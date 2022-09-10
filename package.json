@@ -1,13 +1,24 @@
 {
   "name": "solo-player-h",
   "version": "0.0.0",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve -o",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "build": "npm run postinstall:electron && npm run electron:tsc && ng build",
+    "build:dev": "npm run build -- -c dev",
+    "build:prod": "npm run build -- -c production",
+    "electron:tsc": "tsc main.ts",
+    "electron:serve": "wait-on http-get://localhost:4200/ && npm run electron:tsc && electron ./ --serve",
+    "electron:local": "npm run build:prod && electron .",
+    "electron:linux": "npm run build:prod && npx electron-builder build --linux",
+    "electron:windows": "npm run build:prod && npx electron-builder build --windows",
+    "electron:mac": "npm run build:prod && npx electron-builder build --mac",
+    "start": "npm run postinstall:electron && npm-run-all -p ng:serve electron:serve",
+    "ng:serve": "ng serve",
+    "ng:serve:web": "npm run postinstall:web && npm run electron:tsc  && ng serve -o",
+    "postinstall": "npm run postinstall:electron && npx electron-builder install-app-deps",
+    "postinstall:web": "node postinstall-web",
+    "postinstall:electron": "node postinstall"
   },
   "private": true,
   "dependencies": {
