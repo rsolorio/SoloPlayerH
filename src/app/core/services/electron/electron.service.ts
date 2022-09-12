@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ipcRenderer } from 'electron';
+import { dialog } from '@electron/remote';
+import * as remoteRenderer from '@electron/remote/renderer';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +25,11 @@ export class ElectronService {
   }
 
   openDevTools(): void {
-    this.electronApi.openDevTools();
+    remoteRenderer.getCurrentWebContents().openDevTools();
+  }
+
+  openDialog(): void {
+    dialog.showOpenDialog(remoteRenderer.getCurrentWindow(), { properties: ['openDirectory']});
   }
 
   openFolderDialog(options?: any): Promise<string[]> {
