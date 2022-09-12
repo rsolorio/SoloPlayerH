@@ -12,7 +12,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "sol",
+      "prefix": "sp",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

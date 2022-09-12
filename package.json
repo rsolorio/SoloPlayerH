@@ -31,6 +31,7 @@
     "@angular/platform-browser-dynamic": "~11.2.14",
     "@angular/router": "~11.2.14",
     "@electron/remote": "^2.0.8",
+    "music-metadata-browser": "^2.5.9",
     "rxjs": "~6.6.0",
     "sqlite3": "^5.0.11",
     "tslib": "^2.0.0",

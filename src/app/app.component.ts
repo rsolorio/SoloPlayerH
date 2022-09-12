@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { DatabaseService } from './shared/services/database/database.service';
 
 @Component({
-  selector: 'sol-root',
+  selector: 'sp-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
