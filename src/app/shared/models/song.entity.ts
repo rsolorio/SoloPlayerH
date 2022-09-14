@@ -7,4 +7,18 @@ export class Song extends BaseEntity {
 
   @Column()
   name: string;
+  albumId: string;
+  trackNumber: number;
+  mediaNumber: number;
+  releaseYear: number;
+  releaseDecade: number;
+  composer: string;
+  addDate: Date;
+  changeDate: Date;
+  language: string;
+  mood: string;
+  playCount: number;
+  rating: number;
+  filePath: string;
+  lyrics: string;
 }

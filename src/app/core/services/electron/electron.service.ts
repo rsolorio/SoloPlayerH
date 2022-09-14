@@ -28,11 +28,9 @@ export class ElectronService {
     remoteRenderer.getCurrentWebContents().openDevTools();
   }
 
-  openDialog(): void {
-    dialog.showOpenDialog(remoteRenderer.getCurrentWindow(), { properties: ['openDirectory']});
-  }
-
-  openFolderDialog(options?: any): Promise<string[]> {
-    return this.electronApi.openFolderDialog(options);
+  openFolderDialog(options?: Electron.OpenDialogSyncOptions): string[] {
+    options = options ? options : {};
+    options.properties = ['openDirectory'];
+    return dialog.showOpenDialogSync(remoteRenderer.getCurrentWindow(), options);
   }
 }

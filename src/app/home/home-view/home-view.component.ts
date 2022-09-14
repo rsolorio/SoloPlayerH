@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ElectronService } from 'src/app/core/services/electron/electron.service';
-import * as musicMetadata from 'music-metadata-browser';
+import * as fs from 'fs';
+import * as path from 'path';
+import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 
 @Component({
   selector: 'sp-home-view',
@@ -9,26 +11,34 @@ import * as musicMetadata from 'music-metadata-browser';
 })
 export class HomeViewComponent implements OnInit {
 
-  constructor(public electronService: ElectronService) { }
+  constructor(public electronService: ElectronService, public metadataService: MusicMetadataService) { }
 
   ngOnInit(): void {
   }
 
   public onTest1(): void {
-    // this.electronService.openFolderDialog({ title: 'Hello Dialog!' }).then(result => {
-    //   console.log(result);
-    // });
+    this.logMetadata();
+  }
 
-    // const path = 'J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna\\01 - 01 - lucky star.mp3';
-    // const url = 'file://' + path;
-    // musicMetadata.fetchFromUrl(url).then(metadata => {
-    //   console.log(metadata);
-    //   const tagType = metadata.format.tagTypes[0];
-    //   const tags = metadata.native[tagType];
-    //   console.log(tags);
-    // });
-
-    this.electronService.openDialog();
+  public async logMetadata(): Promise<void> {
+    const selectedFolders = this.electronService.openFolderDialog();
+    const directoryPath = selectedFolders[0];
+    console.log(directoryPath);
+    const folderItems = fs.readdirSync(directoryPath);
+    for (const folderItem of folderItems) {
+      const itemPath = path.join(directoryPath, folderItem);
+      if (fs.statSync(itemPath).isDirectory()) {
+        console.log('Directory: ' + itemPath);
+      }
+      else if (folderItem.toLowerCase().endsWith('.mp3')) {
+        const metadata = await this.metadataService.getMetadata(itemPath);
+        console.log(folderItem);
+        console.log(metadata);
+      }
+      else {
+        console.log('File: ' + folderItem);
+      }
+    }
   }
 
   public onTest2(): void {
