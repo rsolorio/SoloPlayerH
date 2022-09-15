@@ -6,19 +6,47 @@ export class Song extends BaseEntity {
   id: string;
 
   @Column()
-  name: string;
-  albumId: string;
-  trackNumber: number;
-  mediaNumber: number;
-  releaseYear: number;
-  releaseDecade: number;
-  composer: string;
-  addDate: Date;
-  changeDate: Date;
-  language: string;
-  mood: string;
-  playCount: number;
-  rating: number;
   filePath: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  albumId: string;
+
+  @Column({ nullable: true })
+  trackNumber: number;
+
+  @Column({ nullable: true })
+  mediaNumber: number;
+
+  @Column({ nullable: true })
+  releaseYear: number;
+
+  @Column({ nullable: true })
+  releaseDecade: number;
+
+  @Column({ nullable: true })
+  composer: string;
+
+  @Column({ nullable: true })
+  addDate: Date;
+
+  @Column({ nullable: true })
+  changeDate: Date;
+
+  @Column({ nullable: true })
+  language: string;
+
+  @Column({ nullable: true })
+  mood: string;
+
+  @Column({ nullable: true })
+  playCount: number;
+
+  @Column({ nullable: true })
+  rating: number;
+
+  @Column({ nullable: true })
   lyrics: string;
 }

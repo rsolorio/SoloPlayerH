@@ -3,6 +3,7 @@ import { ElectronService } from 'src/app/core/services/electron/electron.service
 import * as fs from 'fs';
 import * as path from 'path';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
+import { Song } from 'src/app/shared/models/song.entity';
 
 @Component({
   selector: 'sp-home-view',
@@ -34,6 +35,14 @@ export class HomeViewComponent implements OnInit {
         const metadata = await this.metadataService.getMetadata(itemPath);
         console.log(folderItem);
         console.log(metadata);
+        const s = new Song();
+        s.id = this.metadataService.getId3v24Identifier(metadata);
+        s.albumId = metadata.common.album;
+        s.name = metadata.common.title;
+        s.releaseYear = metadata.common.year;
+        s.releaseDecade = 1990;
+        s.filePath = itemPath;
+        s.save();
       }
       else {
         console.log('File: ' + folderItem);

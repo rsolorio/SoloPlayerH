@@ -61,10 +61,6 @@ try {
       if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
       }
-      // if (mainWindow === null) {
-      //   console.log('main window null');
-      //   createWindow();
-      // }
 
       ipcMain.handle('openFolderDialog', (e, options) => {
         options = options ? options : {};

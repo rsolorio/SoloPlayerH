@@ -8,6 +8,7 @@ import { Song } from '../../models/song.entity';
 export class DatabaseService {
 
   public dataSource: DataSource;
+
   constructor() {
     const options: DataSourceOptions = {
       type: 'sqlite',
