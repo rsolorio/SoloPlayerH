@@ -43,6 +43,7 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - id
 - name
 - artistId
+- releaseYear
 - lastSongAddDate
 - lastSongChangeDate
 - songCount

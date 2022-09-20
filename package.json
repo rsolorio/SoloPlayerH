@@ -33,6 +33,7 @@
     "@electron/remote": "^2.0.8",
     "@mdi/font": "^7.0.96",
     "bootstrap": "^4.6.2",
+    "lodash": "^4.17.21",
     "music-metadata-browser": "^2.5.9",
     "primeicons": "^1.0.0",
     "primeng": "^10.0.3",
