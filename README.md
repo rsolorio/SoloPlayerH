@@ -1,9 +1,18 @@
-# SoloPlayer
+# Solo Player
 
-Mp3 player and mini manager.
+Mp3 player, music manager, playlist builder, file synchronizer.
 
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.
+
+## Tag Support
+- Id3
+- Multi genre
+- Single album artist
+- Multiple artist
+- Multiple covers
+- Language
+- Tokens
 
 ## Database schema
 

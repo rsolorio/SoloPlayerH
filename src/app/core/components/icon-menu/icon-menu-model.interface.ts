@@ -1,6 +1,6 @@
 import { IMenuModel } from '../../models/menu-model.interface';
 
-/** The model of the org-icon-menu component. */
+/** The model of the icon-menu component. */
 export interface IIconMenuModel {
     /** The icon of the menu. */
     iconClass: string;

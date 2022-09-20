@@ -1,8 +1,8 @@
 export enum LogType {
-  Info = 'mdi mdi-alpha-i-box-outline org-color-info',
-  Warning = 'mdi mdi-exclamation-thick org-color-warning',
-  Error = 'mdi mdi-close org-color-error',
-  Debug = 'mdi mdi-bug-outline org-color-debug'
+  Info = 'mdi mdi-alpha-i-box-outline sp-color-info',
+  Warning = 'mdi mdi-exclamation-thick sp-color-warning',
+  Error = 'mdi mdi-close sp-color-error',
+  Debug = 'mdi mdi-bug-outline sp-color-debug'
 }
 
 export enum LogLevel {

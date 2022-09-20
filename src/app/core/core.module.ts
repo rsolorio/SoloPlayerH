@@ -9,6 +9,9 @@ import { LoadingViewComponent } from './components/loading-view/loading-view.com
 import { DurationPipe } from './pipes/duration.pipe';
 import { SortByPipe } from './pipes/sort-by.pipe';
 import { IconMenuComponent } from './components/icon-menu/icon-menu.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { SideBarComponent } from './components/side-bar/side-bar.component';
+import { SideBarMenuComponent } from './components/side-bar-menu/side-bar-menu.component';
 
 
 
@@ -17,13 +20,22 @@ import { IconMenuComponent } from './components/icon-menu/icon-menu.component';
     LoadingViewComponent,
     DurationPipe,
     SortByPipe,
-    IconMenuComponent
+    IconMenuComponent,
+    NavBarComponent,
+    SideBarComponent,
+    SideBarMenuComponent
   ],
   imports: [
     CommonModule,
     HttpClientModule,
     SlideMenuModule,
     FormsModule
+  ],
+  exports: [
+    LoadingViewComponent,
+    NavBarComponent,
+    SideBarComponent,
+    SideBarMenuComponent
   ]
 })
 export class CoreModule { }

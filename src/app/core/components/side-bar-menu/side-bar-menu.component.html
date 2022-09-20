@@ -1,0 +1,12 @@
+<ul class="list-group">
+  <li
+  *ngFor="let menuItem of sidebarMenuModel.items"
+  [ngClass]="{ 'active': menuItem.active, 'disabled': menuItem.disabled }"
+  (click)="runMenuAction(menuItem)"
+  class="list-group-item list-group-item-secondary sp-text-large list-group-item-action">
+    <i [ngClass]="menuItem.icon"></i>
+    <span>&nbsp;&nbsp;</span><span>{{menuItem.caption}}</span>
+    <i *ngIf="menuItem.isNew" class="mdi mdi-vanish-quarter mdi-rotate-90 sp-sidebar-menu-notification"></i>
+    <div *ngIf="menuItem.subtitle" class="sp-sidebar-menu-item-subtitle">{{menuItem.subtitle}}</div>
+  </li>
+</ul>

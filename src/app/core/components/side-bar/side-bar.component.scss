@@ -1,0 +1,30 @@
+@import "../../../../styles-variables";
+
+div {
+    width: $sp-sidebar-width;
+    overflow: auto;
+    font-family: $sp-font-family-regular;
+
+    /* With a fixed position stick it to the top and bottom */
+    position: fixed;
+    top: 0;
+    bottom: 0;
+}
+
+.sp-sidebar-left {
+    // Stick it to the left
+    left: 0;
+
+    &.sp-collapsed {
+        transform: translateX(-100%);
+    }
+}
+
+.sp-sidebar-right {
+    // Stick it to the right
+    right: 0;
+
+    &.sp-collapsed {
+        transform: translateX(100%);
+    }
+}
