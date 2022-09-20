@@ -83,3 +83,8 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - classificationName
 - classificationType
 - songId
+
+### PlayHistory table
+- id
+- songId
+- playDate

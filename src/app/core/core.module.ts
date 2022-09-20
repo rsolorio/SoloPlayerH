@@ -1,10 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LoadingViewComponent } from './components/loading-view/loading-view.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    LoadingViewComponent
+  ],
   imports: [
     CommonModule
   ]

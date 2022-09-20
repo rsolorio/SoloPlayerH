@@ -1,0 +1,57 @@
+/* COLORS */
+$sp-color-blue: #2a9fd6;
+$sp-color-green: #77b300;
+$sp-color-purple: #9933cc;
+$sp-color-pink: #e83e8c;
+$sp-color-orange: #ff8800;
+$sp-color-yellow: #e9ff25;
+$sp-color-red: #cc0000;
+$sp-color-cyan: #02f1f1;
+$sp-color-gray-light: #999;
+$sp-color-gray: #555;
+$sp-color-muted: #6c757d;
+$sp-color-gray-dark: #2a2a2a;
+$sp-color-white: #fff;
+$sp-color-black: #060606;
+$sp-color-gray-super-light: #e9ecef;
+
+/* THEME */
+// Layout
+$sp-color-background: $sp-color-black;
+// Alerts
+$sp-color-error: $ep-color-red;
+$sp-color-warning: $ep-color-yellow;
+$sp-color-success: $ep-color-green;
+$sp-color-info: $ep-color-blue;
+// Text
+$ep-color-text-normal: $ep-color-white;
+$ep-color-text-muted: $ep-color-muted;
+
+/* DIMS */
+$sp-dim-white-low: rgba(255,255,255,0.1);
+$sp-dim-white-high: rgba(255,255,255,0.6);
+$sp-dim-black-low: rgba(0,0,0,0.3);
+$sp-dim-black-high: rgba(0,0,0,0.8);
+
+/* SIZE */
+$sp-media-max-width: 767px;
+
+$sp-sidebar-width: 250px;
+$sp-navbar-height: 42px;
+$sp-content-max-width: 1000px;
+
+$sp-card-img-size-md: 200px;
+$sp-card-img-size-sm: 150px;
+
+$sp-player-height-sm: 50px;
+$sp-player-height-md: 70px;
+$sp-player-height-lg: 100px;
+
+/* POSITION */
+$sp-card-margin-md: 15px;
+$sp-card-margin-sm: 10px;
+
+/* FONTS */
+$sp-font-family-regular: 'Saira Semi Condensed', sans-serif;
+$sp-font-family-narrow: 'Saira Extra Condensed', sans-serif;
+// $sp-font-family-caps: 'Six Caps', sans-serif;

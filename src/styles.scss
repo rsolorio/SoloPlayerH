@@ -1,1 +1,386 @@
-/* You can add global styles to this file, and also import other style files */
+@import './styles-variables';
+@import url('https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:100|Saira+Semi+Condensed:400');
+
+// MAIN *******************************************************************************************
+// html {
+    /* height: 100%; /* This is needed so child divs can expand 100% when they're empty */
+// }
+
+body {
+    /* height: 100%; /* This is needed so child divs can expand 100% when they're empty */
+    background-attachment: fixed; /* So the image background doesn't move when scrolling */
+}
+
+// Z-INDEX ****************************************************************************************
+.sp-z-1 {
+    z-index: 10000 !important; /* Sidebar */
+}
+
+.sp-z-2 {
+    z-index: 9900 !important; /* Loading view */
+}
+
+.sp-z-3 {
+    z-index: 9800 !important; /* Icon context menu */
+}
+
+.sp-z-4 {
+    z-index: 9700 !important; /* Player overlay */
+}
+
+.sp-z-5 {
+    z-index: 9600 !important; /* Nav bar */
+}
+
+.sp-z-6 {
+    z-index: 9500 !important;
+}
+
+.sp-z-7 {
+    z-index: 9400 !important;
+}
+
+// COLORS *****************************************************************************************
+.sp-color-heart {
+    color: $sp-color-red;
+}
+
+.sp-color-rating {
+    color: $sp-color-orange !important;
+}
+
+.sp-color-lyric {
+    color: $sp-color-blue !important;
+}
+
+.sp-color-mood {
+    color: $sp-color-yellow;
+}
+
+.sp-color-playlist {
+    color: $sp-color-green;
+}
+
+.sp-color-playing {
+    color: $sp-color-cyan;
+}
+
+.sp-color-success {
+    color: $sp-color-green;
+}
+
+.sp-color-error {
+    color: $sp-color-red;
+}
+
+.sp-color-warning {
+    color: $sp-color-yellow;
+}
+
+.sp-color-info {
+    color: $sp-color-blue;
+}
+
+.sp-color-trace {
+    color: $sp-color-purple;
+}
+
+.sp-color-debug {
+    color: $sp-color-orange;
+}
+
+.sp-color-normal-text {
+    color: $sp-color-white;
+}
+
+.sp-color-muted {
+    color: $sp-color-muted;
+}
+
+.sp-bg-transparent {
+    background-color: transparent;
+}
+
+.sp-bg-dim-white-high {
+    background-color: $sp-dim-white-high;
+}
+
+.sp-bg-dim-white-low {
+    background-color: $sp-dim-white-low;
+}
+
+.sp-bg-dim-black-low {
+    background-color: $sp-dim-black-low !important;
+}
+
+.sp-bg-dim-black-high, .sp-selected-item {
+    background-color: $sp-dim-black-high !important;
+}
+
+// ANIMATION **************************************************************************************
+// Timings
+// ease (default): slow start/fast speed/slow end
+// linear: same speed start to end
+// ease-in: slow start
+// ease-out: slow end
+// ease-in-out: slow start/normal speed/slow end
+// cubic-bezier(n,n,n,n): custom
+
+/* Applies animation to any transform with duration of 0.3 secs */
+.sp-ease-transform {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Applies animation to any opacity change with duration of 0.5 secs */
+.sp-ease-opacity {
+    transition: opacity 1s ease-in-out;
+}
+
+/* Applies animation to any color change with duration of 2 secs */
+.sp-ease-color {
+    transition: color 2s ease-in-out;
+}
+
+/* Applies animation to any color change with duration of 2 secs.
+A longer duration allows to properly see the transition in the whole page. */
+.sp-ease-background-color {
+    transition: background-color 2s ease-in-out;
+}
+
+/* Applies animation to any height change with duration of 0.5 secs */
+.sp-ease-height {
+    transition: height 0.5s ease-out;
+}
+
+// SIZE ********************************************************************************************
+.sp-full-height {
+    height: 100%;
+}
+
+.sp-no-height {
+    height: 0;
+}
+
+.sp-full-width {
+    width: 100%;
+}
+
+.sp-max-width {
+    /* This is the max width of the app area; the min is 360 */
+    max-width: $sp-content-max-width;
+}
+
+.sp-nav-bar-height {
+    height: $sp-navbar-height;
+    max-height: $sp-navbar-height;
+}
+
+.sp-nav-bar-placeholder-height {
+    height: $sp-navbar-height;
+}
+
+.sp-player-small-height {
+    height: $sp-player-height-sm;
+}
+
+.sp-player-medium-height {
+    height: $sp-player-height-md;
+}
+
+.sp-player-large-height {
+    height: $sp-player-height-lg;
+}
+
+// FONT TYPE **************************************************************************************
+.sp-font-family-regular {
+    font-family: $sp-font-family-regular;
+}
+
+// TEXT SIZE  *************************************************************************************
+.sp-text-tiny {
+    font-size: 0.6em;
+}
+
+.sp-text-small {
+    font-size: 0.8em;
+}
+
+.sp-text-medium {
+    font-size: 1em;
+}
+
+.sp-text-medium-fixed {
+    font-size: 1em;
+}
+
+.sp-text-large {
+    font-size: 1.2em;
+}
+
+.sp-text-xlarge {
+    font-size: 1.5em;
+}
+
+.sp-text-xlarge-fixed {
+    font-size: 1.5em;
+}
+
+.sp-text-big {
+    font-size: 2em;
+}
+
+.sp-text-huge {
+    font-size: 3em;
+}
+
+.sp-text-jumbo {
+    font-size: 4em;
+}
+
+.sp-auto-line-height {
+    line-height: 1.5;
+}
+
+@media only screen and (max-width:$sp-media-max-width) {
+    .sp-text-tiny {
+        font-size: 0.5em;
+    }
+    .sp-text-small {
+        font-size: 0.6em;
+    }
+    .sp-text-medium {
+        font-size: 0.8em;
+    }
+    .sp-text-large {
+        font-size: 1em;
+    }
+    .sp-text-xlarge {
+        font-size: 1.2em;
+    }
+    .sp-text-big {
+        font-size: 1.5em;
+    }
+    .sp-auto-line-height {
+        line-height: 1.2;
+    }
+}
+
+// TEXT EFFECTS ///////////////////////////////////////////////////////////////////////////////////
+
+/* If this text is inside a table, the table requires the table-layout:fixed in order to make this work.
+ * This is usually applied to the Table TD element.
+*/
+.sp-text-overflow-ellipsis {
+    white-space: nowrap; /* This prevents the text create a new line in a white space */
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.sp-table-support-overflow-ellipsis {
+    table-layout: fixed;
+}
+
+.sp-text-center {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.sp-text-center-v {
+    vertical-align: middle !important;
+}
+
+.sp-text-bold {
+    font-weight: bold;
+}
+
+.sp-no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+// Misc *******************************************************************************************
+.sp-cursor-pointer, .sp-clickable {
+    cursor: pointer;
+}
+
+.sp-cursor-drag {
+    cursor: all-scroll;
+}
+
+.sp-no-pointer-events {
+    pointer-events: none;
+}
+
+.sp-float-right {
+    float: right;
+}
+
+.sp-float-left {
+    float: left;
+}
+
+.sp-invisible {
+    visibility: hidden;
+    display: none;
+}
+
+.sp-vertical-align-inherit {
+    vertical-align: inherit;
+}
+
+.sp-flex {
+    display: flex;
+}
+
+.sp-no-outline {
+    outline: 0;
+}
+
+.sp-center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.sp-scrollbar-hidden {
+    scrollbar-width: none; /* Firefox 64 */
+    -ms-overflow-style: none; /* IE 10+ */
+    &::-webkit-scrollbar { /** WebKit (Safari, Chrome) */
+        display: none;
+    }
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.sp-ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 600ms linear;
+    background-color: $sp-dim-white-high;
+}
+
+// Browser overrides //////////////////////////////////////////////////////////////////////////////
+
+// Get rid of the default 'x' button (added by chrome) in search inputs
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
+// CDK overrides **********************************************************************************
+// Problems when scrolling.
+// .cdk-virtual-scroll-content-wrapper {
+//     display: contents; // Allow the context menu to show.
+// }
