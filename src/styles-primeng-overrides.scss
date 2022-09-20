@@ -1,0 +1,61 @@
+@import "./styles-variables";
+
+.p-slidemenu {
+    padding: 0 0 !important;
+}
+
+.p-menu-separator {
+    border: 1px solid $sp-dim-white-low !important;
+}
+
+.p-dialog-header {
+    padding: 0px 5px !important;
+    .pi-times {
+        font-size: 1.8em !important;
+    }
+    .p-dialog-title {
+        font-size: 1em !important;
+        font-family: $sp-font-family-narrow !important;
+    }
+}
+
+.p-dialog-content {
+    padding: 0 0 !important;
+}
+
+p-dynamicdialog .p-component-overlay {
+    z-index: 9890 !important; /* Just underneath the org loading view */
+}
+
+// .ui-accordion-header, .ui-accordion-header a {
+//     outline: 0;
+// }
+
+.p-accordion-tab {
+    margin-top: 2px !important;
+}
+
+.p-accordion-content {
+    background-color: transparent !important;
+    padding: 5px !important;
+}
+
+.sp-selected-menu-item {
+    background-color: $sp-color-gray !important;
+    .p-menuitem-link {
+        .p-menuitem-text {
+            color: $sp-color-white !important;
+        }
+    }
+}
+
+.p-menuitem .p-menuitem-link {
+    font-family: $sp-font-family-regular !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    font-size: 16px !important;
+}
+
+.p-menuitem .p-menuitem-icon {
+    font-size: 16px;
+}

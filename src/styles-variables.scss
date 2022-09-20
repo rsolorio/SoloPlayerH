@@ -19,13 +19,13 @@ $sp-color-gray-super-light: #e9ecef;
 // Layout
 $sp-color-background: $sp-color-black;
 // Alerts
-$sp-color-error: $ep-color-red;
-$sp-color-warning: $ep-color-yellow;
-$sp-color-success: $ep-color-green;
-$sp-color-info: $ep-color-blue;
+$sp-color-error: $sp-color-red;
+$sp-color-warning: $sp-color-yellow;
+$sp-color-success: $sp-color-green;
+$sp-color-info: $sp-color-blue;
 // Text
-$ep-color-text-normal: $ep-color-white;
-$ep-color-text-muted: $ep-color-muted;
+$sp-color-text-normal: $sp-color-white;
+$sp-color-text-muted: $sp-color-muted;
 
 /* DIMS */
 $sp-dim-white-low: rgba(255,255,255,0.1);

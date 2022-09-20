@@ -30,12 +30,12 @@ export class UtilityService {
     });
   }
 
-  public setOrgVersion(version: string): void {
-    (window as any).orgVersion = version;
+  public setAppVersion(version: string): void {
+    (window as any).solAppVersion = version;
   }
 
-  public getOrgVersion(): string {
-    return (window as any).orgVersion;
+  public getAppVersion(): string {
+    return (window as any).solAppVersion;
   }
 
   /** Determines if the specified value represents an empty guid. */

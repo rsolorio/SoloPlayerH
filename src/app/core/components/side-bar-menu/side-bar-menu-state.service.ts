@@ -42,7 +42,7 @@ export class SideBarMenuStateService {
 
   private createAboutMenuItem(): IMenuModel {
     const menuModel = this.createMenuItem('About', 'mdi-owl mdi', false);
-    menuModel.subtitle = this.utility.getOrgVersion();
+    menuModel.subtitle = this.utility.getAppVersion();
     return menuModel;
   }
 

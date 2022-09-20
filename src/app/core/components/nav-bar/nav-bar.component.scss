@@ -1,0 +1,55 @@
+@import "../../../../styles-variables";
+
+#spNavbar {
+    /* With a fixed position stick it to the top and sides */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* This will center a fixed element */
+    margin: auto;
+
+    &.sp-collapsed {
+        transform: translateY(-100%);
+    }
+}
+
+#spNavbarContent {
+    display: flex;
+}
+
+.sp-nav-toast {
+    // Horizontal center *********
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, 0);
+    // ***************************
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: 5px;
+    background-color: $sp-color-green;
+    opacity: 0;
+    &.sp-visible {
+        opacity: .8;
+    }
+}
+
+.sp-nav-bar-shadow {
+    box-shadow: 0px 10px 15px $sp-dim-black-high; // h-offset v-offset blur color
+}
+
+table {
+    td {
+        padding: 0; // For some reason the icon menu td was getting a padding top and bottom of 1px
+    }
+}
+
+.sp-td-icon {
+    width: 42px;
+    text-align: center;
+}
+
+.sp-td-center {
+    border-left: 1px solid $sp-color-gray-light;
+    border-right: 1px solid $sp-color-gray-light;
+}

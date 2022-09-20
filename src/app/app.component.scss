@@ -1,0 +1,21 @@
+@import "../styles-variables";
+
+#spOutletContainerBackground {
+    background-color: $sp-dim-black-low;
+     /* With a fixed position stick it to all sides */
+     position: fixed;
+     top: 0;
+     bottom: 0;
+     left: 0;
+     right: 0;
+     /* Margins at 0 so they force the div to center */
+     margin: auto;
+     z-index: -1;
+}
+
+#spOutletContainer {    
+    /* Margins at 0 so they force the div to center */
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: hidden; /* Do not show content outside this container */
+}

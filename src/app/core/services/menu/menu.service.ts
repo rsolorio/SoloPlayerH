@@ -82,8 +82,8 @@ export class MenuService {
     menu.menuWidth = width;
   }
 
-  public buildSlideMenu(menu: SlideMenu, orgMenuItems: IMenuModel[], actionParam?: any): void {
-    menu.model = this.buildNgMenu(orgMenuItems, actionParam);
+  public buildSlideMenu(menu: SlideMenu, menuItems: IMenuModel[], actionParam?: any): void {
+    menu.model = this.buildNgMenu(menuItems, actionParam);
   }
 
   public findById(id: string, menuList: IMenuModel[]): IMenuModel {

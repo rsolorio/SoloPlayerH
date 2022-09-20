@@ -1,1 +1,51 @@
-<p>nav-bar works!</p>
+<div id="spNavbar" [ngClass]="{ 'sp-collapsed': !model.show }" class="sp-z-5 sp-max-width sp-ease-transform bg-dark">
+  <!-- Container -->
+  <table class="sp-full-width sp-nav-bar-height sp-nav-bar-shadow"><tr>
+      <!-- Hamburger button -->
+      <td class="sp-td-icon">
+          <i class="mdi-menu mdi sp-clickable sp-text-xlarge-fixed" (click)="onHamburgerClick()"></i>
+      </td>
+      <!-- Middle content -->
+      <td class="sp-td-center">
+          <table class="sp-full-width sp-nav-bar-height"><tr>
+              <!-- Inner left icon -->
+              <td *ngIf="model.leftIcon && !model.leftIconMenu" [ngClass]="{ 'sp-clickable' : model.leftIcon.action }" class="sp-td-icon">
+                  <i
+                  [ngClass]="model.leftIcon.icon"
+                  class="sp-text-xlarge-fixed" (click)="onLeftIconClick()"></i>
+              </td>
+              <!-- Inner left icon menu -->
+              <td *ngIf="model.leftIconMenu" class="sp-td-icon">
+                  <sp-icon-menu [items]="model.leftIconMenu.items" [iconClass]="model.leftIconMenu.iconClass" class="sp-text-xlarge-fixed"></sp-icon-menu>
+              </td>
+              <!-- Title or Dynamic content -->
+              <td>
+                  <span *ngIf="model.title" class="sp-font-family-regular sp-text-xlarge-fixed">{{model.title}}</span>
+                  <!-- We need to make sure this element is rendered (as invisible) even if it is not needed. -->
+                  <div [ngClass]="{ 'sp-invisible': model.title, 'sp-flex': !model.title }" class="sp-full-width">
+                      <ng-template #spNavbarContentHost></ng-template>
+                  </div>
+              </td>
+              <!-- Inner right icon -->
+              <td *ngIf="model.rightIcon && !model.rightIconMenu" [ngClass]="{ 'sp-clickable' : model.rightIcon.action }" class="sp-td-icon">
+                  <i
+                  *ngIf="model.rightIcon"
+                  [ngClass]="model.rightIcon.icon"
+                  class="sp-text-xlarge-fixed" (click)="onRightIconClick()"></i>
+              </td>
+              <!-- Inner right icon menu -->
+              <td *ngIf="model.rightIconMenu" class="sp-td-icon">
+                  <sp-icon-menu [items]="model.rightIconMenu.items" [iconClass]="model.rightIconMenu.iconClass" class="sp-text-xlarge-fixed"></sp-icon-menu>
+              </td>
+          </tr></table>
+      </td>
+      <!-- Ellipsis button -->
+      <td class="sp-td-icon">
+          <sp-icon-menu [items]="model.menuList" class="sp-text-xlarge-fixed"></sp-icon-menu>
+      </td>
+  </tr></table>
+  <div *ngIf="model.toastMessage" [ngClass]="{ 'sp-visible': model.toastVisible }" class="sp-nav-toast sp-ease-opacity">
+      <span [textContent]="model.toastMessage"></span>
+  </div>
+</div>
+<div *ngIf="!model.discardPlaceholder" class="sp-nav-bar-placeholder-height"></div>

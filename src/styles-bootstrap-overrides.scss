@@ -1,0 +1,67 @@
+@import "./styles-variables";
+
+/* Sass overrides */
+
+$body-bg: $sp-color-black;
+$body-color: $sp-color-white;
+$link-color: $sp-color-cyan;
+
+$colors: (
+    'blue': $sp-color-blue,
+    'purple': $sp-color-purple,
+    'pink': $sp-color-pink,
+    'red': $sp-color-red,
+    'orange': $sp-color-orange,
+    'yellow': $sp-color-yellow,
+    'green': $sp-color-green,
+    'cyan': $sp-color-cyan,
+    'white': $sp-color-white,
+    'gray': $sp-color-gray,
+    'gray-dark': $sp-color-gray-dark
+) !default;
+
+$theme-colors: (
+    primary: $sp-color-blue,
+    secondary: $sp-color-gray,
+    success: $sp-color-green,
+    info: $sp-color-purple,
+    warning: $sp-color-orange,
+    danger: $sp-color-red,
+    light: $sp-color-gray-light,
+    dark: $sp-color-gray-dark
+) !default;
+
+/* Import Bootstrap after sass overrides and before standard css overrides */
+@import "node_modules/bootstrap/scss/bootstrap.scss";
+
+/* Standard css overrides */
+.table-dark {
+    color: $sp-color-white
+}
+
+/* A bigger version of the default switch. */
+.custom-switch.custom-switch-lg {
+    padding-bottom: 1rem;
+    padding-left: 2.25rem;
+  
+    & .custom-control-label {
+        padding-left: .75rem;
+        padding-top: 0.15rem;
+  
+        &::before {
+            border-radius: 1rem;
+            height: 1.5rem;
+            width: 2.5rem;
+        }
+  
+        &::after {
+            border-radius: .65rem;
+            height: calc(1.5rem - 4px);
+            width: calc(1.5rem - 4px);
+        }
+    }
+      
+    .custom-control-input:checked ~ .custom-control-label::after {
+        transform: translateX(1rem);
+    }
+}
