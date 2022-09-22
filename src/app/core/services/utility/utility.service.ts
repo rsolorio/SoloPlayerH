@@ -207,9 +207,10 @@ export class UtilityService {
    * Converts the specified number of seconds to the format mm:ss
    */
   public secondsToMinutes(value: number): string {
-    const minutes = Math.floor(value / 60);
-    const secondsLeft = value % 60;
-    return `${minutes}:${secondsLeft}`;
+    const valueInt = Math.floor(value);
+    const minutes = Math.floor(valueInt / 60);
+    const secondsLeft = valueInt % 60;
+    return `${this.enforceDigits(minutes, 2)}:${this.enforceDigits(secondsLeft, 2)}`;
   }
 
   /**
@@ -217,8 +218,9 @@ export class UtilityService {
    * @param value The number of seconds to format
    */
   public secondsToHours(value: number): string {
-    const hours = Math.floor(value / 3600);
-    let secondsLeft = value % 3600;
+    const valueInt = Math.floor(value);
+    const hours = Math.floor(valueInt / 3600);
+    let secondsLeft = valueInt % 3600;
     const minutes = Math.floor(secondsLeft / 60);
     secondsLeft = secondsLeft % 60;
     const minutesAndSeconds = `${this.enforceDigits(minutes, 2)}:${this.enforceDigits(secondsLeft, 2)}`;
@@ -292,6 +294,10 @@ export class UtilityService {
 
   public round(value: number, decimals: number): number {
     return parseFloat(value.toFixed(decimals));
+  }
+
+  public getDecade(year: number): number {
+    return Math.floor(year / 10) * 10;
   }
 
   /**

@@ -4,33 +4,40 @@ import { fetchFromUrl, IAudioMetadata, ITag } from 'music-metadata-browser';
 @Injectable({
   providedIn: 'root'
 })
+/**
+ * Exposes methods to parse music tags.
+ * Based on: https://github.com/Borewit/music-metadata-browser
+ * You can test the library here: https://audio-tag-analyzer.netlify.app/
+ */
 export class MusicMetadataService {
 
   constructor() { }
 
-  public getMetadata(filePath: string): Promise<IAudioMetadata> {
+  public async getMetadata(filePath: string, enforceDuration?: boolean): Promise<IAudioMetadata> {
     const url = 'file://' + filePath;
-    return fetchFromUrl(url).then(metadata => {
-      return metadata;
-    });
+    const metadata = await fetchFromUrl(url);
+    if (enforceDuration && !metadata.format.duration) {
+      return await fetchFromUrl(url, { duration: true });
+    }
+    return metadata;
   }
 
   public getId3v24Tags(metadata: IAudioMetadata): ITag[] {
     return metadata.native['ID3v2.4'];
   }
 
-  public getId3v24String(tagId: string, metadata: IAudioMetadata): string {
-    let result: string = null;
+  public getId3v24Tag<T>(tagId: string, metadata: IAudioMetadata): T {
+    let result = null;
     const tags = this.getId3v24Tags(metadata);
     for (const tag of tags) {
       if (tag.id === tagId) {
         if (tag.value) {
-          result = tag.value.toString();
+          result = tag.value;
         }
         break;
       }
     }
-    return result;
+    return result as T;
   }
 
   public getId3v24Identifier(metadata: IAudioMetadata): string {

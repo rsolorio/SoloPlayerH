@@ -49,4 +49,19 @@ export class Song extends BaseEntity {
 
   @Column({ nullable: true })
   lyrics: string;
+
+  @Column({ nullable: true })
+  seconds: number;
+
+  @Column({ nullable: true })
+  duration: string;
+
+  @Column({ nullable: true })
+  bitrate: number;
+
+  @Column({ nullable: true })
+  vbr: boolean;
+
+  @Column({ nullable: true })
+  replayGain: number;
 }
