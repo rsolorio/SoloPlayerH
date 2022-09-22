@@ -3,7 +3,7 @@ import { ElectronService } from 'src/app/core/services/electron/electron.service
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { Song } from 'src/app/shared/models/song.entity';
 import { FileService } from 'src/app/shared/services/file/file.service';
-import { ILyricsTag } from 'src/app/shared/services/music-metadata/music-metadata.interface';
+import { IIdentifierTag, ILyricsTag } from 'src/app/shared/services/music-metadata/music-metadata.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 
 @Component({
@@ -55,7 +55,8 @@ export class SettingsViewComponent implements OnInit {
   async processFile(filePath: string): Promise<void> {
     const fileMetadata = await this.metadataService.getMetadata(filePath, true);
     const song = new Song();
-    song.id = this.metadataService.getId3v24Identifier(fileMetadata);
+    const id = this.metadataService.getId3v24Tag<IIdentifierTag>('UFID', fileMetadata);
+    song.id = id.identifier.toString();
     song.filePath = filePath;
     song.name = fileMetadata.common.title;
     song.albumId = '';

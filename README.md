@@ -38,7 +38,6 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - duration
 - bitrate
 - vbr
-- genre
 - url
 - hasLyric
 - lyrics
