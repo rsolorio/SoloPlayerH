@@ -7,7 +7,7 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 
 ## Tag Support
 - Id3
-- Multi genre
+- Multi genre (either with multiple tags or one tag separated by a forward slash)
 - Single album artist
 - Multiple artist
 - Multiple covers
@@ -62,7 +62,6 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 ### Artist table
 - id
 - name
-- artistRoleId (Album Artist, Artist)
 - artistTypeId (Male, Female, Solo, etc)
 - lastSongAddDate
 - lastSongChangeDate
@@ -72,28 +71,31 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - favorite
 
 ### SongArtist table
-- id
 - songId
 - artistId
-- roleId
+
+### Genre table
+- id
+- name
+
+### SongGenre table
+- songId
+- genreId
 
 ### Playlist table
 - id
 - name
 
 ### PlaylistSong table
-- id
 - playlistId
 - songId
 - sequence
 
 ### ClassificationSong table
-- id
 - classificationName
 - classificationType
 - songId
 
 ### PlayHistory table
-- id
 - songId
 - playDate

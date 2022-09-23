@@ -1,7 +1,7 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({name: 'song'})
-export class Song extends BaseEntity {
+export class SongEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -12,22 +12,28 @@ export class Song extends BaseEntity {
   name: string;
 
   @Column()
-  albumId: string;
+  primaryAlbumId: string;
 
   @Column({ nullable: true })
+  externalId: string;
+
+  @Column()
   trackNumber: number;
 
-  @Column({ nullable: true })
+  @Column()
   mediaNumber: number;
 
-  @Column({ nullable: true })
+  @Column()
   releaseYear: number;
 
-  @Column({ nullable: true })
+  @Column()
   releaseDecade: number;
 
   @Column({ nullable: true })
   composer: string;
+
+  @Column({ nullable: true })
+  comment: string;
 
   @Column({ nullable: true })
   addDate: Date;
@@ -35,33 +41,33 @@ export class Song extends BaseEntity {
   @Column({ nullable: true })
   changeDate: Date;
 
-  @Column({ nullable: true })
+  @Column()
   language: string;
 
-  @Column({ nullable: true })
+  @Column()
   mood: string;
 
-  @Column({ nullable: true })
+  @Column()
   playCount: number;
 
-  @Column({ nullable: true })
+  @Column()
   rating: number;
 
   @Column({ nullable: true })
   lyrics: string;
 
-  @Column({ nullable: true })
+  @Column()
   seconds: number;
 
-  @Column({ nullable: true })
+  @Column()
   duration: string;
 
-  @Column({ nullable: true })
+  @Column()
   bitrate: number;
 
-  @Column({ nullable: true })
+  @Column()
   vbr: boolean;
 
-  @Column({ nullable: true })
+  @Column()
   replayGain: number;
 }

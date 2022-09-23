@@ -26,15 +26,18 @@ export class MusicMetadataService {
     return metadata.native['ID3v2.4'];
   }
 
-  public getId3v24Tag<T>(tagId: string, metadata: IAudioMetadata): T {
+  public getId3v24Tag<T>(tagId: string, metadata: IAudioMetadata, isUserDefined?: boolean): T {
     let result = null;
     const tags = this.getId3v24Tags(metadata);
-    for (const tag of tags) {
-      if (tag.id === tagId) {
-        if (tag.value) {
-          result = tag.value;
+    if (tags && tags.length) {
+      for (const tag of tags) {
+        const actualTagId = isUserDefined ? 'TXXX:' + tagId : tagId;
+        if (tag.id === actualTagId) {
+          if (tag.value) {
+            result = tag.value;
+          }
+          break;
         }
-        break;
       }
     }
     return result as T;
