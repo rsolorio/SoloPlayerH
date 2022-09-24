@@ -15,17 +15,17 @@ export enum Milliseconds {
 export enum AppRoutes {
   Empty = '/',
   Home = '/home',
-  Library = '/library',
-  Browse = '/library/browse',
   Favorites = '/favorites',
   Search = '/search',
   Songs = '/songs',
   Artists = '/artists',
+  AlbumArtists = 'albumartists',
   Albums = '/albums',
+  Genres = '/genres',
+  Classifications = '/classifications',
   Playlists = '/playlists',
   Filters = '/filters',
   FilterView = '/filters/view',
   Settings = '/settings',
-  Custom = '/custom',
   Log = '/log'
 }

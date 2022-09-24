@@ -1,7 +1,10 @@
 import { IAudioMetadata } from 'music-metadata-browser';
 import { IFileInfo } from '../file/file.interface';
 
-export interface ILyricsTag {
+/**
+ * Defines the structure of the object that holds Lyrics or Comments in a tag.
+ */
+export interface IMemoTag {
   description?: string;
   language?: string;
   text?: string;

@@ -9,7 +9,7 @@ import { SongEntity } from '../../models/song.entity';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
-import { IAudioInfo, IIdentifierTag, ILyricsTag } from '../music-metadata/music-metadata.interface';
+import { IAudioInfo, IIdentifierTag, IMemoTag } from '../music-metadata/music-metadata.interface';
 import { MusicMetadataService } from '../music-metadata/music-metadata.service';
 
 @Injectable({
@@ -211,7 +211,7 @@ export class ScanService {
     }
 
     // TODO: get lyrics from text file
-    const lyrics = this.metadataService.getId3v24Tag<ILyricsTag>('USLT', audioInfo.metadata);
+    const lyrics = this.metadataService.getId3v24Tag<IMemoTag>('USLT', audioInfo.metadata);
     if (lyrics) {
       song.lyrics = lyrics.text;
     }

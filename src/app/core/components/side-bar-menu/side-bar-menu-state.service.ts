@@ -80,12 +80,15 @@ export class SideBarMenuStateService {
         this.state.loginMenuLoaded = false;
       }
       this.state.items.push(this.createMenuItem('Home', 'mdi-home mdi', false, null, AppRoutes.Home));
+      this.state.items.push(this.createMenuItem('Album Artists', 'mdi-account-badge mdi', false, null, AppRoutes.AlbumArtists));
       this.state.items.push(this.createMenuItem('Artists', 'mdi-account-music mdi', false, null, AppRoutes.Artists));
       this.state.items.push(this.createMenuItem('Albums', 'mdi-album mdi', false, null, AppRoutes.Albums));
       this.state.items.push(this.createMenuItem('Songs', 'mdi-music-note mdi', false, null, AppRoutes.Songs));
+      this.state.items.push(this.createMenuItem('Genres', 'mdi-tag-outline mdi', false, null, AppRoutes.Genres));
+      this.state.items.push(this.createMenuItem('Classifications', 'mdi-tag-multiple-outline mdi', false, null, AppRoutes.Genres));
+      this.state.items.push(this.createMenuItem('Songs', 'mdi-music-note mdi', false, null, AppRoutes.Songs));
       this.state.items.push(this.createMenuItem('Playlists', 'mdi-playlist-play mdi', false, null, AppRoutes.Playlists));
       this.state.items.push(this.createMenuItem('Filters', 'mdi-filter-outline mdi', false, null, AppRoutes.Filters));
-      this.state.items.push(this.createMenuItem('Browse', 'mdi-feature-search-outline mdi', false, null, AppRoutes.Browse));
       this.state.items.push(this.createMenuItem('Settings', 'mdi-cogs mdi', false, null, AppRoutes.Settings));
       this.state.items.push(this.createMenuItem('Log', 'mdi-file-document-edit-outline mdi', false, null, AppRoutes.Log));
 

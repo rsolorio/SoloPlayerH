@@ -9,10 +9,29 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - Id3
 - Multi genre (either with multiple tags or one tag separated by a forward slash)
 - Single album artist
-- Multiple artist
+- Multiple artist (multiple tags)
 - Multiple covers
 - Language
 - Tokens
+
+## Menu
+- Home
+- Album Artists
+  - Albums
+- Artists
+  - Songs
+- Albums
+  - Songs
+- Genres
+  - Album Artists
+- Classifications
+  - Album Artists
+- Songs
+- Playlists
+- Filters
+  - Songs
+- Settings
+- Log
 
 ## Database schema
 
