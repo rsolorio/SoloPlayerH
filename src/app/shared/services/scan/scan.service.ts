@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { createHash } from 'crypto';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AlbumEntity } from '../../models/album.entity';
 import { ArtistEntity } from '../../models/artist.entity';
-import { GenreEntity } from '../../models/genre.entity';
+import { ClassificationEntity } from '../../models/classification.entity';
 import { SongArtistEntity } from '../../models/song-artist.entity';
-import { SongGenreEntity } from '../../models/song-genre.entity';
+import { SongClassificationEntity } from '../../models/song-classification.entity';
 import { SongEntity } from '../../models/song.entity';
 import { DatabaseService } from '../database/database.service';
 import { FileService } from '../file/file.service';
@@ -87,7 +86,6 @@ export class ScanService {
     }
 
     // TODO: add default genre if no one found
-    // TODO: create composite primary key
     const songGenres = this.processSongGenres(song, genres);
     for (const songGenre of songGenres) {
       await songGenre.save();
@@ -101,7 +99,7 @@ export class ScanService {
     if (fileInfo.metadata.common.artist) {
       artist.name = fileInfo.metadata.common.artist;
     }
-    artist.id = this.hash(artist.name);
+    artist.id = this.db.hash(artist.name);
     artist.favorite = false;
 
     const artistType = this.metadataService.getId3v24Tag<string>('ARTISTTYPE', fileInfo.metadata, true);
@@ -132,7 +130,7 @@ export class ScanService {
     }
 
     // Combine these fields to make album unique
-    album.id = this.hash(`${artist.name}|${album.name}|${album.releaseYear}`);
+    album.id = this.db.hash(`${artist.name}|${album.name}|${album.releaseYear}`);
 
     const albumType = this.metadataService.getId3v24Tag<string>('ALBUMTYPE', fileInfo.metadata, true);
     album.albumType = albumType ? albumType : this.unknownValue;
@@ -145,7 +143,7 @@ export class ScanService {
   private processSong(album: AlbumEntity, fileInfo: IFileInfo): SongEntity {
     const song = new SongEntity();
     song.filePath = fileInfo.filePath;
-    song.id = this.hash(song.filePath);
+    song.id = this.db.hash(song.filePath);
 
     const id = this.metadataService.getId3v24Tag<IIdentifierTag>('UFID', fileInfo.metadata);
     if (id) {
@@ -230,7 +228,7 @@ export class ScanService {
       for (const artistName of fileInfo.metadata.common.artists) {
         const artist = new ArtistEntity();
         artist.name = artistName;
-        artist.id = this.hash(artistName);
+        artist.id = this.db.hash(artistName);
         artist.favorite = false;
         artist.artistType = this.unknownValue;
         artist.country = this.unknownValue;
@@ -253,17 +251,18 @@ export class ScanService {
     return songArtists;
   }
 
-  private processMultipleGenres(fileInfo: IFileInfo): GenreEntity[] {
-    const genres: GenreEntity[] = [];
+  private processMultipleGenres(fileInfo: IFileInfo): ClassificationEntity[] {
+    const genres: ClassificationEntity[] = [];
 
     if (fileInfo.metadata.common.genre && fileInfo.metadata.common.genre.length) {
       for (const genreName of fileInfo.metadata.common.genre) {
         // Besides multiple genres in array, also support multiple genres separated by /
         const subGenres = genreName.split('/');
         for (const subGenreName of subGenres) {
-          const genre = new GenreEntity();
-          genre.id = this.hash(subGenreName);
+          const genre = new ClassificationEntity();
+          genre.classificationType = 'Genre';
           genre.name = subGenreName;
+          genre.id = this.db.hash(`${genre.classificationType}:${genre.name}`);
           genres.push(genre);
         }
       }
@@ -271,19 +270,15 @@ export class ScanService {
     return genres;
   }
 
-  private processSongGenres(song: SongEntity, genres: GenreEntity[]): SongGenreEntity[] {
-    const songGenres: SongGenreEntity[] = [];
+  private processSongGenres(song: SongEntity, genres: ClassificationEntity[]): SongClassificationEntity[] {
+    const songGenres: SongClassificationEntity[] = [];
 
     for (const genre of genres) {
-      const songGenre = new SongGenreEntity();
+      const songGenre = new SongClassificationEntity();
       songGenre.songId = song.id;
-      songGenre.genreId = genre.id;
+      songGenre.classificationId = genre.id;
       songGenres.push(songGenre);
     }
     return songGenres;
-  }
-
-  private hash(value: string): string {
-    return createHash('sha1').update(value).digest('base64');
   }
 }

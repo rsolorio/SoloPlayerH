@@ -74,14 +74,6 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - songId
 - artistId
 
-### Genre table
-- id
-- name
-
-### SongGenre table
-- songId
-- genreId
-
 ### Playlist table
 - id
 - name
@@ -91,10 +83,14 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - songId
 - sequence
 
-### ClassificationSong table
-- classificationName
+### Classification table
+- id
+- name
 - classificationType
+
+### SongClassification table
 - songId
+- classificationId
 
 ### PlayHistory table
 - songId
