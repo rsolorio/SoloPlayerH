@@ -1,13 +1,8 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
+import { IdNameEntity } from './base.entity';
 
 @Entity({name: 'artist'})
-export class ArtistEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column()
-  name: string;
-
+export class ArtistEntity extends IdNameEntity {
   @Column()
   artistType: string;
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { fetchFromUrl, IAudioMetadata, ITag } from 'music-metadata-browser';
+import { IFileInfo } from './music-metadata.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +14,19 @@ export class MusicMetadataService {
 
   constructor() { }
 
-  public async getMetadata(filePath: string, enforceDuration?: boolean): Promise<IAudioMetadata> {
+  public async getMetadata(filePath: string, enforceDuration?: boolean): Promise<IFileInfo> {
     const url = 'file://' + filePath;
-    const metadata = await fetchFromUrl(url);
-    if (enforceDuration && !metadata.format.duration) {
-      return await fetchFromUrl(url, { duration: true });
+    const fileInfo: IFileInfo = {
+      metadata: await fetchFromUrl(url),
+      filePath,
+      paths: filePath.split('\\').reverse(),
+      fullyParsed: false
+    };
+    if (enforceDuration && !fileInfo.metadata.format.duration) {
+      fileInfo.metadata = await fetchFromUrl(url, { duration: true });
+      fileInfo.fullyParsed = true;
     }
-    return metadata;
+    return fileInfo;
   }
 
   public getId3v24Tags(metadata: IAudioMetadata): ITag[] {
@@ -30,9 +37,9 @@ export class MusicMetadataService {
     let result = null;
     const tags = this.getId3v24Tags(metadata);
     if (tags && tags.length) {
+      const actualTagId = isUserDefined ? 'TXXX:' + tagId.toUpperCase() : tagId.toUpperCase();
       for (const tag of tags) {
-        const actualTagId = isUserDefined ? 'TXXX:' + tagId : tagId;
-        if (tag.id === actualTagId) {
+        if (tag.id.toUpperCase() === actualTagId) {
           if (tag.value) {
             result = tag.value;
           }

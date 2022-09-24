@@ -1,15 +1,10 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
+import { IdNameEntity } from './base.entity';
 
 @Entity({name: 'song'})
-export class SongEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column()
+export class SongEntity extends IdNameEntity {
+  @Column({ unique: true })
   filePath: string;
-
-  @Column()
-  name: string;
 
   @Column()
   primaryAlbumId: string;
@@ -66,8 +61,14 @@ export class SongEntity extends BaseEntity {
   bitrate: number;
 
   @Column()
+  frequency: number;
+
+  @Column()
   vbr: boolean;
 
   @Column()
   replayGain: number;
+
+  @Column()
+  fullyParsed: boolean;
 }

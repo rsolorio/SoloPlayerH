@@ -47,48 +47,51 @@ export class ScanService {
   }
 
   private async processFile(filePath: string): Promise<void> {
-    const fileMetadata = await this.metadataService.getMetadata(filePath, true);
-    const fileInfo: IFileInfo = {
-      filePath,
-      paths: filePath.split('\\').reverse(),
-      metadata: fileMetadata
-    };
+    const fileInfo = await this.metadataService.getMetadata(filePath, true);
 
     const primaryArtist = this.processAlbumArtist(fileInfo);
-    await primaryArtist.save();
+    await this.db.add(primaryArtist, ArtistEntity);
     const primaryAlbum = this.processAlbum(primaryArtist, fileInfo);
-    await primaryAlbum.save();
+    await this.db.add(primaryAlbum, AlbumEntity);
     const song = this.processSong(primaryAlbum, fileInfo);
-    await song.save();
+    // TODO: if the song already exists, update data
+    await this.db.add(song, SongEntity);
 
-    const artists = this.processMultipleArtists(fileInfo);
+    const artists = this.processArtists(fileInfo);
     for (const artist of artists) {
       // Only add if it does not exist, otherwise it will update an existing record
       // and wipe out other fields
-      if (!await this.db.artistExists(artist.id)) {
-        await artist.save();
-      }
+      await this.db.add(artist, ArtistEntity);
     }
 
     // Make sure the primary artist is part of the song artists
     if (!artists.find(a => a.id === primaryArtist.id)) {
       artists.push(primaryArtist);
     }
-    // TODO: create composite primary key
     const songArtists = this.processSongArtists(song, artists);
     for (const songArtist of songArtists) {
-      await songArtist.save();
+      await this.db.addSongArtist(songArtist);
     }
 
-    const genres = this.processMultipleGenres(fileInfo);
+    const genres = this.processGenres(fileInfo);
     for (const genre of genres) {
-      await genre.save();
+      await this.db.add(genre, ClassificationEntity);
     }
 
     // TODO: add default genre if no one found
     const songGenres = this.processSongGenres(song, genres);
     for (const songGenre of songGenres) {
-      await songGenre.save();
+      await this.db.AddSongClassification(songGenre);
+    }
+
+    const classifications = this.processClassifications(fileInfo);
+    for (const classification of classifications) {
+      await this.db.add(classification, ClassificationEntity);
+    }
+
+    const songClassifications = this.processSongClassifications(song, classifications);
+    for (const songClassification of songClassifications) {
+      await this.db.AddSongClassification(songClassification);
     }
   }
 
@@ -215,13 +218,15 @@ export class ScanService {
     song.seconds = fileInfo.metadata.format.duration ? fileInfo.metadata.format.duration : 0;
     song.duration = this.utilities.secondsToMinutes(song.seconds);
     song.bitrate = fileInfo.metadata.format.bitrate ? fileInfo.metadata.format.bitrate : 0;
+    song.frequency = fileInfo.metadata.format.sampleRate ? fileInfo.metadata.format.sampleRate : 0;
     song.vbr = fileInfo.metadata.format.codecProfile !== 'CBR';
     song.replayGain = fileInfo.metadata.format.trackGain ? fileInfo.metadata.format.trackGain : 0;
+    song.fullyParsed = fileInfo.fullyParsed;
 
     return song;
   }
 
-  private processMultipleArtists(fileInfo: IFileInfo): ArtistEntity[] {
+  private processArtists(fileInfo: IFileInfo): ArtistEntity[] {
     const artists: ArtistEntity[] = [];
 
     if (fileInfo.metadata.common.artists && fileInfo.metadata.common.artists.length) {
@@ -251,7 +256,7 @@ export class ScanService {
     return songArtists;
   }
 
-  private processMultipleGenres(fileInfo: IFileInfo): ClassificationEntity[] {
+  private processGenres(fileInfo: IFileInfo): ClassificationEntity[] {
     const genres: ClassificationEntity[] = [];
 
     if (fileInfo.metadata.common.genre && fileInfo.metadata.common.genre.length) {
@@ -280,5 +285,40 @@ export class ScanService {
       songGenres.push(songGenre);
     }
     return songGenres;
+  }
+
+  private processClassifications(fileInfo: IFileInfo): ClassificationEntity[] {
+    const classifications: ClassificationEntity[] = [];
+
+    const tags = this.metadataService.getId3v24Tags(fileInfo.metadata);
+    if (tags && tags.length) {
+      for (const tag of tags) {
+        if (tag.id.toLowerCase().startsWith('txxx:classificationtype:')) {
+          const tagIdParts = tag.id.split(':');
+          if (tagIdParts.length > 2) {
+            const classificationType = tagIdParts[1];
+            const classificationName = tagIdParts[2];
+            const classification = new ClassificationEntity();
+            classification.name = classificationName;
+            classification.classificationType = classificationType;
+            classification.id = this.db.hash(`${classification.classificationType}:${classification.name}`);
+            classifications.push(classification);
+          }
+        }
+      }
+    }
+    return classifications;
+  }
+
+  private processSongClassifications(song: SongEntity, classifications: ClassificationEntity[]): SongClassificationEntity[] {
+    const songClassifications: SongClassificationEntity[] = [];
+
+    for (const classification of classifications) {
+      const songClassification = new SongClassificationEntity();
+      songClassification.songId = song.id;
+      songClassification.classificationId = classification.id;
+      songClassifications.push(songClassification);
+    }
+    return songClassifications;
   }
 }

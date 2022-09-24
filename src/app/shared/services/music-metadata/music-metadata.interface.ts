@@ -22,4 +22,5 @@ export interface IFileInfo {
   filePath: string;
   paths: string[];
   metadata: IAudioMetadata;
+  fullyParsed: boolean;
 }
