@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { fetchFromUrl, IAudioMetadata, ITag } from 'music-metadata-browser';
-import { IFileInfo } from './music-metadata.interface';
+import { IFileInfo } from '../file/file.interface';
+import { IAudioInfo } from './music-metadata.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,19 +15,18 @@ export class MusicMetadataService {
 
   constructor() { }
 
-  public async getMetadata(filePath: string, enforceDuration?: boolean): Promise<IFileInfo> {
-    const url = 'file://' + filePath;
-    const fileInfo: IFileInfo = {
+  public async getMetadata(fileInfo: IFileInfo, enforceDuration?: boolean): Promise<IAudioInfo> {
+    const url = 'file://' + fileInfo.path;
+    const info: IAudioInfo = {
+      fileInfo,
       metadata: await fetchFromUrl(url),
-      filePath,
-      paths: filePath.split('\\').reverse(),
       fullyParsed: false
     };
-    if (enforceDuration && !fileInfo.metadata.format.duration) {
-      fileInfo.metadata = await fetchFromUrl(url, { duration: true });
-      fileInfo.fullyParsed = true;
+    if (enforceDuration && !info.metadata.format.duration) {
+      info.metadata = await fetchFromUrl(url, { duration: true });
+      info.fullyParsed = true;
     }
-    return fileInfo;
+    return info;
   }
 
   public getId3v24Tags(metadata: IAudioMetadata): ITag[] {

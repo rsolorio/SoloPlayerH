@@ -47,6 +47,7 @@ export class DatabaseService {
    * @returns The entity.
    */
   public async add<T extends IdEntity>(entity: T, entityType: typeof IdEntity): Promise<T> {
+    // TODO: determine type from entity parameter
     const exists = await this.exists(entity.id, entityType);
     if (exists) {
       return entity;

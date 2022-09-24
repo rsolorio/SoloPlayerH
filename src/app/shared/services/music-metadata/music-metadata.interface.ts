@@ -1,4 +1,5 @@
 import { IAudioMetadata } from 'music-metadata-browser';
+import { IFileInfo } from '../file/file.interface';
 
 export interface ILyricsTag {
   description?: string;
@@ -18,9 +19,8 @@ export interface IPictureTag {
   type?: string;
 }
 
-export interface IFileInfo {
-  filePath: string;
-  paths: string[];
+export interface IAudioInfo {
+  fileInfo: IFileInfo;
   metadata: IAudioMetadata;
   fullyParsed: boolean;
 }
