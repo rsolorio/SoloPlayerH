@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ElectronService } from 'src/app/core/services/electron/electron.service';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 
 @Component({
@@ -11,7 +12,8 @@ export class SettingsViewComponent implements OnInit {
 
   constructor(
     private electron: ElectronService,
-    private scanner: ScanService) { }
+    private scanner: ScanService,
+    private db: DatabaseService) { }
 
   ngOnInit(): void {
   }
@@ -24,5 +26,11 @@ export class SettingsViewComponent implements OnInit {
         console.log('Done Done Done');
       });
     }
+  }
+
+  onTest(): void {
+    this.db.test().then(result => {
+      console.log(result);
+    });
   }
 }

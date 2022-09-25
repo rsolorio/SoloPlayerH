@@ -1,13 +1,11 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne, Relation, JoinColumn } from 'typeorm';
+import { AlbumEntity } from './album.entity';
 import { IdNameEntity } from './base.entity';
 
 @Entity({name: 'song'})
 export class SongEntity extends IdNameEntity {
   @Column({ unique: true })
   filePath: string;
-
-  @Column()
-  primaryAlbumId: string;
 
   @Column({ nullable: true })
   externalId: string;
@@ -71,4 +69,8 @@ export class SongEntity extends IdNameEntity {
 
   @Column()
   fullyParsed: boolean;
+
+  @ManyToOne(type => AlbumEntity, album => album.songs)
+  @JoinColumn({ name: 'primaryAlbumId'})
+  primaryAlbum: Relation<AlbumEntity>;
 }

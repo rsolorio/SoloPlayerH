@@ -118,7 +118,7 @@ export class ScanService {
   private processAlbum(artist: ArtistEntity, audioInfo: IAudioInfo): AlbumEntity {
     const album = new AlbumEntity();
 
-    album.primaryArtistId = artist.id;
+    album.primaryArtist = artist;
 
     album.name = this.unknownValue;
     if (audioInfo.metadata.common.album) {
@@ -161,7 +161,7 @@ export class ScanService {
       song.name = audioInfo.fileInfo.name;
     }
 
-    song.primaryAlbumId = album.id;
+    song.primaryAlbum = album;
     song.trackNumber = audioInfo.metadata.common.track && audioInfo.metadata.common.track.no ? audioInfo.metadata.common.track.no : 0;
     song.mediaNumber = audioInfo.metadata.common.disk && audioInfo.metadata.common.disk.no ? audioInfo.metadata.common.disk.no : 0;
     song.releaseYear = album.releaseYear;

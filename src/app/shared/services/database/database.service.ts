@@ -86,4 +86,13 @@ export class DatabaseService {
     }
     return songClassification.save();
   }
+
+  public async test(): Promise<ArtistEntity[]> {
+    const result = await this.dataSource
+      .getRepository(ArtistEntity)
+      .createQueryBuilder('artist')
+      .innerJoinAndSelect('artist.albums', 'album')
+      .getMany();
+    return result;
+  }
 }
