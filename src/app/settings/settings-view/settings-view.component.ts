@@ -29,7 +29,7 @@ export class SettingsViewComponent implements OnInit {
   }
 
   onTest(): void {
-    this.db.test().then(result => {
+    this.db.getSongsWithClassification('Genre', 'Pop').then(result => {
       console.log(result);
     });
   }

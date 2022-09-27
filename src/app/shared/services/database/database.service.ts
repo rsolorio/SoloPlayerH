@@ -7,7 +7,7 @@ import { SongArtistEntity } from '../../models/song-artist.entity';
 import { SongEntity } from '../../models/song.entity';
 import { ClassificationEntity } from '../../models/classification.entity';
 import { SongClassificationEntity } from '../../models/song-classification.entity';
-import { IdEntity, IdNameEntity } from '../../models/base.entity';
+import { IdEntity } from '../../models/base.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +21,10 @@ export class DatabaseService {
       type: 'sqlite',
       database: 'solo-player.db',
       entities: [
-        IdEntity,
-        IdNameEntity,
         SongEntity,
         AlbumEntity,
         ArtistEntity,
-        SongArtistEntity,
-        ClassificationEntity,
-        SongClassificationEntity
+        ClassificationEntity
       ],
       synchronize: true,
       logging: 'all'
@@ -87,12 +83,26 @@ export class DatabaseService {
     return songClassification.save();
   }
 
-  public async test(): Promise<ArtistEntity[]> {
-    const result = await this.dataSource
+  public async getArtistsWithAlbums(): Promise<ArtistEntity[]> {
+    return this.dataSource
       .getRepository(ArtistEntity)
       .createQueryBuilder('artist')
       .innerJoinAndSelect('artist.albums', 'album')
       .getMany();
-    return result;
+  }
+
+  public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {
+    const classificationId = this.hash(`${classificationType}:${classificationName}`);
+    return this.dataSource
+      .getRepository(SongEntity)
+      .createQueryBuilder('song')
+      .innerJoinAndSelect('song.classifications', 'classification')
+      .where('classification.id = :classificationId')
+      .setParameter('classificationId', classificationId)
+      .getMany();
+  }
+
+  public async getSongsWithGenre(genreName: string): Promise<SongEntity[]> {
+    return this.getSongsWithClassification('Genre', genreName);
   }
 }

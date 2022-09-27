@@ -1,6 +1,8 @@
-import { Column, Entity, ManyToOne, Relation, JoinColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, Relation, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { AlbumEntity } from './album.entity';
+import { ArtistEntity } from './artist.entity';
 import { IdNameEntity } from './base.entity';
+import { ClassificationEntity } from './classification.entity';
 
 @Entity({name: 'song'})
 export class SongEntity extends IdNameEntity {
@@ -73,4 +75,12 @@ export class SongEntity extends IdNameEntity {
   @ManyToOne(type => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})
   primaryAlbum: Relation<AlbumEntity>;
+
+  @ManyToMany(() => ArtistEntity, artist => artist.songs)
+  @JoinTable({ name: 'songArtist' })
+  artists: Relation<ArtistEntity[]>;
+
+  @ManyToMany(() => ClassificationEntity, classification => classification.songs)
+  @JoinTable({ name: 'songClassification' })
+  classifications: Relation<ClassificationEntity[]>;
 }
