@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AlbumEntity } from '../../models/album.entity';
-import { ArtistEntity } from '../../models/artist.entity';
-import { ClassificationEntity } from '../../models/classification.entity';
-import { SongEntity } from '../../models/song.entity';
+import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity } from '../../entities';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
@@ -274,16 +271,18 @@ export class ScanService {
         if (tag.id.toLowerCase().startsWith('txxx:classificationtype:')) {
           const tagIdParts = tag.id.split(':');
           if (tagIdParts.length > 2) {
-            const classificationType = tagIdParts[1];
-            const classificationName = tagIdParts[2];
-            const id = this.db.hash(`${classificationType}:${classificationName}`);
-            const existingClassification = classifications.find(c => c.id === id);
-            if (!existingClassification) {
-              const classification = new ClassificationEntity();
-              classification.name = classificationName;
-              classification.classificationType = classificationType;
-              classification.id = id;
-              classifications.push(classification);
+            const classificationType = tagIdParts[2];
+            const classificationName = tag.value ? tag.value.toString() : null;
+            if (classificationName) {
+              const id = this.db.hash(`${classificationType}:${classificationName}`);
+              const existingClassification = classifications.find(c => c.id === id);
+              if (!existingClassification) {
+                const classification = new ClassificationEntity();
+                classification.name = classificationName;
+                classification.classificationType = classificationType;
+                classification.id = id;
+                classifications.push(classification);
+              }
             }
           }
         }
