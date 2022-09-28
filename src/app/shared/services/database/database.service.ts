@@ -22,7 +22,7 @@ export class DatabaseService {
         ClassificationEntity
       ],
       synchronize: true,
-      logging: 'all'
+      logging: ['query', 'error', 'warn']
     };
     this.dataSource = new DataSource(options);
     const x = this.dataSource.getRepository(SongEntity);

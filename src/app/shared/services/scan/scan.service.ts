@@ -32,7 +32,10 @@ export class ScanService {
         },
         complete: async () => {
           console.log(files.length);
+          let fileCount = 0;
           for (const filePath of files) {
+            fileCount++;
+            console.log(`${fileCount} of ${files.length}`);
             await this.processFile(filePath);
           }
           console.log('Done Done');
@@ -44,8 +47,13 @@ export class ScanService {
 
   private async processFile(fileInfo: IFileInfo): Promise<void> {
     const info = await this.metadataService.getMetadata(fileInfo, true);
+    if (!info || info.error) {
+      return;
+    }
 
     // PRIMARY ALBUM ARTIST
+    // TODO: if the artist already exists we need to verify if the artist was created from the regular process artist process,
+    // if so, we need to update the artist with extra info like artist type and country
     const primaryArtist = this.processAlbumArtist(info);
     await this.db.add(primaryArtist, ArtistEntity);
 

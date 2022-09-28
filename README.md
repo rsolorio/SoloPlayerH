@@ -1,6 +1,6 @@
 # Solo Player
 
-Mp3 player, music manager, track finder, playlist builder, file synchronizer.
+Mp3 player, music manager, tag editor, track finder, playlist builder, file synchronizer.
 
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.
