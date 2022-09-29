@@ -39,7 +39,10 @@ export class SettingsViewComponent implements OnInit {
     // this.db.getSongsFromAlbumArtist(artist.id).then(result => {
     //   console.log(result);
     // });
-    this.db.getSongsFromArtist(artist.id).then(result => {
+    // this.db.getSongsFromArtist(artist.id).then(result => {
+    //   console.log(result);
+    // });
+    this.db.getArtistSongCount(null).then(result => {
       console.log(result);
     });
   }

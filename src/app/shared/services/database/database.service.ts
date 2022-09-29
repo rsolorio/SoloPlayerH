@@ -84,6 +84,18 @@ export class DatabaseService {
       .getMany();
   }
 
+  public async getArtistSongCount(artistId: string): Promise<any> {
+    return this.dataSource
+      .getRepository(ArtistEntity)
+      .createQueryBuilder('artist')
+      .innerJoin('artist.albums', 'album')
+      .innerJoin('album.songs', 'song')
+      .select('artist.name', 'artistName')
+      .addSelect('COUNT(artist.name)', 'count')
+      .groupBy('artist.name')
+      .getRawMany();
+  }
+
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {
     const classificationId = this.hash(`${classificationType}:${classificationName}`);
     return this.dataSource

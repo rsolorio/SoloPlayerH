@@ -100,8 +100,11 @@ export class ScanService {
     const artist = new ArtistEntity();
 
     artist.name = this.unknownValue;
-    if (audioInfo.metadata.common.artist) {
-      artist.name = audioInfo.metadata.common.artist;
+    if (audioInfo.metadata.common.albumartist) {
+      artist.name = audioInfo.metadata.common.albumartist;
+    }
+    else if (audioInfo.metadata.common.artists && audioInfo.metadata.common.artists.length) {
+      artist.name = audioInfo.metadata.common.artists[0];
     }
     artist.favorite = false;
 
