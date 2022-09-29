@@ -103,7 +103,6 @@ export class ScanService {
     if (audioInfo.metadata.common.artist) {
       artist.name = audioInfo.metadata.common.artist;
     }
-    artist.id = this.db.hash(artist.name);
     artist.favorite = false;
 
     const artistType = this.metadataService.getId3v24Tag<string>('ARTISTTYPE', audioInfo.metadata, true);
@@ -112,6 +111,7 @@ export class ScanService {
     const country = this.metadataService.getId3v24Tag<string>('COUNTRY', audioInfo.metadata, true);
     artist.country = country ? country : this.unknownValue;
 
+    this.db.hashArtist(artist);
     return artist;
   }
 
@@ -133,21 +133,18 @@ export class ScanService {
       }
     }
 
-    // Combine these fields to make album unique
-    album.id = this.db.hash(`${artist.name}|${album.name}|${album.releaseYear}`);
-
     const albumType = this.metadataService.getId3v24Tag<string>('ALBUMTYPE', audioInfo.metadata, true);
     album.albumType = albumType ? albumType : this.unknownValue;
 
     album.favorite = false;
 
+    this.db.hashAlbum(album);
     return album;
   }
 
   private processSong(album: AlbumEntity, audioInfo: IAudioInfo): SongEntity {
     const song = new SongEntity();
     song.filePath = audioInfo.fileInfo.path;
-    song.id = this.db.hash(song.filePath);
 
     const id = this.metadataService.getId3v24Tag<IIdentifierTag>('UFID', audioInfo.metadata);
     if (id) {
@@ -224,6 +221,7 @@ export class ScanService {
     song.replayGain = audioInfo.metadata.format.trackGain ? audioInfo.metadata.format.trackGain : 0;
     song.fullyParsed = audioInfo.fullyParsed;
 
+    this.db.hashSong(song);
     return song;
   }
 
@@ -234,10 +232,10 @@ export class ScanService {
       for (const artistName of audioInfo.metadata.common.artists) {
         const artist = new ArtistEntity();
         artist.name = artistName;
-        artist.id = this.db.hash(artistName);
         artist.favorite = false;
         artist.artistType = this.unknownValue;
         artist.country = this.unknownValue;
+        this.db.hashArtist(artist);
         artists.push(artist);
       }
     }
@@ -255,13 +253,12 @@ export class ScanService {
         // Besides multiple genres in array, also support multiple genres separated by /
         const subGenres = genreName.split('/');
         for (const subGenreName of subGenres) {
-          const id = this.db.hash(`${classificationType}:${subGenreName}`);
-          const existingGenre = genres.find(g => g.id === id);
+          const genre = new ClassificationEntity();
+          genre.name = subGenreName;
+          genre.classificationType = classificationType;
+          this.db.hashClassification(genre);
+          const existingGenre = genres.find(g => g.id === genre.id);
           if (!existingGenre) {
-            const genre = new ClassificationEntity();
-            genre.classificationType = classificationType;
-            genre.name = subGenreName;
-            genre.id = this.db.hash(`${genre.classificationType}:${genre.name}`);
             genres.push(genre);
           }
         }
@@ -282,13 +279,12 @@ export class ScanService {
             const classificationType = tagIdParts[2];
             const classificationName = tag.value ? tag.value.toString() : null;
             if (classificationName) {
-              const id = this.db.hash(`${classificationType}:${classificationName}`);
-              const existingClassification = classifications.find(c => c.id === id);
+              const classification = new ClassificationEntity();
+              classification.name = classificationName;
+              classification.classificationType = classificationType;
+              this.db.hashClassification(classification);
+              const existingClassification = classifications.find(c => c.id === classification.id);
               if (!existingClassification) {
-                const classification = new ClassificationEntity();
-                classification.name = classificationName;
-                classification.classificationType = classificationType;
-                classification.id = id;
                 classifications.push(classification);
               }
             }

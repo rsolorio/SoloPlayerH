@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ElectronService } from 'src/app/core/services/electron/electron.service';
+import { ArtistEntity } from 'src/app/shared/entities';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 
@@ -29,7 +30,16 @@ export class SettingsViewComponent implements OnInit {
   }
 
   onTest(): void {
-    this.db.getSongsWithClassification('Genre', 'Pop').then(result => {
+    // this.db.getSongsWithGenre('Pop').then(result => {
+    //   console.log(result);
+    // });
+    const artist = new ArtistEntity();
+    artist.name = 'Norah Jones';
+    this.db.hashArtist(artist);
+    // this.db.getSongsFromAlbumArtist(artist.id).then(result => {
+    //   console.log(result);
+    // });
+    this.db.getSongsFromArtist(artist.id).then(result => {
       console.log(result);
     });
   }

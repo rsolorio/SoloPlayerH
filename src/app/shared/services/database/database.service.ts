@@ -32,6 +32,24 @@ export class DatabaseService {
     return createHash('sha1').update(value).digest('base64');
   }
 
+  public hashArtist(artist: ArtistEntity): void {
+    artist.id = this.hash(artist.name);
+  }
+
+  public hashAlbum(album: AlbumEntity): void {
+    // Combine these fields to make album unique: ArtistName|AlbumName|ReleaseYear
+    album.id = this.hash(`${album.primaryArtist.name}|${album.name}|${album.releaseYear}`);
+  }
+
+  public hashSong(song: SongEntity): void {
+    song.id = this.hash(song.filePath);
+  }
+
+  public hashClassification(classification: ClassificationEntity): void {
+    // Combine these fields to make album unique: ClassificationType:ClassificationName
+    classification.id = this.hash(`${classification.classificationType}:${classification.name}`);
+  }
+
   /**
    * Adds a new record to the database if the entity does not exist (based on its id).
    * @param entity The entity to be inserted in the database.
@@ -79,5 +97,26 @@ export class DatabaseService {
 
   public async getSongsWithGenre(genreName: string): Promise<SongEntity[]> {
     return this.getSongsWithClassification('Genre', genreName);
+  }
+
+  public async getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
+    return this.dataSource
+      .getRepository(SongEntity)
+      .createQueryBuilder('song')
+      .innerJoinAndSelect('song.artists', 'artist')
+      .where('artist.id = :artistId')
+      .setParameter('artistId', artistId)
+      .getMany();
+  }
+
+  public async getSongsFromAlbumArtist(artistId: string): Promise<SongEntity[]> {
+    return this.dataSource
+      .getRepository(SongEntity)
+      .createQueryBuilder('song')
+      .innerJoinAndSelect('song.primaryAlbum', 'album')
+      .innerJoinAndSelect('album.primaryArtist', 'artist')
+      .where('artist.id = :artistId')
+      .setParameter('artistId', artistId)
+      .getMany();
   }
 }
