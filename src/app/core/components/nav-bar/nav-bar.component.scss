@@ -53,3 +53,9 @@ table {
     border-left: 1px solid $sp-color-gray-light;
     border-right: 1px solid $sp-color-gray-light;
 }
+
+.sp-nav-bar-overlay {
+    background-color: $sp-color-overlay-04;
+    height: 100%;
+    position: absolute;
+}

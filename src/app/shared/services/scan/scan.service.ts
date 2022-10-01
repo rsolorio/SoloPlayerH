@@ -280,15 +280,18 @@ export class ScanService {
           const tagIdParts = tag.id.split(':');
           if (tagIdParts.length > 2) {
             const classificationType = tagIdParts[2];
-            const classificationName = tag.value ? tag.value.toString() : null;
-            if (classificationName) {
-              const classification = new ClassificationEntity();
-              classification.name = classificationName;
-              classification.classificationType = classificationType;
-              this.db.hashClassification(classification);
-              const existingClassification = classifications.find(c => c.id === classification.id);
-              if (!existingClassification) {
-                classifications.push(classification);
+            const classificationNames = tag.value ? tag.value.toString() : null;
+            if (classificationNames) {
+              const names = classificationNames.split(',');
+              for (const name of names) {
+                const classification = new ClassificationEntity();
+                classification.name = name;
+                classification.classificationType = classificationType;
+                this.db.hashClassification(classification);
+                const existingClassification = classifications.find(c => c.id === classification.id);
+                if (!existingClassification) {
+                  classifications.push(classification);
+                }
               }
             }
           }

@@ -1,3 +1,56 @@
+/*
+ Dark Theme Design
+ - The higher a surface's elevation (raising it closer to an implied light source),
+   the lighter that surface becomes.
+ - Elevation level / White overlay transparency
+   00- 00dp / 00%
+   01- 01dp / 05%
+   02- 02dp / 07%
+   03- 03dp / 08%
+   04- 04dp / 09% / Navbar
+   05- 06dp / 11% / Action buttons
+   06- 08dp / 12%
+   07- 12dp / 14%
+   08- 16dp / 15% / Sidebars
+   09- 24dp / 16% / Dialogs, Modals, Toasts
+ - When light text appears on dark backgrounds it should use the following opacity levels:
+   - High-emphasis text has an opacity of 87%
+   - Medium-emphasis text and hint text have opacities of 60%
+   - Disabled text has an opacity of 38%
+ - To ensure proper visibility and color contrast accessibility, the opacity value of overlays
+   should be adjusted for every combination of text on a surface.
+   - Enabled: no overlay
+   - Hover: 4% overlay
+   - Focus: 12% overlay
+   - Selected: 8% overlay
+   - Activated: 12% overlay
+   - Pressed: 12% overlay
+   - Dragged: 8% overlay
+ */
+
+/* Opacity by emphasis */
+$sp-opacity-high: 0.87;
+$sp-opacity-medium: 0.60;
+$sp-opacity-low: 0.38;
+
+/* Opacity by elevation */
+$sp-opacity-00: 0;
+$sp-opacity-01: 0.05;
+$sp-opacity-02: 0.07;
+$sp-opacity-03: 0.08;
+$sp-opacity-04: 0.09;
+$sp-opacity-05: 0.11;
+$sp-opacity-06: 0.12;
+$sp-opacity-07: 0.14;
+$sp-opacity-08: 0.15;
+$sp-opacity-09: 0.16;
+
+/* Opacity by status */
+$sp-opacity-hover: 0.04;
+$sp-opacity-selected: 0.08;
+$sp-opacity-focus: 0.12;
+$sp-opacity-activated: 0.12;
+
 /* COLORS */
 $sp-color-blue: #2a9fd6;
 $sp-color-green: #77b300;
@@ -10,22 +63,39 @@ $sp-color-cyan: #02f1f1;
 $sp-color-gray-light: #999;
 $sp-color-gray: #555;
 $sp-color-muted: #6c757d;
-$sp-color-gray-dark: #2a2a2a;
+$sp-color-gray-dark: #121212;
 $sp-color-white: #fff;
 $sp-color-black: #060606;
 $sp-color-gray-super-light: #e9ecef;
 
 /* THEME */
-// Layout
-$sp-color-background: $sp-color-black;
+// Overlay
+$sp-color-overlay: $sp-color-white;
+$sp-color-overlay-hover: rgba($sp-color-white, $sp-opacity-hover);
+$sp-color-overlay-04: rgba($sp-color-white, $sp-opacity-04);
+// Background
+$sp-color-background: $sp-color-gray-dark;
+$sp-color-on-background: $sp-color-white;
+$sp-color-on-background-high: rgba($sp-color-white, $sp-opacity-high);
+$sp-color-on-background-medium: rgba($sp-color-white, $sp-opacity-medium);
+$sp-color-on-background-low: rgba($sp-color-white, $sp-opacity-low);
+// Primary
+$sp-color-primary: $sp-color-cyan;
+$sp-color-on-primary: $sp-color-black;
+// Primary Variant
+$sp-color-primary-variant: $sp-color-blue;
+$sp-color-on-primary-variant: $sp-color-black;
+// Secondary
+$sp-color-secondary: $sp-color-blue;
+$sp-color-on-secondary: $sp-color-black;
+// Error
+$sp-color-error: $sp-color-red;
+$sp-color-on-error: $sp-color-black;
 // Alerts
 $sp-color-error: $sp-color-red;
 $sp-color-warning: $sp-color-yellow;
 $sp-color-success: $sp-color-green;
 $sp-color-info: $sp-color-blue;
-// Text
-$sp-color-text-normal: $sp-color-white;
-$sp-color-text-muted: $sp-color-muted;
 
 /* DIMS */
 $sp-dim-white-low: rgba(255,255,255,0.1);

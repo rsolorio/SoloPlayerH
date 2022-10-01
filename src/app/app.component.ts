@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Inject } from '@angular/core';
+import { Component, OnInit, HostListener, Inject, HostBinding } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 
@@ -10,12 +10,18 @@ import { UtilityService } from './core/services/utility/utility.service';
 import { DatabaseService } from './shared/services/database/database.service';
 import { LogService } from './core/services/log/log.service';
 
+/**
+ * The main app component.
+ * It is using the body selector in order to be able to set the background image by using host binding.
+ * Ignoring tslint rule for having kebab case in the selector, since this is a special case.
+ */
 @Component({
-  selector: 'sp-root',
+  selector: 'body', // tslint:disable-line:component-selector
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  @HostBinding('style.background-color') public backgroundColor: string;
   private lastScrollTop = 0;
 
   constructor(
@@ -31,6 +37,7 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.setAppBackground();
     this.watchRouteChange();
     this.utilities.setAppVersion('0.0.1');
   }
@@ -90,5 +97,10 @@ export class AppComponent implements OnInit {
         this.events.broadcast<string>(EventType.RouteChanged, route);
       }
     });
+  }
+
+  private setAppBackground(): void {
+    // TODO: set the color using the styles
+    this.backgroundColor = '#121212';
   }
 }

@@ -1,3 +1,5 @@
+@import "../../../../styles-variables";
+
 .sp-sidebar-menu-notification {
   position: absolute;
   margin-left: -10px;
@@ -11,4 +13,34 @@
   transform: translateY(-50%);
   top: 50%;
   margin-right: 10px;
+}
+
+/* Emulate bootstrap list group styles */
+.sp-list-group {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-top: 0;
+}
+
+.sp-list-group-item {
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid $sp-color-on-background-low;
+  color: $sp-color-on-background-high;
+  background-color: $sp-color-background;
+}
+
+.sp-list-item-overlay {
+  background-color: transparent;
+  position: absolute;
+  height: 100%;
+  display: block;
+  top: 0;
+  right: 0;
+  left: 0;
+  &:hover {
+    background-color: $sp-color-overlay-hover;
+  }
 }
