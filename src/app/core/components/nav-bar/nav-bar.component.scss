@@ -27,7 +27,8 @@
     padding: 5px;
     border-radius: 5px;
     margin-top: 5px;
-    background-color: $sp-color-green;
+    background-color: $sp-color-primary;
+    color: $sp-color-on-primary;
     opacity: 0;
     &.sp-visible {
         opacity: .8;
@@ -50,12 +51,6 @@ table {
 }
 
 .sp-td-center {
-    border-left: 1px solid $sp-color-gray-light;
-    border-right: 1px solid $sp-color-gray-light;
-}
-
-.sp-nav-bar-overlay {
-    background-color: $sp-color-overlay-04;
-    height: 100%;
-    position: absolute;
+    border-left: 1px solid $sp-color-on-background-low;
+    border-right: 1px solid $sp-color-on-background-low;
 }

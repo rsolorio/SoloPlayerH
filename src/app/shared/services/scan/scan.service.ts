@@ -52,9 +52,21 @@ export class ScanService {
     }
 
     // PRIMARY ALBUM ARTIST
-    // TODO: if the artist already exists we need to verify if the artist was created from the regular process artist process,
-    // if so, we need to update the artist with extra info like artist type and country
     const primaryArtist = this.processAlbumArtist(info);
+    const existingArtist = await ArtistEntity.findOneBy({ id: primaryArtist.id });
+    if (existingArtist) {
+      // Only update if the existing artist has empty fields
+      let needsUpdate = !existingArtist.artistType && primaryArtist.artistType;
+      if (!needsUpdate) {
+        needsUpdate = !existingArtist.country && primaryArtist.country;
+      }
+      if (needsUpdate) {
+        primaryArtist.save();
+      }
+    }
+    else {
+      primaryArtist.save();
+    }
     await this.db.add(primaryArtist, ArtistEntity);
 
     // MULTIPLE ARTISTS

@@ -71,8 +71,16 @@ $sp-color-gray-super-light: #e9ecef;
 /* THEME */
 // Overlay
 $sp-color-overlay: $sp-color-white;
-$sp-color-overlay-hover: rgba($sp-color-white, $sp-opacity-hover);
-$sp-color-overlay-04: rgba($sp-color-white, $sp-opacity-04);
+$sp-color-overlay-hover: rgba($sp-color-overlay, $sp-opacity-hover);
+$sp-color-overlay-01: rgba($sp-color-overlay, $sp-opacity-01);
+$sp-color-overlay-02: rgba($sp-color-overlay, $sp-opacity-02);
+$sp-color-overlay-03: rgba($sp-color-overlay, $sp-opacity-03);
+$sp-color-overlay-04: rgba($sp-color-overlay, $sp-opacity-04);
+$sp-color-overlay-05: rgba($sp-color-overlay, $sp-opacity-05);
+$sp-color-overlay-06: rgba($sp-color-overlay, $sp-opacity-06);
+$sp-color-overlay-07: rgba($sp-color-overlay, $sp-opacity-07);
+$sp-color-overlay-08: rgba($sp-color-overlay, $sp-opacity-08);
+$sp-color-overlay-09: rgba($sp-color-overlay, $sp-opacity-09);
 // Background
 $sp-color-background: $sp-color-gray-dark;
 $sp-color-on-background: $sp-color-white;

@@ -40,6 +40,48 @@ body {
     z-index: 9400 !important;
 }
 
+// BACKGROUND *************************************************************************************
+// Hack: blend the main bg color and the overlay color by using a solid gradient and an actual color
+.sp-bg {
+    background-color: $sp-color-background;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-01 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-01;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-02 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-02;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-03 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-03;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-04 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-04;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-05 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-05;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
 // COLORS *****************************************************************************************
 .sp-color-heart {
     color: $sp-color-red;
@@ -95,10 +137,6 @@ body {
 
 .sp-color-muted {
     color: $sp-color-muted;
-}
-
-.sp-bg {
-    background-color: $sp-color-background;
 }
 
 .sp-bg-transparent {
