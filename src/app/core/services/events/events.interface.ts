@@ -1,6 +1,6 @@
-import { EventType } from './events.enum';
+import { CoreEvent } from './events.enum';
 
 export interface IEvent {
-    key: EventType | string;
+    key: CoreEvent | string;
     data?: any;
 }

@@ -1,0 +1,32 @@
+<div class="loading-image-container sp-full-width sp-full-height">
+  <!-- Caret text -->
+  <div *ngIf="model.caretText" class="loading-image-caret sp-full-width sp-text-overflow-ellipsis">
+    <span class="sp-text-medium">{{model.caretText}}</span>
+  </div>
+  <!-- This shield prevents the actual image from displaying the context menu when long-touched in mobile devices.
+  It is also used to display a red background if the image doesn't load -->
+  <div
+    #shieldElement
+    [ngClass]="{ 'loading-image-error': hasImageError, 'sp-center': model.autoSize, 'sp-full-width': !model.autoSize, 'sp-full-height': !model.autoSize }"
+    class="loading-image-top-shield">
+    <div *ngIf="isLoading" class="sp-is-loading">
+      <i class="mdi-loading mdi-spin mdi sp-text-xlarge"></i>
+    </div>
+  </div>
+  <!-- Temporary loading animation. Transparent gif used to get rid of the "default" white border when an image doesn't have the src set -->
+  <div
+    *ngIf="!isImageLoaded"
+    class="loading-image-loading sp-full-width sp-full-height">
+  </div>
+    <!-- Actual image -->
+  <img
+    #imageElement
+    *ngIf="model.src || model.selectedImageIndex > -1"
+    [src]="model.src ? model.src : model.images[model.selectedImageIndex].srcOriginal"
+    (load)="onImageLoad($event)"
+    (error)="onImageError($event)"
+    (click)="onImageClick($event)"
+    (contextmenu)="onImageContextMenu($event)"
+    [ngClass]="{ 'loading-image-fit': !model.stretch && !model.autoSize, 'sp-center': model.autoSize, 'sp-full-width': !model.autoSize, 'sp-full-height': !model.autoSize }"
+    class="loading-image-loaded" />
+</div>

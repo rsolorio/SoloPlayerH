@@ -4,7 +4,7 @@ import { IMenuModel } from '../../models/menu-model.interface';
 import { SlideMenu } from 'primeng/slidemenu';
 import { MenuService } from '../../services/menu/menu.service';
 import { EventsService } from '../../services/events/events.service';
-import { EventType } from '../../services/events/events.enum';
+import { CoreEvent } from '../../services/events/events.enum';
 
 @Component({
   selector: 'sp-icon-menu',
@@ -55,7 +55,7 @@ export class IconMenuComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.events.onEvent(EventType.RouteChanging).subscribe(() => {
+    this.events.onEvent(CoreEvent.RouteChanging).subscribe(() => {
       this.menuService.hideSlideMenu();
     });
   }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { IEvent } from './events.interface';
-import { EventType } from './events.enum';
+import { CoreEvent } from './events.enum';
 import { filter, map } from 'rxjs/operators';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class EventsService {
    * @param key The event key that represents the message.
    * @param data The data to be included in the message.
    */
-  public broadcast<T>(key: EventType | string, data?: T): void {
+  public broadcast<T>(key: CoreEvent | string, data?: T): void {
     this.eventList.next({ key, data });
   }
 
@@ -32,7 +32,7 @@ export class EventsService {
    * This wil return an observable with the message data.
    * @param key The key of the event waiting to be triggered.
    */
-  public onEvent<T>(key: EventType | string): Observable<T> {
+  public onEvent<T>(key: CoreEvent | string): Observable<T> {
     return this.eventList.asObservable().pipe(
       filter(event => event.key === key),
       map(event => event.data as T)

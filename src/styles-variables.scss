@@ -33,6 +33,9 @@ $sp-opacity-high: 0.87;
 $sp-opacity-medium: 0.60;
 $sp-opacity-low: 0.38;
 
+/* Separator opacity */
+$sp-opacity-separator: 0.1;
+
 /* Opacity by elevation */
 $sp-opacity-00: 0;
 $sp-opacity-01: 0.05;
@@ -87,6 +90,7 @@ $sp-color-on-background: $sp-color-white;
 $sp-color-on-background-high: rgba($sp-color-white, $sp-opacity-high);
 $sp-color-on-background-medium: rgba($sp-color-white, $sp-opacity-medium);
 $sp-color-on-background-low: rgba($sp-color-white, $sp-opacity-low);
+$sp-color-on-background-separator: rgba($sp-color-white, $sp-opacity-separator);
 // Primary
 $sp-color-primary: $sp-color-cyan;
 $sp-color-on-primary: $sp-color-black;
@@ -106,8 +110,6 @@ $sp-color-success: $sp-color-green;
 $sp-color-info: $sp-color-blue;
 
 /* DIMS */
-$sp-dim-white-low: rgba(255,255,255,0.1);
-$sp-dim-white-high: rgba(255,255,255,0.6);
 $sp-dim-black-low: rgba(0,0,0,0.3);
 $sp-dim-black-high: rgba(0,0,0,0.8);
 

@@ -5,7 +5,7 @@ import { SideBarStateService } from '../side-bar/side-bar-state.service';
 import { Position } from '../../globals.enum';
 import { SideBarMenuStateService } from './side-bar-menu-state.service';
 import { EventsService } from '../../services/events/events.service';
-import { EventType } from '../../services/events/events.enum';
+import { CoreEvent } from '../../services/events/events.enum';
 import { ISideBarMenuModel } from './side-bar-menu-model.interface';
 
 @Component({
@@ -36,7 +36,7 @@ export class SideBarMenuComponent implements OnInit {
   }
 
   private watchRouteChange(): void {
-    this.events.onEvent<string>(EventType.RouteChanged).subscribe(route => {
+    this.events.onEvent<string>(CoreEvent.RouteChanged).subscribe(route => {
       this.sidebarMenuState.populateMenuByRoute(route);
       this.sidebarMenuState.activateByRoute(route);
     });

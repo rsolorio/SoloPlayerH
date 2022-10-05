@@ -3,7 +3,7 @@ import { IWindowSize, IWindowSizeChangedEvent, ITimeSpan } from './utility.inter
 import { BreakpointMode, Milliseconds, AppRoutes } from './utility.enum';
 import { BreakpointRanges } from './utility.class';
 import { EventsService } from '../../../core/services/events/events.service';
-import { EventType } from '../../../core/services/events/events.enum';
+import { CoreEvent } from '../../../core/services/events/events.enum';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { ISize } from 'src/app/core/models/core.interface';
@@ -24,7 +24,7 @@ export class UtilityService {
     private routerCache: RouterCacheService,
     private log: LogService,
     public ngZone: NgZone) {
-    events.onEvent<IWindowSizeChangedEvent>(EventType.WindowSizeChanged).subscribe(eventData => {
+    events.onEvent<IWindowSizeChangedEvent>(CoreEvent.WindowSizeChanged).subscribe(eventData => {
       this.windowSize = eventData.new;
       this.log.debug('Window size changed.');
     });

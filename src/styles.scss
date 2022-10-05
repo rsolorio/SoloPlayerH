@@ -82,7 +82,17 @@ body {
     color: $sp-color-on-background-high;
 }
 
+.sp-bg-09 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-09;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
 // COLORS *****************************************************************************************
+.sp-color-on-background-high {
+    color: $sp-color-on-background-high;
+}
 .sp-color-heart {
     color: $sp-color-red;
 }
@@ -143,20 +153,23 @@ body {
     background-color: transparent;
 }
 
-.sp-bg-dim-white-high {
-    background-color: $sp-dim-white-high;
-}
-
-.sp-bg-dim-white-low {
-    background-color: $sp-dim-white-low;
-}
-
 .sp-bg-dim-black-low {
     background-color: $sp-dim-black-low !important;
 }
 
 .sp-bg-dim-black-high, .sp-selected-item {
     background-color: $sp-dim-black-high !important;
+}
+
+// TABLES *****************************************************************************************
+.sp-table-list {
+    border-spacing: 0;
+    td {
+        border-top: 1px solid $sp-color-on-background-separator;
+    }
+    td, th {
+        padding: 0.3rem;;
+    }
 }
 
 // ANIMATION **************************************************************************************
@@ -408,7 +421,7 @@ A longer duration allows to properly see the transition in the whole page. */
     border-radius: 50%;
     transform: scale(0);
     animation: ripple 600ms linear;
-    background-color: $sp-dim-white-high;
+    background-color: $sp-color-on-background-medium;
 }
 
 // Browser overrides //////////////////////////////////////////////////////////////////////////////

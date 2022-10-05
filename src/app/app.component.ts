@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener, Inject, HostBinding } from '@angular/c
 import { DOCUMENT } from '@angular/common';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 
-import { EventType } from './core/services/events/events.enum';
+import { CoreEvent } from './core/services/events/events.enum';
 import { EventsService } from './core/services/events/events.service';
 import { BreakpointMode } from './core/services/utility/utility.enum';
 import { IWindowSize, IWindowSizeChangedEvent } from './core/services/utility/utility.interface';
@@ -46,10 +46,10 @@ export class AppComponent implements OnInit {
   private onScroll($event: Event): void {
     if (this.doc.documentElement.scrollTop !== undefined) {
       if (this.doc.documentElement.scrollTop > this.lastScrollTop) {
-        this.events.broadcast(EventType.WindowScrollDown);
+        this.events.broadcast(CoreEvent.WindowScrollDown);
       }
       else {
-        this.events.broadcast(EventType.WindowScrollUp);
+        this.events.broadcast(CoreEvent.WindowScrollUp);
       }
       this.lastScrollTop = this.doc.documentElement.scrollTop;
     }
@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:click', ['$event'])
   private onClick($event: Event): void {
-    this.events.broadcast(EventType.WindowClick, $event);
+    this.events.broadcast(CoreEvent.WindowClick, $event);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -73,15 +73,15 @@ export class AppComponent implements OnInit {
   private broadcastWindowSizeEvents(newSize: IWindowSize, oldSize?: IWindowSize): void {
     // If the breakpoint changed fire an event
     if (!oldSize || oldSize.mode !== newSize.mode) {
-      this.events.broadcast(EventType.BreakpointChanged, newSize);
+      this.events.broadcast(CoreEvent.BreakpointChanged, newSize);
       if (newSize.mode === BreakpointMode.Small) {
-        this.events.broadcast(EventType.BreakpointReduced, newSize);
+        this.events.broadcast(CoreEvent.BreakpointReduced, newSize);
       }
       else if (newSize.mode === BreakpointMode.Large) {
-        this.events.broadcast(EventType.BreakpointExtended, newSize);
+        this.events.broadcast(CoreEvent.BreakpointExtended, newSize);
       }
     }
-    this.events.broadcast<IWindowSizeChangedEvent>(EventType.WindowSizeChanged, {old: oldSize, new: newSize});
+    this.events.broadcast<IWindowSizeChangedEvent>(CoreEvent.WindowSizeChanged, {old: oldSize, new: newSize});
   }
 
   private watchRouteChange(): void {
@@ -89,12 +89,12 @@ export class AppComponent implements OnInit {
       if (action instanceof NavigationStart) {
         const navStart = action as NavigationStart;
         const route = this.utilities.getUrlWithoutParams(navStart.url);
-        this.events.broadcast<string>(EventType.RouteChanging, route);
+        this.events.broadcast<string>(CoreEvent.RouteChanging, route);
       }
       else if (action instanceof NavigationEnd) {
         const navEnd = action as NavigationEnd;
         const route = this.utilities.getUrlWithoutParams(navEnd.url);
-        this.events.broadcast<string>(EventType.RouteChanged, route);
+        this.events.broadcast<string>(CoreEvent.RouteChanged, route);
       }
     });
   }

@@ -1,0 +1,68 @@
+@import "../../../../styles-variables";
+
+.loading-image-container {
+    position: relative;
+    background-color: transparent;
+}
+
+.loading-image-top-shield {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.loading-image-caret {
+    bottom: 0;
+    position: absolute;
+    height: 20%;
+    z-index: 3;
+    background-color: $sp-dim-black-high;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.loading-image-error {
+    background-color: $sp-color-red;
+    background-image: url('../../../../assets/img/broken.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+}
+
+.loading-image-loading {
+    background-color: $sp-color-black;
+    background-image: url('../../../../assets/img/loading.gif');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+}
+
+.loading-image-loaded {
+    position: absolute;
+}
+
+.loading-image-fit {
+    object-fit: contain;
+}
+
+.org-is-loading {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-09;
+    background-blend-mode: overlay;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-block;
+    position: absolute;
+
+    .mdi-loading {
+        height: 40px;
+        width: 40px;
+        vertical-align: middle;
+        display: table-cell;
+    }
+}

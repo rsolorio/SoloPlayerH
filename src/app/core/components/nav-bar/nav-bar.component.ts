@@ -4,7 +4,7 @@ import { Position } from '../../globals.enum';
 import { INavbarModel } from './nav-bar-model.interface';
 import { NavBarStateService } from './nav-bar-state.service';
 import { EventsService } from '../../services/events/events.service';
-import { EventType } from '../../services/events/events.enum';
+import { CoreEvent } from '../../services/events/events.enum';
 
 /**
  * Component that displays a navigation bar at the top of the application.
@@ -25,11 +25,11 @@ export class NavBarComponent implements OnInit {
     this.model = this.navbarService.getState();
 
     // Auto hide when scrolling down
-    this.events.onEvent(EventType.WindowScrollDown).subscribe(() => {
+    this.events.onEvent(CoreEvent.WindowScrollDown).subscribe(() => {
       this.navbarService.hide();
     });
     // Auto show when scrolling up
-    this.events.onEvent(EventType.WindowScrollUp).subscribe(() => {
+    this.events.onEvent(CoreEvent.WindowScrollUp).subscribe(() => {
       this.navbarService.show();
     });
   }

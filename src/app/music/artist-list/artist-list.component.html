@@ -1,0 +1,22 @@
+<div *ngIf="model.items.length === 0"></div>
+<table *ngIf="model.items.length > 0" class="sp-table-list sp-color-on-background-high sp-table-support-overflow-ellipsis sp-full-width">
+  <tr *ngFor="let artist of model.items" [ngClass]="{ 'sp-selected-item': artist.selected }">
+    <!-- Artist Image -->
+    <td class="sp-table-image-field" (click)="onArtistClick(artist)">
+      <sp-loading-image [src]="'../assets/img/default-image-small.jpg'" class="sp-table-loading-image"></sp-loading-image>
+    </td>
+    <!-- Artist Info -->
+    <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">
+      <span class="sp-text-medium sp-no-select">{{artist.name}}</span>
+      <br>
+      <span class="text-muted sp-text-small org-no-select">Albums: 0 | Songs: 0</span>
+    </td>
+    <!-- Favorite -->
+    <td class="sp-td-favorite org-text-center">
+    </td>
+    <!-- Artist Menu Icon -->
+    <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+      <org-icon-menu [items]="menuList" [context]="artist" [iconClass]="'mdi mdi-dots-horizontal'"></org-icon-menu>
+    </td>
+  </tr>
+</table>
