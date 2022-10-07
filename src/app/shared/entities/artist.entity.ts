@@ -1,10 +1,11 @@
 import { Column, Entity, ManyToMany, OneToMany, Relation } from 'typeorm';
+import { IArtistModel } from '../models/artist-model.interface';
 import { AlbumEntity } from './album.entity';
-import { IdNameEntity } from './base.entity';
+import { DbEntity } from './base.entity';
 import { SongEntity } from './song.entity';
 
 @Entity({name: 'artist'})
-export class ArtistEntity extends IdNameEntity {
+export class ArtistEntity extends DbEntity implements IArtistModel {
   @Column()
   artistType: string;
 
@@ -19,4 +20,8 @@ export class ArtistEntity extends IdNameEntity {
 
   @ManyToMany(() => SongEntity, song => song.artists)
   songs: Relation<SongEntity[]>;
+
+  selected: boolean;
+  albumCount: number;
+  songCount: number;
 }

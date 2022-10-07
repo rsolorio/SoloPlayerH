@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ArtistEntity } from 'src/app/shared/entities';
+import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
@@ -12,7 +13,7 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 @Injectable({
   providedIn: 'root'
 })
-export class ArtistListBroadcastService extends ListBroadcastServiceBase<ArtistEntity> {
+export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtistModel> {
 
   constructor(
     private eventsService: EventsService,
@@ -30,7 +31,24 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<ArtistE
     return null;
   }
 
-  protected getItems(listModel: IPaginationModel<ArtistEntity>): Observable<ArtistEntity[]> {
+  protected getItems(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
     return from(this.db.getArtistsWithAlbums());
+  }
+
+  public getAndBroadcastAlbumArtists(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
+    if (listModel.noMoreItems) {
+      this.broadcast(listModel);
+      return of(listModel.items);
+    }
+    return from(this.db.getArtistSongCount(null)).pipe(
+      tap(response => {
+        listModel.items = response;
+        this.lastResult = listModel;
+
+        if (this.beforeBroadcast(response)) {
+          this.broadcast(listModel);
+        }
+      })
+    );
   }
 }

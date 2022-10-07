@@ -1,7 +1,7 @@
 import { Column } from 'typeorm';
-import { IdNameEntity } from './base.entity';
+import { DbEntity } from './base.entity';
 
-export class RelatedImageEntity extends IdNameEntity {
+export class RelatedImageEntity extends DbEntity {
   @Column()
   relatedId: string;
 

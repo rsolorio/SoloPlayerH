@@ -9,10 +9,11 @@
     <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">
       <span class="sp-text-medium sp-no-select">{{artist.name}}</span>
       <br>
-      <span class="text-muted sp-text-small org-no-select">Albums: 0 | Songs: 0</span>
+      <span class="text-muted sp-text-small org-no-select">Songs: {{artist.songCount}}</span>
     </td>
     <!-- Favorite -->
     <td class="sp-td-favorite org-text-center">
+      <i class="mdi mdi-heart-outline"></i>
     </td>
     <!-- Artist Menu Icon -->
     <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">

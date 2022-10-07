@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { createHash } from 'crypto';
 import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity } from '../../entities';
-import { IdEntity } from '../../entities/base.entity';
+import { DbEntity } from '../../entities/base.entity';
+import { IArtistModel } from '../../models/artist-model.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -55,7 +56,7 @@ export class DatabaseService {
    * @param entity The entity to be inserted in the database.
    * @returns The entity.
    */
-  public async add<T extends IdEntity>(entity: T, entityType: typeof IdEntity): Promise<T> {
+  public async add<T extends DbEntity>(entity: T, entityType: typeof DbEntity): Promise<T> {
     // TODO: determine type from entity parameter
     const exists = await this.exists(entity.id, entityType);
     if (exists) {
@@ -64,14 +65,14 @@ export class DatabaseService {
     return entity.save();
   }
 
-  public exists(id: string, entityType: typeof IdEntity): Promise<boolean> {
+  public exists(id: string, entityType: typeof DbEntity): Promise<boolean> {
     return entityType.findOneBy({ id }).then(entity => {
       return entity !== null;
     });
   }
 
   public exists2(id: string): Promise<boolean> {
-    return IdEntity.findOneBy({ id }).then(entity => {
+    return DbEntity.findOneBy({ id }).then(entity => {
       return entity !== null;
     });
   }
@@ -84,16 +85,29 @@ export class DatabaseService {
       .getMany();
   }
 
-  public async getArtistSongCount(artistId: string): Promise<any> {
+  public async getArtistSongCount(artistId: string): Promise<IArtistModel[]> {
     return this.dataSource
       .getRepository(ArtistEntity)
       .createQueryBuilder('artist')
       .innerJoin('artist.albums', 'album')
       .innerJoin('album.songs', 'song')
-      .select('artist.name', 'artistName')
-      .addSelect('COUNT(artist.name)', 'count')
+      .select('artist.name', 'name')
+      .addSelect('COUNT(artist.name)', 'songCount')
       .groupBy('artist.name')
       .getRawMany();
+  }
+
+  public async getArtistsWithAlbumCount(): Promise<IArtistModel[]> {
+    const query = `
+      SELECT artist.id, artist.name, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount
+      FROM artist INNER JOIN (
+        SELECT album.id, album.primaryArtistId, album.name, album.releaseYear, COUNT(song.id) AS songCount
+        FROM album INNER JOIN song ON album.id = song.primaryAlbumId
+        GROUP BY album.id, album.primaryArtistId, album.name, album.releaseYear
+      ) AS album ON artist.id = album.primaryArtistId
+      GROUP BY artist.id, artist.name
+    `;
+    return this.dataSource.query(query);
   }
 
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {

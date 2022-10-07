@@ -9,6 +9,7 @@ const routes: Routes = [
   { path: 'home', component: HomeViewComponent },
   { path: 'settings', component: SettingsViewComponent },
   { path: 'artists', component: ArtistListComponent },
+  { path: 'albumartists', component: ArtistListComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

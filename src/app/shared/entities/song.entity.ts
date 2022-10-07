@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToOne, Relation, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { AlbumEntity } from './album.entity';
 import { ArtistEntity } from './artist.entity';
-import { IdNameEntity } from './base.entity';
+import { DbEntity } from './base.entity';
 import { ClassificationEntity } from './classification.entity';
 
 @Entity({name: 'song'})
-export class SongEntity extends IdNameEntity {
+export class SongEntity extends DbEntity {
   @Column({ unique: true })
   filePath: string;
 

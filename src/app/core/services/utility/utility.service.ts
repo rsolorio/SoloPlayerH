@@ -189,6 +189,10 @@ export class UtilityService {
     return route.snapshot.data[paramName];
   }
 
+  public isRouteActive(route: AppRoutes): boolean {
+    return this.router.url === route;
+  }
+
   /** Returns the difference in days between two dates. */
   public differenceInDays(date1: Date, date2: Date): number {
     const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());

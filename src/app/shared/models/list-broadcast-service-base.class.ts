@@ -7,8 +7,8 @@ import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { ICriteriaValueBaseModel } from './criteria-base-model.interface';
 import { CriteriaBase, CriteriaValueBase } from './criteria-base.class';
 import { IPaginationModel } from './pagination-model.interface';
-import { BaseEntity } from 'typeorm';
 import { SearchWildcard } from './search.enum';
+import { IDbModel } from './base-model.interface';
 
 export interface IListBroadcastService {
   search(searchTerm: string): Observable<any[]>;
@@ -20,10 +20,10 @@ export interface IListBroadcastService {
  * these actions include search and get.
  * The first time you call this service, the pageNumber must be set to 1.
  */
-export abstract class ListBroadcastServiceBase<TItemModel extends BaseEntity>
+export abstract class ListBroadcastServiceBase<TItemModel extends IDbModel>
 implements IListBroadcastService {
 
-  private lastResult: IPaginationModel<TItemModel>;
+  protected lastResult: IPaginationModel<TItemModel>;
   protected minSearchTermLength = 2;
 
   constructor(private events: EventsService, private utilities: UtilityService) { }
