@@ -30,7 +30,9 @@ export class AppComponent implements OnInit {
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
-    private router: Router) {
+    private router: Router)
+  {
+    doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
     dbService.dataSource.initialize().then(ds => {
       console.log('Database initialized!');
     });
@@ -102,5 +104,9 @@ export class AppComponent implements OnInit {
   private setAppBackground(): void {
     // TODO: set the color using the styles
     this.backgroundColor = '#121212';
+  }
+
+  private onDomContentLoaded(): void {
+
   }
 }

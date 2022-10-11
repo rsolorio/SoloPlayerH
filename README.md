@@ -18,16 +18,22 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - Home
 - Album Artists
   - Albums
+    - Songs
 - Artists
   - Songs
 - Albums
   - Songs
 - Genres
   - Album Artists
+    - Albums
+      - Songs
 - Classifications
   - Album Artists
+    - Albums
+      - Songs
 - Songs
 - Playlists
+  - Songs
 - Filters
   - Songs
 - Settings

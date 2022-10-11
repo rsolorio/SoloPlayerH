@@ -1,9 +1,13 @@
 <div *ngIf="model.items.length === 0"></div>
-<table *ngIf="model.items.length > 0" class="sp-table-list sp-color-on-background-high sp-table-support-overflow-ellipsis sp-full-width">
-  <tr *ngFor="let artist of model.items" [ngClass]="{ 'sp-selected-item': artist.selected }">
+<table *ngIf="model.items.length > 0" spIntersectionObserver class="sp-table-list sp-color-on-background-high sp-table-support-overflow-ellipsis sp-full-width">
+  <tr
+  *ngFor="let artist of model.items"
+  spIntersectionObserverTarget
+  (intersectionChange)="onIntersectionChange($event, artist)"
+  [ngClass]="{ 'sp-selected-item': artist.selected }">
     <!-- Artist Image -->
     <td class="sp-table-image-field" (click)="onArtistClick(artist)">
-      <sp-loading-image [src]="'../assets/img/default-image-small.jpg'" class="sp-table-loading-image"></sp-loading-image>
+      <sp-loading-image [src]="artist.imageSrc" class="sp-table-loading-image"></sp-loading-image>
     </td>
     <!-- Artist Info -->
     <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">

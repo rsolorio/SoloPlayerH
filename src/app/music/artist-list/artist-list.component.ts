@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -50,7 +49,12 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       name: null
     };
     // Use broadcast to search and populate
-    this.broadcast.getAndBroadcastAlbumArtists(pagination).subscribe();
+    if (this.isAlbumArtist) {
+      this.broadcast.getAndBroadcastAlbumArtists(pagination).subscribe();
+    }
+    else {
+      this.broadcast.getAndBroadcastArtists(pagination).subscribe();
+    }
   }
 
   private initializeMenu(): void {
@@ -63,5 +67,14 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   public getArtistGenderIcons(): void {}
 
   public onFavoriteChange(): void {}
+
+  public onIntersectionChange(isIntersecting: boolean, artist: IArtistModel): void {
+    // console.log(isIntersecting);
+    // console.log(artist);
+
+    if (isIntersecting && !artist.imageSrc) {
+      artist.imageSrc = '../assets/img/default-image-small.jpg';
+    }
+  }
 
 }

@@ -24,4 +24,5 @@ export class ArtistEntity extends DbEntity implements IArtistModel {
   selected: boolean;
   albumCount: number;
   songCount: number;
+  imageSrc: string;
 }

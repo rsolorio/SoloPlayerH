@@ -6,4 +6,5 @@ export interface IArtistModel extends IDbModel {
   favorite: boolean;
   albumCount: number;
   songCount: number;
+  imageSrc: string;
 }

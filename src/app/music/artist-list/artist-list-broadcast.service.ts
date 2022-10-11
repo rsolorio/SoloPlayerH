@@ -40,7 +40,24 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
       this.broadcast(listModel);
       return of(listModel.items);
     }
-    return from(this.db.getArtistSongCount(null)).pipe(
+    return from(this.db.getAlbumArtistView()).pipe(
+      tap(response => {
+        listModel.items = response;
+        this.lastResult = listModel;
+
+        if (this.beforeBroadcast(response)) {
+          this.broadcast(listModel);
+        }
+      })
+    );
+  }
+
+  public getAndBroadcastArtists(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
+    if (listModel.noMoreItems) {
+      this.broadcast(listModel);
+      return of(listModel.items);
+    }
+    return from(this.db.getArtistView()).pipe(
       tap(response => {
         listModel.items = response;
         this.lastResult = listModel;

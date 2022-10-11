@@ -3,7 +3,8 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { createHash } from 'crypto';
 import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity } from '../../entities';
 import { DbEntity } from '../../entities/base.entity';
-import { IArtistModel } from '../../models/artist-model.interface';
+import { AlbumArtistViewEntity } from '../../entities/album-artist-view.entity';
+import { ArtistViewEntity } from '../../entities/artist-view.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,9 @@ export class DatabaseService {
         SongEntity,
         AlbumEntity,
         ArtistEntity,
-        ClassificationEntity
+        ClassificationEntity,
+        ArtistViewEntity,
+        AlbumArtistViewEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -85,29 +88,12 @@ export class DatabaseService {
       .getMany();
   }
 
-  public async getArtistSongCount(artistId: string): Promise<IArtistModel[]> {
-    return this.dataSource
-      .getRepository(ArtistEntity)
-      .createQueryBuilder('artist')
-      .innerJoin('artist.albums', 'album')
-      .innerJoin('album.songs', 'song')
-      .select('artist.name', 'name')
-      .addSelect('COUNT(artist.name)', 'songCount')
-      .groupBy('artist.name')
-      .getRawMany();
+  public async getAlbumArtistView(): Promise<AlbumArtistViewEntity[]> {
+    return this.dataSource.manager.find(AlbumArtistViewEntity);
   }
 
-  public async getArtistsWithAlbumCount(): Promise<IArtistModel[]> {
-    const query = `
-      SELECT artist.id, artist.name, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount
-      FROM artist INNER JOIN (
-        SELECT album.id, album.primaryArtistId, album.name, album.releaseYear, COUNT(song.id) AS songCount
-        FROM album INNER JOIN song ON album.id = song.primaryAlbumId
-        GROUP BY album.id, album.primaryArtistId, album.name, album.releaseYear
-      ) AS album ON artist.id = album.primaryArtistId
-      GROUP BY artist.id, artist.name
-    `;
-    return this.dataSource.query(query);
+  public async getArtistView(): Promise<ArtistViewEntity[]> {
+    return this.dataSource.manager.find(ArtistViewEntity);
   }
 
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {
