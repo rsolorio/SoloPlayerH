@@ -36,6 +36,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initializeMenu();
     // this.model = this.stateService.getState();
 
     this.subs.sink = this.events.onEvent<IPaginationModel<IArtistModel>>(AppEvent.ArtistListUpdated).subscribe(response => {
@@ -58,6 +59,31 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   private initializeMenu(): void {
+    this.menuList.push({
+      caption: 'Play',
+      icon: 'mdi-play mdi',
+      action: param => {}
+    });
+
+    this.menuList.push({
+      caption: 'Search...',
+      icon: 'mdi-web mdi',
+      action: param => {
+        const artistModel = param as IArtistModel;
+        this.utility.googleSearch(artistModel.name);
+      }
+    });
+
+    this.menuList.push({
+      caption: 'Properties...',
+      icon: 'mdi-square-edit-outline mdi',
+      action: param => {
+        const artist = param as IArtistModel;
+        if (artist) {
+          this.utility.navigateWithRouteParams(AppRoutes.Artists, [artist.id]);
+        }
+      }
+    });
   }
 
   public onArtistClick(): void {}
@@ -73,6 +99,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     // console.log(artist);
 
     if (isIntersecting && !artist.imageSrc) {
+      // TODO: logic for getting artist image
       artist.imageSrc = '../assets/img/default-image-small.jpg';
     }
   }

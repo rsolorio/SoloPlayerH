@@ -1,5 +1,5 @@
 <div *ngIf="model.items.length === 0"></div>
-<table *ngIf="model.items.length > 0" spIntersectionObserver class="sp-table-list sp-color-on-background-high sp-table-support-overflow-ellipsis sp-full-width">
+<table *ngIf="model.items.length > 0" spIntersectionObserver class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-full-width">
   <tr
   *ngFor="let artist of model.items"
   spIntersectionObserverTarget
@@ -13,15 +13,12 @@
     <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">
       <span class="sp-text-medium sp-no-select">{{artist.name}}</span>
       <br>
-      <span class="text-muted sp-text-small org-no-select">Songs: {{artist.songCount}}</span>
-    </td>
-    <!-- Favorite -->
-    <td class="sp-td-favorite org-text-center">
-      <i class="mdi mdi-heart-outline"></i>
+      <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small org-no-select">Albums: {{artist.albumCount}} | </span>
+      <span class="sp-color-on-bg-low sp-text-small org-no-select">Songs: {{artist.songCount}}</span>
     </td>
     <!-- Artist Menu Icon -->
     <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
-      <org-icon-menu [items]="menuList" [context]="artist" [iconClass]="'mdi mdi-dots-horizontal'"></org-icon-menu>
+      <sp-icon-menu [items]="menuList" [context]="artist" [iconClass]="'mdi mdi-dots-horizontal'"></sp-icon-menu>
     </td>
   </tr>
 </table>

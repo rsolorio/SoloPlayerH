@@ -90,9 +90,14 @@ body {
 }
 
 // COLORS *****************************************************************************************
-.sp-color-on-background-high {
+.sp-color-on-bg-high {
     color: $sp-color-on-background-high;
 }
+
+.sp-color-on-bg-low {
+    color: $sp-color-on-background-low;
+}
+
 .sp-color-heart {
     color: $sp-color-red;
 }

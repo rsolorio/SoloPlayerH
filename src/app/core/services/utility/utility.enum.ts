@@ -19,7 +19,7 @@ export enum AppRoutes {
   Search = '/search',
   Songs = '/songs',
   Artists = '/artists',
-  AlbumArtists = 'albumartists',
+  AlbumArtists = '/albumartists',
   Albums = '/albums',
   Genres = '/genres',
   Classifications = '/classifications',

@@ -36,7 +36,8 @@ import { ElectronService } from './services/electron/electron.service';
     LoadingViewComponent,
     NavBarComponent,
     SideBarComponent,
-    SideBarMenuComponent
+    SideBarMenuComponent,
+    IconMenuComponent
   ],
   providers: [ ElectronService ]
 })
