@@ -98,6 +98,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     // console.log(isIntersecting);
     // console.log(artist);
 
+    artist.canBeRendered = isIntersecting;
     if (isIntersecting && !artist.imageSrc) {
       // TODO: logic for getting artist image
       artist.imageSrc = '../assets/img/default-image-small.jpg';

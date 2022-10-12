@@ -5,20 +5,34 @@
   spIntersectionObserverTarget
   (intersectionChange)="onIntersectionChange($event, artist)"
   [ngClass]="{ 'sp-selected-item': artist.selected }">
-    <!-- Artist Image -->
-    <td class="sp-table-image-field" (click)="onArtistClick(artist)">
-      <sp-loading-image [src]="artist.imageSrc" class="sp-table-loading-image"></sp-loading-image>
-    </td>
-    <!-- Artist Info -->
-    <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">
-      <span class="sp-text-medium sp-no-select">{{artist.name}}</span>
-      <br>
-      <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small org-no-select">Albums: {{artist.albumCount}} | </span>
-      <span class="sp-color-on-bg-low sp-text-small org-no-select">Songs: {{artist.songCount}}</span>
-    </td>
-    <!-- Artist Menu Icon -->
-    <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
-      <sp-icon-menu [items]="menuList" [context]="artist" [iconClass]="'mdi mdi-dots-horizontal'"></sp-icon-menu>
-    </td>
+    <ng-container *ngIf="artist.canBeRendered">
+      <!-- Artist Image -->
+      <td class="sp-table-image-field" (click)="onArtistClick(artist)">
+        <sp-loading-image [src]="artist.imageSrc" class="sp-table-loading-image"></sp-loading-image>
+      </td>
+      <!-- Artist Info -->
+      <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">
+        <span class="sp-text-medium sp-no-select">{{artist.name}}</span>
+        <br>
+        <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small org-no-select">Albums: {{artist.albumCount}} | </span>
+        <span class="sp-color-on-bg-low sp-text-small org-no-select">Songs: {{artist.songCount}}</span>
+      </td>
+      <!-- Artist Menu Icon -->
+      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+        <sp-icon-menu [items]="menuList" [context]="artist" [iconClass]="'mdi mdi-dots-horizontal'"></sp-icon-menu>
+      </td>
+    </ng-container>
+    <ng-container *ngIf="!artist.canBeRendered">
+      <td class="sp-table-image-field">
+        <img class="sp-table-loading-image"/>
+      </td>
+      <!-- Artist Info -->
+      <td class="sp-text-overflow-ellipsis">
+        <span class="sp-text-medium sp-no-select">Loading artist...</span>
+      </td>
+      <!-- Artist Menu Icon -->
+      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+      </td>
+    </ng-container>
   </tr>
 </table>

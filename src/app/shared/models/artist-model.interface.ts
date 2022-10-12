@@ -7,4 +7,5 @@ export interface IArtistModel extends IDbModel {
   albumCount: number;
   songCount: number;
   imageSrc: string;
+  canBeRendered: boolean;
 }

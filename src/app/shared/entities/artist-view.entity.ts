@@ -24,4 +24,5 @@ export class ArtistViewEntity implements IArtistModel {
   @ViewColumn()
   songCount: number;
   imageSrc: string;
+  canBeRendered: boolean;
 }

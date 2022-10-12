@@ -25,4 +25,5 @@ export class ArtistEntity extends DbEntity implements IArtistModel {
   albumCount: number;
   songCount: number;
   imageSrc: string;
+  canBeRendered: boolean;
 }
