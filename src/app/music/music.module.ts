@@ -7,13 +7,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { AlbumListComponent } from './album-list/album-list.component';
+import { ClassificationListComponent } from './classification-list/classification-list.component';
 
 
 
 @NgModule({
   declarations: [
     ArtistListComponent,
-    AlbumListComponent
+    AlbumListComponent,
+    ClassificationListComponent
   ],
   imports: [
     CommonModule,

@@ -6,6 +6,8 @@ import { DbEntity } from '../../entities/base.entity';
 import { AlbumArtistViewEntity } from '../../entities/album-artist-view.entity';
 import { ArtistViewEntity } from '../../entities/artist-view.entity';
 import { AlbumViewEntity } from '../../entities/album-view.entity';
+import { IClassificationModel } from '../../models/classification-model.interface';
+import { ClassificationViewEntity } from '../../entities/classification-view.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -25,13 +27,13 @@ export class DatabaseService {
         ClassificationEntity,
         ArtistViewEntity,
         AlbumArtistViewEntity,
-        AlbumViewEntity
+        AlbumViewEntity,
+        ClassificationViewEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
     };
     this.dataSource = new DataSource(options);
-    const x = this.dataSource.getRepository(SongEntity);
   }
 
   public hash(value: string): string {
@@ -102,6 +104,27 @@ export class DatabaseService {
     return this.dataSource.manager.find(AlbumViewEntity);
   }
 
+  public async getClassificationView(): Promise<ClassificationViewEntity[]> {
+    return this.dataSource
+      .getRepository(ClassificationViewEntity)
+      .createQueryBuilder('classification')
+      .where('classification.classificationType <> :classificationType')
+      .setParameter('classificationType', 'Genre')
+      .orderBy('classification.classificationType', 'ASC')
+      .addOrderBy('classification.name', 'ASC')
+      .getMany();
+  }
+
+  public async getGenreView(): Promise<ClassificationViewEntity[]> {
+    return this.dataSource
+      .getRepository(ClassificationViewEntity)
+      .createQueryBuilder('classification')
+      .where('classification.classificationType = :classificationType')
+      .setParameter('classificationType', 'Genre')
+      .orderBy('classification.name', 'ASC')
+      .getMany();
+  }
+
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {
     const classificationId = this.hash(`${classificationType}:${classificationName}`);
     return this.dataSource
@@ -136,5 +159,9 @@ export class DatabaseService {
       .where('artist.id = :artistId')
       .setParameter('artistId', artistId)
       .getMany();
+  }
+
+  public async getAllClassifications(): Promise<IClassificationModel[]> {
+    return this.dataSource.getRepository(ClassificationEntity).find();
   }
 }

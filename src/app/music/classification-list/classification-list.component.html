@@ -1,0 +1,38 @@
+<div *ngIf="model.items.length === 0"></div>
+<table *ngIf="model.items.length > 0" spIntersectionObserver class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-full-width">
+  <tr
+  *ngFor="let classification of model.items"
+  spIntersectionObserverTarget
+  (intersectionChange)="onIntersectionChange($event, classification)"
+  [ngClass]="{ 'sp-selected-item': classification.selected }">
+    <ng-container *ngIf="classification.canBeRendered">
+      <!-- Classification Image -->
+      <td class="sp-table-image-field" (click)="onClassificationClick(classification)">
+        <sp-loading-image [src]="classification.imageSrc" class="sp-table-loading-image"></sp-loading-image>
+      </td>
+      <!-- Classification Info -->
+      <td class="sp-text-overflow-ellipsis" (click)="onClassificationClick(classification)">
+        <span *ngIf="isGenreList" class="sp-text-medium sp-no-select">{{classification.name}}</span>
+        <span *ngIf="!isGenreList" class="sp-text-medium sp-no-select">{{classification.classificationType}}: {{classification.name}}</span>
+        <br>
+        <span class="sp-color-on-bg-low sp-text-small org-no-select">Songs: {{classification.songCount}}</span>
+      </td>
+      <!-- Classification Menu Icon -->
+      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+        <sp-icon-menu [items]="menuList" [context]="classification" [iconClass]="'mdi mdi-dots-horizontal'"></sp-icon-menu>
+      </td>
+    </ng-container>
+    <ng-container *ngIf="!classification.canBeRendered">
+      <td class="sp-table-image-field">
+        <img class="sp-table-loading-image"/>
+      </td>
+      <!-- Classification Info -->
+      <td class="sp-text-overflow-ellipsis">
+        <span class="sp-text-medium sp-no-select">Loading classification...</span>
+      </td>
+      <!-- Classification Menu Icon -->
+      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+      </td>
+    </ng-container>
+  </tr>
+</table>

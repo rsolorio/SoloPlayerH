@@ -88,12 +88,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   public onArtistClick(): void {}
 
-  public getArtistGroupName(): void {}
-
-  public getArtistGenderIcons(): void {}
-
-  public onFavoriteChange(): void {}
-
   public onIntersectionChange(isIntersecting: boolean, artist: IArtistModel): void {
     // console.log(isIntersecting);
     // console.log(artist);

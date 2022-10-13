@@ -4,6 +4,7 @@ export enum AppEvent {
   SongListUpdated = 'SONG_LIST_UPDATED',
   AlbumListUpdated = 'ALBUM_LIST_UPDATED',
   ArtistListUpdated = 'ARTIST_LIST_UPDATED',
+  ClassificationListUpdated = 'CLASSIFICATION_LIST_UPDATED',
   PlaylistListUpdated = 'PLAYLIST_LIST_UPDATED',
   FilterListUpdated = 'FILTER_LIST_UPDATED',
   // Player

@@ -84,7 +84,7 @@ export class SideBarMenuStateService {
       this.state.items.push(this.createMenuItem('Artists', 'mdi-account-music mdi', false, null, AppRoutes.Artists));
       this.state.items.push(this.createMenuItem('Albums', 'mdi-album mdi', false, null, AppRoutes.Albums));
       this.state.items.push(this.createMenuItem('Genres', 'mdi-tag-outline mdi', false, null, AppRoutes.Genres));
-      this.state.items.push(this.createMenuItem('Classifications', 'mdi-tag-multiple-outline mdi', false, null, AppRoutes.Genres));
+      this.state.items.push(this.createMenuItem('Classifications', 'mdi-tag-multiple-outline mdi', false, null, AppRoutes.Classifications));
       this.state.items.push(this.createMenuItem('Songs', 'mdi-music-note mdi', false, null, AppRoutes.Songs));
       this.state.items.push(this.createMenuItem('Playlists', 'mdi-playlist-play mdi', false, null, AppRoutes.Playlists));
       this.state.items.push(this.createMenuItem('Filters', 'mdi-filter-outline mdi', false, null, AppRoutes.Filters));

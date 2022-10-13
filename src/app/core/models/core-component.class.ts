@@ -11,7 +11,7 @@ export class CoreComponent implements OnDestroy {
    */
   public subs = new Subscriptions();
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.subs.unSubscribe();
   }
 }
