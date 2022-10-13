@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeViewComponent } from './home/home-view/home-view.component';
+import { AlbumListComponent } from './music/album-list/album-list.component';
 import { ArtistListComponent } from './music/artist-list/artist-list.component';
 import { MusicModule } from './music/music.module';
 import { SettingsViewComponent } from './settings/settings-view/settings-view.component';
@@ -10,6 +11,7 @@ const routes: Routes = [
   { path: 'settings', component: SettingsViewComponent },
   { path: 'artists', component: ArtistListComponent },
   { path: 'albumartists', component: ArtistListComponent },
+  { path: 'albums', component: AlbumListComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

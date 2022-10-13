@@ -1,10 +1,11 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { IAlbumModel } from '../models/album-model.interface';
 import { ArtistEntity } from './artist.entity';
 import { DbEntity } from './base.entity';
 import { SongEntity } from './song.entity';
 
 @Entity({name: 'album'})
-export class AlbumEntity extends DbEntity {
+export class AlbumEntity extends DbEntity implements IAlbumModel {
   @Column()
   albumType: string;
 
@@ -20,4 +21,8 @@ export class AlbumEntity extends DbEntity {
 
   @OneToMany(type => SongEntity, song => song.primaryAlbum)
   songs: Relation<SongEntity[]>;
+
+  songCount: number;
+  imageSrc: string;
+  canBeRendered: boolean;
 }

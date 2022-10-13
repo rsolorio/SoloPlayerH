@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
+import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
@@ -13,7 +12,7 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 @Injectable({
   providedIn: 'root'
 })
-export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtistModel> {
+export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumModel> {
 
   constructor(
     private eventsService: EventsService,
@@ -24,31 +23,14 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
   }
 
   protected getEventName(): string {
-    return AppEvent.ArtistListUpdated;
+    return AppEvent.AlbumListUpdated;
   }
 
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     return null;
   }
 
-  protected getItems(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
-    return from(this.db.getArtistView());
-  }
-
-  public getAndBroadcastAlbumArtists(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
-    if (listModel.noMoreItems) {
-      this.broadcast(listModel);
-      return of(listModel.items);
-    }
-    return from(this.db.getAlbumArtistView()).pipe(
-      tap(response => {
-        listModel.items = response;
-        this.lastResult = listModel;
-
-        if (this.beforeBroadcast(response)) {
-          this.broadcast(listModel);
-        }
-      })
-    );
+  protected getItems(listModel: IPaginationModel<IAlbumModel>): Observable<IAlbumModel[]> {
+    return from(this.db.getAlbumView());
   }
 }

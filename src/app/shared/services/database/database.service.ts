@@ -5,6 +5,7 @@ import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity } from '../
 import { DbEntity } from '../../entities/base.entity';
 import { AlbumArtistViewEntity } from '../../entities/album-artist-view.entity';
 import { ArtistViewEntity } from '../../entities/artist-view.entity';
+import { AlbumViewEntity } from '../../entities/album-view.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class DatabaseService {
         ArtistEntity,
         ClassificationEntity,
         ArtistViewEntity,
-        AlbumArtistViewEntity
+        AlbumArtistViewEntity,
+        AlbumViewEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -80,13 +82,13 @@ export class DatabaseService {
     });
   }
 
-  public async getArtistsWithAlbums(): Promise<ArtistEntity[]> {
-    return this.dataSource
-      .getRepository(ArtistEntity)
-      .createQueryBuilder('artist')
-      .innerJoinAndSelect('artist.albums', 'album')
-      .getMany();
-  }
+  // public async getArtistsWithAlbums(): Promise<ArtistEntity[]> {
+  //   return this.dataSource
+  //     .getRepository(ArtistEntity)
+  //     .createQueryBuilder('artist')
+  //     .innerJoinAndSelect('artist.albums', 'album')
+  //     .getMany();
+  // }
 
   public async getAlbumArtistView(): Promise<AlbumArtistViewEntity[]> {
     return this.dataSource.manager.find(AlbumArtistViewEntity);
@@ -94,6 +96,10 @@ export class DatabaseService {
 
   public async getArtistView(): Promise<ArtistViewEntity[]> {
     return this.dataSource.manager.find(ArtistViewEntity);
+  }
+
+  public async getAlbumView(): Promise<AlbumViewEntity[]> {
+    return this.dataSource.manager.find(AlbumViewEntity);
   }
 
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {

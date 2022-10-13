@@ -28,7 +28,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   constructor(
     private stateService: ArtistListStateService,
     private events: EventsService,
-    private broadcast: ArtistListBroadcastService,
+    private broadcastService: ArtistListBroadcastService,
     private utility: UtilityService
   ) {
     super();
@@ -51,10 +51,10 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     };
     // Use broadcast to search and populate
     if (this.isAlbumArtist) {
-      this.broadcast.getAndBroadcastAlbumArtists(pagination).subscribe();
+      this.broadcastService.getAndBroadcastAlbumArtists(pagination).subscribe();
     }
     else {
-      this.broadcast.getAndBroadcastArtists(pagination).subscribe();
+      this.broadcastService.getAndBroadcast(pagination).subscribe();
     }
   }
 

@@ -17,13 +17,14 @@ export class AlbumArtistViewEntity implements IArtistModel {
   id: string;
   @ViewColumn()
   name: string;
-  artistType: string;
-  country: string;
-  favorite: boolean;
   @ViewColumn()
   albumCount: number;
   @ViewColumn()
   songCount: number;
+
+  artistType: string;
+  country: string;
+  favorite: boolean;
   imageSrc: string;
   canBeRendered: boolean;
 }
