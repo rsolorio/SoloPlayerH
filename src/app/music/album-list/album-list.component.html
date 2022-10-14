@@ -13,8 +13,9 @@
       <!-- Album Info -->
       <td class="sp-text-overflow-ellipsis" (click)="onAlbumClick(album)">
         <span class="sp-text-medium sp-no-select">{{album.name}}</span>
+        <span *ngIf="album.releaseYear > 0" class="sp-text-medium sp-no-select"> ({{album.releaseYear}})</span>
         <br>
-        <span class="sp-color-on-bg-low sp-text-small org-no-select">Songs: {{album.songCount}}</span>
+        <span class="sp-color-on-bg-low sp-text-small org-no-select">{{album.artistName}} | Songs: {{album.songCount}}</span>
       </td>
       <!-- Album Menu Icon -->
       <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">

@@ -22,6 +22,7 @@ export class AlbumEntity extends DbEntity implements IAlbumModel {
   @OneToMany(type => SongEntity, song => song.primaryAlbum)
   songs: Relation<SongEntity[]>;
 
+  artistName: string;
   songCount: number;
   imageSrc: string;
   canBeRendered: boolean;
