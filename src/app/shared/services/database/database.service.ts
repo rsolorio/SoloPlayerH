@@ -8,6 +8,7 @@ import { ArtistViewEntity } from '../../entities/artist-view.entity';
 import { AlbumViewEntity } from '../../entities/album-view.entity';
 import { IClassificationModel } from '../../models/classification-model.interface';
 import { ClassificationViewEntity } from '../../entities/classification-view.entity';
+import { SongViewEntity } from '../../entities/song-view.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,8 @@ export class DatabaseService {
         ArtistViewEntity,
         AlbumArtistViewEntity,
         AlbumViewEntity,
-        ClassificationViewEntity
+        ClassificationViewEntity,
+        SongViewEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -123,6 +125,10 @@ export class DatabaseService {
       .setParameter('classificationType', 'Genre')
       .orderBy('classification.name', 'ASC')
       .getMany();
+  }
+
+  public async getSongView(): Promise<SongViewEntity[]> {
+    return this.dataSource.manager.find(SongViewEntity);
   }
 
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {

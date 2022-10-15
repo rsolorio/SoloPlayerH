@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { AlbumListComponent } from './album-list/album-list.component';
 import { ClassificationListComponent } from './classification-list/classification-list.component';
+import { SongListComponent } from './song-list/song-list.component';
 
 
 
@@ -15,7 +16,8 @@ import { ClassificationListComponent } from './classification-list/classificatio
   declarations: [
     ArtistListComponent,
     AlbumListComponent,
-    ClassificationListComponent
+    ClassificationListComponent,
+    SongListComponent
   ],
   imports: [
     CommonModule,

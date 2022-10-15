@@ -4,29 +4,29 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
-import { AlbumListBroadcastService } from './album-list-broadcast.service';
-import { AlbumListStateService } from './album-list-state.service';
+import { ISongModel } from 'src/app/shared/models/song-model.interface';
+import { SongListBroadcastService } from './song-list-broadcast.service';
+import { SongListStateService } from './song-list-state.service';
 
 @Component({
-  selector: 'sp-album-list',
-  templateUrl: './album-list.component.html',
-  styleUrls: ['./album-list.component.scss']
+  selector: 'sp-song-list',
+  templateUrl: './song-list.component.html',
+  styleUrls: ['./song-list.component.scss']
 })
-export class AlbumListComponent extends CoreComponent implements OnInit {
+export class SongListComponent extends CoreComponent implements OnInit {
 
-  public model: IPaginationModel<IAlbumModel> = {
+  public model: IPaginationModel<ISongModel> = {
     items: []
   };
   /** This is the menu of each artist item */
   public menuList: IMenuModel[] = [];
 
   constructor(
-    private stateService: AlbumListStateService,
+    private stateService: SongListStateService,
     private events: EventsService,
-    private broadcastService: AlbumListBroadcastService,
+    private broadcastService: SongListBroadcastService,
     private utility: UtilityService
   ) {
     super();
@@ -35,11 +35,11 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.initializeMenu();
 
-    this.subs.sink = this.events.onEvent<IPaginationModel<IAlbumModel>>(AppEvent.AlbumListUpdated).subscribe(response => {
+    this.subs.sink = this.events.onEvent<IPaginationModel<ISongModel>>(AppEvent.SongListUpdated).subscribe(response => {
       this.model = response;
     });
 
-    const pagination: IPaginationModel<IAlbumModel> = {
+    const pagination: IPaginationModel<ISongModel> = {
       items: [],
       criteria: null,
       name: null
@@ -58,8 +58,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       caption: 'Search...',
       icon: 'mdi-web mdi',
       action: param => {
-        const albumModel = param as IAlbumModel;
-        this.utility.googleSearch(albumModel.name);
+        const song = param as ISongModel;
+        this.utility.googleSearch(song.name);
       }
     });
 
@@ -67,24 +67,21 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       caption: 'Properties...',
       icon: 'mdi-square-edit-outline mdi',
       action: param => {
-        const album = param as IAlbumModel;
-        if (album) {
-          this.utility.navigateWithRouteParams(AppRoutes.Albums, [album.id]);
+        const song = param as ISongModel;
+        if (song) {
+          this.utility.navigateWithRouteParams(AppRoutes.Songs, [song.id]);
         }
       }
     });
   }
 
-  public onAlbumClick(): void {}
+  public onSongClick(): void {}
 
-  public onIntersectionChange(isIntersecting: boolean, album: IAlbumModel): void {
-    // console.log(isIntersecting);
-    // console.log(artist);
-
-    album.canBeRendered = isIntersecting;
-    if (isIntersecting && !album.imageSrc) {
+  public onIntersectionChange(isIntersecting: boolean, song: ISongModel): void {
+    song.canBeRendered = isIntersecting;
+    if (isIntersecting && !song.imageSrc) {
       // TODO: logic for getting artist image
-      album.imageSrc = '../assets/img/default-image-small.jpg';
+      song.imageSrc = '../assets/img/default-image-small.jpg';
     }
   }
 

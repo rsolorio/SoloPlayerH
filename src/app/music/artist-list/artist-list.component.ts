@@ -40,7 +40,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     // this.model = this.stateService.getState();
 
     this.subs.sink = this.events.onEvent<IPaginationModel<IArtistModel>>(AppEvent.ArtistListUpdated).subscribe(response => {
-      console.log(response.items[0]);
       this.model = response;
     });
 

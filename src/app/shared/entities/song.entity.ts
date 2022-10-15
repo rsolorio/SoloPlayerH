@@ -1,11 +1,12 @@
 import { Column, Entity, ManyToOne, Relation, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import { ISongModel } from '../models/song-model.interface';
 import { AlbumEntity } from './album.entity';
 import { ArtistEntity } from './artist.entity';
 import { DbEntity } from './base.entity';
 import { ClassificationEntity } from './classification.entity';
 
 @Entity({name: 'song'})
-export class SongEntity extends DbEntity {
+export class SongEntity extends DbEntity implements ISongModel {
   @Column({ unique: true })
   filePath: string;
 
@@ -72,6 +73,9 @@ export class SongEntity extends DbEntity {
   @Column()
   fullyParsed: boolean;
 
+  @Column()
+  favorite: boolean;
+
   @ManyToOne(type => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})
   primaryAlbum: Relation<AlbumEntity>;
@@ -83,4 +87,9 @@ export class SongEntity extends DbEntity {
   @ManyToMany(() => ClassificationEntity, classification => classification.songs)
   @JoinTable({ name: 'songClassification' })
   classifications: Relation<ClassificationEntity[]>;
+
+  albumName: string;
+  artistName: string;
+  imageSrc: string;
+  canBeRendered: boolean;
 }

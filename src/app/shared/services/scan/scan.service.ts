@@ -235,6 +235,7 @@ export class ScanService {
     song.vbr = audioInfo.metadata.format.codecProfile !== 'CBR';
     song.replayGain = audioInfo.metadata.format.trackGain ? audioInfo.metadata.format.trackGain : 0;
     song.fullyParsed = audioInfo.fullyParsed;
+    song.favorite = false;
 
     this.db.hashSong(song);
     return song;
