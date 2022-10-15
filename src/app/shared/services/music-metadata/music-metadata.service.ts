@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { readFileSync } from 'fs';
+import { readFileSync, readFile } from 'fs';
 import { IAudioMetadata, ITag, parseBuffer } from 'music-metadata-browser';
 import { IFileInfo } from '../file/file.interface';
 import { IAudioInfo } from './music-metadata.interface';
@@ -25,7 +25,7 @@ export class MusicMetadataService {
         fullyParsed: false
       };
       if (enforceDuration && !info.metadata.format.duration) {
-        info.metadata = await parseBuffer(fileBuffer);
+        info.metadata = await parseBuffer(fileBuffer, null, { duration: true});
         info.fullyParsed = true;
       }
       return info;
@@ -39,6 +39,43 @@ export class MusicMetadataService {
         error: ex
       };
     }
+  }
+
+  public getMetadataAsync(fileInfo: IFileInfo, enforceDuration?: boolean): Promise<IAudioInfo> {
+    return new Promise<IAudioInfo>(resolve => {
+      const result: IAudioInfo = {
+        fileInfo,
+        metadata: null,
+        fullyParsed: false
+      };
+      readFile(fileInfo.path, (readError, data) => {
+        if (readError) {
+          result.error = readError;
+          resolve(result);
+        }
+        else {
+          parseBuffer(data).then(metadata => {
+            result.metadata = metadata;
+            if (enforceDuration && !metadata.format.duration) {
+              parseBuffer(data, null, { duration: true}).then(metadata2 => {
+                result.metadata = metadata2;
+                result.fullyParsed = true;
+                resolve(result);
+              }, parseError2 => {
+                result.error = parseError2;
+                resolve(result);
+              });
+            }
+            else {
+              resolve(result);
+            }
+          }, parseError1 => {
+            result.error = parseError1;
+            resolve(result);
+          });
+        }
+      });
+    });
   }
 
   public getId3v24Tags(metadata: IAudioMetadata): ITag[] {

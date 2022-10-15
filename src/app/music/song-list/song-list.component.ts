@@ -7,6 +7,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
+import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 import { SongListStateService } from './song-list-state.service';
 
@@ -27,7 +28,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private stateService: SongListStateService,
     private events: EventsService,
     private broadcastService: SongListBroadcastService,
-    private utility: UtilityService
+    private utility: UtilityService,
+    private metadataService: MusicMetadataService
   ) {
     super();
   }
@@ -80,8 +82,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
   public onIntersectionChange(isIntersecting: boolean, song: ISongModel): void {
     song.canBeRendered = isIntersecting;
     if (isIntersecting && !song.imageSrc) {
-      // TODO: logic for getting artist image
       song.imageSrc = '../assets/img/default-image-small.jpg';
+      this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: []}).then(audioInfo => {
+        if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
+          const picture = audioInfo.metadata.common.picture[0];
+          song.imageSrc = 'data:image/jpg;base64,' + picture.data.toString('base64');
+        }
+      });
     }
   }
 
