@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -29,16 +30,19 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private events: EventsService,
     private broadcastService: SongListBroadcastService,
     private utility: UtilityService,
-    private metadataService: MusicMetadataService
+    private metadataService: MusicMetadataService,
+    private loadingService: LoadingViewStateService
   ) {
     super();
   }
 
   ngOnInit(): void {
+    this.loadingService.show();
     this.initializeMenu();
 
     this.subs.sink = this.events.onEvent<IPaginationModel<ISongModel>>(AppEvent.SongListUpdated).subscribe(response => {
       this.model = response;
+      this.loadingService.hide();
     });
 
     const pagination: IPaginationModel<ISongModel> = {

@@ -46,7 +46,7 @@ export class ScanService {
   }
 
   private async processFile(fileInfo: IFileInfo): Promise<void> {
-    const info = await this.metadataService.getMetadata(fileInfo, true);
+    const info = await this.metadataService.getMetadataAsync(fileInfo, true);
     if (!info || info.error) {
       return;
     }

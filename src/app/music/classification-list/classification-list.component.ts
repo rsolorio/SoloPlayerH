@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -29,18 +30,20 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private stateService: ClassificationListStateService,
     private events: EventsService,
     private broadcastService: ClassificationListBroadcastService,
-    private utility: UtilityService
+    private utility: UtilityService,
+    private loadingService: LoadingViewStateService
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoutes.Genres);
   }
 
   ngOnInit(): void {
+    this.loadingService.show();
     this.initializeMenu();
-    // this.model = this.stateService.getState();
 
     this.subs.sink = this.events.onEvent<IPaginationModel<IClassificationModel>>(AppEvent.ClassificationListUpdated).subscribe(response => {
       this.model = response;
+      this.loadingService.hide();
     });
 
     const pagination: IPaginationModel<IClassificationModel> = {

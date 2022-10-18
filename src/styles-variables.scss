@@ -58,7 +58,8 @@ $sp-opacity-focus: 0.12;
 $sp-opacity-activated: 0.12;
 
 /* COLORS */
-$sp-color-blue: #2a9fd6;
+$sp-color-blue: #2b4eff;
+$sp-color-blue-light: #2a9fd6;
 $sp-color-green: #77b300;
 $sp-color-purple: #9933cc;
 $sp-color-pink: #e83e8c;
@@ -98,7 +99,7 @@ $sp-color-on-background-separator: rgba($sp-color-white, $sp-opacity-separator);
 $sp-color-primary: $sp-color-cyan;
 $sp-color-on-primary: $sp-color-black;
 // Primary Variant
-$sp-color-primary-variant: $sp-color-blue;
+$sp-color-primary-variant: $sp-color-blue-light;
 $sp-color-on-primary-variant: $sp-color-black;
 // Secondary
 $sp-color-secondary: $sp-color-blue;

@@ -9,7 +9,7 @@
     background: $sp-dim-black-low;
 }
 
-/* Circular loader */
+/* Circular loader - Outer circle */
 .sp-circular-loader {
     display: block;
     position: relative;
@@ -20,10 +20,11 @@
     margin: -100px 0 0 -100px; /* This depends on the width and height, and it is usually the half of the value (negative) */
     border-radius: 50%;
     border: 3px solid transparent;
-    border-top-color: $sp-color-red;
+    border-top-color: $sp-color-blue;
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
+/* Circular loader - Mid circle */
 .sp-circular-loader:before {
     content: "";
     position: absolute;
@@ -33,10 +34,11 @@
     bottom: 5px;
     border-radius: 50%;
     border: 3px solid transparent;
-    border-top-color: $sp-color-orange;
+    border-top-color: $sp-color-blue-light;
     -webkit-animation: spin 3s linear infinite;
     animation: spin 3s linear infinite;
 }
+/* Circular loader - Inner circle */
 .sp-circular-loader:after {
     content: "";
     position: absolute;
@@ -46,7 +48,7 @@
     bottom: 15px;
     border-radius: 50%;
     border: 3px solid transparent;
-    border-top-color: $sp-color-yellow;
+    border-top-color: $sp-color-cyan;
     -webkit-animation: spin 1.5s linear infinite;
     animation: spin 1.5s linear infinite;
 }

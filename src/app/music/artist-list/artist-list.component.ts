@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -29,18 +30,20 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private stateService: ArtistListStateService,
     private events: EventsService,
     private broadcastService: ArtistListBroadcastService,
-    private utility: UtilityService
+    private utility: UtilityService,
+    private loadingService: LoadingViewStateService
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoutes.AlbumArtists);
   }
 
   ngOnInit(): void {
+    this.loadingService.show();
     this.initializeMenu();
-    // this.model = this.stateService.getState();
 
     this.subs.sink = this.events.onEvent<IPaginationModel<IArtistModel>>(AppEvent.ArtistListUpdated).subscribe(response => {
       this.model = response;
+      this.loadingService.hide();
     });
 
     const pagination: IPaginationModel<IArtistModel> = {
