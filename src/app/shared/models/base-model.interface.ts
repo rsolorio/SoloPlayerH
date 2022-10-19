@@ -4,3 +4,8 @@ export interface IDbModel extends ISelectable {
   id: string;
   name: string;
 }
+
+export interface IListModel extends IDbModel {
+  imageSrc: string;
+  canBeRendered: boolean;
+}

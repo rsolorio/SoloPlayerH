@@ -1,5 +1,6 @@
 export enum AppEvent {
   // App
+  QuickSearchFired = 'QUICK_SEARCH_FIRED',
   SearchSelectionDone = 'SEARCH_SELECTION_DONE',
   SongListUpdated = 'SONG_LIST_UPDATED',
   AlbumListUpdated = 'ALBUM_LIST_UPDATED',

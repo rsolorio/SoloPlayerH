@@ -1,0 +1,38 @@
+<div *ngIf="model.paginationModel.items.length === 0"></div>
+<table
+*ngIf="model.paginationModel.items.length > 0"
+spIntersectionObserver
+class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-full-width">
+  <tr
+  *ngFor="let item of model.paginationModel.items"
+  spIntersectionObserverTarget
+  (intersectionChange)="onIntersectionChange($event, item)"
+  [ngClass]="{ 'sp-selected-item': item.selected }">
+    <!-- Real content -->
+    <ng-container *ngIf="item.canBeRendered">
+      <!-- Image -->
+      <td class="sp-table-image-field" (click)="onImageClick(item)">
+        <sp-loading-image [src]="item.imageSrc" class="sp-table-loading-image"></sp-loading-image>
+      </td>
+      <!-- Info -->
+      <td class="sp-text-overflow-ellipsis" (click)="onContentClick(item)">
+        <ng-template [ngTemplateOutlet]="infoTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
+      </td>
+      <!-- Menu Icon -->
+      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+        <sp-icon-menu [items]="model.menuList" [context]="item" [iconClass]="'mdi mdi-dots-horizontal'"></sp-icon-menu>
+      </td>
+    </ng-container>
+    <!-- Placeholder content -->
+    <ng-container *ngIf="!item.canBeRendered">
+      <td class="sp-table-image-field">
+        <img class="sp-table-loading-image"/>
+      </td>
+      <td class="sp-text-overflow-ellipsis">
+        <span class="sp-text-medium sp-no-select">Loading item...</span>
+      </td>
+      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+      </td>
+    </ng-container>
+  </tr>
+</table>

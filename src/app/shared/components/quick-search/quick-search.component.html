@@ -1,0 +1,12 @@
+<div class="quick-search-container">
+  <!-- Textbox -->
+  <input [(ngModel)]="searchTerm" (keyup.enter)="onEnter()" type="search" class="form-control" placeholder="{{placeholder}}" />
+  <!-- Clear icon -->
+  <span (click)="onClearClick()" [hidden]="searchTerm === ''" class="sp-cursor-pointer sp-search-clear-icon">
+    <i class="mdi mdi-close"></i>
+  </span>
+  <!-- Search icon -->
+  <span (click)="onSearchClick()" [hidden]="searchTerm !== ''" class="sp-cursor-pointer sp-search-clear-icon">
+    <i class="mdi mdi-magnify"></i>
+  </span>
+</div>

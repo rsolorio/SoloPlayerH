@@ -14,8 +14,8 @@
       <td class="sp-text-overflow-ellipsis" (click)="onSongClick(song)">
         <span class="sp-text-medium sp-no-select">{{song.name}}</span>
         <br>
-        <span class="sp-color-on-bg-low sp-text-small org-no-select">{{song.artistName}} | {{song.albumName}}</span>
-        <span *ngIf="song.releaseYear > 0" class="sp-color-on-bg-low sp-text-small org-no-select"> ({{song.releaseYear}})</span>
+        <span class="sp-color-on-bg-low sp-text-small sp-no-select">{{song.artistName}} | {{song.albumName}}</span>
+        <span *ngIf="song.releaseYear > 0" class="sp-color-on-bg-low sp-text-small sp-no-select"> ({{song.releaseYear}})</span>
       </td>
       <!-- Song Menu Icon -->
       <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">

@@ -1,0 +1,35 @@
+@import "../../../../styles-variables";
+
+:host {
+    width: 100%;
+    padding: 3px;
+}
+.quick-search-container {
+    display: flex;
+}
+
+.sp-search-clear-icon {
+    position: absolute;
+    opacity: 0.5;
+    right: 94px;
+    top: 5px;
+    color: $sp-color-on-background-high;
+    width: 24px;
+    text-align: center;
+    font-size: 20px;
+}
+
+input {
+    height: 34px;
+}
+
+.btn {
+    padding-top: 3px;
+    padding-right: 5px;
+}
+
+@media only screen and (max-width:$sp-media-max-width) {
+    .sp-search-clear-icon {
+        right: 94px;
+    }
+}

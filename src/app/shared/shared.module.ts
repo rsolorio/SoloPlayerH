@@ -4,6 +4,9 @@ import { LoadingImageComponent } from './components/loading-image/loading-image.
 import { CoreModule } from '../core/core.module';
 import { IntersectionObserverDirective } from './directives/intersection-observer/intersection-observer.directive';
 import { IntersectionObserverTargetDirective } from './directives/intersection-observer/intersection-observer-target.directive';
+import { QuickSearchComponent } from './components/quick-search/quick-search.component';
+import { FormsModule } from '@angular/forms';
+import { ListBaseComponent } from './components/list-base/list-base.component';
 
 
 
@@ -11,16 +14,21 @@ import { IntersectionObserverTargetDirective } from './directives/intersection-o
   declarations: [
     LoadingImageComponent,
     IntersectionObserverDirective,
-    IntersectionObserverTargetDirective
+    IntersectionObserverTargetDirective,
+    QuickSearchComponent,
+    ListBaseComponent
   ],
   imports: [
     CommonModule,
-    CoreModule
+    CoreModule,
+    FormsModule
   ],
   exports: [
+    ListBaseComponent,
     LoadingImageComponent,
     IntersectionObserverDirective,
     IntersectionObserverTargetDirective
-  ]
+  ],
+  entryComponents: [ QuickSearchComponent ]
 })
 export class SharedModule { }

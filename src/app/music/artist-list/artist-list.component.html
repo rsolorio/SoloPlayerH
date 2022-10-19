@@ -14,8 +14,8 @@
       <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">
         <span class="sp-text-medium sp-no-select">{{artist.name}}</span>
         <br>
-        <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small org-no-select">Albums: {{artist.albumCount}} | </span>
-        <span class="sp-color-on-bg-low sp-text-small org-no-select">Songs: {{artist.songCount}}</span>
+        <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small sp-no-select">Albums: {{artist.albumCount}} | </span>
+        <span class="sp-color-on-bg-low sp-text-small sp-no-select">Songs: {{artist.songCount}}</span>
       </td>
       <!-- Artist Menu Icon -->
       <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">

@@ -1,0 +1,19 @@
+@import "../../../../styles-variables";
+
+table {
+    font-family: $sp-font-family-regular;
+}
+
+.sp-table-context-field {
+    width: 50px;
+}
+
+.sp-table-image-field {
+    width: 60px;
+}
+
+.sp-table-loading-image {
+    display: flex;
+    height: 50px;
+    width: 50px;
+}

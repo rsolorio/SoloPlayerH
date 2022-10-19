@@ -1,8 +1,6 @@
-import { IDbModel } from './base-model.interface';
+import { IListModel } from './base-model.interface';
 
-export interface IClassificationModel extends IDbModel {
+export interface IClassificationModel extends IListModel {
   classificationType: string;
   songCount: number;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

@@ -362,6 +362,14 @@ A longer duration allows to properly see the transition in the whole page. */
               user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
+// Components *************************************************************************************
+
+input[type="text"], input[type="search"], textarea {
+    background-color: $sp-color-background;
+    color: $sp-color-on-background-high;
+    width: 100%;
+}
+
 // Misc *******************************************************************************************
 .sp-cursor-pointer, .sp-clickable {
     cursor: pointer;
