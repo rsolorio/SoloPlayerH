@@ -1,38 +1,15 @@
-<div *ngIf="model.items.length === 0"></div>
-<table *ngIf="model.items.length > 0" spIntersectionObserver class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-full-width">
-  <tr
-  *ngFor="let artist of model.items"
-  spIntersectionObserverTarget
-  (intersectionChange)="onIntersectionChange($event, artist)"
-  [ngClass]="{ 'sp-selected-item': artist.selected }">
-    <ng-container *ngIf="artist.canBeRendered">
-      <!-- Artist Image -->
-      <td class="sp-table-image-field" (click)="onArtistClick(artist)">
-        <sp-loading-image [src]="artist.imageSrc" class="sp-table-loading-image"></sp-loading-image>
-      </td>
-      <!-- Artist Info -->
-      <td class="sp-text-overflow-ellipsis" (click)="onArtistClick(artist)">
-        <span class="sp-text-medium sp-no-select">{{artist.name}}</span>
-        <br>
-        <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small sp-no-select">Albums: {{artist.albumCount}} | </span>
-        <span class="sp-color-on-bg-low sp-text-small sp-no-select">Songs: {{artist.songCount}}</span>
-      </td>
-      <!-- Artist Menu Icon -->
-      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
-        <sp-icon-menu [items]="menuList" [context]="artist" [iconClass]="'mdi mdi-dots-horizontal'"></sp-icon-menu>
-      </td>
-    </ng-container>
-    <ng-container *ngIf="!artist.canBeRendered">
-      <td class="sp-table-image-field">
-        <img class="sp-table-loading-image"/>
-      </td>
-      <!-- Artist Info -->
-      <td class="sp-text-overflow-ellipsis">
-        <span class="sp-text-medium sp-no-select">Loading artist...</span>
-      </td>
-      <!-- Artist Menu Icon -->
-      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
-      </td>
-    </ng-container>
-  </tr>
-</table>
+<sp-list-base
+[listUpdatedEvent]="appEvent.ArtistListUpdated"
+[itemMenuList]="itemMenuList"
+[infoTemplate]="infoTemplate"
+(initialized)="onInitialized()"
+(searchFired)="onSearch($event)"
+(favoriteClick)="onFavoriteClick()"
+(itemContentClick)="onItemContentClick()">
+  <ng-template #infoTemplate let-item="item">
+    <span class="sp-text-medium sp-no-select">{{item.name}}</span>
+    <br>
+    <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small sp-no-select">Albums: {{item.albumCount}} | </span>
+    <span class="sp-color-on-bg-low sp-text-small sp-no-select">Songs: {{item.songCount}}</span>
+  </ng-template>
+</sp-list-base>

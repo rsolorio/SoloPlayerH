@@ -17,11 +17,6 @@ import { AlbumListBroadcastService } from './album-list-broadcast.service';
 export class AlbumListComponent extends CoreComponent implements OnInit {
 
   public appEvent = AppEvent;
-
-  public model: IPaginationModel<IAlbumModel> = {
-    items: []
-  };
-  /** This is the menu of each item */
   public itemMenuList: IMenuModel[] = [];
 
   constructor(
@@ -33,10 +28,10 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeMenu();
+    this.initializeItemMenu();
   }
 
-  private initializeMenu(): void {
+  private initializeItemMenu(): void {
     this.itemMenuList.push({
       caption: 'Play',
       icon: 'mdi-play mdi',
