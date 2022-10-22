@@ -61,20 +61,22 @@ export class ScanService {
         needsUpdate = !existingArtist.country && primaryArtist.country;
       }
       if (needsUpdate) {
-        primaryArtist.save();
+        await primaryArtist.save();
       }
     }
     else {
-      primaryArtist.save();
+      await primaryArtist.save();
     }
-    await this.db.add(primaryArtist, ArtistEntity);
 
     // MULTIPLE ARTISTS
     const artists = this.processArtists(info);
     for (const artist of artists) {
-      // Only add if it does not exist, otherwise it will update an existing record
-      // and wipe out other fields
-      await this.db.add(artist, ArtistEntity);
+      // Skip the primary artist because it has been already added or updated in the previous step
+      if (artist.name !== primaryArtist.name) {
+        // Only add if it does not exist, otherwise it will update an existing record
+        // and wipe out other fields
+        await this.db.add(artist, ArtistEntity);
+      }
     }
 
     // PRIMARY ALBUM
