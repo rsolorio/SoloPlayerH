@@ -32,12 +32,17 @@ export class ScanService {
         },
         complete: async () => {
           console.log(files.length);
+          const failures: IAudioInfo[] = [];
           let fileCount = 0;
           for (const filePath of files) {
             fileCount++;
             console.log(`${fileCount} of ${files.length}`);
-            await this.processFile(filePath);
+            const audioInfo = await this.processFile(filePath);
+            if (audioInfo && audioInfo.error) {
+              failures.push(audioInfo);
+            }
           }
+          console.log(failures);
           console.log('Done Done');
           resolve();
         }
@@ -45,10 +50,10 @@ export class ScanService {
     });
   }
 
-  private async processFile(fileInfo: IFileInfo): Promise<void> {
+  private async processFile(fileInfo: IFileInfo): Promise<IAudioInfo> {
     const info = await this.metadataService.getMetadataAsync(fileInfo, true);
     if (!info || info.error) {
-      return;
+      return info;
     }
 
     // PRIMARY ALBUM ARTIST
@@ -108,6 +113,8 @@ export class ScanService {
     song.classifications = [...genres, ...classifications];
     // TODO: if the song already exists, update data
     await this.db.add(song, SongEntity);
+
+    return info;
   }
 
   private processAlbumArtist(audioInfo: IAudioInfo): ArtistEntity {

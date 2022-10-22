@@ -69,7 +69,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // List updated
     this.subs.sink = this.events.onEvent<IPaginationModel<any>>(this.listUpdatedEvent).subscribe(response => {
       this.model.paginationModel = response;
-      this.loadingService.hide();
+      this.afterListUpdated();
     });
 
     // Search
@@ -119,4 +119,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.itemContentClick.emit(item);
   }
 
+  private afterListUpdated(): void {
+    this.loadingService.hide();
+    this.navbarService.showToast(`Found: ${this.model.paginationModel.items.length} item` + (this.model.paginationModel.items.length !== 1 ? 's' : ''));
+  }
 }

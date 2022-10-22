@@ -5,8 +5,7 @@ import { ArtistEntity } from './artist.entity';
 @ViewEntity({
   expression: ds => ds
     .createQueryBuilder(ArtistEntity, 'artist')
-    .innerJoin('artist.albums', 'album')
-    .innerJoin('album.songs', 'song')
+    .innerJoin('artist.songs', 'song')
     .select('artist.id', 'id')
     .addSelect('artist.name', 'name')
     .addSelect('COUNT(artist.id)', 'songCount')
