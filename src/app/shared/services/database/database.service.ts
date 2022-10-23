@@ -118,7 +118,12 @@ export class DatabaseService {
       const parameter = {};
       parameter[criteriaItem.ColumnName] = criteriaItem.ColumnValue;
       if (hasWhere) {
-        queryBuilder = queryBuilder.andWhere(where, parameter);
+        if (criteriaItem.OrOperator) {
+          queryBuilder = queryBuilder.orWhere(where, parameter);
+        }
+        else {
+          queryBuilder = queryBuilder.andWhere(where, parameter);
+        }
       }
       else {
         queryBuilder = queryBuilder.where(where, parameter);
@@ -166,10 +171,6 @@ export class DatabaseService {
       case CriteriaOperator.IsNotNull:
         return 'IS NOT NULL';
     }
-  }
-
-  public async getSongView(): Promise<SongViewEntity[]> {
-    return this.dataSource.manager.find(SongViewEntity);
   }
 
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {

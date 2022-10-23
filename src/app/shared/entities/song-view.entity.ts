@@ -12,6 +12,8 @@ import { SongEntity } from './song.entity';
     .addSelect('song.filePath', 'filePath')
     .addSelect('song.playCount', 'playCount')
     .addSelect('song.releaseYear', 'releaseYear')
+    .addSelect('song.trackNumber', 'trackNumber')
+    .addSelect('song.mediaNumber', 'mediaNumber')
     .addSelect('album.name', 'albumName')
     .addSelect('artist.name', 'artistName')
 })
@@ -26,6 +28,10 @@ export class SongViewEntity implements ISongModel {
   playCount: number;
   @ViewColumn()
   releaseYear: number;
+  @ViewColumn()
+  trackNumber: number;
+  @ViewColumn()
+  mediaNumber: number;
   @ViewColumn()
   albumName: string;
   @ViewColumn()

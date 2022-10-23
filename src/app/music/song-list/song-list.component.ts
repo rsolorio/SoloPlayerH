@@ -5,7 +5,6 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
@@ -63,7 +62,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public onSearch(searchTerm: string): void {
-    console.log(searchTerm);
+    this.loadingService.show();
+    this.broadcastService.search(searchTerm).subscribe();
   }
 
   public onFavoriteClick(): void {}
@@ -72,7 +72,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   public onInitialized(): void {
     this.loadingService.show();
-    this.broadcastService.search(SearchWildcard.All);
+    this.broadcastService.search(SearchWildcard.All).subscribe();
   }
 
   public onItemImageSet(song: ISongModel): void {

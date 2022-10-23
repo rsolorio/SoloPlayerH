@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
+import { SongViewEntity } from 'src/app/shared/entities';
+import { CriteriaOperator, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
+import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
@@ -31,10 +33,183 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
   }
 
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    return null;
+    const musicSearch = this.buildSearchTerms(searchTerm);
+    return this.buildCriteriaFromTerms(musicSearch);
   }
 
   protected getItems(listModel: IPaginationModel<ISongModel>): Observable<ISongModel[]> {
-    return from(this.db.getSongView());
+    return from(this.db.getList(SongViewEntity, listModel.criteria));
   }
+
+  private buildSearchTerms(searchTerm: string): IMusicSearchTerms {
+    const musicSearch: IMusicSearchTerms = {
+      artists: [],
+      albums: [],
+      titles: [],
+      wildcard: ''
+    };
+
+    let artist = '';
+    let album = '';
+    let title = '';
+
+    // SEARCH SYNTAX
+    // Artist: @artistName, @"artist name"
+    // Album: $albumName, $"album name"
+    // Title: #songTitle, #"song title"
+    // TODO: implement reg exp
+
+    const searchItems = searchTerm.split(' ');
+    searchItems.forEach(searchItem => {
+      if (searchItem.startsWith('@')) {
+        if (searchItem.startsWith('@"')) {
+          artist = searchItem.substring(2);
+          if (artist.endsWith('"')) {
+            artist = artist.substring(0, artist.length - 1);
+            musicSearch.artists.push(artist);
+          }
+        }
+        else {
+          musicSearch.artists.push(searchItem.substring(1));
+        }
+      } else if (searchItem.startsWith('$')) {
+        if (searchItem.startsWith('$"')) {
+          album = searchItem.substring(2);
+          if (album.endsWith('"')) {
+            album = album.substring(0, album.length - 1);
+            musicSearch.albums.push(album);
+          }
+        }
+        else {
+          musicSearch.albums.push(searchItem.substring(1));
+        }
+      }
+      else if (searchItem.startsWith('#')) {
+        if (searchItem.startsWith('#"')) {
+          title = searchItem.substring(2);
+          if (title.endsWith('"')) {
+            title = title.substring(0, title.length - 1);
+            musicSearch.titles.push(title);
+          }
+        }
+        else {
+          musicSearch.titles.push(searchItem.substring(1));
+        }
+      }
+      else {
+        if (artist) {
+          if (searchItem.endsWith('"')) {
+            artist += ' ' + searchItem.substring(0, searchItem.length - 1);
+            musicSearch.artists.push(artist);
+            artist = null;
+          }
+          else {
+            artist += ' ' + searchItem;
+          }
+        }
+        else if (album) {
+          if (searchItem.endsWith('"')) {
+            album += ' ' + searchItem.substring(0, searchItem.length - 1);
+            musicSearch.albums.push(album);
+            album = null;
+          }
+          else {
+            album += ' ' + searchItem;
+          }
+        }
+        else if (title) {
+          if (searchItem.endsWith('"')) {
+            title += ' ' + searchItem.substring(0, searchItem.length - 1);
+            musicSearch.titles.push(title);
+            title = null;
+          }
+          else {
+            title += ' ' + searchItem;
+          }
+        }
+        else {
+          musicSearch.wildcard += searchItem + ' ';
+        }
+      }
+    });
+
+    return musicSearch;
+  }
+
+  private buildCriteriaFromTerms(searchTerms: IMusicSearchTerms): ICriteriaValueBaseModel[] {
+    if (!searchTerms.artists.length && !searchTerms.albums.length && !searchTerms.titles.length) {
+      return this.buildArtistAlbumTitleCriteria(searchTerms.wildcard);
+    }
+
+    const criteria: ICriteriaValueBaseModel[] = [];
+
+    searchTerms.artists.forEach(artist => {
+      const searchTerm = this.normalizeCriteriaSearchTerm(artist, true);
+      const criteriaValue = new CriteriaValueBase('artistName', searchTerm, CriteriaOperator.Like);
+      criteria.push(criteriaValue);
+    });
+
+    searchTerms.albums.forEach(album => {
+      const searchTerm = this.normalizeCriteriaSearchTerm(album, true);
+      const criteriaValue = new CriteriaValueBase('albumName', searchTerm, CriteriaOperator.Like);
+      criteria.push(criteriaValue);
+    });
+
+    searchTerms.titles.forEach(title => {
+      const searchTerm = this.normalizeCriteriaSearchTerm(title, true);
+      const criteriaValue = new CriteriaValueBase('name', searchTerm, CriteriaOperator.Like);
+      criteria.push(criteriaValue);
+    });
+
+    // First sort by year in case there are multiple albums with the same name for the same artist
+    let sortCriteriaValue = new CriteriaValueBase('releaseYear');
+    sortCriteriaValue.Operator = CriteriaOperator.None;
+    sortCriteriaValue.SortSequence = 1;
+    criteria.push(sortCriteriaValue);
+    // Now sort by album media
+    sortCriteriaValue = new CriteriaValueBase('mediaNumber');
+    sortCriteriaValue.Operator = CriteriaOperator.None;
+    sortCriteriaValue.SortSequence = 2;
+    criteria.push(sortCriteriaValue);
+    // Then by album track
+    sortCriteriaValue = new CriteriaValueBase('trackNumber');
+    sortCriteriaValue.Operator = CriteriaOperator.None;
+    sortCriteriaValue.SortSequence = 3;
+    criteria.push(sortCriteriaValue);
+    // In case tracks don't have numbers, sort by title
+    sortCriteriaValue = new CriteriaValueBase('name');
+    sortCriteriaValue.Operator = CriteriaOperator.None;
+    sortCriteriaValue.SortSequence = 4;
+    criteria.push(sortCriteriaValue);
+
+    // TODO: what to do with wildcards here?
+
+    return criteria;
+  }
+
+  private buildArtistAlbumTitleCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
+    const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
+    const criteria: ICriteriaValueBaseModel[] = [];
+
+    let criteriaValue = new CriteriaValueBase('artistName', criteriaSearchTerm, CriteriaOperator.Like);
+    criteriaValue.OrOperator = true;
+    criteria.push(criteriaValue);
+
+    criteriaValue = new CriteriaValueBase('albumName', criteriaSearchTerm, CriteriaOperator.Like);
+    criteriaValue.OrOperator = true;
+    criteria.push(criteriaValue);
+
+    criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
+    criteriaValue.OrOperator = true;
+    criteria.push(criteriaValue);
+
+    return criteria;
+  }
+}
+
+interface IMusicSearchTerms {
+  artists: string[];
+  albums: string[];
+  titles: string[];
+  wildcard: string;
 }
