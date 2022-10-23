@@ -1,15 +1,26 @@
 import { Injectable } from '@angular/core';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { createHash } from 'crypto';
-import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity } from '../../entities';
-import { DbEntity } from '../../entities/base.entity';
-import { AlbumArtistViewEntity } from '../../entities/album-artist-view.entity';
-import { ArtistViewEntity } from '../../entities/artist-view.entity';
-import { AlbumViewEntity } from '../../entities/album-view.entity';
 import { IClassificationModel } from '../../models/classification-model.interface';
-import { ClassificationViewEntity } from '../../entities/classification-view.entity';
-import { SongViewEntity } from '../../entities/song-view.entity';
+import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import {
+  ArtistEntity,
+  AlbumEntity,
+  ClassificationEntity,
+  SongEntity,
+  ArtistViewEntity,
+  AlbumViewEntity,
+  AlbumArtistViewEntity,
+  SongViewEntity,
+  ClassificationViewEntity,
+  DbEntity
+} from '../../entities';
 
+/**
+ * Wrapper for the typeorm library that connects to the Sqlite database.
+ * Typeorm uses https://www.npmjs.com/package/reflect-metadata to get metadata from its entities.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -17,7 +28,7 @@ export class DatabaseService {
 
   public dataSource: DataSource;
 
-  constructor() {
+  constructor(private utilities: UtilityService) {
     const options: DataSourceOptions = {
       type: 'sqlite',
       database: 'solo-player.db',
@@ -98,9 +109,9 @@ export class DatabaseService {
     return this.dataSource.manager.find(AlbumArtistViewEntity);
   }
 
-  public async getArtistView(): Promise<ArtistViewEntity[]> {
-    return this.dataSource.manager.find(ArtistViewEntity);
-  }
+  // public async getArtistView(): Promise<ArtistViewEntity[]> {
+  //   return this.dataSource.manager.find(ArtistViewEntity);
+  // }
 
   public async getAlbumView(): Promise<AlbumViewEntity[]> {
     return this.dataSource.manager.find(AlbumViewEntity);
@@ -115,6 +126,77 @@ export class DatabaseService {
       .orderBy('classification.classificationType', 'ASC')
       .addOrderBy('classification.name', 'ASC')
       .getMany();
+  }
+
+  public async getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: ICriteriaValueBaseModel[]): Promise<T[]> {
+    const entityTempName = 'getListEntity';
+    const queryBuilder = this.dataSource.getRepository(entity).createQueryBuilder(entityTempName);
+    return this.applyCriteria(queryBuilder, entityTempName, criteria).getMany();
+  }
+
+  private applyCriteria<T>(
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
+  ): SelectQueryBuilder<T> {
+    if (!criteria || !criteria.length) {
+      return queryBuilder;
+    }
+
+    // Build where clause
+    let hasWhere = false;
+    const whereCriteria = criteria.filter(criteriaItem => criteriaItem.Operator !== CriteriaOperator.None);
+    whereCriteria.forEach(criteriaItem => {
+      const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${criteriaItem.ColumnName}`;
+      const parameter = {};
+      parameter[criteriaItem.ColumnName] = criteriaItem.ColumnValue;
+      if (hasWhere) {
+        queryBuilder = queryBuilder.andWhere(where, parameter);
+      }
+      else {
+        queryBuilder = queryBuilder.where(where, parameter);
+        hasWhere = true;
+      }
+    });
+
+    // Order by
+    let hasOrderBy = false;
+    const orderByCriteria = criteria.filter(criteriaItem => criteriaItem.SortSequence > 0);
+    this.utilities.sort(orderByCriteria, 'SortSequence').forEach(orderByItem => {
+      const column = `${entityName}.${orderByItem.ColumnName}`;
+      const order = orderByItem.SortDirection === CriteriaSortDirection.Ascending ? 'ASC' : 'DESC';
+      if (hasOrderBy) {
+        queryBuilder = queryBuilder.addOrderBy(column, order);
+      }
+      else {
+        queryBuilder = queryBuilder.orderBy(column, order);
+        hasOrderBy = true;
+      }
+    });
+    return queryBuilder;
+  }
+
+  private getOperatorText(operator: CriteriaOperator): string {
+    switch (operator) {
+      case CriteriaOperator.None:
+        return null;
+      case CriteriaOperator.Equals:
+        return '=';
+      case CriteriaOperator.NotEquals:
+        return '<>';
+      case CriteriaOperator.GreaterThan:
+        return '>';
+      case CriteriaOperator.GreaterThanOrEqualTo:
+        return '>=';
+      case CriteriaOperator.LessThan:
+        return '<';
+      case CriteriaOperator.LessThanOrEqualTo:
+        return '<=';
+      case CriteriaOperator.Like:
+        return 'LIKE';
+      case CriteriaOperator.IsNull:
+        return 'IS NULL';
+      case CriteriaOperator.IsNotNull:
+        return 'IS NOT NULL';
+    }
   }
 
   public async getGenreView(): Promise<ClassificationViewEntity[]> {

@@ -7,7 +7,7 @@ export interface ICriteriaBaseModel {
 
 export interface ICriteriaValueBaseModel {
     ColumnName: string;
-    ColumnValue: string;
+    ColumnValue: any;
     Operator: CriteriaOperator;
     OrOperator: boolean;
     SortDirection: CriteriaSortDirection;
