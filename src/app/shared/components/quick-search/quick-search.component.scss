@@ -2,7 +2,6 @@
 
 :host {
     width: 100%;
-    padding: 3px;
 }
 .quick-search-container {
     display: flex;
@@ -12,7 +11,7 @@
     position: absolute;
     opacity: 0.5;
     right: 94px;
-    top: 5px;
+    top: 10px;
     color: $sp-color-on-background-high;
     width: 24px;
     text-align: center;
@@ -21,6 +20,10 @@
 
 input {
     height: 34px;
+    border-radius: 0.25rem;
+    border: 1px solid $sp-color-on-background-low;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .btn {

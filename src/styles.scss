@@ -9,6 +9,7 @@
 body {
     /* height: 100%; /* This is needed so child divs can expand 100% when they're empty */
     background-attachment: fixed; /* So the image background doesn't move when scrolling */
+    margin: 0; /* It looks the browser gives 8px by default */
 }
 
 // Z-INDEX ****************************************************************************************
@@ -406,6 +407,10 @@ input[type="text"], input[type="search"], textarea {
 
 .sp-no-outline {
     outline: 0;
+}
+
+.sp-border-collapse {
+    border-collapse: collapse;
 }
 
 .sp-center {
