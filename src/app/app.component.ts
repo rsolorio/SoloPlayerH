@@ -95,7 +95,8 @@ export class AppComponent implements OnInit {
       }
       else if (action instanceof NavigationEnd) {
         const navEnd = action as NavigationEnd;
-        const route = this.utilities.getUrlWithoutParams(navEnd.url);
+        const url = navEnd.urlAfterRedirects ? navEnd.urlAfterRedirects : navEnd.url;
+        const route = this.utilities.getUrlWithoutParams(url);
         this.events.broadcast<string>(CoreEvent.RouteChanged, route);
       }
     });
