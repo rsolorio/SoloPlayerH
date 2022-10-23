@@ -26,6 +26,10 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     return AppEvent.SongListUpdated;
   }
 
+  protected supportsSearchAllWildcard(): boolean {
+    return true;
+  }
+
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     return null;
   }

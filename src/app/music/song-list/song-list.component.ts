@@ -6,6 +6,7 @@ import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
+import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { SongListBroadcastService } from './song-list-broadcast.service';
@@ -71,12 +72,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   public onInitialized(): void {
     this.loadingService.show();
-    const pagination: IPaginationModel<ISongModel> = {
-      items: [],
-      criteria: null,
-      name: null
-    };
-    this.broadcastService.getAndBroadcast(pagination).subscribe();
+    this.broadcastService.search(SearchWildcard.All);
   }
 
   public onItemImageSet(song: ISongModel): void {

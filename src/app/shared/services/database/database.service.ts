@@ -97,37 +97,6 @@ export class DatabaseService {
     });
   }
 
-  // public async getArtistsWithAlbums(): Promise<ArtistEntity[]> {
-  //   return this.dataSource
-  //     .getRepository(ArtistEntity)
-  //     .createQueryBuilder('artist')
-  //     .innerJoinAndSelect('artist.albums', 'album')
-  //     .getMany();
-  // }
-
-  public async getAlbumArtistView(): Promise<AlbumArtistViewEntity[]> {
-    return this.dataSource.manager.find(AlbumArtistViewEntity);
-  }
-
-  // public async getArtistView(): Promise<ArtistViewEntity[]> {
-  //   return this.dataSource.manager.find(ArtistViewEntity);
-  // }
-
-  public async getAlbumView(): Promise<AlbumViewEntity[]> {
-    return this.dataSource.manager.find(AlbumViewEntity);
-  }
-
-  public async getClassificationView(): Promise<ClassificationViewEntity[]> {
-    return this.dataSource
-      .getRepository(ClassificationViewEntity)
-      .createQueryBuilder('classification')
-      .where('classification.classificationType <> :classificationType')
-      .setParameter('classificationType', 'Genre')
-      .orderBy('classification.classificationType', 'ASC')
-      .addOrderBy('classification.name', 'ASC')
-      .getMany();
-  }
-
   public async getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: ICriteriaValueBaseModel[]): Promise<T[]> {
     const entityTempName = 'getListEntity';
     const queryBuilder = this.dataSource.getRepository(entity).createQueryBuilder(entityTempName);
@@ -197,16 +166,6 @@ export class DatabaseService {
       case CriteriaOperator.IsNotNull:
         return 'IS NOT NULL';
     }
-  }
-
-  public async getGenreView(): Promise<ClassificationViewEntity[]> {
-    return this.dataSource
-      .getRepository(ClassificationViewEntity)
-      .createQueryBuilder('classification')
-      .where('classification.classificationType = :classificationType')
-      .setParameter('classificationType', 'Genre')
-      .orderBy('classification.name', 'ASC')
-      .getMany();
   }
 
   public async getSongView(): Promise<SongViewEntity[]> {

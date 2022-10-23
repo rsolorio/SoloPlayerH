@@ -5,10 +5,8 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
-import { CriteriaOperator, CriteriaSortDirection } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
+import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
 
 @Component({
@@ -66,7 +64,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   public onSearch(searchTerm: string): void {
     this.loadingService.show();
-    console.log(searchTerm);
     this.broadcastService.search(searchTerm).subscribe();
   }
 
@@ -76,15 +73,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   public onInitialized(): void {
     this.loadingService.show();
-    const criteriaValue = new CriteriaValueBase('name', null, CriteriaOperator.None);
-    criteriaValue.SortSequence = 1;
-    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
-    const pagination: IPaginationModel<IArtistModel> = {
-      items: [],
-      criteria: [ criteriaValue ],
-      name: null
-    };
-    this.broadcastService.getAndBroadcast(pagination).subscribe();
+    this.broadcastService.search(SearchWildcard.All).subscribe();
   }
 
 }

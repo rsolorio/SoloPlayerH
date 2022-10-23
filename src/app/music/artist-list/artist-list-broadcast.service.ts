@@ -30,6 +30,10 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
     return AppEvent.ArtistListUpdated;
   }
 
+  protected supportsSearchAllWildcard(): boolean {
+    return true;
+  }
+
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
     const criteria: ICriteriaValueBaseModel[] = [];

@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { AlbumViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
-import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
+import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
+import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
@@ -26,11 +28,27 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
     return AppEvent.AlbumListUpdated;
   }
 
+  protected supportsSearchAllWildcard(): boolean {
+    return true;
+  }
+
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    return null;
+    const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
+    const criteria: ICriteriaValueBaseModel[] = [];
+
+    let criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
+    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
+    criteriaValue.SortSequence = 1;
+    criteria.push(criteriaValue);
+
+    criteriaValue = new CriteriaValueBase('songCount', 0, CriteriaOperator.GreaterThan);
+    criteria.push(criteriaValue);
+
+    // TODO: sort by LastSongAddDate
+    return criteria;
   }
 
   protected getItems(listModel: IPaginationModel<IAlbumModel>): Observable<IAlbumModel[]> {
-    return from(this.db.getAlbumView());
+    return from(this.db.getList(AlbumViewEntity, listModel.criteria));
   }
 }

@@ -6,7 +6,7 @@ import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
+import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 
 @Component({
@@ -27,6 +27,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoutes.Genres);
+    this.broadcastService.isGenreList = this.isGenreList;
   }
 
   ngOnInit(): void {
@@ -62,7 +63,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   public onSearch(searchTerm: string): void {
-    console.log(searchTerm);
+    this.loadingService.show();
+    this.broadcastService.search(searchTerm).subscribe();
   }
 
   public onFavoriteClick(): void {}
@@ -71,19 +73,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   public onInitialized(): void {
     this.loadingService.show();
-    const pagination: IPaginationModel<IClassificationModel> = {
-      items: [],
-      criteria: null,
-      name: null
-    };
-    if (this.isGenreList) {
-      // TODO: filter by genre
-      this.broadcastService.getAndBroadcastGenres(pagination).subscribe();
-    }
-    else {
-      // TODO: filter by anything except filter
-      this.broadcastService.getAndBroadcast(pagination).subscribe();
-    }
+    this.broadcastService.search(SearchWildcard.All).subscribe();
   }
 
 }
