@@ -8,6 +8,7 @@ import { ArtistEntity } from './artist.entity';
     .innerJoin('artist.songs', 'song')
     .select('artist.id', 'id')
     .addSelect('artist.name', 'name')
+    .addSelect('artist.artistSort', 'artistSort')
     .addSelect('COUNT(artist.id)', 'songCount')
     .groupBy('artist.id')
 })
@@ -18,6 +19,8 @@ export class ArtistViewEntity implements IArtistModel {
   name: string;
   @ViewColumn()
   songCount: number;
+  @ViewColumn()
+  artistSort: string;
 
   artistType: string;
   country: string;

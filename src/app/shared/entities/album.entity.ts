@@ -8,12 +8,12 @@ import { SongEntity } from './song.entity';
 export class AlbumEntity extends DbEntity implements IAlbumModel {
   @Column()
   albumType: string;
-
   @Column()
   releaseYear: number;
-
   @Column()
   favorite: boolean;
+  @Column()
+  albumSort: string;
 
   @ManyToOne(type => ArtistEntity, artist => artist.albums)
   @JoinColumn({ name: 'primaryArtistId'})

@@ -127,12 +127,20 @@ export class ScanService {
     else if (audioInfo.metadata.common.artists && audioInfo.metadata.common.artists.length) {
       artist.name = audioInfo.metadata.common.artists[0];
     }
+
+    if (audioInfo.metadata.common.albumartistsort) {
+      artist.artistSort = audioInfo.metadata.common.albumartistsort;
+    }
+    else {
+      artist.artistSort = artist.name;
+    }
     artist.favorite = false;
 
-    const artistType = this.metadataService.getId3v24Tag<string>('ARTISTTYPE', audioInfo.metadata, true);
+    const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
+    const artistType = this.metadataService.getTag<string>('ARTISTTYPE', id3v2Tags, true);
     artist.artistType = artistType ? artistType : this.unknownValue;
 
-    const country = this.metadataService.getId3v24Tag<string>('COUNTRY', audioInfo.metadata, true);
+    const country = this.metadataService.getTag<string>('COUNTRY', id3v2Tags, true);
     artist.country = country ? country : this.unknownValue;
 
     this.db.hashArtist(artist);
@@ -157,7 +165,15 @@ export class ScanService {
       }
     }
 
-    const albumType = this.metadataService.getId3v24Tag<string>('ALBUMTYPE', audioInfo.metadata, true);
+    if (audioInfo.metadata.common.albumsort) {
+      album.albumSort = audioInfo.metadata.common.albumsort;
+    }
+    else {
+      album.albumSort = album.name;
+    }
+
+    const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
+    const albumType = this.metadataService.getTag<string>('ALBUMTYPE', id3v2Tags, true);
     album.albumType = albumType ? albumType : this.unknownValue;
 
     album.favorite = false;
@@ -170,7 +186,8 @@ export class ScanService {
     const song = new SongEntity();
     song.filePath = audioInfo.fileInfo.path;
 
-    const id = this.metadataService.getId3v24Tag<IIdentifierTag>('UFID', audioInfo.metadata);
+    const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
+    const id = this.metadataService.getTag<IIdentifierTag>('UFID', id3v2Tags);
     if (id) {
       song.externalId = id.identifier.toString();
     }
@@ -196,45 +213,52 @@ export class ScanService {
     }
 
     song.addDate = audioInfo.fileInfo.addDate;
-    const addDate = this.metadataService.getId3v24Tag<string>('TDAT', audioInfo.metadata, true);
+    const addDate = this.metadataService.getTag<string>('TDAT', id3v2Tags, true);
     if (addDate) {
       song.addDate = new Date(addDate);
     }
 
     song.changeDate = audioInfo.fileInfo.changeDate;
-    const changeDate = this.metadataService.getId3v24Tag<string>('CHANGEDATE', audioInfo.metadata, true);
+    const changeDate = this.metadataService.getTag<string>('CHANGEDATE', id3v2Tags, true);
     if (changeDate) {
       song.changeDate = new Date(changeDate);
     }
 
     song.language = this.unknownValue;
-    const language = this.metadataService.getId3v24Tag<string>('TLAN', audioInfo.metadata, true);
+    const language = this.metadataService.getTag<string>('TLAN', id3v2Tags, true);
     if (language) {
       song.language = language;
     }
 
     song.mood = this.unknownValue;
-    const mood = this.metadataService.getId3v24Tag<string>('TMOO', audioInfo.metadata, true);
+    const mood = this.metadataService.getTag<string>('TMOO', id3v2Tags, true);
     if (mood) {
       song.mood = mood;
     }
 
     song.playCount = 0;
-    const playCount = this.metadataService.getId3v24Tag<string>('PLAYCOUNT', audioInfo.metadata, true);
+    const playCount = this.metadataService.getTag<string>('PLAYCOUNT', id3v2Tags, true);
     if (playCount) {
       song.playCount = parseInt(playCount, 10);
     }
 
     song.rating = 0;
-    const rating = this.metadataService.getId3v24Tag<string>('RATING', audioInfo.metadata, true);
+    const rating = this.metadataService.getTag<string>('RATING', id3v2Tags, true);
     if (rating) {
       song.rating = parseInt(rating, 10);
     }
 
     // TODO: get lyrics from text file
-    const lyrics = this.metadataService.getId3v24Tag<IMemoTag>('USLT', audioInfo.metadata);
+    const lyrics = this.metadataService.getTag<IMemoTag>('USLT', id3v2Tags);
     if (lyrics) {
       song.lyrics = lyrics.text;
+    }
+
+    if (audioInfo.metadata.common.titlesort) {
+      song.titleSort = audioInfo.metadata.common.titlesort;
+    }
+    else {
+      song.titleSort = song.name;
     }
 
     song.seconds = audioInfo.metadata.format.duration ? audioInfo.metadata.format.duration : 0;
@@ -254,14 +278,28 @@ export class ScanService {
     const artists: ArtistEntity[] = [];
 
     if (audioInfo.metadata.common.artists && audioInfo.metadata.common.artists.length) {
+      // Try to find multiple artist sorts as well
+      const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
+      const artistSorts = this.metadataService.getTags<string>('TSOP', id3v2Tags);
+      let artistIndex = 0;
       for (const artistName of audioInfo.metadata.common.artists) {
         const artist = new ArtistEntity();
         artist.name = artistName;
         artist.favorite = false;
         artist.artistType = this.unknownValue;
         artist.country = this.unknownValue;
+        // Sort
+        if (artistSorts && artistSorts.length > artistIndex) {
+          // assuming sorts come in the same order as artists
+          artist.artistSort = artistSorts[artistIndex];
+        }
+        else {
+          artist.artistSort = artist.name;
+        }
+
         this.db.hashArtist(artist);
         artists.push(artist);
+        artistIndex++;
       }
     }
 

@@ -3,7 +3,7 @@ import { IArtistModel } from '../models/artist-model.interface';
 
 @ViewEntity({
   expression: `
-  SELECT artist.id, artist.name, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount
+  SELECT artist.id, artist.name, artist.artistSort, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount
   FROM artist INNER JOIN (
     SELECT album.id, album.primaryArtistId, album.name, album.releaseYear, COUNT(song.id) AS songCount
     FROM album INNER JOIN song ON album.id = song.primaryAlbumId
@@ -21,6 +21,8 @@ export class AlbumArtistViewEntity implements IArtistModel {
   albumCount: number;
   @ViewColumn()
   songCount: number;
+  @ViewColumn()
+  artistSort: string;
 
   artistType: string;
   country: string;

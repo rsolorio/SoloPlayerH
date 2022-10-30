@@ -5,10 +5,7 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
-import { CriteriaOperator, CriteriaSortDirection } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { AlbumListBroadcastService } from './album-list-broadcast.service';
 

@@ -33,8 +33,11 @@ export class SettingsViewComponent implements OnInit {
   }
 
   onTest(): void {
-    this.fileService.getFilesAsync('J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna').subscribe(fileInfo => {
+    // const directoryPath = 'J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna';
+    const directoryPath = 'E:\\Music\\English\\R&B\\Amaarae';
+    this.fileService.getFilesAsync(directoryPath).subscribe(fileInfo => {
       this.metadataService.getMetadata(fileInfo).then(audioInfo => {
+        console.log(audioInfo.metadata);
         console.log(audioInfo.metadata.common.picture[0]);
       });
     });

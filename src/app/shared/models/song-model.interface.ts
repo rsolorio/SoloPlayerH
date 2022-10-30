@@ -7,6 +7,7 @@ export interface ISongModel extends IListModel {
   favorite: boolean;
   albumName: string;
   artistName: string;
+  titleSort: string;
   trackNumber: number;
   mediaNumber: number;
 }

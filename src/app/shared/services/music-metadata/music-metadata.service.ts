@@ -82,9 +82,8 @@ export class MusicMetadataService {
     return metadata.native['ID3v2.4'];
   }
 
-  public getId3v24Tag<T>(tagId: string, metadata: IAudioMetadata, isUserDefined?: boolean): T {
+  public getTag<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T {
     let result = null;
-    const tags = this.getId3v24Tags(metadata);
     if (tags && tags.length) {
       const actualTagId = isUserDefined ? 'TXXX:' + tagId.toUpperCase() : tagId.toUpperCase();
       for (const tag of tags) {
@@ -97,6 +96,24 @@ export class MusicMetadataService {
       }
     }
     return result as T;
+  }
+
+  public getTags<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T[] {
+    const result: T[] = [];
+
+    if (tags && tags.length) {
+      const actualTagId = isUserDefined ? 'TXXX:' + tagId.toUpperCase() : tagId.toUpperCase();
+      for (const tag of tags) {
+        if (tag.id.toUpperCase() === actualTagId) {
+          const value = tag.value as T;
+          if (value !== null) {
+            result.push(value);
+          }
+        }
+      }
+    }
+
+    return result;
   }
 
   public getId3v24Identifier(metadata: IAudioMetadata): string {

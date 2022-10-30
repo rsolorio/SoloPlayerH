@@ -9,6 +9,7 @@ import { AlbumEntity } from './album.entity';
     .innerJoin('album.songs', 'song')
     .select('album.id', 'id')
     .addSelect('album.name', 'name')
+    .addSelect('album.albumSort', 'albumSort')
     .addSelect('album.releaseYear', 'releaseYear')
     .addSelect('artist.name', 'artistName')
     .addSelect('COUNT(album.id)', 'songCount')
@@ -25,6 +26,8 @@ export class AlbumViewEntity implements IAlbumModel {
   releaseYear: number;
   @ViewColumn()
   artistName: string;
+  @ViewColumn()
+  albumSort: string;
 
   albumType: string;
   favorite: boolean;

@@ -10,6 +10,7 @@ import { SongEntity } from './song.entity';
     .select('song.id', 'id')
     .addSelect('song.name', 'name')
     .addSelect('song.filePath', 'filePath')
+    .addSelect('song.titleSort', 'titleSort')
     .addSelect('song.playCount', 'playCount')
     .addSelect('song.releaseYear', 'releaseYear')
     .addSelect('song.trackNumber', 'trackNumber')
@@ -36,6 +37,8 @@ export class SongViewEntity implements ISongModel {
   albumName: string;
   @ViewColumn()
   artistName: string;
+  @ViewColumn()
+  titleSort: string;
 
   favorite: boolean;
   imageSrc: string;

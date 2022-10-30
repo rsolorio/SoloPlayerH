@@ -15,6 +15,9 @@ export class ArtistEntity extends DbEntity implements IArtistModel {
   @Column()
   favorite: boolean;
 
+  @Column()
+  artistSort: string;
+
   @OneToMany(type => AlbumEntity, album => album.primaryArtist )
   albums: Relation<AlbumEntity[]>;
 
