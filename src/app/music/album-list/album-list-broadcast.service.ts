@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AlbumViewEntity } from 'src/app/shared/entities';
+import { AlbumViewEntity, AlbumClassificationViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
+import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
@@ -49,6 +49,9 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
   }
 
   protected getItems(listModel: IPaginationModel<IAlbumModel>): Observable<IAlbumModel[]> {
+    if (hasCriteria('classificationId', listModel.criteria)) {
+      return from(this.db.getList(AlbumClassificationViewEntity, listModel.criteria));
+    }
     return from(this.db.getList(AlbumViewEntity, listModel.criteria));
   }
 }

@@ -5,7 +5,7 @@
 (initialized)="onInitialized()"
 (searchFired)="onSearch($event)"
 (favoriteClick)="onFavoriteClick()"
-(itemContentClick)="onItemContentClick()">
+(itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <span *ngIf="isGenreList" class="sp-text-medium sp-no-select">{{item.name}}</span>
     <span *ngIf="!isGenreList" class="sp-text-medium sp-no-select">{{item.classificationType}}: {{item.name}}</span>

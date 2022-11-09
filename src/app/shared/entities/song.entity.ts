@@ -7,6 +7,8 @@ import { ClassificationEntity } from './classification.entity';
 
 @Entity({name: 'song'})
 export class SongEntity extends DbEntity implements ISongModel {
+  @Column()
+  titleSort: string;
   @Column({ unique: true })
   filePath: string;
   @Column({ nullable: true })
@@ -53,8 +55,6 @@ export class SongEntity extends DbEntity implements ISongModel {
   fullyParsed: boolean;
   @Column()
   favorite: boolean;
-  @Column()
-  titleSort: string;
 
   @ManyToOne(type => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})

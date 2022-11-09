@@ -14,8 +14,12 @@ import {
   AlbumArtistViewEntity,
   SongViewEntity,
   ClassificationViewEntity,
-  DbEntity
+  DbEntity,
+  ArtistClassificationViewEntity,
+  AlbumClassificationViewEntity,
+  SongArtistViewEntity
 } from '../../entities';
+import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -41,7 +45,11 @@ export class DatabaseService {
         AlbumArtistViewEntity,
         AlbumViewEntity,
         ClassificationViewEntity,
-        SongViewEntity
+        SongViewEntity,
+        ArtistClassificationViewEntity,
+        AlbumClassificationViewEntity,
+        SongArtistViewEntity,
+        SongClassificationViewEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -198,6 +206,11 @@ export class DatabaseService {
       .getMany();
   }
 
+  /**
+   * OBSOLETE: Use SongViewEntity instead.
+   * @param artistId 
+   * @returns 
+   */
   public async getSongsFromAlbumArtist(artistId: string): Promise<SongEntity[]> {
     return this.dataSource
       .getRepository(SongEntity)

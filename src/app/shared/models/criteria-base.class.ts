@@ -48,3 +48,15 @@ export class CriteriaValueBase implements ICriteriaValueBaseModel {
         }
     }
 }
+
+export function hasCriteria(columnName: string, criteria: ICriteriaValueBaseModel[]): boolean {
+    if (criteria && criteria.length) {
+        const items = criteria.filter(item => item.ColumnName === columnName);
+        for (const criteriaItem of items) {
+            if (criteriaItem.Operator !== CriteriaOperator.None) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

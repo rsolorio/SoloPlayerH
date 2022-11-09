@@ -9,3 +9,7 @@ export * from './classification.entity';
 export * from './classification-view.entity';
 export * from './song.entity';
 export * from './song-view.entity';
+export * from './artist-classification-view.entity';
+export * from './album-classification-view.entity';
+export * from './song-artist-view.entity';
+export * from './song-classification-view.entity';

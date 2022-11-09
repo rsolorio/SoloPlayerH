@@ -5,9 +5,12 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
+import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
+import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 
 @Component({
@@ -24,7 +27,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private broadcastService: SongListBroadcastService,
     private utility: UtilityService,
     private metadataService: MusicMetadataService,
-    private loadingService: LoadingViewStateService
+    private loadingService: LoadingViewStateService,
+    private breadcrumbsService: MusicBreadcrumbsStateService
   ) {
     super();
   }
@@ -68,11 +72,37 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   public onFavoriteClick(): void {}
 
-  public onItemContentClick(): void {}
+  public onItemContentClick(song: ISongModel): void {
+    // Play
+  }
 
-  public onInitialized(): void {
+  public onListInitialized(): void {
+    const breadcrumbs = this.breadcrumbsService.getState();
+    if (breadcrumbs.length) {
+      this.loadSongs(breadcrumbs);
+    }
+    else {
+      this.loadAllSongs();
+    }
+  }
+
+  private loadAllSongs(): void {
     this.loadingService.show();
     this.broadcastService.search(SearchWildcard.All).subscribe();
+  }
+
+  private loadSongs(breadcrumbs: IMusicBreadcrumbModel[]): void {
+    this.loadingService.show();
+    const listModel: IPaginationModel<ISongModel> = {
+      items: [],
+      criteria: []
+    };
+    for (const breadcrumb of breadcrumbs) {
+      for (const criteriaItem of breadcrumb.criteriaList) {
+        listModel.criteria.push(criteriaItem);
+      }
+    }
+    this.broadcastService.getAndBroadcast(listModel).subscribe();
   }
 
   public onItemImageSet(song: ISongModel): void {

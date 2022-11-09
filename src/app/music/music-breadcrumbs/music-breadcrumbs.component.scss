@@ -1,0 +1,15 @@
+@import "../../../styles-variables";
+
+:host {
+  width: 100%;
+}
+
+.sp-breadcrumbs {
+  overflow-x: scroll;
+  display: flex;
+  flex-wrap: nowrap;
+  padding-top: 8px;
+  font-family: $sp-font-family-regular;
+  margin-left: 5px;
+  margin-right: 5px;
+}

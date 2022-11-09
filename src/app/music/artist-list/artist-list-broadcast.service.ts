@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AlbumArtistViewEntity } from 'src/app/shared/entities';
-import { ArtistViewEntity } from 'src/app/shared/entities/artist-view.entity';
+import { AlbumArtistViewEntity, ArtistClassificationViewEntity, ArtistViewEntity } from 'src/app/shared/entities';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
+import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
@@ -51,6 +50,9 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
 
   protected getItems(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
     if (this.isAlbumArtist) {
+      if (hasCriteria('classificationId', listModel.criteria)) {
+        return from(this.db.getList(ArtistClassificationViewEntity, listModel.criteria));
+      }
       return from(this.db.getList(AlbumArtistViewEntity, listModel.criteria));
     }
     return from(this.db.getList(ArtistViewEntity, listModel.criteria));

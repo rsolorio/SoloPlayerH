@@ -2,10 +2,10 @@
 [listUpdatedEvent]="appEvent.AlbumListUpdated"
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"
-(initialized)="onInitialized()"
+(initialized)="onListInitialized()"
 (searchFired)="onSearch($event)"
 (favoriteClick)="onFavoriteClick()"
-(itemContentClick)="onItemContentClick()">
+(itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <span class="sp-text-medium sp-no-select">{{item.name}}</span>
     <span *ngIf="item.releaseYear > 0" class="sp-text-medium sp-no-select"> ({{item.releaseYear}})</span>

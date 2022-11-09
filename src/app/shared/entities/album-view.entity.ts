@@ -2,12 +2,16 @@ import { ViewColumn, ViewEntity } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
 import { AlbumEntity } from './album.entity';
 
+/**
+ * Fields: id, primaryArtistId, name, albumSort, releaseYear, artistName, songCount
+ */
 @ViewEntity({
   expression: ds => ds
     .createQueryBuilder(AlbumEntity, 'album')
     .innerJoin('album.primaryArtist', 'artist')
     .innerJoin('album.songs', 'song')
     .select('album.id', 'id')
+    .addSelect('artist.id', 'primaryArtistId')
     .addSelect('album.name', 'name')
     .addSelect('album.albumSort', 'albumSort')
     .addSelect('album.releaseYear', 'releaseYear')
@@ -28,6 +32,8 @@ export class AlbumViewEntity implements IAlbumModel {
   artistName: string;
   @ViewColumn()
   albumSort: string;
+  @ViewColumn()
+  primaryArtistId: string;
 
   albumType: string;
   favorite: boolean;

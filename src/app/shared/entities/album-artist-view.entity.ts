@@ -1,6 +1,9 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
 
+/**
+ * Fields: id, name, artistSort, albumCount, songCount
+ */
 @ViewEntity({
   expression: `
   SELECT artist.id, artist.name, artist.artistSort, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount

@@ -5,8 +5,12 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
+import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
+import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
+import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 
 @Component({
@@ -23,7 +27,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   constructor(
     private broadcastService: ClassificationListBroadcastService,
     private utility: UtilityService,
-    private loadingService: LoadingViewStateService
+    private loadingService: LoadingViewStateService,
+    private breadcrumbsService: MusicBreadcrumbsStateService
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoutes.Genres);
@@ -69,7 +74,22 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   public onFavoriteClick(): void {}
 
-  public onItemContentClick(): void {}
+  public onItemContentClick(classification: IClassificationModel): void {
+    this.onClassificationClick(classification);
+  }
+
+  private onClassificationClick(classification: IClassificationModel): void {
+    // Load album artists
+    // Add a new breadcrumb so the artist list can pick it up
+    const criteriaItem = new CriteriaValueBase('classificationId', classification.id, CriteriaOperator.Equals);
+    this.breadcrumbsService.add({
+      caption: classification.name,
+      criteriaList: [ criteriaItem ],
+      source: BreadcrumbSource.Classification
+    });
+    // Now move to the album list
+    this.utility.navigate(AppRoutes.AlbumArtists);
+  }
 
   public onInitialized(): void {
     this.loadingService.show();

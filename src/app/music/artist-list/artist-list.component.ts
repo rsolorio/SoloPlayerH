@@ -5,8 +5,13 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
+import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
+import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { BreadcrumbSource, IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
+import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
+import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
 
 @Component({
@@ -23,7 +28,8 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   constructor(
     private broadcastService: ArtistListBroadcastService,
     private utility: UtilityService,
-    private loadingService: LoadingViewStateService
+    private loadingService: LoadingViewStateService,
+    private breadcrumbsService: MusicBreadcrumbsStateService
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoutes.AlbumArtists);
@@ -69,11 +75,69 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   public onFavoriteClick(): void {}
 
-  public onItemContentClick(): void {}
+  public onItemContentClick(artist: IArtistModel): void {
+    this.onArtistClick(artist);
+  }
 
-  public onInitialized(): void {
+  private onArtistClick(artist: IArtistModel): void {
+    if (this.isAlbumArtist) {
+      this.showAlbums(artist);
+    }
+    else {
+      this.showSongs(artist);
+    }
+  }
+
+  private showAlbums(artist: IArtistModel): void {
+    // Add a new breadcrumb so the album list can pick it up
+    const criteriaItem = new CriteriaValueBase('primaryArtistId', artist.id, CriteriaOperator.Equals);
+    this.breadcrumbsService.add({
+      caption: artist.name,
+      criteriaList: [ criteriaItem ],
+      source: BreadcrumbSource.AlbumArtist
+    });
+    // Now move to the album list
+    this.utility.navigate(AppRoutes.Albums);
+  }
+
+  private showSongs(artist: IArtistModel): void {
+    // Add a new breadcrumb so the song list can pick it up
+    const criteriaItem = new CriteriaValueBase('artistId', artist.id, CriteriaOperator.Equals);
+    this.breadcrumbsService.add({
+      caption: artist.name,
+      criteriaList: [ criteriaItem ],
+      source: BreadcrumbSource.Artist
+    });
+    // Now move to the album list
+    this.utility.navigate(AppRoutes.Songs);
+  }
+
+  public onListInitialized(): void {
+    const breadcrumbs = this.breadcrumbsService.getState();
+    if (breadcrumbs.length) {
+      this.loadArtists(breadcrumbs);
+    }
+    else {
+      this.loadAllArtists();
+    }
+  }
+
+  private loadAllArtists(): void {
     this.loadingService.show();
     this.broadcastService.search(SearchWildcard.All).subscribe();
   }
 
+  private loadArtists(breadcrumbs: IMusicBreadcrumbModel[]): void {
+    this.loadingService.show();
+    const listModel: IPaginationModel<IArtistModel> = {
+      items: [],
+      criteria: []
+    };
+    for (const breadcrumb of breadcrumbs) {
+      for (const criteriaItem of breadcrumb.criteriaList) {
+        listModel.criteria.push(criteriaItem);
+      }
+    }
+    this.broadcastService.getAndBroadcast(listModel).subscribe();
+  }
 }

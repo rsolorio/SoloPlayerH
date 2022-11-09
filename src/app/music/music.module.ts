@@ -9,6 +9,7 @@ import { SharedModule } from '../shared/shared.module';
 import { AlbumListComponent } from './album-list/album-list.component';
 import { ClassificationListComponent } from './classification-list/classification-list.component';
 import { SongListComponent } from './song-list/song-list.component';
+import { MusicBreadcrumbsComponent } from './music-breadcrumbs/music-breadcrumbs.component';
 
 
 
@@ -17,7 +18,8 @@ import { SongListComponent } from './song-list/song-list.component';
     ArtistListComponent,
     AlbumListComponent,
     ClassificationListComponent,
-    SongListComponent
+    SongListComponent,
+    MusicBreadcrumbsComponent
   ],
   imports: [
     CommonModule,

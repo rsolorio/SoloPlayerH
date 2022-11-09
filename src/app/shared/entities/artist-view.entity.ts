@@ -2,6 +2,9 @@ import { ViewColumn, ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
 import { ArtistEntity } from './artist.entity';
 
+/**
+ * Fields: id, name, artistSort, songCount
+ */
 @ViewEntity({
   expression: ds => ds
     .createQueryBuilder(ArtistEntity, 'artist')

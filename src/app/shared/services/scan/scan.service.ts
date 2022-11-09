@@ -213,7 +213,7 @@ export class ScanService {
     }
 
     song.addDate = audioInfo.fileInfo.addDate;
-    const addDate = this.metadataService.getTag<string>('TDAT', id3v2Tags, true);
+    const addDate = this.metadataService.getTag<string>('ADDDATE', id3v2Tags, true);
     if (addDate) {
       song.addDate = new Date(addDate);
     }
@@ -249,9 +249,9 @@ export class ScanService {
     }
 
     // TODO: get lyrics from text file
-    const lyrics = this.metadataService.getTag<IMemoTag>('USLT', id3v2Tags);
-    if (lyrics) {
-      song.lyrics = lyrics.text;
+    const lyrics = audioInfo.metadata.common.lyrics;
+    if (lyrics && lyrics.length) {
+      song.lyrics = lyrics[0];
     }
 
     if (audioInfo.metadata.common.titlesort) {
