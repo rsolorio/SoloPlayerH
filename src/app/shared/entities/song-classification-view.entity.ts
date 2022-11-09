@@ -16,6 +16,7 @@ import { ISongModel } from '../models/song-model.interface';
   INNER JOIN artist
   ON album.primaryArtistId = artist.id
   INNER JOIN songClassification
+  ON song.id = songClassification.songId
 `
 })
 export class SongClassificationViewEntity implements ISongModel {

@@ -116,7 +116,7 @@ This is a hybrid app built with Electron/Angular/Sqlite.
   - Samples per second in the audio
   - Set during the scan process
 - vbr
-  - Flag that indicate if it has a variable bitrate
+  - Flag that indicates if it has a variable bitrate
   - Set during the scan process
 - replayGain
   - Loudness of the audio

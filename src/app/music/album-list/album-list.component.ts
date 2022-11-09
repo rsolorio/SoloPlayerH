@@ -49,7 +49,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-web mdi',
       action: param => {
         const albumModel = param as IAlbumModel;
-        this.utility.googleSearch(albumModel.name);
+        this.utility.googleSearch(`${albumModel.artistName} ${albumModel.name}`);
       }
     });
 
@@ -61,6 +61,22 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         if (album) {
           this.utility.navigateWithRouteParams(AppRoutes.Albums, [album.id]);
         }
+      }
+    });
+
+    this.itemMenuList.push({
+      isSeparator: true,
+      caption: null
+    });
+
+    this.itemMenuList.push({
+      caption: 'Songs',
+      icon: 'mdi-music-note mdi',
+      action: param => {
+        const album = param as IAlbumModel;
+          if (album) {
+            this.showSongs(album);
+          }
       }
     });
   }
@@ -77,7 +93,10 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private onAlbumClick(album: IAlbumModel): void {
-    // Load songs
+    this.showSongs(album);
+  }
+
+  private addBreadcrumb(album: IAlbumModel): void {
     // TODO: if there's no artist breadcrumb, add the name of the artist as part of the caption
     const criteriaItem = new CriteriaValueBase('primaryAlbumId', album.id, CriteriaOperator.Equals);
     this.breadcrumbsService.add({
@@ -85,7 +104,10 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       criteriaList: [ criteriaItem ],
       source: BreadcrumbSource.Album
     });
-    // Now move to the album list
+  }
+
+  private showSongs(album: IAlbumModel): void {
+    this.addBreadcrumb(album);
     this.utility.navigate(AppRoutes.Songs);
   }
 

@@ -66,6 +66,35 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         }
       }
     });
+
+    this.itemMenuList.push({
+      isSeparator: true,
+      caption: null
+    });
+
+    if (this.isAlbumArtist) {
+      this.itemMenuList.push({
+        caption: 'Albums',
+        icon: 'mdi-album mdi',
+        action: param => {
+          const artist = param as IArtistModel;
+          if (artist) {
+            this.showAlbums(artist);
+          }
+        }
+      });
+    }
+
+    this.itemMenuList.push({
+      caption: 'Songs',
+      icon: 'mdi-music-note mdi',
+      action: param => {
+        const artist = param as IArtistModel;
+          if (artist) {
+            this.showSongs(artist);
+          }
+      }
+    });
   }
 
   public onSearch(searchTerm: string): void {
@@ -89,27 +118,23 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   private showAlbums(artist: IArtistModel): void {
-    // Add a new breadcrumb so the album list can pick it up
-    const criteriaItem = new CriteriaValueBase('primaryArtistId', artist.id, CriteriaOperator.Equals);
-    this.breadcrumbsService.add({
-      caption: artist.name,
-      criteriaList: [ criteriaItem ],
-      source: BreadcrumbSource.AlbumArtist
-    });
-    // Now move to the album list
+    this.addBreadcrumb(artist);
     this.utility.navigate(AppRoutes.Albums);
   }
 
   private showSongs(artist: IArtistModel): void {
-    // Add a new breadcrumb so the song list can pick it up
-    const criteriaItem = new CriteriaValueBase('artistId', artist.id, CriteriaOperator.Equals);
+    this.addBreadcrumb(artist);
+    this.utility.navigate(AppRoutes.Songs);
+  }
+
+  private addBreadcrumb(artist: IArtistModel): void {
+    const columnName = this.isAlbumArtist ? 'primaryArtistId' : 'artistId';
+    const criteriaItem = new CriteriaValueBase(columnName, artist.id, CriteriaOperator.Equals);
     this.breadcrumbsService.add({
       caption: artist.name,
       criteriaList: [ criteriaItem ],
-      source: BreadcrumbSource.Artist
+      source: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
     });
-    // Now move to the album list
-    this.utility.navigate(AppRoutes.Songs);
   }
 
   public onListInitialized(): void {

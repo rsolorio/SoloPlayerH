@@ -47,21 +47,39 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     });
 
     this.itemMenuList.push({
-      caption: 'Search...',
-      icon: 'mdi-web mdi',
+      isSeparator: true,
+      caption: null
+    });
+
+    this.itemMenuList.push({
+      caption: 'Album Artists',
+      icon: 'mdi-account-music mdi',
       action: param => {
-        const classificationModel = param as IClassificationModel;
-        this.utility.googleSearch(classificationModel.name);
+        const classification = param as IClassificationModel;
+        if (classification) {
+          this.showAlbumArtists(classification);
+        }
       }
     });
 
     this.itemMenuList.push({
-      caption: 'Properties...',
-      icon: 'mdi-square-edit-outline mdi',
+      caption: 'Albums',
+      icon: 'mdi-album mdi',
       action: param => {
         const classification = param as IClassificationModel;
         if (classification) {
-          this.utility.navigateWithRouteParams(AppRoutes.Classifications, [classification.id]);
+          this.showAlbums(classification);
+        }
+      }
+    });
+
+    this.itemMenuList.push({
+      caption: 'Songs',
+      icon: 'mdi-music-note mdi',
+      action: param => {
+        const classification = param as IClassificationModel;
+        if (classification) {
+          this.showSongs(classification);
         }
       }
     });
@@ -79,16 +97,31 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   private onClassificationClick(classification: IClassificationModel): void {
-    // Load album artists
-    // Add a new breadcrumb so the artist list can pick it up
+    this.showAlbumArtists(classification);
+  }
+
+  private addBreadcrumb(classification: IClassificationModel): void {
     const criteriaItem = new CriteriaValueBase('classificationId', classification.id, CriteriaOperator.Equals);
     this.breadcrumbsService.add({
       caption: classification.name,
       criteriaList: [ criteriaItem ],
       source: BreadcrumbSource.Classification
     });
-    // Now move to the album list
+  }
+
+  private showAlbumArtists(classification: IClassificationModel): void {
+    this.addBreadcrumb(classification);
     this.utility.navigate(AppRoutes.AlbumArtists);
+  }
+
+  private showAlbums(classification: IClassificationModel): void {
+    this.addBreadcrumb(classification);
+    this.utility.navigate(AppRoutes.Albums);
+  }
+
+  private showSongs(classification: IClassificationModel): void {
+    this.addBreadcrumb(classification);
+    this.utility.navigate(AppRoutes.Songs);
   }
 
   public onInitialized(): void {
