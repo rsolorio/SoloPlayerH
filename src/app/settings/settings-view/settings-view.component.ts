@@ -34,11 +34,10 @@ export class SettingsViewComponent implements OnInit {
 
   onTest(): void {
     // const directoryPath = 'J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna';
-    const directoryPath = 'E:\\Music\\English\\R&B\\Amaarae';
+    const directoryPath = 'E:\\Temp\\English';
     this.fileService.getFilesAsync(directoryPath).subscribe(fileInfo => {
       this.metadataService.getMetadata(fileInfo).then(audioInfo => {
         console.log(audioInfo.metadata);
-        console.log(audioInfo.metadata.common.picture[0]);
       });
     });
   }

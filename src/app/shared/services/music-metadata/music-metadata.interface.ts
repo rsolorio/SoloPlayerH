@@ -28,3 +28,9 @@ export interface IAudioInfo {
   fullyParsed: boolean;
   error?: any;
 }
+
+export interface IPopularimeterTag {
+  counter: number;
+  email: string;
+  rating: number;
+}

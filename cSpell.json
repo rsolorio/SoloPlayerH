@@ -11,6 +11,7 @@
     "Dismissable",
     "primeng",
     "Colibri",
-    "typeorm"
+    "typeorm",
+    "Popularimeter"
   ]
 }

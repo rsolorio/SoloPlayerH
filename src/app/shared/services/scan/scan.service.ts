@@ -4,7 +4,7 @@ import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity } from '../
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
-import { IAudioInfo, IIdentifierTag, IMemoTag } from '../music-metadata/music-metadata.interface';
+import { IAudioInfo, IIdentifierTag, IPopularimeterTag } from '../music-metadata/music-metadata.interface';
 import { MusicMetadataService } from '../music-metadata/music-metadata.service';
 
 @Injectable({
@@ -137,10 +137,10 @@ export class ScanService {
     artist.favorite = false;
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
-    const artistType = this.metadataService.getTag<string>('ARTISTTYPE', id3v2Tags, true);
+    const artistType = this.metadataService.getTag<string>('ArtistType', id3v2Tags, true);
     artist.artistType = artistType ? artistType : this.unknownValue;
 
-    const country = this.metadataService.getTag<string>('COUNTRY', id3v2Tags, true);
+    const country = this.metadataService.getTag<string>('Country', id3v2Tags, true);
     artist.country = country ? country : this.unknownValue;
 
     this.db.hashArtist(artist);
@@ -173,7 +173,7 @@ export class ScanService {
     }
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
-    const albumType = this.metadataService.getTag<string>('ALBUMTYPE', id3v2Tags, true);
+    const albumType = this.metadataService.getTag<string>('AlbumType', id3v2Tags, true);
     album.albumType = albumType ? albumType : this.unknownValue;
 
     album.favorite = false;
@@ -213,13 +213,13 @@ export class ScanService {
     }
 
     song.addDate = audioInfo.fileInfo.addDate;
-    const addDate = this.metadataService.getTag<string>('ADDDATE', id3v2Tags, true);
+    const addDate = this.metadataService.getTag<string>('AddDate', id3v2Tags, true);
     if (addDate) {
       song.addDate = new Date(addDate);
     }
 
     song.changeDate = audioInfo.fileInfo.changeDate;
-    const changeDate = this.metadataService.getTag<string>('CHANGEDATE', id3v2Tags, true);
+    const changeDate = this.metadataService.getTag<string>('ChangeDate', id3v2Tags, true);
     if (changeDate) {
       song.changeDate = new Date(changeDate);
     }
@@ -236,16 +236,31 @@ export class ScanService {
       song.mood = mood;
     }
 
-    song.playCount = 0;
-    const playCount = this.metadataService.getTag<string>('PLAYCOUNT', id3v2Tags, true);
-    if (playCount) {
-      song.playCount = parseInt(playCount, 10);
+    // Rating
+    song.rating = 0;
+    if (audioInfo.metadata.common.rating && audioInfo.metadata.common.rating.length) {
+      // TODO: find rating by source
+
+      // Default: get first item and convert
+      const ratingItem = audioInfo.metadata.common.rating[0];
+      if (ratingItem.rating) {
+        // Since this is a 0-1 value, convert to a 0-5 value
+        song.rating = Math.round(ratingItem.rating * 5);
+      }
     }
 
-    song.rating = 0;
-    const rating = this.metadataService.getTag<string>('RATING', id3v2Tags, true);
-    if (rating) {
-      song.rating = parseInt(rating, 10);
+    // Play Count (PCNT)
+    song.playCount = 0;
+    const playCount = this.metadataService.getTag<number>('PCNT', id3v2Tags, true);
+    if (playCount) {
+      song.playCount = playCount;
+    }
+    // Play Count (Popularimeter)
+    if (!song.playCount) {
+      const popularimeter = this.metadataService.getTag<IPopularimeterTag>('POPM', id3v2Tags, true);
+      if (popularimeter && popularimeter.counter) {
+        song.playCount = popularimeter.counter;
+      }
     }
 
     // TODO: get lyrics from text file
@@ -260,6 +275,9 @@ export class ScanService {
     else {
       song.titleSort = song.name;
     }
+
+    // Subtitle
+    //const subTitle = this.metadataService.getTag<string>('TIT3', id3v2Tags, true);
 
     song.seconds = audioInfo.metadata.format.duration ? audioInfo.metadata.format.duration : 0;
     song.duration = this.utilities.secondsToMinutes(song.seconds);
