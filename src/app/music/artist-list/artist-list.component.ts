@@ -102,8 +102,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     this.broadcastService.search(searchTerm).subscribe();
   }
 
-  public onFavoriteClick(): void {}
-
   public onItemContentClick(artist: IArtistModel): void {
     this.onArtistClick(artist);
   }

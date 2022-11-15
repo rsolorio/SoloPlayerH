@@ -90,8 +90,6 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     this.broadcastService.search(searchTerm).subscribe();
   }
 
-  public onFavoriteClick(): void {}
-
   public onItemContentClick(classification: IClassificationModel): void {
     this.onClassificationClick(classification);
   }

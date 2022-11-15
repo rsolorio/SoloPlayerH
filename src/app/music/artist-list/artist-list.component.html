@@ -4,7 +4,6 @@
 [infoTemplate]="infoTemplate"
 (initialized)="onListInitialized()"
 (searchFired)="onSearch($event)"
-(favoriteClick)="onFavoriteClick()"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <span class="sp-text-medium sp-no-select">{{item.name}}</span>

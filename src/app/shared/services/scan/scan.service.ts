@@ -211,6 +211,9 @@ export class ScanService {
     if (audioInfo.metadata.common.comment && audioInfo.metadata.common.comment.length) {
       song.comment = audioInfo.metadata.common.comment[0];
     }
+    if (audioInfo.metadata.common.grouping) {
+      song.grouping = audioInfo.metadata.common.grouping;
+    }
 
     song.addDate = audioInfo.fileInfo.addDate;
     const addDate = this.metadataService.getTag<string>('AddDate', id3v2Tags, true);

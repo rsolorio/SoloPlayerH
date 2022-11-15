@@ -33,6 +33,8 @@ export class SongEntity extends DbEntity implements ISongModel {
   language: string;
   @Column()
   mood: string;
+  @Column({ nullable: true })
+  grouping: string;
   @Column()
   playCount: number;
   @Column()

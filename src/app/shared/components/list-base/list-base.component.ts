@@ -28,7 +28,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   };
 
   @Output() public searchFired: EventEmitter<string> = new EventEmitter();
-  @Output() public favoriteClick: EventEmitter<Event> = new EventEmitter();
   @Output() public itemImageSet: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemImageClick: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListModel> = new EventEmitter();
@@ -82,23 +81,22 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   protected initializeNavBar(): void {
-    const navbarModel: INavbarModel = {
-      show: true,
-      menuList: this.model.navbarMenuList,
-      componentType: QuickSearchComponent,
-      leftIcon: {
-        icon: 'mdi-heart-outline mdi',
-        action: () => {
-          this.favoriteClick.emit();
-        }
-      },
-      rightIcon: {
-        icon: 'mdi-filter-multiple-outline mdi',
-        action: () => {}
-      }
-    };
+    // const navbarModel: INavbarModel = {
+    //   show: true,
+    //   menuList: this.model.navbarMenuList,
+    //   componentType: QuickSearchComponent,
+    //   leftIcon: {
+    //     icon: 'mdi-heart-outline mdi',
+    //     action: () => {
+    //     }
+    //   },
+    //   rightIcon: {
+    //     icon: 'mdi-filter-multiple-outline mdi',
+    //     action: () => {}
+    //   }
+    // };
 
-    this.navbarService.set(navbarModel);
+    // this.navbarService.set(navbarModel);
   }
 
   protected broadcastItems(): void {}

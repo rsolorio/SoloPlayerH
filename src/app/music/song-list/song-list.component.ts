@@ -70,8 +70,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.broadcastService.search(searchTerm).subscribe();
   }
 
-  public onFavoriteClick(): void {}
-
   public onItemContentClick(song: ISongModel): void {
     // Play
   }

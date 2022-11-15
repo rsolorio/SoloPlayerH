@@ -79,6 +79,9 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 - comment
   - song comments
   - ID3 mapping: comment
+- grouping
+  - If the song belongs to a larger category
+  - ID3 mapping: TIT1 (content group description)
 - addDate
   - Full timestamp describing when the song was added to the collection
   - ID3 mapping: custom AddDate tag
