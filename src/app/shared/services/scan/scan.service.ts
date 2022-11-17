@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity } from '../../entities';
+import { AppEvent } from '../../models/events.enum';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
@@ -18,39 +20,27 @@ export class ScanService {
     private fileService: FileService,
     private metadataService: MusicMetadataService,
     private utilities: UtilityService,
-    private db: DatabaseService) { }
+    private db: DatabaseService,
+    private events: EventsService) { }
 
-  scan(selectedFolderPath: string): Promise<void> {
+  scan(selectedFolderPath: string): Promise<IFileInfo[]> {
     return new Promise(resolve => {
       const files: IFileInfo[] = [];
       this.fileService.getFilesAsync(selectedFolderPath).subscribe({
         next: fileInfo => {
           if (fileInfo.name.toLowerCase().endsWith('.mp3')) {
             files.push(fileInfo);
-            console.log(fileInfo.path);
+            this.events.broadcast(AppEvent.ScanFile, fileInfo);
           }
         },
-        complete: async () => {
-          console.log(files.length);
-          const failures: IAudioInfo[] = [];
-          let fileCount = 0;
-          for (const filePath of files) {
-            fileCount++;
-            console.log(`${fileCount} of ${files.length}`);
-            const audioInfo = await this.processFile(filePath);
-            if (audioInfo && audioInfo.error) {
-              failures.push(audioInfo);
-            }
-          }
-          console.log(failures);
-          console.log('Done Done');
-          resolve();
+        complete: () => {
+          resolve(files);
         }
       });
     });
   }
 
-  private async processFile(fileInfo: IFileInfo): Promise<IAudioInfo> {
+  public async processFile(fileInfo: IFileInfo): Promise<IAudioInfo> {
     const info = await this.metadataService.getMetadataAsync(fileInfo, true);
     if (!info || info.error) {
       return info;

@@ -14,5 +14,7 @@ export enum AppEvent {
   PlaylistCurrentTrackChanged = 'PLAYLIST_CURRENT_TRACK_CHANGED',
   FullPlayerPaletteLoaded = 'FULL_PLAYER_PALETTE_LOADED',
   // Breadcrumb
-  MusicBreadcrumbAdded = 'MUSIC_BREADCRUMB_ADDED'
+  MusicBreadcrumbAdded = 'MUSIC_BREADCRUMB_ADDED',
+  // Scan
+  ScanFile = 'SCAN_FILE'
 }
