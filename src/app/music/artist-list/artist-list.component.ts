@@ -46,7 +46,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.title = 'Artists';
+    navbar.title = this.isAlbumArtist ? 'Album Artists' : 'Artists';
     navbar.onSearch = searchTerm => {
       this.loadingService.show();
       this.broadcastService.search(searchTerm).subscribe();
@@ -54,7 +54,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     navbar.show = true;
     navbar.mode = NavbarDisplayMode.Title;
     navbar.leftIcon = {
-      icon: 'mdi-account-music mdi'
+      icon: this.isAlbumArtist ? 'mdi-account-badge mdi' : 'mdi-account-music mdi'
     };
   }
 
