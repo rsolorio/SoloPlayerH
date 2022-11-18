@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SideBarStateService } from '../side-bar/side-bar-state.service';
 import { Position } from '../../globals.enum';
-import { INavbarModel } from './nav-bar-model.interface';
+import { INavbarModel, NavbarDisplayMode } from './nav-bar-model.interface';
 import { NavBarStateService } from './nav-bar-state.service';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
@@ -16,6 +16,8 @@ import { CoreEvent } from '../../services/events/events.enum';
 })
 export class NavBarComponent implements OnInit {
   @ViewChild('spNavbarContentHost', { read: ViewContainerRef, static: true }) private navbarContentViewContainer: ViewContainerRef;
+  @ViewChild('spNavbarSearchBox') private navbarSearchBox: ElementRef;
+  public NavbarDisplayMode = NavbarDisplayMode;
   public model: INavbarModel;
 
   constructor(private navbarService: NavBarStateService, private sidebarService: SideBarStateService, private events: EventsService) { }
@@ -32,6 +34,8 @@ export class NavBarComponent implements OnInit {
     this.events.onEvent(CoreEvent.WindowScrollUp).subscribe(() => {
       this.navbarService.show();
     });
+
+    this.navbarService.register(this);
   }
 
   public onHamburgerClick(): void {
@@ -47,6 +51,23 @@ export class NavBarComponent implements OnInit {
   public onRightIconClick(): void {
     if (this.model.rightIcon && this.model.rightIcon.action) {
       this.model.rightIcon.action();
+    }
+  }
+
+  public onSearchEnter(): void {
+    if (this.model.onSearch) {
+      this.model.onSearch(this.model.searchTerm);
+    }
+  }
+
+  public onSearchClearClick(): void {
+    this.model.searchTerm = '';
+    this.searchBoxFocus();
+  }
+
+  public searchBoxFocus(): void {
+    if (this.navbarSearchBox && this.navbarSearchBox.nativeElement) {
+      this.navbarSearchBox.nativeElement.focus();
     }
   }
 }

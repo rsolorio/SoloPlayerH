@@ -27,4 +27,17 @@ export interface INavbarModel {
     toastVisible?: boolean;
     /** If true, this property will not render the place holder that pushes the content of the view below the nav bar. */
     discardPlaceholder?: boolean;
+    /** Determines what should be displayed in the navbar content area. */
+    mode: NavbarDisplayMode;
+    /** Value bound to the search box of the nav bar. */
+    searchTerm?: string;
+    /** Event handler fired when the user performs a search. */
+    onSearch?: (searchTerm: string) => void;
+}
+
+export enum NavbarDisplayMode {
+    None,
+    Title,
+    Component,
+    Search
 }

@@ -1,18 +1,20 @@
 import { Injectable, ViewContainerRef, ComponentFactoryResolver, Type } from '@angular/core';
-import { INavbarModel } from './nav-bar-model.interface';
+import { INavbarModel, NavbarDisplayMode } from './nav-bar-model.interface';
 import { IMenuModel } from '../../models/menu-model.interface';
 import { IIconAction } from '../../models/core.interface';
 import { IIconMenuModel } from '../icon-menu/icon-menu-model.interface';
+import { NavBarComponent } from './nav-bar.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavBarStateService {
-
   private navbarState: INavbarModel = {
     show: true,
-    menuList: []
+    menuList: [],
+    mode: NavbarDisplayMode.None
   };
+  private navbarComponent: NavBarComponent;
   private componentInstance;
   private componentContainer: ViewContainerRef;
   /** Number of seconds the toast message will be displayed. */
@@ -71,11 +73,9 @@ export class NavBarStateService {
   }
 
   public set(navbarModel: INavbarModel): void {
-    if (navbarModel.title) {
-      this.setTitle(navbarModel.title);
-    } else {
-      this.loadComponent(navbarModel.componentType);
-    }
+    this.navbarState.mode = navbarModel.mode;
+    this.navbarState.title = navbarModel.title;
+    this.loadComponent(navbarModel.componentType);
     this.navbarState.discardPlaceholder = navbarModel.discardPlaceholder;
     this.buildMenu(navbarModel.menuList);
     this.setIcons(navbarModel.leftIcon, navbarModel.rightIcon, navbarModel.leftIconMenu, navbarModel.rightIconMenu);
@@ -97,11 +97,6 @@ export class NavBarStateService {
     this.navbarState.rightIconMenu = rightIconMenu;
   }
 
-  public setTitle(title: string): void {
-    this.navbarState.title = title;
-    this.loadComponent(null);
-  }
-
   public getComponentInstance<T>(): T {
     return this.componentInstance as T;
   }
@@ -120,5 +115,15 @@ export class NavBarStateService {
     setTimeout(() => {
       this.navbarState.toastMessage = null;
     }, 1000); // This time has to be equals or less than the time to fade out
+  }
+
+  public register(navbar: NavBarComponent): void {
+    this.navbarComponent = navbar;
+  }
+
+  public searchBoxFocus(): void {
+    if (this.navbarComponent) {
+      this.navbarComponent.searchBoxFocus();
+    }
   }
 }

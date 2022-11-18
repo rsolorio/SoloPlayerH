@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
@@ -28,13 +30,29 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private broadcastService: AlbumListBroadcastService,
     private utility: UtilityService,
     private loadingService: LoadingViewStateService,
-    private breadcrumbsService: MusicBreadcrumbsStateService
+    private breadcrumbsService: MusicBreadcrumbsStateService,
+    private navbarService: NavBarStateService
   ) {
     super();
   }
 
   ngOnInit(): void {
+    this.initializeNavbar();
     this.initializeItemMenu();
+  }
+
+  private initializeNavbar(): void {
+    const navbar = this.navbarService.getState();
+    navbar.title = 'Albums';
+    navbar.onSearch = searchTerm => {
+      this.loadingService.show();
+      this.broadcastService.search(searchTerm).subscribe();
+    };
+    navbar.show = true;
+    navbar.mode = NavbarDisplayMode.Title;
+    navbar.leftIcon = {
+      icon: 'mdi-album mdi'
+    };
   }
 
   private initializeItemMenu(): void {
@@ -79,11 +97,6 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
           }
       }
     });
-  }
-
-  public onSearch(searchTerm: string): void {
-    this.loadingService.show();
-    this.broadcastService.search(searchTerm).subscribe();
   }
 
   public onItemContentClick(album: IAlbumModel): void {

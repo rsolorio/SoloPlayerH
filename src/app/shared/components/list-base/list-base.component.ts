@@ -1,14 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { INavbarModel } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { IListModel } from '../../models/base-model.interface';
-import { AppEvent } from '../../models/events.enum';
 import { IPaginationModel } from '../../models/pagination-model.interface';
-import { QuickSearchComponent } from '../quick-search/quick-search.component';
 import { IListBaseModel } from './list-base-model.interface';
 
 @Component({
@@ -21,13 +19,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public model: IListBaseModel = {
     listUpdatedEvent: null,
     itemMenuList: [],
-    navbarMenuList: [],
     paginationModel: {
       items: []
     }
   };
 
-  @Output() public searchFired: EventEmitter<string> = new EventEmitter();
   @Output() public itemImageSet: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemImageClick: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListModel> = new EventEmitter();
@@ -49,13 +45,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     return this.model.itemMenuList;
   }
 
-  @Input() set navbarMenuList(val: IMenuModel[]) {
-    this.model.navbarMenuList = val;
-  }
-  get navbarMenuList(): IMenuModel[] {
-    return this.model.navbarMenuList;
-  }
-
   constructor(
     private events: EventsService,
     private loadingService: LoadingViewStateService,
@@ -71,32 +60,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       this.afterListUpdated();
     });
 
-    // Search
-    this.subs.sink = this.events.onEvent<string>(AppEvent.QuickSearchFired).subscribe(response => {
-      this.searchFired.emit(response);
-    });
-
+    this.initializeNavbar();
     this.initialized.emit();
-    this.initializeNavBar();
-  }
-
-  protected initializeNavBar(): void {
-    // const navbarModel: INavbarModel = {
-    //   show: true,
-    //   menuList: this.model.navbarMenuList,
-    //   componentType: QuickSearchComponent,
-    //   leftIcon: {
-    //     icon: 'mdi-heart-outline mdi',
-    //     action: () => {
-    //     }
-    //   },
-    //   rightIcon: {
-    //     icon: 'mdi-filter-multiple-outline mdi',
-    //     action: () => {}
-    //   }
-    // };
-
-    // this.navbarService.set(navbarModel);
   }
 
   protected broadcastItems(): void {}
@@ -120,5 +85,30 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private afterListUpdated(): void {
     this.loadingService.hide();
     this.navbarService.showToast(`Found: ${this.model.paginationModel.items.length} item` + (this.model.paginationModel.items.length !== 1 ? 's' : ''));
+  }
+
+  private initializeNavbar(): void {
+    // All list base components should have a search feature
+    const navbar = this.navbarService.getState();
+    navbar.rightIcon = {
+      icon: 'mdi-magnify mdi',
+      action: () => {
+        navbar.searchTerm = '';
+        if (navbar.mode === NavbarDisplayMode.Search) {
+          // TODO: save previous mode
+          navbar.mode = NavbarDisplayMode.Title;
+          navbar.rightIcon.icon = 'mdi-magnify mdi';
+          
+        }
+        else {
+          navbar.mode = NavbarDisplayMode.Search;
+          navbar.rightIcon.icon = 'mdi-magnify-remove-outline mdi';
+          // Give the search box time to render before setting focus
+          setTimeout(() => {
+            this.navbarService.searchBoxFocus();
+          });
+        }
+      }
+    };
   }
 }

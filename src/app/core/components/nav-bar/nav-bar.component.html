@@ -18,12 +18,22 @@
               <td *ngIf="model.leftIconMenu" class="sp-td-icon">
                   <sp-icon-menu [items]="model.leftIconMenu.items" [iconClass]="model.leftIconMenu.iconClass" class="sp-text-xlarge-fixed"></sp-icon-menu>
               </td>
-              <!-- Title or Dynamic content -->
+              <!-- Dynamic content -->
               <td>
-                  <span *ngIf="model.title" class="sp-font-family-regular sp-text-xlarge-fixed">{{model.title}}</span>
+                  <!-- Title -->
+                  <span *ngIf="model.mode === NavbarDisplayMode.Title && model.title" class="sp-font-family-regular sp-text-xlarge-fixed">{{model.title}}</span>
                   <!-- We need to make sure this element is rendered (as invisible) even if it is not needed. -->
-                  <div [ngClass]="{ 'sp-invisible': model.title, 'sp-flex': !model.title }" class="sp-full-width">
+                  <div
+                  class="sp-full-width"
+                  [ngClass]="{ 'sp-invisible': model.mode !== NavbarDisplayMode.Component, 'sp-flex': model.mode === NavbarDisplayMode.Component }">
                       <ng-template #spNavbarContentHost></ng-template>
+                  </div>
+                  <!-- Search -->
+                  <div *ngIf="model.mode === NavbarDisplayMode.Search" class="sp-flex">
+                    <input #spNavbarSearchBox class="sp-nav-bar-search-input" [(ngModel)]="model.searchTerm" (keyup.enter)="onSearchEnter()" type="search" placeholder="Search" />
+                    <span (click)="onSearchClearClick()" [hidden]="!model.searchTerm" class="sp-cursor-pointer sp-nav-bar-search-clear-icon">
+                      <i class="mdi-close mdi"></i>
+                    </span>
                   </div>
               </td>
               <!-- Inner right icon -->

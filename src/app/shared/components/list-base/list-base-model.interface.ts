@@ -5,7 +5,6 @@ import { IPaginationModel } from '../../models/pagination-model.interface';
 export interface IListBaseModel {
   listUpdatedEvent: string;
   itemMenuList: IMenuModel[];
-  navbarMenuList: IMenuModel[];
   paginationModel: IPaginationModel<IListModel>;
   setItemImage?: (item: IListModel) => void;
 }
