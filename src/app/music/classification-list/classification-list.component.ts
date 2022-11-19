@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
@@ -13,6 +12,7 @@ import { AppEvent } from 'src/app/shared/models/events.enum';
 import { BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
+import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 
 @Component({
@@ -41,6 +41,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   ngOnInit(): void {
     this.initializeNavbar();
     this.initializeItemMenu();
+    this.removeUnsupportedBreadcrumbs();
   }
 
   private initializeNavbar(): void {
@@ -51,10 +52,10 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       this.broadcastService.search(searchTerm).subscribe();
     };
     navbar.show = true;
-    navbar.mode = NavbarDisplayMode.Title;
     navbar.leftIcon = {
       icon: this.isGenreList ? 'mdi-tag-outline mdi' : 'mdi-tag-multiple-outline mdi'
     };
+    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? MusicBreadcrumbsComponent : null;
   }
 
   private initializeItemMenu(): void {
@@ -138,6 +139,11 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   public onInitialized(): void {
     this.loadingService.show();
     this.broadcastService.search(SearchWildcard.All).subscribe();
+  }
+
+  private removeUnsupportedBreadcrumbs(): void {
+    // Classifications/genres do not support any kind of breadcrumbs
+    this.breadcrumbsService.clear();
   }
 
 }

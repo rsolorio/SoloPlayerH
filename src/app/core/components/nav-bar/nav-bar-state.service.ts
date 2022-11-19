@@ -61,7 +61,6 @@ export class NavBarStateService {
     this.componentInstance = undefined;
     this.navbarState.componentType = componentType;
     if (componentType) {
-      this.navbarState.title = null;
       const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
       const component = this.componentContainer.createComponent(componentFactory);
       this.componentInstance = component.instance;

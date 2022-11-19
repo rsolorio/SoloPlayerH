@@ -5,7 +5,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AlbumArtistViewEntity, ArtistClassificationViewEntity, ArtistViewEntity } from 'src/app/shared/entities';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
+import { addSorting, CriteriaValueBase, hasCriteria, hasSorting } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
@@ -38,8 +38,6 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
     const criteria: ICriteriaValueBaseModel[] = [];
 
     let criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
-    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
-    criteriaValue.SortSequence = 1;
     criteria.push(criteriaValue);
 
     criteriaValue = new CriteriaValueBase('songCount', 0, CriteriaOperator.GreaterThan);
@@ -48,7 +46,14 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
     return criteria;
   }
 
+  protected addDefaultSorting(criteria: ICriteriaValueBaseModel[]): void {
+    if (!hasSorting(criteria)) {
+      addSorting('name', CriteriaSortDirection.Ascending, criteria);
+    }
+  }
+
   protected getItems(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
+    this.addDefaultSorting(listModel.criteria);
     if (this.isAlbumArtist) {
       if (hasCriteria('classificationId', listModel.criteria)) {
         return from(this.db.getList(ArtistClassificationViewEntity, listModel.criteria));

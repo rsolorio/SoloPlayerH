@@ -1,10 +1,12 @@
-<div #breadcrumbsContainer class="sp-breadcrumbs" (scroll)="onContainerScroll()">
-  <div *ngFor="let breadcrumb of model">
-    <!-- Icon -->
-    <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon"></i>
-    <!-- Caption -->
-    <span *ngIf="breadcrumb.caption">{{breadcrumb.icon}}</span>
+<div #breadcrumbsContainer class="sp-breadcrumbs sp-scrollbar-hidden" (scroll)="onContainerScroll()">
+  <div *ngFor="let breadcrumb of model;let isLast = last;" (click)="onClick(breadcrumb)" class="sp-breadcrumb">
+    <div class="sp-breadcrumb-content sp-bg-09 sp-clickable">
+      <!-- Icon -->
+      <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon"></i>
+      <!-- Caption -->
+      <span *ngIf="breadcrumb.caption">{{breadcrumb.caption}}</span>
+    </div>
     <!-- Caret -->
-    <i class="mdi-chevron-right mdi"></i>
+    <i *ngIf="!isLast" class="mdi-chevron-right mdi"></i>
   </div>
 </div>

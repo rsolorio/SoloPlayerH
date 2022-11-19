@@ -23,6 +23,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       items: []
     }
   };
+  private lastNavbarDisplayMode = NavbarDisplayMode.None;
 
   @Output() public itemImageSet: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemImageClick: EventEmitter<IListModel> = new EventEmitter();
@@ -93,14 +94,13 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     navbar.rightIcon = {
       icon: 'mdi-magnify mdi',
       action: () => {
-        navbar.searchTerm = '';
         if (navbar.mode === NavbarDisplayMode.Search) {
           // TODO: save previous mode
-          navbar.mode = NavbarDisplayMode.Title;
+          navbar.mode = this.lastNavbarDisplayMode;
           navbar.rightIcon.icon = 'mdi-magnify mdi';
-          
         }
         else {
+          this.lastNavbarDisplayMode = navbar.mode;
           navbar.mode = NavbarDisplayMode.Search;
           navbar.rightIcon.icon = 'mdi-magnify-remove-outline mdi';
           // Give the search box time to render before setting focus
@@ -110,5 +110,13 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         }
       }
     };
+
+    if (navbar.componentType) {
+      this.navbarService.loadComponent(navbar.componentType);
+      navbar.mode = NavbarDisplayMode.Component;
+    }
+    else if (navbar.title) {
+      navbar.mode = NavbarDisplayMode.Title;
+    }
   }
 }

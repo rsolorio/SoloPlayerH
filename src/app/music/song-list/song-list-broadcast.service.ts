@@ -3,8 +3,8 @@ import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { SongArtistViewEntity, SongViewEntity,SongClassificationViewEntity } from 'src/app/shared/entities';
-import { CriteriaOperator, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
+import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
+import { addSorting, CriteriaValueBase, hasCriteria, hasSorting } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
@@ -38,6 +38,7 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
   }
 
   protected getItems(listModel: IPaginationModel<ISongModel>): Observable<ISongModel[]> {
+    this.addDefaultSorting(listModel.criteria);
     if (hasCriteria('artistId', listModel.criteria)) {
       return from(this.db.getList(SongArtistViewEntity, listModel.criteria));
     }
@@ -166,31 +167,26 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
       const criteriaValue = new CriteriaValueBase('name', searchTerm, CriteriaOperator.Like);
       criteria.push(criteriaValue);
     });
-
-    // First sort by year in case there are multiple albums with the same name for the same artist
-    let sortCriteriaValue = new CriteriaValueBase('releaseYear');
-    sortCriteriaValue.Operator = CriteriaOperator.None;
-    sortCriteriaValue.SortSequence = 1;
-    criteria.push(sortCriteriaValue);
-    // Now sort by album media
-    sortCriteriaValue = new CriteriaValueBase('mediaNumber');
-    sortCriteriaValue.Operator = CriteriaOperator.None;
-    sortCriteriaValue.SortSequence = 2;
-    criteria.push(sortCriteriaValue);
-    // Then by album track
-    sortCriteriaValue = new CriteriaValueBase('trackNumber');
-    sortCriteriaValue.Operator = CriteriaOperator.None;
-    sortCriteriaValue.SortSequence = 3;
-    criteria.push(sortCriteriaValue);
-    // In case tracks don't have numbers, sort by title
-    sortCriteriaValue = new CriteriaValueBase('name');
-    sortCriteriaValue.Operator = CriteriaOperator.None;
-    sortCriteriaValue.SortSequence = 4;
-    criteria.push(sortCriteriaValue);
-
     // TODO: what to do with wildcards here?
 
     return criteria;
+  }
+
+  private addDefaultSorting(criteria: ICriteriaValueBaseModel[]): void {
+    if (!hasSorting(criteria)) {
+      if (hasCriteria('primaryArtistId', criteria) || hasCriteria('artistId', criteria) || hasCriteria('primaryAlbumId', criteria)) {
+        // First sort by year in case there are multiple albums with the same name for the same artist
+        addSorting('releaseYear', CriteriaSortDirection.Ascending, criteria);
+        // Album Name in case multiple albums in the same year
+        addSorting('albumName', CriteriaSortDirection.Ascending, criteria);
+        // Now sort by album media
+        addSorting('mediaNumber', CriteriaSortDirection.Ascending, criteria);
+        // Then by album track
+        addSorting('trackNumber', CriteriaSortDirection.Ascending, criteria);
+      }
+      // In case tracks don't have numbers, sort by title
+      addSorting('name', CriteriaSortDirection.Ascending, criteria);
+    }
   }
 
   private buildArtistAlbumTitleCriteria(searchTerm: string): ICriteriaValueBaseModel[] {

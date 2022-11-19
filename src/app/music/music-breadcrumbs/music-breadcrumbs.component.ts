@@ -18,4 +18,8 @@ export class MusicBreadcrumbsComponent implements OnInit {
   }
 
   public onContainerScroll(): void {}
+
+  public onClick(breadcrumb: IMusicBreadcrumbModel): void {
+    this.breadcrumbsService.remove(breadcrumb.sequence);
+  }
 }

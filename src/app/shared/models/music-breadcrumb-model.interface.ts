@@ -17,3 +17,10 @@ export enum BreadcrumbSource {
   Classification,
   Genre
 }
+
+export enum BreadcrumbEventType {
+  Add,
+  AddMultiple,
+  Remove,
+  RemoveMultiple
+}

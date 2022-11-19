@@ -5,7 +5,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { ICriteriaValueBaseModel } from './criteria-base-model.interface';
-import { CriteriaBase, CriteriaValueBase } from './criteria-base.class';
+import { CriteriaBase, CriteriaValueBase, hasAnyCriteria, hasCriteria } from './criteria-base.class';
 import { IPaginationModel } from './pagination-model.interface';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
@@ -103,12 +103,20 @@ implements IListBroadcastService {
   }
 
   /** Performs a search based on the specified term and broadcasts an event with the result. */
-  public search(searchTerm: string): Observable<TItemModel[]> {
-    if (!this.isSearchTermValid(searchTerm)) {
+  public search(searchTerm: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<TItemModel[]> {
+    if (!this.isSearchTermValid(searchTerm) && !hasAnyCriteria(extraCriteria)) {
       return of([]);
     }
 
-    return this.paginateAndBroadcast(this.buildCriteria(searchTerm));
+    // TODO: better logic to ensure columns are not duplicated
+    const searchCriteria = this.buildCriteria(searchTerm);
+    if (hasAnyCriteria(extraCriteria)) {
+      for (const extraCriteriaItem of extraCriteria) {
+        searchCriteria.push(extraCriteriaItem);
+      }
+    }
+
+    return this.paginateAndBroadcast(searchCriteria);
   }
 
   public searchFavorites(): Observable<TItemModel[]> {

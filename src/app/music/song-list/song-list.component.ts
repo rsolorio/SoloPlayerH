@@ -1,18 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
+import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
+import { BreadcrumbEventType, IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
+import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 
 @Component({
@@ -31,7 +32,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private metadataService: MusicMetadataService,
     private loadingService: LoadingViewStateService,
     private breadcrumbsService: MusicBreadcrumbsStateService,
-    private navbarService: NavBarStateService
+    private navbarService: NavBarStateService,
+    private events: EventsService
   ) {
     super();
   }
@@ -39,6 +41,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.initializeNavbar();
     this.initializeItemMenu();
+
+    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.MusicBreadcrumbUpdated).subscribe(eventType => {
+      if (eventType === BreadcrumbEventType.RemoveMultiple) {
+        this.loadData();
+      }
+    });
   }
 
   private initializeNavbar(): void {
@@ -46,13 +54,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
     navbar.title = 'Songs';
     navbar.onSearch = searchTerm => {
       this.loadingService.show();
-      this.broadcastService.search(searchTerm).subscribe();
+      this.broadcastService.search(searchTerm, this.breadcrumbsService.getCriteria()).subscribe();
     };
     navbar.show = true;
-    navbar.mode = NavbarDisplayMode.Title;
     navbar.leftIcon = {
       icon: 'mdi-music-note mdi'
     };
+    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? MusicBreadcrumbsComponent : null;
   }
 
   private initializeItemMenu(): void {
@@ -88,9 +96,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public onListInitialized(): void {
-    const breadcrumbs = this.breadcrumbsService.getState();
-    if (breadcrumbs.length) {
-      this.loadSongs(breadcrumbs);
+    this.loadData();
+  }
+
+  private loadData(): void {
+    if (this.breadcrumbsService.hasBreadcrumbs()) {
+      this.loadSongs();
     }
     else {
       this.loadAllSongs();
@@ -102,17 +113,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.broadcastService.search(SearchWildcard.All).subscribe();
   }
 
-  private loadSongs(breadcrumbs: IMusicBreadcrumbModel[]): void {
+  private loadSongs(): void {
     this.loadingService.show();
     const listModel: IPaginationModel<ISongModel> = {
       items: [],
-      criteria: []
+      criteria: this.breadcrumbsService.getCriteria()
     };
-    for (const breadcrumb of breadcrumbs) {
-      for (const criteriaItem of breadcrumb.criteriaList) {
-        listModel.criteria.push(criteriaItem);
-      }
-    }
     this.broadcastService.getAndBroadcast(listModel).subscribe();
   }
 
