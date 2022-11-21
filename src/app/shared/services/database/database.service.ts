@@ -17,9 +17,12 @@ import {
   DbEntity,
   ArtistClassificationViewEntity,
   AlbumClassificationViewEntity,
-  SongArtistViewEntity
+  SongArtistViewEntity,
+  PlaylistEntity,
+  PlaylistSongEntity
 } from '../../entities';
 import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
+import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -49,7 +52,10 @@ export class DatabaseService {
         ArtistClassificationViewEntity,
         AlbumClassificationViewEntity,
         SongArtistViewEntity,
-        SongClassificationViewEntity
+        SongClassificationViewEntity,
+        PlaylistEntity,
+        PlaylistSongEntity,
+        PlaylistViewEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -75,8 +81,12 @@ export class DatabaseService {
   }
 
   public hashClassification(classification: ClassificationEntity): void {
-    // Combine these fields to make album unique: ClassificationType:ClassificationName
+    // Combine these fields to make classification unique: ClassificationType:ClassificationName
     classification.id = this.hash(`${classification.classificationType}:${classification.name}`);
+  }
+
+  public hashPlaylist(playlist: PlaylistEntity): void {
+    playlist.id = this.hash(playlist.name);
   }
 
   /**

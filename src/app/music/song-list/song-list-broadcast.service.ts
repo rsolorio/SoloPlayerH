@@ -7,6 +7,7 @@ import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from
 import { addSorting, CriteriaValueBase, hasCriteria, hasSorting } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
+import { IMusicSearchTerms } from 'src/app/shared/models/music-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
@@ -207,11 +208,4 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
 
     return criteria;
   }
-}
-
-interface IMusicSearchTerms {
-  artists: string[];
-  albums: string[];
-  titles: string[];
-  wildcard: string;
 }

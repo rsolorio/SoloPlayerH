@@ -1,11 +1,12 @@
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { IStateService } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IPaginationModel } from './pagination-model.interface';
 
 /**
  * Base service class that holds and exposes a state.
  */
-export abstract class ListStateServiceBase<TItemModel> {
+export abstract class ListStateServiceBase<TItemModel> implements IStateService<IPaginationModel<TItemModel>> {
   protected state: IPaginationModel<TItemModel>;
 
   constructor(private navbar: NavBarStateService, private utilities: UtilityService) {}

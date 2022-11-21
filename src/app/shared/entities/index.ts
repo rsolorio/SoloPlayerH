@@ -13,3 +13,7 @@ export * from './artist-classification-view.entity';
 export * from './album-classification-view.entity';
 export * from './song-artist-view.entity';
 export * from './song-classification-view.entity';
+export * from './playlist.entity';
+export * from './playlist-view.entity';
+export * from './playlist-song.entity';
+export * from './playlist-song-view.entity';

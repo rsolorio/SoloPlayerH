@@ -35,9 +35,9 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     const selectedFolders = this.electron.openFolderDialog();
     if (selectedFolders && selectedFolders.length) {
       const selectedFolderPath = selectedFolders[0];
-      this.scanner.scan(selectedFolderPath).then(files => {
-        console.log(files.length);
-        this.processFiles(files).then(failures => {
+      this.scanner.scan(selectedFolderPath, '.mp3').then(mp3Files => {
+        console.log(mp3Files.length);
+        this.processAudioFiles(mp3Files).then(failures => {
           if (failures.length) {
             console.log(failures);
           }
@@ -47,13 +47,13 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     }
   }
 
-  async processFiles(files: IFileInfo[]): Promise<IAudioInfo[]> {
+  async processAudioFiles(files: IFileInfo[]): Promise<IAudioInfo[]> {
     const failures: IAudioInfo[] = [];
     let fileCount = 0;
     for (const fileInfo of files) {
       fileCount++;
       console.log(`${fileCount} of ${files.length}`);
-      const audioInfo = await this.scanner.processFile(fileInfo);
+      const audioInfo = await this.scanner.processAudioFile(fileInfo);
       if (audioInfo && audioInfo.error) {
         failures.push(audioInfo);
       }
@@ -63,11 +63,22 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
 
   onTest(): void {
     // const directoryPath = 'J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna';
-    const directoryPath = 'E:\\Temp\\English';
-    this.fileService.getFilesAsync(directoryPath).subscribe(fileInfo => {
-      this.metadataService.getMetadata(fileInfo).then(audioInfo => {
-        console.log(audioInfo.metadata);
-      });
+    // const directoryPath = 'E:\\Temp\\English';
+    // this.fileService.getFilesAsync(directoryPath).subscribe(fileInfo => {
+    //   this.metadataService.getMetadata(fileInfo).then(audioInfo => {
+    //     console.log(audioInfo.metadata);
+    //   });
+    // });
+
+    this.scanner.scan('J:\\Music\\Playlists', '.m3u').then(plsFiles => {
+      this.processPlaylistFiles(plsFiles);
     });
+  }
+
+  async processPlaylistFiles(files: IFileInfo[]): Promise<any> {
+    for (const fileInfo of files) {
+      console.log('Processing ' + fileInfo.path);
+      await this.scanner.processPlaylistFile(fileInfo);
+    }
   }
 }

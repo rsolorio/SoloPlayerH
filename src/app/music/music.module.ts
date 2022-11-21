@@ -10,6 +10,7 @@ import { AlbumListComponent } from './album-list/album-list.component';
 import { ClassificationListComponent } from './classification-list/classification-list.component';
 import { SongListComponent } from './song-list/song-list.component';
 import { MusicBreadcrumbsComponent } from './music-breadcrumbs/music-breadcrumbs.component';
+import { PlaylistListComponent } from './playlist-list/playlist-list.component';
 
 
 
@@ -19,7 +20,8 @@ import { MusicBreadcrumbsComponent } from './music-breadcrumbs/music-breadcrumbs
     AlbumListComponent,
     ClassificationListComponent,
     SongListComponent,
-    MusicBreadcrumbsComponent
+    MusicBreadcrumbsComponent,
+    PlaylistListComponent
   ],
   imports: [
     CommonModule,
