@@ -400,6 +400,10 @@ export class UtilityService {
     window.open('https://google.com/search?q=' + encodedTerm);
   }
 
+  public fileToUrl(filePath: string): string {
+    return 'file://' + filePath;
+  }
+
   /**
    * Creates a ripple effect using the specified click event.
    * @param clickEvent A reference to the click event.

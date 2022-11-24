@@ -394,6 +394,7 @@ export class ScanService {
     // Create playlist
     const playlist = new PlaylistEntity();
     playlist.name = fileInfo.name;
+    playlist.favorite = false;
     this.db.hashPlaylist(playlist);
     const playlistExists = await this.db.exists(playlist.id, PlaylistEntity);
     if (playlistExists) {
@@ -422,6 +423,7 @@ export class ScanService {
     // Create playlist
     const playlist = new PlaylistEntity();
     playlist.name = fileInfo.name;
+    playlist.favorite = false;
     this.db.hashPlaylist(playlist);
     const playlistExists = await this.db.exists(playlist.id, PlaylistEntity);
     if (playlistExists) {

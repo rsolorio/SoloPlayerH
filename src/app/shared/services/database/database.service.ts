@@ -19,7 +19,8 @@ import {
   AlbumClassificationViewEntity,
   SongArtistViewEntity,
   PlaylistEntity,
-  PlaylistSongEntity
+  PlaylistSongEntity,
+  PlaylistSongViewEntity
 } from '../../entities';
 import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
 import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
@@ -55,7 +56,8 @@ export class DatabaseService {
         SongClassificationViewEntity,
         PlaylistEntity,
         PlaylistSongEntity,
-        PlaylistViewEntity
+        PlaylistViewEntity,
+        PlaylistSongViewEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']

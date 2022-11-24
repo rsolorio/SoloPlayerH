@@ -5,4 +5,7 @@ import { DbEntity } from "./base.entity";
 export class PlaylistEntity extends DbEntity{
   @Column({ nullable: true })
   description: string;
+
+  @Column()
+  favorite: boolean;
 }

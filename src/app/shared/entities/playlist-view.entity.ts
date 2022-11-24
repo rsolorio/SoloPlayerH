@@ -26,6 +26,7 @@ export class PlaylistViewEntity implements IPlaylistModel {
   @ViewColumn()
   seconds: number;
 
+  favorite: boolean;
   canBeRendered: boolean;
   imageSrc: string;
 }
