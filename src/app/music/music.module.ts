@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArtistListComponent } from './artist-list/artist-list.component';
 import { CoreModule } from '../core/core.module';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { AlbumListComponent } from './album-list/album-list.component';
@@ -11,8 +9,6 @@ import { ClassificationListComponent } from './classification-list/classificatio
 import { SongListComponent } from './song-list/song-list.component';
 import { MusicBreadcrumbsComponent } from './music-breadcrumbs/music-breadcrumbs.component';
 import { PlaylistListComponent } from './playlist-list/playlist-list.component';
-
-
 
 @NgModule({
   declarations: [
@@ -27,10 +23,8 @@ import { PlaylistListComponent } from './playlist-list/playlist-list.component';
     CommonModule,
     CoreModule,
     FormsModule,
-    SharedModule,
-    BrowserModule,
-    BrowserAnimationsModule
+    SharedModule
   ],
-  entryComponents: [ ArtistListComponent ]
+  entryComponents: []
 })
 export class MusicModule { }

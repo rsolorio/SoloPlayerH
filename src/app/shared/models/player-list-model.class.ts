@@ -1,3 +1,4 @@
+import { DefaultImageSrc } from "src/app/core/globals.enum";
 import { IEventArgs } from "src/app/core/models/core.interface";
 import { EventsService } from "src/app/core/services/events/events.service";
 import { AppEvent } from "./events.enum";
@@ -29,7 +30,7 @@ export class PlayerListModel {
     albumName: '[Empty Album]',
     artistName: '[Empty Artist]',
     filePath: null,
-    imageSrc: null,
+    imageSrc: DefaultImageSrc.Small,
     playCount: 0,
     favorite: false,
     albumWithYear: '[Empty Artist]',

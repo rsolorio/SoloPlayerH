@@ -7,6 +7,8 @@ import { IntersectionObserverTargetDirective } from './directives/intersection-o
 import { QuickSearchComponent } from './components/quick-search/quick-search.component';
 import { FormsModule } from '@angular/forms';
 import { ListBaseComponent } from './components/list-base/list-base.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 
@@ -21,7 +23,9 @@ import { ListBaseComponent } from './components/list-base/list-base.component';
   imports: [
     CommonModule,
     CoreModule,
-    FormsModule
+    FormsModule,
+    BrowserModule,
+    BrowserAnimationsModule
   ],
   exports: [
     ListBaseComponent,

@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@an
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -70,7 +71,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public onIntersectionChange(isIntersecting: boolean, item: IListModel): void {
     item.canBeRendered = isIntersecting;
     if (isIntersecting && !item.imageSrc) {
-      item.imageSrc = '../assets/img/default-image-small.jpg';
+      item.imageSrc = DefaultImageSrc.Small;
       this.itemImageSet.emit(item);
     }
   }
