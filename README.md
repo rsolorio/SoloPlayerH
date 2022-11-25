@@ -38,7 +38,7 @@ This is a hybrid app built with Electron/Angular/Sqlite.
   - Songs
 - Songs
 - Playlists
-  - Songs
+  - Tracks
 - Filters
   - Songs
 - Settings
@@ -165,6 +165,8 @@ This is a hybrid app built with Electron/Angular/Sqlite.
 ### Playlist table
 - id
 - name
+- description
+- favorite
 
 ### PlaylistSong table
 - playlistId

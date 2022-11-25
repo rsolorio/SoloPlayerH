@@ -9,7 +9,7 @@ import { SongBaseEntity } from './song-base.entity';
  */
  @ViewEntity({
   expression: `
-  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.favorite, album.name AS albumName,
+  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.seconds, song.favorite, album.name AS albumName,
   artist.name AS artistName, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songClassification.classificationId
   FROM song
   INNER JOIN album
@@ -35,6 +35,8 @@ export class SongClassificationViewEntity extends SongBaseEntity implements ISon
   trackNumber: number;
   @ViewColumn()
   mediaNumber: number;
+  @ViewColumn()
+  seconds: number;
   @ViewColumn()
   favorite: boolean;
   @ViewColumn()

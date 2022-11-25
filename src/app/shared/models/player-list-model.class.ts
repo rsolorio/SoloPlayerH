@@ -164,13 +164,39 @@ export class PlayerListModel {
     if (songList) {
       //this.Id = trackList.Id;
       //this.Name = trackList.Name;
+      let sequence = 0;
+      this.items = [];
+      for (const song of songList) {
+        sequence++;
+        this.items.push(this.toTrack(song, sequence));
+      }
       this.setPlaylistCursor(this.emptyTrack);
-      //this.items = trackList.Children;
       this.forceReloadPlayModeItems();
     }
   }
 
   // Private Methods ****************************************************************************
+  private toTrack(song: ISongModel, sequence: number): IPlaylistSongModel {
+    return {
+      playlistId: '',
+      id: song.id,
+      name: song.name,
+      filePath: song.filePath,
+      seconds: song.seconds,
+      sequence,
+      albumName: song.albumName,
+      artistName: song.artistName,
+      playCount: song.playCount,
+      favorite: song.favorite,
+      albumWithYear: song.albumWithYear,
+      playCountText: song.playCountText,
+      imageSrc: song.imageSrc,
+      canBeRendered: false,
+      selected: false,
+      playerStatus: PlayerSongStatus.Stopped
+    };
+  }
+
   private reloadPlayModeItems() {
     if (!this.playModeItemsRefreshRequired) {
         return;

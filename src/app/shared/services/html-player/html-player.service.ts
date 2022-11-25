@@ -329,10 +329,13 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     this.events.broadcast(AppEvent.PlayerPositionChanged, { oldValue: oldPosition, newValue: this.state.elapsedSeconds });
   }
 
+  /**
+   * Replaces the audio source with a new one and then loads it.
+   * Make sure you call this method after the player is paused or stopped.
+   * @param audioSrc The source of the audio to load.
+   */
   private loadAudio(audioSrc: string) {
-    this.htmlAudio.remove();
-    this.htmlAudio = null;
-    this.htmlAudio = new Audio(audioSrc);
+    this.htmlAudio.src = audioSrc;
     try {
       this.htmlAudio.load();
       this.registerEvent(HtmlMediaEvent.Custom, 'Load success');

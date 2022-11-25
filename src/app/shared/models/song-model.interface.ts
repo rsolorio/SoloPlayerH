@@ -12,4 +12,5 @@ export interface ISongModel extends IListModel {
   mediaNumber: number;
   albumWithYear: string;
   playCountText: string;
+  seconds: number;
 }
