@@ -1,10 +1,10 @@
 import { Column, Entity, ManyToMany, Relation } from 'typeorm';
 import { IClassificationModel } from '../models/classification-model.interface';
-import { DbEntity } from './base.entity';
+import { ListEntity } from './base.entity';
 import { SongEntity } from './song.entity';
 
 @Entity({name: 'classification'})
-export class ClassificationEntity extends DbEntity implements IClassificationModel {
+export class ClassificationEntity extends ListEntity implements IClassificationModel {
   @Column()
   classificationType: string;
 
@@ -12,6 +12,4 @@ export class ClassificationEntity extends DbEntity implements IClassificationMod
   songs: Relation<SongEntity[]>;
 
   songCount: number;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

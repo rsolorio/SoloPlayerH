@@ -1,5 +1,5 @@
 export enum PlayerOverlayMode {
-  Hidden = 'org-no-height',
-  Small = 'org-player-small-height',
-  Full = 'org-player-full-height'
+  Hidden = 'sp-no-height',
+  Small = 'sp-player-small-height',
+  Full = 'sp-player-full-height'
 }

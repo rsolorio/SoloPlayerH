@@ -1,20 +1,17 @@
 import { Column, Entity, ManyToMany, OneToMany, Relation } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
 import { AlbumEntity } from './album.entity';
-import { DbEntity } from './base.entity';
+import { ListEntity } from './base.entity';
 import { SongEntity } from './song.entity';
 
 @Entity({name: 'artist'})
-export class ArtistEntity extends DbEntity implements IArtistModel {
+export class ArtistEntity extends ListEntity implements IArtistModel {
   @Column()
   artistType: string;
-
   @Column()
   country: string;
-
   @Column()
   favorite: boolean;
-
   @Column()
   artistSort: string;
 
@@ -24,9 +21,6 @@ export class ArtistEntity extends DbEntity implements IArtistModel {
   @ManyToMany(() => SongEntity, song => song.artists)
   songs: Relation<SongEntity[]>;
 
-  selected: boolean;
   albumCount: number;
   songCount: number;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

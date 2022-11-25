@@ -1,0 +1,16 @@
+#spPlayerOverlayContainer {
+    /* With a fixed position stick it to the top and sides */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* This will center a fixed element */
+    margin: auto;
+    // Combining transitions, since this cannot be done using separate classes
+    transition: background-color 1s ease-in-out, height 0.5s ease-out;
+}
+
+// This class is being used by the PlayerOverlayMode.Full
+.sp-player-full-height {
+    height: 100%;
+}

@@ -1,1 +1,7 @@
-<p>player-overlay works!</p>
+<div
+id="spPlayerOverlayContainer"
+[ngSwitch]="model.mode"
+class="sp-z-4 sp-bg-05 sp-max-width {{model.mode}}">
+  <sp-player-small *ngSwitchCase="PlayerOverlayMode.Small"></sp-player-small>
+  <sp-player-full *ngSwitchCase="PlayerOverlayMode.Full"></sp-player-full>
+</div>

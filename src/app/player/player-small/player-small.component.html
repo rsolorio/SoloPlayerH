@@ -1,0 +1,37 @@
+<div class="sp-player-small-height sp-player-shadow">
+  <table *ngIf="model.playerList" class="sp-full-width sp-full-height sp-table-support-overflow-ellipsis">
+    <tr>
+      <!-- Image -->
+      <td *ngIf="model.playerList.current?.imageSrc" class="sp-player-td-image">
+        <sp-loading-image [src]="model.playerList.current?.imageSrc" class="sp-table-loading-image"></sp-loading-image>
+      </td>
+      <!-- Info -->
+      <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">
+        <span class="sp-text-medium">{{model.playerList.current?.name}}</span>
+        <span class="sp-text-tiny sp-play-count">  {{model.playerList.current?.playCountText}}</span>
+        <br>
+        <span class="sp-text-small text-muted">{{model.playerList.current?.artistName}} | {{model.playerList.current?.albumWithYear}}</span>
+      </td>
+      <!-- Back -->
+      <td (click)="onPrevious()" class="sp-td-play-control">
+        <i class="mdi-rewind mdi sp-text-xlarge-fixed"></i>
+      </td>
+      <!-- Play/Pause -->
+      <td (click)="onPlayPause()" class="sp-td-play-control">
+          <div class="sp-play-pause sp-play-pause-button">
+            <i *ngIf="model.status !== PlayerStatus.Playing && !model.isLoading" class="mdi-play mdi sp-play-pause sp-play-pause-icon sp-text-xlarge-fixed"></i>
+            <i *ngIf="model.status !== PlayerStatus.Playing && model.isLoading" class="mdi-loading mdi mdi-spin sp-color-playing sp-play-pause sp-play-pause-icon sp-text-xlarge-fixed"></i>
+            <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-color-playing sp-play-pause sp-play-pause-icon sp-text-xlarge-fixed"></i>
+          </div>
+      </td>
+      <!-- Forward -->
+      <td (click)="onForward()" class="sp-td-play-control">
+        <i class="mdi-fast-forward mdi sp-text-xlarge-fixed"></i>
+      </td>
+      <!-- Menu -->
+      <td class="sp-td-play-control sp-text-xlarge-fixed">
+        <sp-icon-menu [items]="menuList"></sp-icon-menu>
+      </td>
+    </tr>
+  </table>
+</div>

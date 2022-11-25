@@ -25,12 +25,17 @@ export class PlayerListModel {
     id: '0',
     playlistId: '0',
     seconds: 0,
-    name: '[No Selected]',
-    albumName: '[Unknown]',
-    artistName: '[Unknown]',
+    name: '[Empty Song]',
+    albumName: '[Empty Album]',
+    artistName: '[Empty Artist]',
     filePath: null,
     imageSrc: null,
+    playCount: 0,
+    favorite: false,
+    albumWithYear: '[Empty Artist]',
+    playCountText: '',
     canBeRendered: false,
+    selected: false,
     playerStatus: PlayerSongStatus.Empty
   };
 
@@ -127,6 +132,11 @@ export class PlayerListModel {
     return this.getTrack(song) !== null;
   }
 
+  /**
+   * Tries to find the song (by id) in the current list of tracks.
+   * @param song The song to find.
+   * @returns A track model.
+   */
   public getTrack(song: ISongModel): IPlaylistSongModel {
     return this.getTrackById(song.id);
   }

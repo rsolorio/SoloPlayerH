@@ -1,6 +1,7 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
 import { AlbumEntity } from './album.entity';
+import { ListEntity } from './base.entity';
 
 /**
  * Fields: id, primaryArtistId, name, albumSort, releaseYear, artistName, songCount
@@ -19,7 +20,7 @@ import { AlbumEntity } from './album.entity';
     .addSelect('COUNT(album.id)', 'songCount')
     .groupBy('album.id')
 })
-export class AlbumViewEntity implements IAlbumModel {
+export class AlbumViewEntity extends ListEntity implements IAlbumModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -37,6 +38,4 @@ export class AlbumViewEntity implements IAlbumModel {
 
   albumType: string;
   favorite: boolean;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

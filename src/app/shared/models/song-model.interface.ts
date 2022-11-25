@@ -10,4 +10,6 @@ export interface ISongModel extends IListModel {
   titleSort: string;
   trackNumber: number;
   mediaNumber: number;
+  albumWithYear: string;
+  playCountText: string;
 }

@@ -1,5 +1,6 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { ISongModel } from '../models/song-model.interface';
+import { SongBaseEntity } from './song-base.entity';
 
 /**
  * This view combines the song entity with the songArtist entity.
@@ -8,7 +9,7 @@ import { ISongModel } from '../models/song-model.interface';
  */
  @ViewEntity({
   expression: `
-  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, album.name AS albumName,
+  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.favorite, album.name AS albumName,
   artist.name AS artistName, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songClassification.classificationId
   FROM song
   INNER JOIN album
@@ -19,7 +20,7 @@ import { ISongModel } from '../models/song-model.interface';
   ON song.id = songClassification.songId
 `
 })
-export class SongClassificationViewEntity implements ISongModel {
+export class SongClassificationViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -35,6 +36,8 @@ export class SongClassificationViewEntity implements ISongModel {
   @ViewColumn()
   mediaNumber: number;
   @ViewColumn()
+  favorite: boolean;
+  @ViewColumn()
   albumName: string;
   @ViewColumn()
   artistName: string;
@@ -46,8 +49,4 @@ export class SongClassificationViewEntity implements ISongModel {
   primaryArtistId: string;
   @ViewColumn()
   classificationId: string;
-
-  favorite: boolean;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

@@ -1,5 +1,6 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
+import { ListEntity } from './base.entity';
 
 /**
  * This view combines the artist entity with the classification entity.
@@ -25,7 +26,7 @@ import { IArtistModel } from '../models/artist-model.interface';
   GROUP BY artist.id, artist.name, artist.artistSort, albumClassification.classificationId
 `
 })
-export class ArtistClassificationViewEntity implements IArtistModel {
+export class ArtistClassificationViewEntity extends ListEntity implements IArtistModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -42,6 +43,4 @@ export class ArtistClassificationViewEntity implements IArtistModel {
   artistType: string;
   country: string;
   favorite: boolean;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

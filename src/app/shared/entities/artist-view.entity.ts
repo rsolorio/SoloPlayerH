@@ -1,6 +1,7 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
 import { ArtistEntity } from './artist.entity';
+import { ListEntity } from './base.entity';
 
 /**
  * Fields: id, name, artistSort, songCount
@@ -15,7 +16,7 @@ import { ArtistEntity } from './artist.entity';
     .addSelect('COUNT(artist.id)', 'songCount')
     .groupBy('artist.id')
 })
-export class ArtistViewEntity implements IArtistModel {
+export class ArtistViewEntity extends ListEntity implements IArtistModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -29,6 +30,4 @@ export class ArtistViewEntity implements IArtistModel {
   country: string;
   favorite: boolean;
   albumCount: number;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

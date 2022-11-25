@@ -1,5 +1,6 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IClassificationModel } from '../models/classification-model.interface';
+import { ListEntity } from './base.entity';
 import { ClassificationEntity } from './classification.entity';
 
 @ViewEntity({
@@ -12,7 +13,7 @@ import { ClassificationEntity } from './classification.entity';
     .addSelect('COUNT(classification.id)', 'songCount')
     .groupBy('classification.id')
 })
-export class ClassificationViewEntity implements IClassificationModel {
+export class ClassificationViewEntity extends ListEntity implements IClassificationModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -21,6 +22,4 @@ export class ClassificationViewEntity implements IClassificationModel {
   songCount: number;
   @ViewColumn()
   classificationType: string;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

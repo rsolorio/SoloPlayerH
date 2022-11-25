@@ -1,14 +1,16 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { ISongModel } from '../models/song-model.interface';
+import { SongBaseEntity } from './song-base.entity';
 
 /**
  * This view combines the song entity with the songArtist entity.
  * It is intended to be used by filtering using the artistId column;
- * Fields: id, 
+ * Fields: id, name, filePath, playCount, releaseYear, trackNumber, mediaNumber, favorite, albumName, artistName, titleSort, primaryAlbumId, primaryArtistId, artistId
+ * TODO: use standard typeorm syntax to create query, example: PlaylistSongViewEntity
  */
  @ViewEntity({
   expression: `
-  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, album.name AS albumName,
+  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.favorite, album.name AS albumName,
   artist.name AS artistName, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
   FROM song
   INNER JOIN album
@@ -19,7 +21,7 @@ import { ISongModel } from '../models/song-model.interface';
   ON song.id = songArtist.songId
 `
 })
-export class SongArtistViewEntity implements ISongModel {
+export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -41,13 +43,11 @@ export class SongArtistViewEntity implements ISongModel {
   @ViewColumn()
   titleSort: string;
   @ViewColumn()
+  favorite: boolean;
+  @ViewColumn()
   primaryAlbumId: string;
   @ViewColumn()
   primaryArtistId: string;
   @ViewColumn()
   artistId: string;
-
-  favorite: boolean;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

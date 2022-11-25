@@ -1,9 +1,10 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { ISongModel } from '../models/song-model.interface';
+import { SongBaseEntity } from './song-base.entity';
 import { SongEntity } from './song.entity';
 
 /**
- * Field list: id, name, filePath, titleSort, playCount, releaseYear, trackNumber, mediaNumber, albumName, artistName, primaryAlbumId, primaryArtistId
+ * Field list: id, name, filePath, titleSort, playCount, releaseYear, trackNumber, mediaNumber, favorite, albumName, artistName, primaryAlbumId, primaryArtistId
  */
 @ViewEntity({
   expression: ds => ds
@@ -20,10 +21,11 @@ import { SongEntity } from './song.entity';
     .addSelect('song.releaseYear', 'releaseYear')
     .addSelect('song.trackNumber', 'trackNumber')
     .addSelect('song.mediaNumber', 'mediaNumber')
+    .addSelect('song.favorite', 'favorite')
     .addSelect('album.name', 'albumName')
     .addSelect('artist.name', 'artistName')
 })
-export class SongViewEntity implements ISongModel {
+export class SongViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -48,8 +50,6 @@ export class SongViewEntity implements ISongModel {
   primaryAlbumId: string;
   @ViewColumn()
   primaryArtistId: string;
-
+  @ViewColumn()
   favorite: boolean;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

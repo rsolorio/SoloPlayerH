@@ -2,11 +2,11 @@ import { Column, Entity, ManyToOne, Relation, JoinColumn, ManyToMany, JoinTable 
 import { ISongModel } from '../models/song-model.interface';
 import { AlbumEntity } from './album.entity';
 import { ArtistEntity } from './artist.entity';
-import { DbEntity } from './base.entity';
 import { ClassificationEntity } from './classification.entity';
+import { SongBaseEntity } from './song-base.entity';
 
 @Entity({name: 'song'})
-export class SongEntity extends DbEntity implements ISongModel {
+export class SongEntity extends SongBaseEntity implements ISongModel {
   @Column()
   titleSort: string;
   @Column({ unique: true })
@@ -69,9 +69,4 @@ export class SongEntity extends DbEntity implements ISongModel {
   @ManyToMany(() => ClassificationEntity, classification => classification.songs)
   @JoinTable({ name: 'songClassification' })
   classifications: Relation<ClassificationEntity[]>;
-
-  albumName: string;
-  artistName: string;
-  imageSrc: string;
-  canBeRendered: boolean;
 }

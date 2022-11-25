@@ -1,0 +1,47 @@
+@import "../../../styles-variables";
+
+.sp-player-td-image {
+    width: $sp-player-height-sm;
+}
+
+.sp-table-loading-image {
+    width: $sp-player-height-sm;
+    height: $sp-player-height-sm;
+    display: block;
+}
+
+.sp-player-td-info {
+    padding-left: 10px;
+    line-height: 1.4;
+}
+
+.sp-td-play-control {
+    width: 40px;
+    text-align: center;
+}
+
+.sp-play-count {
+    vertical-align: super;
+}
+
+.sp-player-shadow {
+    // box-shadow: [h-offset v-offset blur color]
+    box-shadow: 0px -10px 15px $sp-dim-black-high;
+}
+
+.sp-play-pause {
+    width: 38px;
+    height: 38px;
+}
+
+.sp-play-pause-button {
+    border-radius: 50%;
+    box-shadow: 0px 0px 12px $sp-color-cyan;
+    margin: 0 auto; // this will horizontally center div in the td
+}
+
+.sp-play-pause-icon {
+    vertical-align: middle;
+    text-align: center;
+    display: table-cell;
+}

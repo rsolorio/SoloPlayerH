@@ -1,12 +1,13 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IPlaylistModel } from '../models/playlist-model.interface';
+import { ListEntity } from './base.entity';
 
 /**
- * Fields: id, name, artistSort, albumCount, songCount
+ * Fields: id, name, description, favorite, songCount, seconds
  */
  @ViewEntity({
   expression: `
-  SELECT playlist.id, playlist.name, playlist.description, playlistSongCalculations.songCount, playlistSongCalculations.seconds
+  SELECT playlist.id, playlist.name, playlist.description, playlist.favorite, playlistSongCalculations.songCount, playlistSongCalculations.seconds
   FROM playlist INNER JOIN (
     SELECT playlistSong.playlistId, COUNT(playlistSong.songId) AS songCount, SUM(song.seconds) AS seconds
     FROM playlistSong INNER JOIN song ON playlistSong.songId = song.id
@@ -14,7 +15,7 @@ import { IPlaylistModel } from '../models/playlist-model.interface';
   ) AS playlistSongCalculations ON playlist.id = playlistSongCalculations.playlistId
 `
 })
-export class PlaylistViewEntity implements IPlaylistModel {
+export class PlaylistViewEntity extends ListEntity implements IPlaylistModel {
   @ViewColumn()
   id: string;
   @ViewColumn()
@@ -22,11 +23,9 @@ export class PlaylistViewEntity implements IPlaylistModel {
   @ViewColumn()
   description: string;
   @ViewColumn()
+  favorite: boolean;
+  @ViewColumn()
   songCount: number;
   @ViewColumn()
   seconds: number;
-
-  favorite: boolean;
-  canBeRendered: boolean;
-  imageSrc: string;
 }

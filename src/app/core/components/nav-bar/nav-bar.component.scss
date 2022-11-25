@@ -36,7 +36,8 @@
 }
 
 .sp-nav-bar-shadow {
-    box-shadow: 0px 10px 15px $sp-dim-black-high; // h-offset v-offset blur color
+    // box-shadow: [h-offset v-offset blur color]
+    box-shadow: 0px 10px 15px $sp-dim-black-high;
 }
 
 table {
