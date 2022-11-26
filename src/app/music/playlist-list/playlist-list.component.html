@@ -8,7 +8,7 @@
     <span class="sp-text-medium sp-no-select">{{item.name}}</span>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-      <i class="mdi-music mdi">&nbsp;</i>{{item.songCount}}&nbsp;&nbsp;<i class="mdi-timer-outline mdi">&nbsp;</i>{{item.seconds}}
+      <i class="mdi-music mdi">&nbsp;</i>{{item.songCount}}&nbsp;&nbsp;<i class="mdi-timer-outline mdi">&nbsp;</i>{{item.seconds | duration}}
     </span>
   </ng-template>
 </sp-list-base>

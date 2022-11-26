@@ -196,9 +196,13 @@ body {
     transition: transform 0.3s ease-in-out;
 }
 
-/* Applies animation to any opacity change with duration of 0.5 secs */
-.sp-ease-opacity {
+/* Applies animation to any opacity change with duration of 1 sec */
+.sp-ease-opacity-01 {
     transition: opacity 1s ease-in-out;
+}
+
+.sp-ease-opacity-03 {
+    transition: opacity 3s ease-in-out;
 }
 
 /* Applies animation to any color change with duration of 2 secs */
@@ -413,6 +417,10 @@ input[type="text"], input[type="search"], textarea {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.sp-transparent {
+    opacity: 0;
 }
 
 .sp-scrollbar-hidden {

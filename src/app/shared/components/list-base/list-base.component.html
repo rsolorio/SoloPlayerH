@@ -12,7 +12,10 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
     <ng-container *ngIf="item.canBeRendered">
       <!-- Image -->
       <td class="sp-table-image-field" (click)="onImageClick(item)">
-        <sp-loading-image [src]="item.imageSrc" class="sp-table-loading-image"></sp-loading-image>
+        <sp-transition-image
+        [defaultSrc]="DefaultImageSrc.Small"
+        [transitionSrc]="item.imageSrc"
+        class="sp-table-loading-image"></sp-transition-image>
       </td>
       <!-- Info -->
       <td class="sp-text-overflow-ellipsis" (click)="onContentClick(item)">

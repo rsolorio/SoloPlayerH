@@ -8,6 +8,7 @@ import { MusicModule } from './music/music.module';
 import { PlaylistListComponent } from './music/playlist-list/playlist-list.component';
 import { SongListComponent } from './music/song-list/song-list.component';
 import { SettingsViewComponent } from './settings/settings-view/settings-view.component';
+import { SettingsModule } from './settings/settings.module';
 
 const routes: Routes = [
   { path: 'home', component: HomeViewComponent },
@@ -25,7 +26,8 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
-    MusicModule
+    MusicModule,
+    SettingsModule
   ],
   exports: [RouterModule]
 })

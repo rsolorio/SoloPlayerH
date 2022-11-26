@@ -16,7 +16,7 @@ import { IListBaseModel } from './list-base-model.interface';
   styleUrls: ['./list-base.component.scss']
 })
 export class ListBaseComponent extends CoreComponent implements OnInit {
-
+  public DefaultImageSrc = DefaultImageSrc;
   public model: IListBaseModel = {
     listUpdatedEvent: null,
     itemMenuList: [],
@@ -26,7 +26,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
 
-  @Output() public itemImageSet: EventEmitter<IListModel> = new EventEmitter();
+  @Output() public itemRender: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemImageClick: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListModel> = new EventEmitter();
   @Output() public initialized: EventEmitter<Event> = new EventEmitter();
@@ -69,10 +69,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   protected broadcastItems(): void {}
 
   public onIntersectionChange(isIntersecting: boolean, item: IListModel): void {
-    item.canBeRendered = isIntersecting;
-    if (isIntersecting && !item.imageSrc) {
-      item.imageSrc = DefaultImageSrc.Small;
-      this.itemImageSet.emit(item);
+    if (item.canBeRendered !== isIntersecting) {
+      item.canBeRendered = isIntersecting;
+      if (item.canBeRendered) {
+        this.itemRender.emit(item);
+      }
     }
   }
 

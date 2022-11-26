@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { ListBaseComponent } from './components/list-base/list-base.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TransitionImageComponent } from './components/transition-image/transition-image.component';
 
 
 
@@ -18,7 +19,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     IntersectionObserverDirective,
     IntersectionObserverTargetDirective,
     QuickSearchComponent,
-    ListBaseComponent
+    ListBaseComponent,
+    TransitionImageComponent
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   exports: [
     ListBaseComponent,
     LoadingImageComponent,
+    TransitionImageComponent,
     IntersectionObserverDirective,
     IntersectionObserverTargetDirective
   ],

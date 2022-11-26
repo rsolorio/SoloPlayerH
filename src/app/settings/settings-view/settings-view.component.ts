@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { ElectronService } from 'src/app/core/services/electron/electron.service';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -15,7 +16,8 @@ import { ScanService } from 'src/app/shared/services/scan/scan.service';
   styleUrls: ['./settings-view.component.scss']
 })
 export class SettingsViewComponent extends CoreComponent implements OnInit {
-
+  public DefaultImageSrc = DefaultImageSrc;
+  public transitionSrc: string = null;
   constructor(
     private electron: ElectronService,
     private scanner: ScanService,
@@ -70,9 +72,11 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     //   });
     // });
 
-    this.scanner.scan('J:\\Music\\Playlists', '.m3u').then(plsFiles => {
-      this.processPlaylistFiles(plsFiles);
-    });
+    // this.scanner.scan('J:\\Music\\Playlists', '.m3u').then(plsFiles => {
+    //   this.processPlaylistFiles(plsFiles);
+    // });
+
+    this.transitionSrc = '../assets/img/front.jpg';
   }
 
   async processPlaylistFiles(files: IFileInfo[]): Promise<any> {

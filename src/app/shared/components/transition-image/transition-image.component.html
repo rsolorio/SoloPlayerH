@@ -1,0 +1,13 @@
+<div class="sp-image-container sp-full-width sp-full-height">
+  <!-- Transition Image (bottom) -->
+  <img
+  *ngIf="model.transitionImageSrc"
+  [src]="model.transitionImageSrc"
+  (load)="onTransitionImageLoad($event)"
+  class="sp-image sp-full-height sp-full-width" />
+  <!-- Default Image (top) -->
+  <img
+  [src]="model.defaultImageSrc"
+  [ngClass]="{ 'sp-transparent': model.transitionImageLoaded }"
+  class="sp-ease-opacity-03 sp-image sp-full-height sp-full-width" />
+</div>
