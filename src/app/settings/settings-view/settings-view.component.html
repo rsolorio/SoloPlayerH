@@ -1,4 +1,19 @@
-<button (click)="onScan()">Scan</button>
-<button (click)="onTest()">Test</button>
+<div class="sp-settings-container sp-font-family-regular">
+  <div class="sp-setting">
+    <h2>Statistics</h2>
+    <p>Number of tracks: 0</p>
+    <p>Total playing time: 00:00</p>
+  </div>
+  <div class="sp-setting sp-clickable" (click)="onOpenDevTools()">
+    <h2>Developer Tools</h2>
+    <p>Open Developer Tools</p>
+  </div>
+  <div class="sp-setting">
+    <h2>Test</h2>
 
-<sp-transition-image style="width: 500px; height: 500px; display: flex;" [defaultSrc]="DefaultImageSrc.Medium" [transitionSrc]="transitionSrc"></sp-transition-image>
+    <button (click)="onScan()">Scan</button>
+    <button (click)="onTest()">Test</button>
+  
+    <sp-transition-image style="width: 500px; height: 500px; display: flex;" [defaultSrc]="DefaultImageSrc.Medium" [transitionSrc]="transitionSrc"></sp-transition-image>
+  </div>
+</div>

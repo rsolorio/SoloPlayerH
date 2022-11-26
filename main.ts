@@ -19,6 +19,7 @@ function createWindow(): void {
       contextIsolation: false,
       webSecurity: false
     },
+    icon: path.join(__dirname, '/dist/SoloPlayerH/favicon.ico'),
   });
   mainWindow.maximize();
   remoteMain.enable(mainWindow.webContents);
@@ -33,14 +34,15 @@ function createWindow(): void {
   } else {
     mainWindow.loadURL(
       url.format({
-        pathname: path.join(__dirname, `/dist/SoloPlayerH/index.html`),
+        pathname: path.join(__dirname, '/dist/SoloPlayerH/index.html'),
         protocol: 'file',
         slashes: true,
       }),
     );
   }
 
-  // mainWindow.setMenuBarVisibility(false);
+  mainWindow.setMenuBarVisibility(false);
+  mainWindow.setIcon(path.join(__dirname, '/dist/SoloPlayerH/favicon.ico'))
 
   mainWindow.on('closed', () => {
     mainWindow = null;

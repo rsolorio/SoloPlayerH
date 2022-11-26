@@ -68,6 +68,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-music-note mdi'
     };
     navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? MusicBreadcrumbsComponent : null;
+
+    navbar.menuList = [
+      {
+        caption: 'Quick Filter',
+        icon: 'mdi-filter-variant mdi'
+      }
+    ];
   }
 
   private initializeItemMenu(): void {

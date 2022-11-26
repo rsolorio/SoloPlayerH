@@ -1,0 +1,18 @@
+@import "../../../styles-variables";
+
+.sp-setting {
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 0px solid $sp-color-on-background-separator;
+  border-bottom-width: 1px;
+}
+
+h2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 5px;
+}

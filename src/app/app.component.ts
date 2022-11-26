@@ -21,7 +21,8 @@ import { LogService } from './core/services/log/log.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  @HostBinding('style.background-color') public backgroundColor: string;
+  //@HostBinding('style.background-color') public backgroundColor: string;
+  @HostBinding('class') private cssClass: string = 'sp-bg';
   private lastScrollTop = 0;
 
   constructor(
@@ -39,7 +40,6 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.setAppBackground();
     this.watchRouteChange();
     this.utilities.setAppVersion('0.0.1');
   }
@@ -100,11 +100,6 @@ export class AppComponent implements OnInit {
         this.events.broadcast<string>(CoreEvent.RouteChanged, route);
       }
     });
-  }
-
-  private setAppBackground(): void {
-    // TODO: set the color using the styles
-    this.backgroundColor = '#121212';
   }
 
   private onDomContentLoaded(): void {

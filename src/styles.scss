@@ -12,37 +12,61 @@ body {
     margin: 0; /* It looks the browser gives 8px by default */
 }
 
+/* Z-Index & Backgrounds
+    Component           Z-Index     Background
+    Breadcrumb          N/A         sp-bg-09
+    Menu Item (active)  N/A         sp-bg-08
+    Menu Item (normal)  N/A         sp-bg-07
+    Sidebar             sp-z-9      sp-bg-06
+    Loading View        sp-z-8      N/A
+    Context Menu        sp-z-7      sp-bg-05
+    NavBar              sp-z-5      sp-bg-04
+    Player Overlay      sp-z-6      sp-bg-04
+    View Container      N/A         sp-bg-01
+    Body                N/A         sp-bg
+    
+*/
 // Z-INDEX ****************************************************************************************
+// The bigger the class number the bigger the z index
 .sp-z-1 {
-    z-index: 10000 !important; /* Sidebar */
+    z-index: 100 !important;
 }
 
 .sp-z-2 {
-    z-index: 9900 !important; /* Loading view */
+    z-index: 200 !important;
 }
 
 .sp-z-3 {
-    z-index: 9800 !important; /* Icon context menu */
+    z-index: 300 !important;
 }
 
 .sp-z-4 {
-    z-index: 9700 !important; /* Player overlay */
+    z-index: 400 !important;
 }
 
 .sp-z-5 {
-    z-index: 9600 !important; /* Nav bar */
+    z-index: 500 !important; /* Nav bar */
 }
 
 .sp-z-6 {
-    z-index: 9500 !important;
+    z-index: 600 !important; /* Player overlay */
 }
 
 .sp-z-7 {
-    z-index: 9400 !important;
+    z-index: 700 !important; /* Icon context menu */
+}
+
+.sp-z-8 {
+    z-index: 800 !important; /* Loading view */
+}
+
+.sp-z-9 {
+    z-index: 900 !important; /* Sidebar */
 }
 
 // BACKGROUND *************************************************************************************
 // Hack: blend the main bg color and the overlay color by using a solid gradient and an actual color
+// The bigger the class number the lighter the color
 .sp-bg {
     background-color: $sp-color-background;
     color: $sp-color-on-background-high;
@@ -79,6 +103,27 @@ body {
 .sp-bg-05 {
     background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
     background-color: $sp-color-overlay-05;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-06 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-06;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-07 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-07;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+}
+
+.sp-bg-08 {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+    background-color: $sp-color-overlay-08;
     background-blend-mode: overlay;
     color: $sp-color-on-background-high;
 }

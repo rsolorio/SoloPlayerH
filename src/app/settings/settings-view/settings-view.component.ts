@@ -85,4 +85,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       await this.scanner.processPlaylistFile(fileInfo);
     }
   }
+
+  public onOpenDevTools(): void {
+    this.electron.openDevTools();
+  }
 }

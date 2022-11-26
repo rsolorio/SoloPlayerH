@@ -4,6 +4,19 @@
     padding: 0 0 !important;
 }
 
+/*
+  Applying sp-bg-05 styles to the slide menu.
+  Applying important since these value are overridden after the code is compiled by the theme mechanism.
+*/
+.p-slidemenu.p-slidemenu-overlay {
+    background-image: linear-gradient(0, $sp-color-background, $sp-color-background) !important;
+    background-color: $sp-color-overlay-05 !important;
+    background-blend-mode: overlay;
+    color: $sp-color-on-background-high;
+    font-family: $sp-font-family-regular;
+    border: 1px solid $sp-color-on-background-low !important;
+}
+
 .p-menu-separator {
     border: 1px solid $sp-color-on-background-separator !important;
 }
