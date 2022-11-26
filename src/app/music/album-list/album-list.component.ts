@@ -192,12 +192,15 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemRender(album: IAlbumModel): void {
+    if (album.imageSrc) {
+      return;
+    }
     const criteriaValue = new CriteriaValueBase('primaryAlbumId', album.id);
     this.db.getList(SongViewEntity, [criteriaValue]).then(songList => {
       if (songList && songList.length) {
         // Get any of the songs associated with the album
         const song = songList[0];
-        this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: []}).then(audioInfo => {
+        this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] }).then(audioInfo => {
           album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
         });
       }

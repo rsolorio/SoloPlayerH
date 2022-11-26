@@ -66,8 +66,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.initialized.emit();
   }
 
-  protected broadcastItems(): void {}
-
   public onIntersectionChange(isIntersecting: boolean, item: IListModel): void {
     if (item.canBeRendered !== isIntersecting) {
       item.canBeRendered = isIntersecting;

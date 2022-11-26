@@ -4,9 +4,14 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { PlaylistSongViewEntity } from 'src/app/shared/entities';
+import { CriteriaSortDirection } from 'src/app/shared/models/criteria-base-model.interface';
+import { addSorting, CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { PlaylistListBroadcastService } from './playlist-list-broadcast.service';
 
 @Component({
@@ -23,7 +28,9 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     private broadcastService: PlaylistListBroadcastService,
     private navbarService: NavBarStateService,
     private events: EventsService,
-    private loadingService: LoadingViewStateService
+    private loadingService: LoadingViewStateService,
+    private metadataService: MusicMetadataService,
+    private db: DatabaseService
   ){
     super();
   }
@@ -83,5 +90,23 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   }
 
   private onPlaylistClick(playlist: IPlaylistModel): void {}
+
+  public onItemRender(playlist: IPlaylistModel): void {
+    if (playlist.imageSrc) {
+      return;
+    }
+    const criteriaValue = new CriteriaValueBase('playlistId', playlist.id);
+    const criteria = [criteriaValue];
+    addSorting('sequence', CriteriaSortDirection.Ascending, criteria);
+    this.db.getList(PlaylistSongViewEntity, criteria).then(trackList => {
+      if (trackList && trackList.length) {
+        // Get any of the songs associated with the album
+        const track = trackList[0];
+        this.metadataService.getMetadataAsync({ path: track.filePath, size: 0, parts: [] }).then(audioInfo => {
+          playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
+        });
+      }
+    });
+  }
 
 }

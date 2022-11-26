@@ -159,7 +159,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemRender(song: ISongModel): void {
-    this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: []}).then(audioInfo => {
+    if (song.imageSrc) {
+      return;
+    }
+    this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] }).then(audioInfo => {
       song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);
     });
   }
