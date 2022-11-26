@@ -8,6 +8,8 @@
     <span class="sp-text-medium sp-no-select">{{item.name}}</span>
     <span *ngIf="item.releaseYear > 0" class="sp-text-medium sp-no-select"> ({{item.releaseYear}})</span>
     <br>
-    <span class="sp-color-on-bg-low sp-text-small sp-no-select">{{item.artistName}} | Songs: {{item.songCount}}</span>
+    <span class="sp-color-on-bg-low sp-text-small sp-no-select">
+      <i class="mdi-account mdi">&nbsp;</i>{{item.artistName}}&nbsp;&nbsp;<i class="mdi-music mdi">&nbsp;</i>{{item.songCount}}
+    </span>
   </ng-template>
 </sp-list-base>

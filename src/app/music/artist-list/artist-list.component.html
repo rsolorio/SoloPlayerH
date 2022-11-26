@@ -7,7 +7,11 @@
   <ng-template #infoTemplate let-item="item">
     <span class="sp-text-medium sp-no-select">{{item.name}}</span>
     <br>
-    <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small sp-no-select">Albums: {{item.albumCount}} | </span>
-    <span class="sp-color-on-bg-low sp-text-small sp-no-select">Songs: {{item.songCount}}</span>
+    <span *ngIf="isAlbumArtist" class="sp-color-on-bg-low sp-text-small sp-no-select">
+      <i class="mdi-album mdi">&nbsp;</i>{{item.albumCount}}&nbsp;&nbsp;
+    </span>
+    <span class="sp-color-on-bg-low sp-text-small sp-no-select">
+      <i class="mdi-music mdi">&nbsp;</i>{{item.songCount}}
+    </span>
   </ng-template>
 </sp-list-base>

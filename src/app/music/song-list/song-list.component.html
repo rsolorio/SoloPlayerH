@@ -9,7 +9,9 @@
   <ng-template #infoTemplate let-item="item">
     <span class="sp-text-medium sp-no-select">{{item.name}}</span>
     <br>
-    <span class="sp-color-on-bg-low sp-text-small sp-no-select">{{item.artistName}} | {{item.albumName}}</span>
+    <span class="sp-color-on-bg-low sp-text-small sp-no-select">
+      <i class="mdi-account mdi">&nbsp;</i>{{item.artistName}}&nbsp;&nbsp;<i class="mdi-album mdi">&nbsp;</i>{{item.albumName}}
+    </span>
     <span *ngIf="item.releaseYear > 0" class="sp-color-on-bg-low sp-text-small sp-no-select"> ({{item.releaseYear}})</span>
   </ng-template>
 </sp-list-base>
