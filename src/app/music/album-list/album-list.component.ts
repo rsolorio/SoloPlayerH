@@ -6,7 +6,7 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AlbumViewEntity } from 'src/app/shared/entities';
+import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
@@ -14,6 +14,8 @@ import { AppEvent } from 'src/app/shared/models/events.enum';
 import { BreadcrumbEventType, BreadcrumbSource, IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { AlbumListBroadcastService } from './album-list-broadcast.service';
@@ -34,7 +36,9 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private loadingService: LoadingViewStateService,
     private breadcrumbsService: MusicBreadcrumbsStateService,
     private navbarService: NavBarStateService,
-    private events: EventsService
+    private events: EventsService,
+    private metadataService: MusicMetadataService,
+    private db: DatabaseService
   ) {
     super();
   }
@@ -185,5 +189,18 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     for (const breadcrumb of unsupportedBreadcrumbs) {
       this.breadcrumbsService.remove(breadcrumb.sequence);
     }
+  }
+
+  public onItemRender(album: IAlbumModel): void {
+    const criteriaValue = new CriteriaValueBase('primaryAlbumId', album.id);
+    this.db.getList(SongViewEntity, [criteriaValue]).then(songList => {
+      if (songList && songList.length) {
+        // Get any of the songs associated with the album
+        const song = songList[0];
+        this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: []}).then(audioInfo => {
+          album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
+        });
+      }
+    });
   }
 }
