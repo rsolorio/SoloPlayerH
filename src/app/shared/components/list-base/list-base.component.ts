@@ -8,6 +8,7 @@ import { IIconAction } from 'src/app/core/models/core.interface';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { IListModel } from '../../models/base-model.interface';
+import { AppEvent } from '../../models/events.enum';
 import { IPaginationModel } from '../../models/pagination-model.interface';
 import { IListBaseModel } from './list-base-model.interface';
 
@@ -27,6 +28,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
   private lastNavbarRightIcon: IIconAction;
+  private filterWithCriteriaIcon = 'mdi-filter-check-outline mdi';
+  private filterNoCriteriaIcon = 'mdi-filter-outline mdi';
 
   @Output() public itemRender: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemImageClick: EventEmitter<IListModel> = new EventEmitter();
@@ -64,6 +67,30 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       this.afterListUpdated();
     });
 
+    this.subs.sink = this.events.onEvent<string>(AppEvent.CriteriaApplied).subscribe(response => {
+      if (response === this.listUpdatedEvent) {
+        const navbar = this.navbarService.getState();
+        if (navbar.rightIcon && navbar.rightIcon.icon === this.filterNoCriteriaIcon) {
+          navbar.rightIcon.icon = this.filterWithCriteriaIcon;
+        }
+        else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterNoCriteriaIcon) {
+          this.lastNavbarRightIcon.icon = this.filterWithCriteriaIcon;
+        }
+      }
+    });
+
+    this.subs.sink = this.events.onEvent<string>(AppEvent.CriteriaCleared).subscribe(response => {
+      if (response === this.listUpdatedEvent) {
+        const navbar = this.navbarService.getState();
+        if (navbar.rightIcon && navbar.rightIcon.icon === this.filterWithCriteriaIcon) {
+          navbar.rightIcon.icon = this.filterNoCriteriaIcon;
+        }
+        else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterWithCriteriaIcon) {
+          this.lastNavbarRightIcon.icon = this.filterNoCriteriaIcon;
+        }
+      }
+    });
+
     this.initializeNavbar();
     this.initialized.emit();
   }
@@ -94,7 +121,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // All list base components should have a search feature
     const navbar = this.navbarService.getState();
     navbar.rightIcon = {
-      icon: 'mdi-filter-outline mdi',
+      icon:this.filterNoCriteriaIcon,
     };
 
     // By default, the clear will perform a search with no search value

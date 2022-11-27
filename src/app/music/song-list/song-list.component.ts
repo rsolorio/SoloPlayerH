@@ -156,7 +156,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private loadAllSongs(): void {
     this.loadingService.show();
-    this.broadcastService.search(SearchWildcard.All).subscribe();
+    this.broadcastService.search().subscribe();
   }
 
   private loadSongs(): void {

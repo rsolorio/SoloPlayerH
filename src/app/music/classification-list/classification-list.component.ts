@@ -138,7 +138,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   public onInitialized(): void {
     this.loadingService.show();
-    this.broadcastService.search(SearchWildcard.All).subscribe();
+    this.broadcastService.search().subscribe();
   }
 
   private removeUnsupportedBreadcrumbs(): void {

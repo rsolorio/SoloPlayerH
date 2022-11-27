@@ -8,6 +8,8 @@ export enum AppEvent {
   ClassificationListUpdated = 'CLASSIFICATION_LIST_UPDATED',
   PlaylistListUpdated = 'PLAYLIST_LIST_UPDATED',
   FilterListUpdated = 'FILTER_LIST_UPDATED',
+  CriteriaApplied = 'CRITERIA_APPLIED',
+  CriteriaCleared = 'CRITERIA_CLEARED',
   // Player
   PlayerPositionChanged = 'PLAYER_POSITION_CHANGED',
   PlayerStatusChanged = 'PLAYER_STATUS_CHANGED',

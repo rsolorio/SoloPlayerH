@@ -169,7 +169,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
 
   private loadAllAlbums(): void {
     this.loadingService.show();
-    this.broadcastService.search(SearchWildcard.All).subscribe();
+    this.broadcastService.search().subscribe();
   }
 
   private loadAlbums(): void {

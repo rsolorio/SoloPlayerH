@@ -9,6 +9,7 @@ import { CriteriaBase, CriteriaValueBase, hasAnyCriteria, hasCriteria } from './
 import { IPaginationModel } from './pagination-model.interface';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
+import { AppEvent } from './events.enum';
 
 export interface IListBroadcastService {
   search(searchTerm: string): Observable<any[]>;
@@ -25,6 +26,11 @@ implements IListBroadcastService {
 
   protected lastResult: IPaginationModel<TItemModel>;
   protected minSearchTermLength = 2;
+  /**
+   * The list of columns to be ignored when the service determines if
+   * criteria has been applied when retrieving the list of items.
+   */
+  protected ignoredColumnsInCriteria: string[] = [];
 
   constructor(private events: EventsService, private utilities: UtilityService) { }
 
@@ -103,7 +109,7 @@ implements IListBroadcastService {
   }
 
   /** Performs a search based on the specified term and broadcasts an event with the result. */
-  public search(searchTerm: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<TItemModel[]> {
+  public search(searchTerm?: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<TItemModel[]> {
     const searchCriteria = this.buildCriteria(searchTerm);
     // TODO: better logic to ensure columns are not duplicated
     if (hasAnyCriteria(extraCriteria)) {
@@ -129,6 +135,12 @@ implements IListBroadcastService {
   public broadcast(listModel: IPaginationModel<TItemModel>): void {
     this.lastResult = listModel;
     this.events.broadcast(this.getEventName(), listModel);
+    if (hasAnyCriteria(listModel.criteria, this.ignoredColumnsInCriteria)) {
+      this.events.broadcast(AppEvent.CriteriaApplied, this.getEventName());
+    }
+    else {
+      this.events.broadcast(AppEvent.CriteriaCleared, this.getEventName());
+    }
   }
 
   /** Returns the last broadcasted data.

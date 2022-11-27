@@ -22,6 +22,7 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
     private db: DatabaseService)
   {
     super(eventsService, utilityService);
+    this.ignoredColumnsInCriteria.push('songCount');
   }
 
   protected getEventName(): string {

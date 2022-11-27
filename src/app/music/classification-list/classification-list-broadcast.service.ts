@@ -23,6 +23,7 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
     private db: DatabaseService)
   {
     super(eventsService, utilityService);
+    this.ignoredColumnsInCriteria.push('classificationType');
   }
 
   protected getEventName(): string {

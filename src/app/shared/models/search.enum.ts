@@ -1,4 +1,5 @@
 export enum SearchWildcard {
   All = '*',
-  Any = '%'
+  Any = '%',
+  Empty = ''
 }

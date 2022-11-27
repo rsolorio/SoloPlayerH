@@ -82,7 +82,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
 
   private loadAllPlaylists(): void {
     this.loadingService.show();
-    this.broadcastService.search(SearchWildcard.All).subscribe();
+    this.broadcastService.search().subscribe();
   }
 
   public onItemContentClick(playlist: IPlaylistModel): void {

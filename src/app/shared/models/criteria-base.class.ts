@@ -62,8 +62,11 @@ export class CriteriaValueBase implements ICriteriaValueBaseModel {
 /**
  * Determines if the list has criteria items with CriteriaOperator different than None.
  */
-export function hasAnyCriteria(criteria: ICriteriaValueBaseModel[]): boolean {
-  return criteria && criteria.filter(item => item.Operator !== CriteriaOperator.None).length > 0;
+export function hasAnyCriteria(criteria: ICriteriaValueBaseModel[], ignoreColumns?: string[]): boolean {
+  if (!ignoreColumns) {
+    ignoreColumns = [];
+  }
+  return criteria && criteria.filter(item => item.Operator !== CriteriaOperator.None && !ignoreColumns.includes(item.ColumnName)).length > 0;
 }
 
 /**

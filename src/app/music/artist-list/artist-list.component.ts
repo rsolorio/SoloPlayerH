@@ -171,7 +171,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private loadAllArtists(): void {
     this.loadingService.show();
-    this.broadcastService.search(SearchWildcard.All).subscribe();
+    this.broadcastService.search().subscribe();
   }
 
   private loadArtists(): void {
