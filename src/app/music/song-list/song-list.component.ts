@@ -73,6 +73,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Quick Filter',
         icon: 'mdi-filter-variant mdi'
+      },
+      {
+        caption: 'Sort By',
+        icon: 'mdi-sort mdi'
       }
     ];
   }

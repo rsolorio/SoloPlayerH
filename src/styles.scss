@@ -472,12 +472,18 @@ input[type="text"], input[type="search"], textarea {
     opacity: 0;
 }
 
+/* This hides the scroll bars but still allows to scroll. */
 .sp-scrollbar-hidden {
     scrollbar-width: none; /* Firefox 64 */
     -ms-overflow-style: none; /* IE 10+ */
     &::-webkit-scrollbar { /** WebKit (Safari, Chrome) */
         display: none;
     }
+}
+
+/* This completely disables scrolling in the X axis. */
+.sp-scroll-x-disabled {
+    overflow-x: hidden;
 }
 
 @keyframes ripple {

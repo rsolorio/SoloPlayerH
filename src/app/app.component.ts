@@ -22,7 +22,7 @@ import { LogService } from './core/services/log/log.service';
 })
 export class AppComponent implements OnInit {
   //@HostBinding('style.background-color') public backgroundColor: string;
-  @HostBinding('class') private cssClass: string = 'sp-bg';
+  @HostBinding('class') private cssClass: string = 'sp-bg sp-scroll-x-disabled';
   private lastScrollTop = 0;
 
   constructor(
