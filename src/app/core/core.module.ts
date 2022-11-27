@@ -13,6 +13,7 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { SideBarMenuComponent } from './components/side-bar-menu/side-bar-menu.component';
 import { ElectronService } from './services/electron/electron.service';
+import { SideBarHostComponent } from './components/side-bar-host/side-bar-host.component';
 
 
 
@@ -24,7 +25,8 @@ import { ElectronService } from './services/electron/electron.service';
     IconMenuComponent,
     NavBarComponent,
     SideBarComponent,
-    SideBarMenuComponent
+    SideBarMenuComponent,
+    SideBarHostComponent
   ],
   imports: [
     CommonModule,
@@ -38,7 +40,8 @@ import { ElectronService } from './services/electron/electron.service';
     SideBarComponent,
     SideBarMenuComponent,
     IconMenuComponent,
-    DurationPipe
+    DurationPipe,
+    SideBarHostComponent
   ],
   providers: [ ElectronService ]
 })

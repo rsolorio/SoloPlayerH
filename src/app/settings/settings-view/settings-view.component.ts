@@ -6,9 +6,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFileInfo } from 'src/app/shared/services/file/file.interface';
-import { FileService } from 'src/app/shared/services/file/file.service';
 import { IAudioInfo } from 'src/app/shared/services/music-metadata/music-metadata.interface';
-import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
 
@@ -24,8 +22,6 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   constructor(
     private electron: ElectronService,
     private scanner: ScanService,
-    private metadataService: MusicMetadataService,
-    private fileService: FileService,
     private events: EventsService) {
       super();
     }
@@ -102,7 +98,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           {
             name: 'Test',
             dataType: 'text',
-            descriptions: ['Test action.'],
+            descriptions: ['Action for testing purposes.'],
             action: () => {
               this.onTest();
             }
@@ -200,6 +196,13 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     });
   }
 
+  private async processPlaylistFiles(files: IFileInfo[]): Promise<any> {
+    for (const fileInfo of files) {
+      console.log('Processing ' + fileInfo.path);
+      await this.scanner.processPlaylistFile(fileInfo);
+    }
+  }
+
   onTest(): void {
     // const directoryPath = 'J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna';
     // const directoryPath = 'E:\\Temp\\English';
@@ -213,17 +216,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     //   this.processPlaylistFiles(plsFiles);
     // });
 
-    this.transitionSrc = '../assets/img/front.jpg';
-  }
-
-  async processPlaylistFiles(files: IFileInfo[]): Promise<any> {
-    for (const fileInfo of files) {
-      console.log('Processing ' + fileInfo.path);
-      await this.scanner.processPlaylistFile(fileInfo);
-    }
-  }
-
-  public onOpenDevTools(): void {
-    this.electron.openDevTools();
+    // this.sidebarHostService.loadComponent(QuickSearchComponent);
+    // this.sidebarService.toggleRight();
   }
 }

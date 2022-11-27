@@ -40,6 +40,10 @@ export class SideBarStateService {
     this.setShowProperty(false, Position.Left);
   }
 
+  public hideRight(): void {
+    this.setShowProperty(false, Position.Right);
+  }
+
   public toggleRight(): void {
     this.toggle(Position.Right);
   }
@@ -50,7 +54,14 @@ export class SideBarStateService {
       sidebarState.show = show;
       if (sidebarState.show) {
         // Passing as an arrow function will allow to pass the proper context
-        this.loadingViewService.dim(() => this.hideLeft());
+        this.loadingViewService.dim(() => {
+          if (position === Position.Left) {
+            this.hideLeft();
+          }
+          else if (position === Position.Right) {
+            this.hideRight();
+          }
+        });
       }
       else {
         this.loadingViewService.hide();
