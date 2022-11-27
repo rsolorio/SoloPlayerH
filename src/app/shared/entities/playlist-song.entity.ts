@@ -1,4 +1,5 @@
 import { BaseEntity, Column, PrimaryColumn, Entity } from 'typeorm';
+import { SongEntity } from './song.entity';
 
 @Entity({name: 'playlistSong'})
 export class PlaylistSongEntity extends BaseEntity {
@@ -10,4 +11,6 @@ export class PlaylistSongEntity extends BaseEntity {
 
   @Column()
   sequence: number;
+
+  song?: SongEntity;
 }

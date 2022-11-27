@@ -3,6 +3,7 @@ import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { ElectronService } from 'src/app/core/services/electron/electron.service';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFileInfo } from 'src/app/shared/services/file/file.interface';
 import { FileService } from 'src/app/shared/services/file/file.service';
@@ -50,11 +51,39 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             ]
           },
           {
-            name: 'Media Scanner',
+            name: 'Audio Scanner',
             dataType: 'text',
-            descriptions: ['Start scanning files.'],
+            descriptions: [
+              'Click here to start scanning audio files.',
+              'Files found: 0',
+              ''
+            ],
             action: setting => {
-              setting.dynamicText = 'J:\\Music\\English\\Country\\Alan Jackson\\1992 - A Lot About Livin (And A Little Bout Love)\\01 - 01 - chattahoochee.mp3';
+              const selectedFolders = this.electron.openFolderDialog();
+              if (selectedFolders && selectedFolders.length) {
+                const selectedFolderPath = selectedFolders[0];
+                if (selectedFolderPath) {
+                  this.onAudioScan(setting, selectedFolderPath);
+                }
+              }
+            }
+          },
+          {
+            name: 'Playlist Scanner',
+            dataType: 'text',
+            descriptions: [
+              'Click here to start scanning playlists.',
+              'Playlists found: 0',
+              ''
+            ],
+            action: setting => {
+              const selectedFolders = this.electron.openFolderDialog();
+              if (selectedFolders && selectedFolders.length) {
+                const selectedFolderPath = selectedFolders[0];
+                if (selectedFolderPath) {
+                  this.onPlaylistScan(setting, selectedFolderPath);
+                }
+              }
             }
           }
         ]
@@ -69,46 +98,106 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             action: () => {
               this.electron.openDevTools();
             }
+          },
+          {
+            name: 'Test',
+            dataType: 'text',
+            descriptions: ['Test action.'],
+            action: () => {
+              this.onTest();
+            }
           }
         ]
       }
     ];
   }
 
-  onScan(): void {
-    const selectedFolders = this.electron.openFolderDialog();
-    if (selectedFolders && selectedFolders.length) {
-      const selectedFolderPath = selectedFolders[0];
-      this.scanner.scan(selectedFolderPath, '.mp3').then(mp3Files => {
-        console.log(mp3Files.length);
-        this.processAudioFiles(mp3Files).then(failures => {
-          if (failures.length) {
-            console.log(failures);
-          }
-          console.log('Done');
-        });
+  onAudioScan(setting: ISetting, folderPath: string): void {
+    // Disable the setting
+    setting.disabled = true;
+    // Subscribe to files
+    let fileCount = 0;
+    const fileScanSub = this.events.onEvent<IFileInfo>(AppEvent.ScanFile).subscribe(fileInfo => {
+      fileCount++;
+      setting.descriptions[1] = `Files found: ${fileCount}.`;
+    });
+    this.subs.add(fileScanSub, 'settingsViewScanFile');
+    // Start scanning
+    setting.descriptions[0] = 'Calculating file count...';
+    this.scanner.scan(folderPath, '.mp3').then(mp3Files => {
+      // Calculation process done, delete subscription
+      this.subs.unSubscribe('settingsViewScanFile');
+      // Start reading file metadata
+      setting.descriptions[0] = 'Reading metadata...';
+      this.processAudioFiles(mp3Files, setting).then(failures => {
+        setting.descriptions[0] = 'Scan process done.';
+        if (failures.length) {
+          console.log(failures);
+          setting.descriptions[2] = 'File errors found: ' + failures.length;
+        }
+        else {
+          setting.descriptions[2] = 'No errors found.';
+        }
+        setting.disabled = false;
       });
-    }
+    });
   }
 
   public onSettingClick(setting: ISetting): void {
-    if (setting.action) {
+    if (setting.action && !setting.disabled) {
       setting.action(setting);
     }
   }
 
-  async processAudioFiles(files: IFileInfo[]): Promise<IAudioInfo[]> {
+  async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<IAudioInfo[]> {
     const failures: IAudioInfo[] = [];
     let fileCount = 0;
     for (const fileInfo of files) {
       fileCount++;
-      console.log(`${fileCount} of ${files.length}`);
+      setting.descriptions[1] = `File ${fileCount} of ${files.length}.`;
+      setting.descriptions[2] = fileInfo.path;
       const audioInfo = await this.scanner.processAudioFile(fileInfo);
       if (audioInfo && audioInfo.error) {
         failures.push(audioInfo);
       }
     }
     return failures;
+  }
+
+  public onPlaylistScan(setting: ISetting, folderPath: string): void {
+    setting.disabled = true;
+    setting.descriptions[0] = 'Scanning playlists...';
+    let playlistCount = 0;
+    let trackCount = 0;
+    // Subscribe
+    const playlistCreatedSub = this.events.onEvent<PlaylistEntity>(AppEvent.ScanPlaylistCreated)
+    .subscribe(playlist => {
+      // New playlist
+      playlistCount++;
+      // Reset track count
+      trackCount = 0;
+      // Update status
+      setting.descriptions[1] = `Playlist ${playlistCount} created: ${playlist.name}.`;
+      setting.descriptions[2] = '';
+    });
+    this.subs.add(playlistCreatedSub, 'settingsViewScanPlaylistCreated');
+    const trackAddedSub = this.events.onEvent<PlaylistSongEntity>(AppEvent.ScanTrackAdded)
+    .subscribe(track => {
+      trackCount++;
+      setting.descriptions[2] = `Track added: ${trackCount} - ${track.song.name} - ${track.song.duration}.`;
+    });
+    this.subs.add(trackAddedSub, 'settingsViewScanTrackAdded');
+    // Star scan process
+    this.scanner.scan(folderPath, '.m3u').then(playlistFiles => {
+      this.processPlaylistFiles(playlistFiles).then(() => {
+        // Process done, remove subs
+        this.subs.unSubscribe('settingsViewScanPlaylistCreated');
+        this.subs.unSubscribe('settingsViewScanTrackAdded');
+        // Notify and enable back
+        setting.descriptions[0] = 'Scan process done.';
+        setting.disabled = false;
+      });
+    });
   }
 
   onTest(): void {

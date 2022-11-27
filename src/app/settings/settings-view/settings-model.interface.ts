@@ -3,6 +3,7 @@ export interface ISetting {
   dataType: string;
   descriptions: string[];
   dynamicText?: string;
+  disabled?: boolean;
   action?: (setting: ISetting) => void;
 }
 

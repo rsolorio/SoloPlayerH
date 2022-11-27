@@ -16,5 +16,7 @@ export enum AppEvent {
   // Breadcrumb
   MusicBreadcrumbUpdated = 'MUSIC_BREADCRUMB_UPDATED',
   // Scan
-  ScanFile = 'SCAN_FILE'
+  ScanFile = 'SCAN_FILE',
+  ScanPlaylistCreated = 'SCAN_PLAYLIST_CREATED',
+  ScanTrackAdded = 'SCAN_TRACK_ADDED'
 }

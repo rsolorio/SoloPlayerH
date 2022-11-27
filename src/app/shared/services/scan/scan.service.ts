@@ -379,21 +379,27 @@ export class ScanService {
       const firstLine = fileLines[0].toUpperCase();
 
       if (firstLine === '[PLAYLIST]') {
-        return this.processPls(fileInfo, fileLines);
+        const playlist = await this.createPlaylist(fileInfo.name);
+        if (playlist) {
+          return this.processPls(playlist.id, fileInfo, fileLines);
+        }
+        
       }
 
       if (firstLine === '#EXTM3U') {
-        return this.processM3u(fileInfo, fileLines);
+        const playlist = await this.createPlaylist(fileInfo.name);
+        if (playlist) {
+          return this.processM3u(playlist.id, fileInfo, fileLines);
+        }
       }
     }
 
     return null;
   }
 
-  public async processPls(fileInfo: IFileInfo, lines: string[]): Promise<any> {
-    // Create playlist
+  private async createPlaylist(name: string): Promise<PlaylistEntity> {
     const playlist = new PlaylistEntity();
-    playlist.name = fileInfo.name;
+    playlist.name = name;
     playlist.favorite = false;
     this.db.hashPlaylist(playlist);
     const playlistExists = await this.db.exists(playlist.id, PlaylistEntity);
@@ -402,7 +408,11 @@ export class ScanService {
       return null;
     }
     await playlist.save();
+    this.events.broadcast(AppEvent.ScanPlaylistCreated, playlist);
+    return playlist;
+  }
 
+  private async processPls(playlistId: string, fileInfo: IFileInfo, lines: string[]): Promise<any> {
     let songSequence = 1;
     for (const line of lines) {
       if (line.startsWith('File')) {
@@ -410,41 +420,31 @@ export class ScanService {
         if (lineParts.length > 1) {
           // TODO: validate proper audio extension
           const audioFilePath = this.fileService.getAbsolutePath(fileInfo.directoryPath, lineParts[1]);
-          const songAdded = await this.addPlaylistSong(playlist.id, audioFilePath, songSequence);
-          if (songAdded) {
+          const track = await this.addPlaylistSong(playlistId, audioFilePath, songSequence);
+          if (track) {
             songSequence++;
+            this.events.broadcast(AppEvent.ScanTrackAdded, track);
           }
         }
       }
     }
   }
 
-  public async processM3u(fileInfo: IFileInfo, lines: string[]): Promise<any> {
-    // Create playlist
-    const playlist = new PlaylistEntity();
-    playlist.name = fileInfo.name;
-    playlist.favorite = false;
-    this.db.hashPlaylist(playlist);
-    const playlistExists = await this.db.exists(playlist.id, PlaylistEntity);
-    if (playlistExists) {
-      // Playlist already exists
-      return null;
-    }
-    await playlist.save();
-
+  private async processM3u(playlistId: string, fileInfo: IFileInfo, lines: string[]): Promise<any> {
     let songSequence = 1;
     for (const line of lines) {
       if (!line.startsWith('#EXTINF')) {
         const audioFilePath = this.fileService.getAbsolutePath(fileInfo.directoryPath, line);
-        const songAdded = await this.addPlaylistSong(playlist.id, audioFilePath, songSequence);
-        if (songAdded) {
+        const track = await this.addPlaylistSong(playlistId, audioFilePath, songSequence);
+        if (track) {
           songSequence++;
+          this.events.broadcast(AppEvent.ScanTrackAdded, track);
         }
       }
     }
   }
 
-  private async addPlaylistSong(playlistId: string, songFilePath: string, sequence: number): Promise<boolean> {
+  private async addPlaylistSong(playlistId: string, songFilePath: string, sequence: number): Promise<PlaylistSongEntity> {
     const song = await SongEntity.findOneBy({ filePath: songFilePath });
     if (song) {
       const playlistSong = new PlaylistSongEntity();
@@ -452,10 +452,11 @@ export class ScanService {
       playlistSong.songId = song.id;
       playlistSong.sequence = sequence;
       await playlistSong.save();
-      return true;
+      playlistSong.song = song;
+      return playlistSong;
     }
 
     console.log('Playlist audio file not found: ' + songFilePath);
-    return false;
+    return null;
   }
 }

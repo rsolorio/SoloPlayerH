@@ -5,7 +5,7 @@
     <div
     *ngFor="let setting of settingCategory.settings"
     class="sp-setting"
-    [ngClass]="{ 'sp-clickable': setting.action }"
+    [ngClass]="{ 'sp-clickable': setting.action && !setting.disabled, 'sp-color-on-bg-low': setting.disabled }"
     (click)="onSettingClick(setting)">
       <!-- Header -->
       <p class="sp-text-xlarge">{{setting.name}}</p>
@@ -15,12 +15,5 @@
       <p *ngIf="setting.dynamicText" class="sp-text-medium">{{setting.dynamicText}}</p>
     </div>
   </ng-container>
-  <div class="sp-setting">
-    <h2>Test</h2>
-
-    <button (click)="onScan()">Scan</button>
-    <button (click)="onTest()">Test</button>
-  
-    <sp-transition-image style="width: 500px; height: 500px; display: flex;" [defaultSrc]="DefaultImageSrc.Medium" [transitionSrc]="transitionSrc"></sp-transition-image>
-  </div>
+  <sp-transition-image style="width: 500px; height: 500px; display: flex;" [defaultSrc]="DefaultImageSrc.Medium" [transitionSrc]="transitionSrc"></sp-transition-image>
 </div>

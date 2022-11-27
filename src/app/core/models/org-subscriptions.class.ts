@@ -49,7 +49,7 @@ export class Subscriptions {
    * Removes the subscription associated with the specified key, if exists.
    * @param key The unique identifier of the subscription.
    */
-  public unSubscribeByKey(key: string): void {
+  private unSubscribeByKey(key: string): void {
     const existingSub = this.get(key);
     if (existingSub) {
       existingSub.unsubscribe();
