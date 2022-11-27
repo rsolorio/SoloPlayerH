@@ -29,12 +29,7 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
     return AppEvent.ClassificationListUpdated;
   }
 
-  protected supportsSearchAllWildcard(): boolean {
-    return true;
-  }
-
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
     const criteria: ICriteriaValueBaseModel[] = [];
 
     let criteriaValue = new CriteriaValueBase('classificationType', 'Genre');
@@ -43,9 +38,14 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
     criteriaValue.SortSequence = 1;
     criteria.push(criteriaValue);
 
-    criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
-    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
+    criteriaValue = new CriteriaValueBase('name');
+    if (searchTerm) {
+      const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
+      criteriaValue.ColumnValue = criteriaSearchTerm;
+      criteriaValue.Operator = CriteriaOperator.Like;
+    }
     criteriaValue.SortSequence = 2;
+    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
     criteria.push(criteriaValue);
 
     return criteria;

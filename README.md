@@ -5,14 +5,38 @@ Mp3 player, music manager, tag editor, album art finder, playlist builder, file 
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.
 
-## Tag Support
-- Id3
+## Features
+
+### Breadcrumbs
+The breadcrumbs are displayed as you navigate in the following entities: Classifications, Genres, Album Artists, Albums. They indicate how the current list of entities is being filtered.
+
+### Quick Filters
+Each list view supports quick filters which allow you to filter by the most common fields.
+
+### Playlist Support
+- PLS
+- M3U
+
+### Themes
+- Dark
+
+### Tag Support
+- Id3v2
 - Multi genre (either with multiple tags or one tag separated by a forward slash)
 - Single album artist
 - Multiple artist (multiple tags)
 - Multiple covers
 - Language
 - Tokens
+
+### Tag Mapping
+You can configure how the tag information is retrieved and where it will be stored.
+
+### And More...
+- 0-5 rating mechanism
+- Favorites
+- Mood
+- Language
 
 ## Menu
 - Home

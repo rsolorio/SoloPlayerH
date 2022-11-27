@@ -104,18 +104,13 @@ implements IListBroadcastService {
 
   /** Performs a search based on the specified term and broadcasts an event with the result. */
   public search(searchTerm: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<TItemModel[]> {
-    if (!this.isSearchTermValid(searchTerm) && !hasAnyCriteria(extraCriteria)) {
-      return of([]);
-    }
-
-    // TODO: better logic to ensure columns are not duplicated
     const searchCriteria = this.buildCriteria(searchTerm);
+    // TODO: better logic to ensure columns are not duplicated
     if (hasAnyCriteria(extraCriteria)) {
       for (const extraCriteriaItem of extraCriteria) {
         searchCriteria.push(extraCriteriaItem);
       }
     }
-
     return this.paginateAndBroadcast(searchCriteria);
   }
 
@@ -143,15 +138,8 @@ implements IListBroadcastService {
     return this.lastResult;
   }
 
-  protected supportsSearchAllWildcard(): boolean {
-    return false;
-  }
-
   protected isSearchTermValid(searchTerm: string): boolean {
     if (searchTerm) {
-      if (this.supportsSearchAllWildcard() && searchTerm === SearchWildcard.All) {
-        return true;
-      }
       if (searchTerm.length >= this.minSearchTermLength) {
         return true;
       }

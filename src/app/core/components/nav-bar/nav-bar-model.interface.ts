@@ -33,6 +33,8 @@ export interface INavbarModel {
     searchTerm?: string;
     /** Event handler fired when the user performs a search. */
     onSearch?: (searchTerm: string) => void;
+    /** Event handler fired when the user clicks the clear button. */
+    onSearchClear?: () => void;
 }
 
 export enum NavbarDisplayMode {

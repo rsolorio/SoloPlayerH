@@ -63,6 +63,9 @@ export class NavBarComponent implements OnInit {
   public onSearchClearClick(): void {
     this.model.searchTerm = '';
     this.searchBoxFocus();
+    if (this.model.onSearchClear) {
+      this.model.onSearchClear();
+    }
   }
 
   public searchBoxFocus(): void {

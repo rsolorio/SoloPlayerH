@@ -29,10 +29,6 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     return AppEvent.SongListUpdated;
   }
 
-  protected supportsSearchAllWildcard(): boolean {
-    return true;
-  }
-
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     const musicSearch = this.buildSearchTerms(searchTerm);
     return this.buildCriteriaFromTerms(musicSearch);
@@ -56,6 +52,10 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
       titles: [],
       wildcard: ''
     };
+
+    if (!searchTerm) {
+      return musicSearch;
+    }
 
     let artist = '';
     let album = '';

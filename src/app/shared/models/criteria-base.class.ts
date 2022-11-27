@@ -38,21 +38,37 @@ export class CriteriaValueBase implements ICriteriaValueBaseModel {
   public SortDirection = CriteriaSortDirection.Ascending;
   public SortSequence = 0;
 
+  /**
+   * Creates a new CriteriaValueBase object.
+   * The default Operator is Equals, but if columnValue and operator arguments are not specified
+   * the Operator will be None.
+   */
   constructor(columnName: string, columnValue?: any, operator?: CriteriaOperator) {
     this.ColumnName = columnName;
     if (columnValue !== undefined) {
       this.ColumnValue = columnValue;
     }
-    if (operator !== undefined) {
+    if (operator === undefined) {
+      if (columnValue === undefined) {
+        this.Operator = CriteriaOperator.None;
+      }
+    }
+    else {
       this.Operator = operator;
     }
   }
 }
 
+/**
+ * Determines if the list has criteria items with CriteriaOperator different than None.
+ */
 export function hasAnyCriteria(criteria: ICriteriaValueBaseModel[]): boolean {
   return criteria && criteria.filter(item => item.Operator !== CriteriaOperator.None).length > 0;
 }
 
+/**
+ * Determines if the list has criteria that matches the specified column name and the CriteriaOperator is different than None.
+ */
 export function hasCriteria(columnName: string, criteria: ICriteriaValueBaseModel[]): boolean {
   if (criteria && criteria.length) {
     const items = criteria.filter(item => item.ColumnName === columnName);

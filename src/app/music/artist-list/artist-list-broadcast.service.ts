@@ -29,16 +29,15 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
     return AppEvent.ArtistListUpdated;
   }
 
-  protected supportsSearchAllWildcard(): boolean {
-    return true;
-  }
-
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
     const criteria: ICriteriaValueBaseModel[] = [];
+    let criteriaValue: ICriteriaValueBaseModel;
 
-    let criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
-    criteria.push(criteriaValue);
+    if (searchTerm) {
+      const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
+      criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
+      criteria.push(criteriaValue);
+    }
 
     criteriaValue = new CriteriaValueBase('songCount', 0, CriteriaOperator.GreaterThan);
     criteria.push(criteriaValue);

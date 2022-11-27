@@ -28,15 +28,15 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
     return AppEvent.PlaylistListUpdated;
   }
 
-  protected supportsSearchAllWildcard(): boolean {
-    return true;
-  }
-
   protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
     const criteria: ICriteriaValueBaseModel[] = [];
 
-    const criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
+    const criteriaValue = new CriteriaValueBase('name');
+    if (searchTerm) {
+      const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
+      criteriaValue.ColumnValue = criteriaSearchTerm;
+      criteriaValue.Operator = CriteriaOperator.Like;
+    }
     criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
     criteriaValue.SortSequence = 1;
     criteria.push(criteriaValue);

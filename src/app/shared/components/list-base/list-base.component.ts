@@ -111,6 +111,13 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       }
     };
 
+    // By default, the clear will perform a search with no search value
+    navbar.onSearchClear = () => {
+      if (navbar.onSearch) {
+        navbar.onSearch(navbar.searchTerm);
+      }
+    };
+
     if (navbar.componentType) {
       this.navbarService.loadComponent(navbar.componentType);
       navbar.mode = NavbarDisplayMode.Component;
