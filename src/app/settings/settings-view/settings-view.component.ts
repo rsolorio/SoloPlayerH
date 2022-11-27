@@ -81,6 +81,11 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
                 }
               }
             }
+          },
+          {
+            name: 'Tag Mapping',
+            dataType: 'text',
+            descriptions: ['Configure the mapping between the audio tags and the database.']
           }
         ]
       },

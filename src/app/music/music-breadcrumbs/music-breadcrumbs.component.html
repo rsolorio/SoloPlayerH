@@ -4,7 +4,10 @@
       <!-- Icon -->
       <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon"></i>
       <!-- Caption -->
-      <span *ngIf="breadcrumb.caption">{{breadcrumb.caption}}</span>
+      <span *ngIf="breadcrumb.caption" class="sp-text-large">{{breadcrumb.caption}}</span>
+      <!-- Close icon -->
+      <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>
+      <i *ngIf="isLast" class="mdi-close mdi sp-color-on-bg-low sp-text-medium"></i>
     </div>
     <!-- Caret -->
     <i *ngIf="!isLast" class="mdi-chevron-right mdi"></i>

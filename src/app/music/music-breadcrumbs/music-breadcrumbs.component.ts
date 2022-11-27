@@ -20,6 +20,13 @@ export class MusicBreadcrumbsComponent implements OnInit {
   public onContainerScroll(): void {}
 
   public onClick(breadcrumb: IMusicBreadcrumbModel): void {
-    this.breadcrumbsService.remove(breadcrumb.sequence);
+    if (breadcrumb.last) {
+      // If it's the last remove it
+      this.breadcrumbsService.remove(breadcrumb.sequence);
+    }
+    else {
+      // If it's not the last, leave it and remove trailing ones
+      this.breadcrumbsService.remove(breadcrumb.sequence + 1);
+    }
   }
 }
