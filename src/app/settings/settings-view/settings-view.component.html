@@ -1,13 +1,20 @@
 <div class="sp-settings-container sp-font-family-regular">
-  <div class="sp-setting">
-    <h2>Statistics</h2>
-    <p>Number of tracks: 0</p>
-    <p>Total playing time: 00:00</p>
-  </div>
-  <div class="sp-setting sp-clickable" (click)="onOpenDevTools()">
-    <h2>Developer Tools</h2>
-    <p>Open Developer Tools</p>
-  </div>
+  <ng-container *ngFor="let settingCategory of settingsInfo">
+    <!-- Category -->
+    <p class="sp-text-big sp-color-primary">{{settingCategory.name}}</p>
+    <div
+    *ngFor="let setting of settingCategory.settings"
+    class="sp-setting"
+    [ngClass]="{ 'sp-clickable': setting.action }"
+    (click)="onSettingClick(setting)">
+      <!-- Header -->
+      <p class="sp-text-xlarge">{{setting.name}}</p>
+      <!-- Descriptions -->
+      <p *ngFor="let description of setting.descriptions" class="sp-text-medium">{{description}}</p>
+      <!-- Dynamic Text -->
+      <p *ngIf="setting.dynamicText" class="sp-text-medium">{{setting.dynamicText}}</p>
+    </div>
+  </ng-container>
   <div class="sp-setting">
     <h2>Test</h2>
 

@@ -1,15 +1,13 @@
 @import "../../../styles-variables";
 
-.sp-setting {
+.sp-settings-container {
   padding-left: 10px;
   padding-right: 10px;
-  border: 0px solid $sp-color-on-background-separator;
-  border-bottom-width: 1px;
 }
 
-h2 {
-  margin-top: 5px;
-  margin-bottom: 5px;
+.sp-setting {
+  border: 0px solid $sp-color-on-background-separator;
+  border-bottom-width: 1px;
 }
 
 p {
