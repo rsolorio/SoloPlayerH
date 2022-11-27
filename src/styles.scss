@@ -247,11 +247,11 @@ body {
 
 /* Applies animation to any opacity change with duration of 1 sec */
 .sp-ease-opacity-01 {
-    transition: opacity 1s ease-in-out;
+    transition: opacity 1s ease-out;
 }
 
 .sp-ease-opacity-03 {
-    transition: opacity 3s ease-in-out;
+    transition: opacity 3s ease-out;
 }
 
 /* Applies animation to any color change with duration of 2 secs */

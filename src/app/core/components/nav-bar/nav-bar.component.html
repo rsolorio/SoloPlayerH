@@ -54,8 +54,8 @@
           <sp-icon-menu [items]="model.menuList" class="sp-text-xlarge-fixed"></sp-icon-menu>
       </td>
   </tr></table>
-  <!-- Toast -->
-  <div *ngIf="model.toastMessage" [ngClass]="{ 'sp-visible': model.toastVisible }" class="sp-nav-toast sp-ease-opacity-01">
+  <!-- Toast (the ease class timing has to match the hideToast method in the service) -->
+  <div *ngIf="model.toastMessage" [ngClass]="{ 'sp-visible': model.toastVisible }" class="sp-nav-toast sp-ease-opacity-03">
       <span [textContent]="model.toastMessage"></span>
   </div>
 </div>

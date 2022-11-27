@@ -113,7 +113,7 @@ export class NavBarStateService {
     // Remove the message so the element is removed from the DOM
     setTimeout(() => {
       this.navbarState.toastMessage = null;
-    }, 1000); // This time has to be equals or less than the time to fade out
+    }, 3000); // This time has to be equals or less than the time to fade out
   }
 
   public register(navbar: NavBarComponent): void {
