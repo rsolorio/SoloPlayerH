@@ -237,4 +237,15 @@ export class DatabaseService {
   public async getAllClassifications(): Promise<IClassificationModel[]> {
     return this.dataSource.getRepository(ClassificationEntity).find();
   }
+
+  public async getPlaylistWithSongs(playlistId: string): Promise<PlaylistEntity> {
+    return this.dataSource
+      .getRepository(PlaylistEntity)
+      .createQueryBuilder('playlist')
+      .innerJoinAndSelect('playlist.playlistSongs', 'playlistSong')
+      .innerJoinAndSelect('playlistSong.song', 'song')
+      .where('playlist.id = :playlistId')
+      .setParameter('playlistId', playlistId)
+      .getOne();
+  }
 }

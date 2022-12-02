@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne, Relation, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Column, Entity, ManyToOne, Relation, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { ISongModel } from '../models/song-model.interface';
 import { AlbumEntity } from './album.entity';
 import { ArtistEntity } from './artist.entity';
 import { ClassificationEntity } from './classification.entity';
+import { PlaylistSongEntity } from './playlist-song.entity';
 import { SongBaseEntity } from './song-base.entity';
 
 @Entity({name: 'song'})
@@ -69,4 +70,7 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   @ManyToMany(() => ClassificationEntity, classification => classification.songs)
   @JoinTable({ name: 'songClassification' })
   classifications: Relation<ClassificationEntity[]>;
+
+  @OneToMany(type => PlaylistSongEntity, playlistSong => playlistSong.song)
+  playlistSongs: Relation<PlaylistSongEntity[]>;
 }

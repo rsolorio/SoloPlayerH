@@ -248,23 +248,23 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       return;
     }
 
-    const song = this.state.playerList.current;
+    const track = this.state.playerList.current;
 
     if (this.nav.mediaSession.metadata &&
-        this.nav.mediaSession.metadata.title === song.name &&
-        this.nav.mediaSession.metadata.artist === song.artistName &&
-        this.nav.mediaSession.metadata.album === song.albumName) {
+        this.nav.mediaSession.metadata.title === track.song.name &&
+        this.nav.mediaSession.metadata.artist === track.song.artistName &&
+        this.nav.mediaSession.metadata.album === track.song.albumName) {
           return;
     }
 
     // TODO: determine why TS doesn't recognize this
     // @ts-ignore
     this.nav.mediaSession.metadata = new MediaMetadata({
-      title: song.name,
-      artist: song.artistName,
-      album: song.albumName,
+      title: track.song.name,
+      artist: track.song.artistName,
+      album: track.song.albumName,
       artwork: [{
-        src: song.imageSrc,
+        src: track.song.imageSrc,
         type: 'image/jpeg'
       }]
     });
@@ -318,8 +318,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     }
     else {
       this.state.elapsedSeconds = seconds;
-      if (this.state.playerList.hasTrack() && this.state.playerList.current.seconds > 0) {
-        const percentage = seconds / this.state.playerList.current.seconds * 100;
+      if (this.state.playerList.hasTrack() && this.state.playerList.current.song.seconds > 0) {
+        const percentage = seconds / this.state.playerList.current.song.seconds * 100;
         this.state.elapsedPercentage = percentage.toFixed(2);
       }
       else {
@@ -391,7 +391,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       track = this.state.playerList.current;
     }
     if (track) {
-      return `${track.name} - ${track.artistName}`;
+      return `${track.name} - ${track.song.artistName}`;
     }
     return null;
   }
@@ -407,7 +407,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
 
   private setupNewTrack(track: IPlaylistSongModel) {
     this.state.playerList.setCurrent(track);
-    this.loadAudio(this.utilities.fileToUrl(track.filePath));
+    this.loadAudio(this.utilities.fileToUrl(track.song.filePath));
   }
 
   private getTrack(sequence: number): IPlaylistSongModel {
@@ -429,13 +429,13 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     this.state.hasError = false;
     switch (this.state.status) {
       case PlayerStatus.Playing:
-        this.state.playerList.current.playerStatus = PlayerSongStatus.Playing;
+        this.state.playerList.current.song.playerStatus = PlayerSongStatus.Playing;
         break;
       case PlayerStatus.Paused:
-        this.state.playerList.current.playerStatus = PlayerSongStatus.Paused;
+        this.state.playerList.current.song.playerStatus = PlayerSongStatus.Paused;
         break;
       case PlayerStatus.Stopped:
-        this.state.playerList.current.playerStatus = PlayerSongStatus.Stopped;
+        this.state.playerList.current.song.playerStatus = PlayerSongStatus.Stopped;
         break;
     }
     const eventArgs: IPlayerStatusChangedEventArgs = {
@@ -516,7 +516,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       }
       else {
           const currentTime = this.htmlAudio.currentTime;
-          if (currentTime < this.state.playerList.current.seconds) {
+          if (currentTime < this.state.playerList.current.song.seconds) {
               // If this happens let's assume the song was paused by an external action
               this.onAudioPause();
               this.registerEvent(HtmlMediaEvent.Pause, 'xx - external');

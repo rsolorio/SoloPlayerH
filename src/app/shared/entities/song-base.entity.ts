@@ -1,3 +1,5 @@
+import { IAlbumModel } from "../models/album-model.interface";
+import { PlayerSongStatus } from "../models/player.enum";
 import { ListEntity } from "./base.entity";
 
 /**
@@ -7,9 +9,25 @@ import { ListEntity } from "./base.entity";
  */
 export class SongBaseEntity extends ListEntity {
   releaseYear: number;
-  albumName: string;
-  artistName: string;
+  primaryAlbumName: string;
+  primaryArtistName: string;
   playCount: number;
+  playerStatus: PlayerSongStatus;
+  primaryAlbum: IAlbumModel;
+
+  public get albumName(): string {
+    if (this.primaryAlbum) {
+      return this.primaryAlbum.name;
+    }
+    return this.primaryAlbumName;
+  }
+
+  public get artistName(): string {
+    if (this.primaryAlbum && this.primaryAlbum.primaryArtist) {
+      return this.primaryAlbum.primaryArtist.name;
+    }
+    return this.primaryArtistName;
+  }
 
   public get albumWithYear(): string {
     const yearText = this.releaseYear >= 0 ? ` (${this.releaseYear})` : '';

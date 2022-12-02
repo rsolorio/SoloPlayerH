@@ -381,7 +381,7 @@ export class ScanService {
       if (firstLine === '[PLAYLIST]') {
         const playlist = await this.createPlaylist(fileInfo.name);
         if (playlist) {
-          return this.processPls(playlist.id, fileInfo, fileLines);
+          return this.processPls(playlist, fileInfo, fileLines);
         }
         
       }
@@ -389,7 +389,7 @@ export class ScanService {
       if (firstLine === '#EXTM3U') {
         const playlist = await this.createPlaylist(fileInfo.name);
         if (playlist) {
-          return this.processM3u(playlist.id, fileInfo, fileLines);
+          return this.processM3u(playlist, fileInfo, fileLines);
         }
       }
     }
@@ -412,7 +412,7 @@ export class ScanService {
     return playlist;
   }
 
-  private async processPls(playlistId: string, fileInfo: IFileInfo, lines: string[]): Promise<any> {
+  private async processPls(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<any> {
     let songSequence = 1;
     for (const line of lines) {
       if (line.startsWith('File')) {
@@ -420,7 +420,7 @@ export class ScanService {
         if (lineParts.length > 1) {
           // TODO: validate proper audio extension
           const audioFilePath = this.fileService.getAbsolutePath(fileInfo.directoryPath, lineParts[1]);
-          const track = await this.addPlaylistSong(playlistId, audioFilePath, songSequence);
+          const track = await this.addPlaylistSong(playlist, audioFilePath, songSequence);
           if (track) {
             songSequence++;
             this.events.broadcast(AppEvent.ScanTrackAdded, track);
@@ -430,12 +430,12 @@ export class ScanService {
     }
   }
 
-  private async processM3u(playlistId: string, fileInfo: IFileInfo, lines: string[]): Promise<any> {
+  private async processM3u(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<any> {
     let songSequence = 1;
     for (const line of lines) {
       if (!line.startsWith('#EXTINF')) {
         const audioFilePath = this.fileService.getAbsolutePath(fileInfo.directoryPath, line);
-        const track = await this.addPlaylistSong(playlistId, audioFilePath, songSequence);
+        const track = await this.addPlaylistSong(playlist, audioFilePath, songSequence);
         if (track) {
           songSequence++;
           this.events.broadcast(AppEvent.ScanTrackAdded, track);
@@ -444,12 +444,12 @@ export class ScanService {
     }
   }
 
-  private async addPlaylistSong(playlistId: string, songFilePath: string, sequence: number): Promise<PlaylistSongEntity> {
+  private async addPlaylistSong(playlist: PlaylistEntity, songFilePath: string, sequence: number): Promise<PlaylistSongEntity> {
     const song = await SongEntity.findOneBy({ filePath: songFilePath });
     if (song) {
       const playlistSong = new PlaylistSongEntity();
-      playlistSong.playlistId = playlistId;
-      playlistSong.songId = song.id;
+      playlistSong.playlist = playlist;
+      playlistSong.song = song;
       playlistSong.sequence = sequence;
       await playlistSong.save();
       playlistSong.song = song;

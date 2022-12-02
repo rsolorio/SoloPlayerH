@@ -7,4 +7,5 @@ export interface IListBaseModel {
   itemMenuList: IMenuModel[];
   paginationModel: IPaginationModel<IListModel>;
   setItemImage?: (item: IListModel) => void;
+  getBackdropIcon: (item: IListModel) => string;
 }

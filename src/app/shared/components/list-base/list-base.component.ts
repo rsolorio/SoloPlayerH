@@ -24,7 +24,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     itemMenuList: [],
     paginationModel: {
       items: []
-    }
+    },
+    getBackdropIcon: () => null
   };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
   private lastNavbarRightIcon: IIconAction;
@@ -34,7 +35,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @Output() public itemRender: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemImageClick: EventEmitter<IListModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListModel> = new EventEmitter();
-  @Output() public initialized: EventEmitter<Event> = new EventEmitter();
+  @Output() public initialized: EventEmitter<IListBaseModel> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
 
@@ -92,7 +93,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     });
 
     this.initializeNavbar();
-    this.initialized.emit();
+    this.initialized.emit(this.model);
   }
 
   public onIntersectionChange(isIntersecting: boolean, item: IListModel): void {

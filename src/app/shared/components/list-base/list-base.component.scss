@@ -17,3 +17,13 @@ table {
     height: 50px;
     width: 50px;
 }
+
+.sp-table-image-backdrop {
+    height: 50px;
+    width: 50px;
+    background-color: $sp-dim-black-low;
+    position: absolute;
+    font-size: 2em;
+    display: grid;
+    text-align: center;
+}

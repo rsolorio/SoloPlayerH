@@ -10,8 +10,8 @@ import { SongBaseEntity } from './song-base.entity';
  */
  @ViewEntity({
   expression: `
-  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.seconds, song.favorite, album.name AS albumName,
-  artist.name AS artistName, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
+  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.seconds, song.favorite,
+  album.name AS primaryAlbumName, artist.name AS primaryArtistName, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
   FROM song
   INNER JOIN album
   ON song.primaryAlbumId = album.id
@@ -37,9 +37,9 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   mediaNumber: number;
   @ViewColumn()
-  albumName: string;
+  primaryAlbumName: string;
   @ViewColumn()
-  artistName: string;
+  primaryArtistName: string;
   @ViewColumn()
   titleSort: string;
   @ViewColumn()

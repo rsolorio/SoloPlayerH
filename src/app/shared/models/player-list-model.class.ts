@@ -24,20 +24,36 @@ export class PlayerListModel {
   private emptyTrack: IPlaylistSongModel = {
     sequence: 0,
     id: '0',
-    playlistId: '0',
-    seconds: 0,
-    name: '[Empty Song]',
-    albumName: '[Empty Album]',
-    artistName: '[Empty Artist]',
-    filePath: null,
+    songId: null,
+    playlistId: null,
+    name: null,
     imageSrc: DefaultImageSrc.Small,
-    playCount: 0,
-    favorite: false,
-    albumWithYear: '[Empty Artist]',
-    playCountText: '',
     canBeRendered: false,
     selected: false,
-    playerStatus: PlayerSongStatus.Empty
+    song: {
+      id: '0',
+      name: '[Empty Song]',
+      seconds: 0,
+      playCount: 0,
+      filePath: null,
+      releaseYear: 0,
+      favorite: false,
+      albumWithYear: '[Empty Album]',
+      artistName: '[Empty Artist]',
+      primaryArtistName: '[Empty Artist]',
+      trackNumber: 0,
+      mediaNumber: 0,
+      playCountText: '',
+      titleSort: null,
+      albumName: '[Empty Album]',
+      primaryAlbumName: '[Empty Album]',
+      primaryAlbum: null,
+      playerStatus: PlayerSongStatus.Empty,
+      imageSrc: DefaultImageSrc.Small,
+      canBeRendered: false,
+      selected: false
+    },
+    playlist: null
   };
 
   // Public Properties **************************************************************************
@@ -145,7 +161,8 @@ export class PlayerListModel {
   public getTrackById(songId: string): IPlaylistSongModel {
     let result: IPlaylistSongModel = null;
     for (const track of this.items) {
-      if (track.id === songId) {
+      const trackSongId = track.songId ? track.songId : track.song.id;
+      if (trackSongId === songId) {
         result = track;
       }
     }
@@ -179,22 +196,16 @@ export class PlayerListModel {
   // Private Methods ****************************************************************************
   private toTrack(song: ISongModel, sequence: number): IPlaylistSongModel {
     return {
-      playlistId: '',
-      id: song.id,
+      id: null,
+      playlistId: null,
+      songId: song.id,
       name: song.name,
-      filePath: song.filePath,
-      seconds: song.seconds,
       sequence,
-      albumName: song.albumName,
-      artistName: song.artistName,
-      playCount: song.playCount,
-      favorite: song.favorite,
-      albumWithYear: song.albumWithYear,
-      playCountText: song.playCountText,
       imageSrc: song.imageSrc,
       canBeRendered: false,
       selected: false,
-      playerStatus: PlayerSongStatus.Stopped
+      song: song,
+      playlist: null
     };
   }
 
@@ -314,7 +325,7 @@ export class PlayerListModel {
   private setPlaylistCursor(currentTrack: IPlaylistSongModel) {
     // This means we are removing the old track from being current
     if (this.hasTrack()) {
-      this.current.playerStatus = PlayerSongStatus.Empty;
+      this.current.song.playerStatus = PlayerSongStatus.Empty;
     }
     const args: IEventArgs<IPlaylistSongModel> = {
       oldValue: this.current,
@@ -325,7 +336,7 @@ export class PlayerListModel {
     this.next = this.innerGetNext(this.current);
     // Now mark it as current
     if (this.current) {
-      this.current.playerStatus = PlayerSongStatus.Stopped;
+      this.current.song.playerStatus = PlayerSongStatus.Stopped;
     }
     this.events.broadcast(AppEvent.PlaylistCurrentTrackChanged, args);
   }

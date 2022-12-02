@@ -23,8 +23,8 @@ import { SongEntity } from './song.entity';
     .addSelect('song.mediaNumber', 'mediaNumber')
     .addSelect('song.seconds', 'seconds')
     .addSelect('song.favorite', 'favorite')
-    .addSelect('album.name', 'albumName')
-    .addSelect('artist.name', 'artistName')
+    .addSelect('album.name', 'primaryAlbumName')
+    .addSelect('artist.name', 'primaryArtistName')
 })
 export class SongViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
@@ -42,9 +42,9 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   mediaNumber: number;
   @ViewColumn()
-  albumName: string;
+  primaryAlbumName: string;
   @ViewColumn()
-  artistName: string;
+  primaryArtistName: string;
   @ViewColumn()
   titleSort: string;
   @ViewColumn()

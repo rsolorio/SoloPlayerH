@@ -42,7 +42,7 @@ function createWindow(): void {
   }
 
   mainWindow.setMenuBarVisibility(false);
-  mainWindow.setIcon(path.join(__dirname, '/dist/SoloPlayerH/favicon.ico'))
+  mainWindow.setIcon(path.join(__dirname, '/dist/SoloPlayerH/favicon.ico'));
 
   mainWindow.on('closed', () => {
     mainWindow = null;

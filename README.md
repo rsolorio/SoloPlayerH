@@ -162,25 +162,19 @@ You can configure how the tag information is retrieved and where it will be stor
 ### Album table
 - id
 - name
-- artistId
+- primaryArtistId
 - releaseYear
-- lastSongAddDate
-- lastSongChangeDate
-- songCount
-- complete
 - favorite
-- albumTypeId
+- albumSort
+- albumType
 
 ### Artist table
 - id
 - name
-- artistTypeId (Male, Female, Solo, etc)
-- lastSongAddDate
-- lastSongChangeDate
-- songCount
-- albumCount
+- artistType
 - country
 - favorite
+- artistSort
 
 ### SongArtist table
 - songId
@@ -207,5 +201,3 @@ You can configure how the tag information is retrieved and where it will be stor
 - classificationId
 
 ### PlayHistory table
-- songId
-- playDate

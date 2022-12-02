@@ -1,3 +1,4 @@
+import { IArtistModel } from './artist-model.interface';
 import { IListModel } from './base-model.interface';
 
 export interface IAlbumModel extends IListModel {
@@ -7,4 +8,5 @@ export interface IAlbumModel extends IListModel {
   albumSort: string;
   artistName: string;
   songCount: number;
+  primaryArtist: IArtistModel;
 }

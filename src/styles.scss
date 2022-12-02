@@ -22,6 +22,7 @@ body {
     Context Menu        sp-z-7      sp-bg-05
     NavBar              sp-z-5      sp-bg-04
     Player Overlay      sp-z-6      sp-bg-04
+    List Image Backdrop sp-z-1      N/A
     View Container      N/A         sp-bg-01
     Body                N/A         sp-bg
     
@@ -29,7 +30,7 @@ body {
 // Z-INDEX ****************************************************************************************
 // The bigger the class number the bigger the z index
 .sp-z-1 {
-    z-index: 100 !important;
+    z-index: 100 !important; /* List image backdrop */
 }
 
 .sp-z-2 {

@@ -8,11 +8,12 @@ import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlayerOverlayStateService } from 'src/app/player/player-overlay/player-overlay-state.service';
+import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { BreadcrumbEventType } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
-import { SearchWildcard } from 'src/app/shared/models/search.enum';
+import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
@@ -141,7 +142,15 @@ export class SongListComponent extends CoreComponent implements OnInit {
     }
   }
 
-  public onListInitialized(): void {
+  public onListInitialized(listBaseModel: IListBaseModel): void {
+    listBaseModel.getBackdropIcon = item => {
+      const song = item as ISongModel;
+      // TODO: song should have a player status property
+      if (song.playerStatus === PlayerSongStatus.Playing) {
+        return 'mdi-play mdi';
+      }
+      return null;
+    };
     this.loadData();
   }
 

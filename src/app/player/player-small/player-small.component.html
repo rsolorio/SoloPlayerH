@@ -10,7 +10,7 @@
         <span class="sp-text-medium">{{model.playerList.current?.name}}</span>
         <span class="sp-text-tiny sp-play-count">  {{model.playerList.current?.playCountText}}</span>
         <br>
-        <span class="sp-text-small text-muted">{{model.playerList.current?.artistName}} | {{model.playerList.current?.albumWithYear}}</span>
+        <span class="sp-text-small text-muted">{{model.playerList.current?.song.artistName}} | {{model.playerList.current?.song.albumWithYear}}</span>
       </td>
       <!-- Back -->
       <td (click)="onPrevious()" class="sp-td-play-control">

@@ -12,6 +12,11 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
     <ng-container *ngIf="item.canBeRendered">
       <!-- Image -->
       <td class="sp-table-image-field" (click)="onImageClick(item)">
+        <!-- Optional backdrop icon -->
+        <div *ngIf="model.getBackdropIcon(item)" class="sp-table-image-backdrop sp-z-1">
+          <i [ngClass]="model.getBackdropIcon(item)" class="sp-color-primary"></i>
+        </div>
+        <!-- Img -->
         <sp-transition-image
         [defaultSrc]="DefaultImageSrc.Small"
         [transitionSrc]="item.imageSrc"

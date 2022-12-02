@@ -153,13 +153,13 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
 
     searchTerms.artists.forEach(artist => {
       const searchTerm = this.normalizeCriteriaSearchTerm(artist, true);
-      const criteriaValue = new CriteriaValueBase('artistName', searchTerm, CriteriaOperator.Like);
+      const criteriaValue = new CriteriaValueBase('primaryArtistName', searchTerm, CriteriaOperator.Like);
       criteria.push(criteriaValue);
     });
 
     searchTerms.albums.forEach(album => {
       const searchTerm = this.normalizeCriteriaSearchTerm(album, true);
-      const criteriaValue = new CriteriaValueBase('albumName', searchTerm, CriteriaOperator.Like);
+      const criteriaValue = new CriteriaValueBase('primaryAlbumName', searchTerm, CriteriaOperator.Like);
       criteria.push(criteriaValue);
     });
 
@@ -179,7 +179,7 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
         // First sort by year in case there are multiple albums with the same name for the same artist
         addSorting('releaseYear', CriteriaSortDirection.Ascending, criteria);
         // Album Name in case multiple albums in the same year
-        addSorting('albumName', CriteriaSortDirection.Ascending, criteria);
+        addSorting('primaryAlbumName', CriteriaSortDirection.Ascending, criteria);
         // Now sort by album media
         addSorting('mediaNumber', CriteriaSortDirection.Ascending, criteria);
         // Then by album track
@@ -194,11 +194,11 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
     const criteria: ICriteriaValueBaseModel[] = [];
 
-    let criteriaValue = new CriteriaValueBase('artistName', criteriaSearchTerm, CriteriaOperator.Like);
+    let criteriaValue = new CriteriaValueBase('primaryArtistName', criteriaSearchTerm, CriteriaOperator.Like);
     criteriaValue.OrOperator = true;
     criteria.push(criteriaValue);
 
-    criteriaValue = new CriteriaValueBase('albumName', criteriaSearchTerm, CriteriaOperator.Like);
+    criteriaValue = new CriteriaValueBase('primaryAlbumName', criteriaSearchTerm, CriteriaOperator.Like);
     criteriaValue.OrOperator = true;
     criteria.push(criteriaValue);
 

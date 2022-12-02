@@ -1,5 +1,6 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
+import { IArtistModel } from '../models/artist-model.interface';
 import { AlbumEntity } from './album.entity';
 import { ListEntity } from './base.entity';
 
@@ -38,4 +39,5 @@ export class AlbumViewEntity extends ListEntity implements IAlbumModel {
 
   albumType: string;
   favorite: boolean;
+  primaryArtist: IArtistModel;
 }
