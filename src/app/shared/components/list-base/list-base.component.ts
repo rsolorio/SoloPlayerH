@@ -7,7 +7,7 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IIconAction } from 'src/app/core/models/core.interface';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { IListModel } from '../../models/base-model.interface';
+import { IListItemModel } from '../../models/base-model.interface';
 import { AppEvent } from '../../models/events.enum';
 import { IPaginationModel } from '../../models/pagination-model.interface';
 import { IListBaseModel } from './list-base-model.interface';
@@ -32,9 +32,9 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private filterWithCriteriaIcon = 'mdi-filter-check-outline mdi';
   private filterNoCriteriaIcon = 'mdi-filter-outline mdi';
 
-  @Output() public itemRender: EventEmitter<IListModel> = new EventEmitter();
-  @Output() public itemImageClick: EventEmitter<IListModel> = new EventEmitter();
-  @Output() public itemContentClick: EventEmitter<IListModel> = new EventEmitter();
+  @Output() public itemRender: EventEmitter<IListItemModel> = new EventEmitter();
+  @Output() public itemImageClick: EventEmitter<IListItemModel> = new EventEmitter();
+  @Output() public itemContentClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public initialized: EventEmitter<IListBaseModel> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
@@ -96,7 +96,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.initialized.emit(this.model);
   }
 
-  public onIntersectionChange(isIntersecting: boolean, item: IListModel): void {
+  public onIntersectionChange(isIntersecting: boolean, item: IListItemModel): void {
     if (item.canBeRendered !== isIntersecting) {
       item.canBeRendered = isIntersecting;
       if (item.canBeRendered) {
@@ -105,11 +105,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
   }
 
-  public onImageClick(item: IListModel): void {
+  public onImageClick(item: IListItemModel): void {
     this.itemImageClick.emit(item);
   }
 
-  public onContentClick(item: IListModel): void {
+  public onContentClick(item: IListItemModel): void {
     this.itemContentClick.emit(item);
   }
 

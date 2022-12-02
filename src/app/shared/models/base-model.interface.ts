@@ -5,7 +5,7 @@ export interface IDbModel extends ISelectable {
   name: string;
 }
 
-export interface IListModel extends IDbModel {
+export interface IListItemModel extends IDbModel {
   imageSrc: string;
   canBeRendered: boolean;
   selected: boolean;

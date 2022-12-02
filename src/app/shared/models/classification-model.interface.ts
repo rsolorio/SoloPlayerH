@@ -1,6 +1,6 @@
-import { IListModel } from './base-model.interface';
+import { IListItemModel } from './base-model.interface';
 
-export interface IClassificationModel extends IListModel {
+export interface IClassificationModel extends IListItemModel {
   classificationType: string;
   songCount: number;
 }

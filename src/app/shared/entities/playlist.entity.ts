@@ -1,10 +1,10 @@
 import { Column, Entity, OneToMany, Relation } from "typeorm";
 import { IPlaylistModel } from "../models/playlist-model.interface";
-import { ListEntity } from "./base.entity";
+import { ListItemEntity } from "./base.entity";
 import { PlaylistSongEntity } from "./playlist-song.entity";
 
 @Entity({name: 'playlist'})
-export class PlaylistEntity extends ListEntity implements IPlaylistModel {
+export class PlaylistEntity extends ListItemEntity implements IPlaylistModel {
   @Column({ nullable: true })
   description: string;
   @Column()

@@ -1,6 +1,6 @@
-import { IListModel } from './base-model.interface';
+import { IListItemModel } from './base-model.interface';
 
-export interface IPlaylistModel extends IListModel {
+export interface IPlaylistModel extends IListItemModel {
   description: string;
   songCount: number;
   seconds: number;

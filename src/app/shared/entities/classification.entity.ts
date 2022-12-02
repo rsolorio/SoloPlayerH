@@ -1,10 +1,10 @@
 import { Column, Entity, ManyToMany, Relation } from 'typeorm';
 import { IClassificationModel } from '../models/classification-model.interface';
-import { ListEntity } from './base.entity';
+import { ListItemEntity } from './base.entity';
 import { SongEntity } from './song.entity';
 
 @Entity({name: 'classification'})
-export class ClassificationEntity extends ListEntity implements IClassificationModel {
+export class ClassificationEntity extends ListItemEntity implements IClassificationModel {
   @Column()
   classificationType: string;
 

@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToMany, OneToMany, Relation } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
 import { AlbumEntity } from './album.entity';
-import { ListEntity } from './base.entity';
+import { ListItemEntity } from './base.entity';
 import { SongEntity } from './song.entity';
 
 @Entity({name: 'artist'})
-export class ArtistEntity extends ListEntity implements IArtistModel {
+export class ArtistEntity extends ListItemEntity implements IArtistModel {
   @Column()
   artistType: string;
   @Column()

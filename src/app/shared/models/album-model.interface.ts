@@ -1,7 +1,7 @@
 import { IArtistModel } from './artist-model.interface';
-import { IListModel } from './base-model.interface';
+import { IListItemModel } from './base-model.interface';
 
-export interface IAlbumModel extends IListModel {
+export interface IAlbumModel extends IListItemModel {
   albumType: string;
   releaseYear: number;
   favorite: boolean;

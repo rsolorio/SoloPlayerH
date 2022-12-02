@@ -1,6 +1,6 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IPlaylistModel } from '../models/playlist-model.interface';
-import { ListEntity } from './base.entity';
+import { ListItemEntity } from './base.entity';
 
 /**
  * Fields: id, name, description, favorite, songCount, seconds
@@ -15,7 +15,7 @@ import { ListEntity } from './base.entity';
   ) AS playlistSongCalculations ON playlist.id = playlistSongCalculations.playlistId
 `
 })
-export class PlaylistViewEntity extends ListEntity implements IPlaylistModel {
+export class PlaylistViewEntity extends ListItemEntity implements IPlaylistModel {
   @ViewColumn()
   id: string;
   @ViewColumn()

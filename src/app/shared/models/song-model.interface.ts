@@ -1,8 +1,8 @@
 import { IAlbumModel } from './album-model.interface';
-import { IListModel } from './base-model.interface';
+import { IListItemModel } from './base-model.interface';
 import { PlayerSongStatus } from './player.enum';
 
-export interface ISongModel extends IListModel {
+export interface ISongModel extends IListItemModel {
   filePath: string;
   playCount: number;
   releaseYear: number;

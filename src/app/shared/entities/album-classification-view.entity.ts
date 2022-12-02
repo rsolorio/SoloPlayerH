@@ -1,7 +1,7 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
 import { IArtistModel } from '../models/artist-model.interface';
-import { ListEntity } from './base.entity';
+import { ListItemEntity } from './base.entity';
 
 /**
  * This view combines the album entity with the classification entity.
@@ -23,7 +23,7 @@ import { ListEntity } from './base.entity';
   GROUP BY album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, artist.name, songClass.classificationId
 `
 })
-export class AlbumClassificationViewEntity extends ListEntity implements IAlbumModel {
+export class AlbumClassificationViewEntity extends ListItemEntity implements IAlbumModel {
   @ViewColumn()
   id: string;
   @ViewColumn()

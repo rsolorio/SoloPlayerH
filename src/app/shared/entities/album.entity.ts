@@ -1,11 +1,11 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
 import { ArtistEntity } from './artist.entity';
-import { ListEntity } from './base.entity';
+import { ListItemEntity } from './base.entity';
 import { SongEntity } from './song.entity';
 
 @Entity({name: 'album'})
-export class AlbumEntity extends ListEntity implements IAlbumModel {
+export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   @Column()
   albumType: string;
   @Column()

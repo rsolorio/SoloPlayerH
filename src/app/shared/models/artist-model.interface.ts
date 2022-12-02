@@ -1,6 +1,6 @@
-import { IListModel } from './base-model.interface';
+import { IListItemModel } from './base-model.interface';
 
-export interface IArtistModel extends IListModel {
+export interface IArtistModel extends IListItemModel {
   artistType: string;
   country: string;
   favorite: boolean;

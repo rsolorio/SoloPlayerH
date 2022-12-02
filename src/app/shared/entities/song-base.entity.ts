@@ -1,13 +1,13 @@
 import { IAlbumModel } from "../models/album-model.interface";
 import { PlayerSongStatus } from "../models/player.enum";
-import { ListEntity } from "./base.entity";
+import { ListItemEntity } from "./base.entity";
 
 /**
  * Base class that includes some properties of the ISongModel interface.
  * It does not actually implement the full interface since the properties would
  * need decorators that depend on the parent class.
  */
-export class SongBaseEntity extends ListEntity {
+export class SongBaseEntity extends ListItemEntity {
   releaseYear: number;
   primaryAlbumName: string;
   primaryArtistName: string;

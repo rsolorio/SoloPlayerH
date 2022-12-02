@@ -1,6 +1,6 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
-import { ListEntity } from './base.entity';
+import { ListItemEntity } from './base.entity';
 
 /**
  * Fields: id, name, artistSort, albumCount, songCount
@@ -16,7 +16,7 @@ import { ListEntity } from './base.entity';
   GROUP BY artist.id, artist.name
 `
 })
-export class AlbumArtistViewEntity extends ListEntity implements IArtistModel {
+export class AlbumArtistViewEntity extends ListItemEntity implements IArtistModel {
   @ViewColumn()
   id: string;
   @ViewColumn()

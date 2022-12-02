@@ -1,5 +1,5 @@
 import { BaseEntity, PrimaryColumn, Column } from 'typeorm';
-import { IDbModel, IListModel } from '../models/base-model.interface';
+import { IDbModel, IListItemModel } from '../models/base-model.interface';
 
 export class DbEntity extends BaseEntity implements IDbModel {
   @PrimaryColumn()
@@ -8,7 +8,7 @@ export class DbEntity extends BaseEntity implements IDbModel {
   name: string;
 }
 
-export class ListEntity extends DbEntity implements IListModel {
+export class ListItemEntity extends DbEntity implements IListItemModel {
   canBeRendered: boolean;
   imageSrc: string;
   selected: boolean;
