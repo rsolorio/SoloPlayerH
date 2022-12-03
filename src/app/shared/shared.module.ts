@@ -10,6 +10,7 @@ import { ListBaseComponent } from './components/list-base/list-base.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TransitionImageComponent } from './components/transition-image/transition-image.component';
+import { QuickFilterComponent } from './components/quick-filter/quick-filter.component';
 
 
 
@@ -20,7 +21,8 @@ import { TransitionImageComponent } from './components/transition-image/transiti
     IntersectionObserverTargetDirective,
     QuickSearchComponent,
     ListBaseComponent,
-    TransitionImageComponent
+    TransitionImageComponent,
+    QuickFilterComponent
   ],
   imports: [
     CommonModule,

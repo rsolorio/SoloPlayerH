@@ -7,8 +7,8 @@
       </td>
       <!-- Info -->
       <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">
-        <span class="sp-text-medium">{{model.playerList.current?.name}}</span>
-        <span class="sp-text-tiny sp-play-count">  {{model.playerList.current?.playCountText}}</span>
+        <span class="sp-text-medium">{{model.playerList.current?.song.name}}</span>
+        <span class="sp-text-tiny sp-play-count">  {{model.playerList.current?.song.playCountText}}</span>
         <br>
         <span class="sp-text-small text-muted">{{model.playerList.current?.song.artistName}} | {{model.playerList.current?.song.albumWithYear}}</span>
       </td>

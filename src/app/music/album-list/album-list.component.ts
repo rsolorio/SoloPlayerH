@@ -4,6 +4,8 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { IPromiseItem } from 'src/app/core/services/promise-queue/promise-queue.interface';
+import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
@@ -15,6 +17,7 @@ import { BreadcrumbEventType, BreadcrumbSource, IMusicBreadcrumbModel } from 'sr
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { IAudioInfo } from 'src/app/shared/services/music-metadata/music-metadata.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
@@ -38,7 +41,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private navbarService: NavBarStateService,
     private events: EventsService,
     private metadataService: MusicMetadataService,
-    private db: DatabaseService
+    private db: DatabaseService,
+    private queueService: PromiseQueueService
   ) {
     super();
   }
@@ -195,14 +199,23 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     if (album.imageSrc) {
       return;
     }
+
+    const promiseInfo: IPromiseItem<IAudioInfo> = {
+      promise: this.getMetadataAsync(album),
+      callback: audioInfo => {
+        album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
+      }
+    };
+    this.queueService.sink = promiseInfo;
+  }
+
+  private getMetadataAsync(album: IAlbumModel): Promise<IAudioInfo> {
     const criteriaValue = new CriteriaValueBase('primaryAlbumId', album.id);
-    this.db.getList(SongViewEntity, [criteriaValue]).then(songList => {
+    return this.db.getList(SongViewEntity, [criteriaValue]).then(songList => {
       if (songList && songList.length) {
         // Get any of the songs associated with the album
         const song = songList[0];
-        this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] }).then(audioInfo => {
-          album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
-        });
+        return this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] });
       }
     });
   }
