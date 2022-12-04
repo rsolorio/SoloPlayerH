@@ -1,43 +1,32 @@
 import { Injectable } from '@angular/core';
-import { IPromiseItem, IPromiseQueue } from './promise-queue.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PromiseQueueService {
-
-  private queue: IPromiseQueue = {
-    promises: []
-  };
-
+  private queue: Promise<any>[] = [];
   constructor() { }
 
-  public set sink(promiseItem: IPromiseItem<any>) {
-    this.push(promiseItem.promise, promiseItem.callback);
+  public set sink(promise: Promise<any>) {
+    this.push(promise);
   }
 
-  public push<T>(promise: Promise<T>, callback?: (response: T) => void): void {
-    this.queue.promises.push({
-      promise,
-      callback
-    })
+  public push(promise: Promise<any>): void {
+    this.queue.push(promise);
 
     // If this is the only promise just run it
-    if (this.queue.promises.length === 1) {
+    if (this.queue.length === 1) {
       this.runNextPromise();
     }
   }
 
   private runNextPromise(): void {
     // Make sure there's something to run
-    if (!this.queue.promises.length) {
+    if (!this.queue.length) {
       return;
     }
-    const item = this.queue.promises.shift();
-    item.promise.then(response => {
-      if (item.callback) {
-        item.callback(response);
-      }
+    const item = this.queue.shift();
+    item.then(() => {
       // Once it is done, go to the next promise
       this.runNextPromise();
     });

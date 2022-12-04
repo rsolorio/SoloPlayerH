@@ -3,6 +3,23 @@
 *ngIf="model.paginationModel.items.length > 0"
 spIntersectionObserver
 class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-full-width">
+  <!--
+    HACK: when the table layout is fixed, the structure of the columns is defined by the very first row.
+    Since a "fake" row (row that is out of the viewport and doesn't render real content) has only one column,
+    when it becomes the very first row in the table, the whole table follows its structure.
+    What I'm doing here is "hardcoding" the first row to have the same three columns with the same width for
+    all other rows. It does not actually matter if the row is not visible (collapsed),
+    as long as it is the first row, it will define the structure of the rest of the rows.
+    Since the first row overrides the structure of the rest of the rows, in theory you only need to apply
+    the structure to the first row; in other words, you don't need to style all the rows and columns.
+    I have confirmed this.
+   -->
+  <tr class="sp-table-row-placeholder">
+    <td class="sp-table-image-field"></td>
+    <td></td>
+    <td class="sp-table-context-field"></td>
+  </tr>
+  <!-- Actual rows -->
   <tr
   *ngFor="let item of model.paginationModel.items"
   spIntersectionObserverTarget
@@ -31,15 +48,11 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
         <sp-icon-menu [items]="model.itemMenuList" [context]="item" [iconClass]="'mdi mdi-dots-horizontal'"></sp-icon-menu>
       </td>
     </ng-container>
-    <!-- Placeholder content -->
+    <!-- Fake row, the less content we have here the better, since this is how rows not visible in the view port are rendered. -->
     <ng-container *ngIf="!item.canBeRendered">
-      <td class="sp-table-image-field">
-        <img class="sp-table-loading-image"/>
-      </td>
-      <td class="sp-text-overflow-ellipsis">
-        <span class="sp-text-medium sp-no-select">Loading item...</span>
-      </td>
-      <td class="sp-table-context-field sp-text-center sp-cursor-pointer sp-text-xlarge text-muted">
+      <!-- Forcing the row to have the same height as a real row to make the scrollbar be the right proportion size. -->
+      <td colspan="3" class="sp-table-row-fake">
+        <span class="sp-text-medium">Loading item...</span>
       </td>
     </ng-container>
   </tr>

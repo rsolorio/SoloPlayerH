@@ -5,7 +5,6 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
-import { IPromiseItem } from 'src/app/core/services/promise-queue/promise-queue.interface';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -18,7 +17,6 @@ import { IPaginationModel } from 'src/app/shared/models/pagination-model.interfa
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
-import { IAudioInfo } from 'src/app/shared/services/music-metadata/music-metadata.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
@@ -189,12 +187,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
     if (song.imageSrc) {
       return;
     }
-    const promiseInfo: IPromiseItem<IAudioInfo> = {
-      promise: this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] }),
-      callback: audioInfo => {
-        song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);
-      }
-    };
-    this.queueService.sink = promiseInfo;
+    this.queueService.sink = this.setSongImage(song);
+  }
+
+  public async setSongImage(song: ISongModel): Promise<void> {
+    const audioInfo = await this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] });
+    song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);
   }
 }

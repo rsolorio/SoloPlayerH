@@ -4,6 +4,10 @@ table {
     font-family: $sp-font-family-regular;
 }
 
+.sp-table-row-placeholder {
+    visibility: collapse;
+}
+
 .sp-table-context-field {
     width: 50px;
 }
@@ -26,4 +30,8 @@ table {
     font-size: 2em;
     display: grid;
     text-align: center;
+}
+
+.sp-table-row-fake {
+    height: 59px; // 50px image, 4px padding top, 4px padding bottom, 1px border top
 }
