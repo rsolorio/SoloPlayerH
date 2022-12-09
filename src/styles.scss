@@ -308,6 +308,10 @@ A longer duration allows to properly see the transition in the whole page. */
     font-family: $sp-font-family-regular;
 }
 
+.sp-font-family-narrow {
+    font-family: $sp-font-family-narrow;
+}
+
 // TEXT SIZE  *************************************************************************************
 .sp-text-tiny {
     font-size: 0.6em;

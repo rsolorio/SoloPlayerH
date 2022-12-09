@@ -13,8 +13,9 @@
     <span *ngIf="item.lyrics" class="sp-text-tiny sp-no-select sp-title-batch">LYRICS</span>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-      <i class="mdi-account mdi">&nbsp;</i>{{item.artistName}}&nbsp;&nbsp;<i class="mdi-album mdi">&nbsp;</i>{{item.albumName}}
+      <i class="mdi-account mdi">&nbsp;</i>{{item.artistName}}&nbsp;&nbsp;
+      <i class="mdi-album mdi">&nbsp;</i>{{item.albumName}}&nbsp;&nbsp;
+      <i class="mdi-calendar mdi" *ngIf="item.releaseYear > 0">&nbsp;</i>{{item.releaseYear}}
     </span>
-    <span *ngIf="item.releaseYear > 0" class="sp-color-on-bg-low sp-text-small sp-no-select"> ({{item.releaseYear}})</span>
   </ng-template>
 </sp-list-base>
