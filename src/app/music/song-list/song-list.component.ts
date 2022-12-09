@@ -30,6 +30,7 @@ import { SongListBroadcastService } from './song-list-broadcast.service';
 export class SongListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public appEvent = AppEvent;
+  public playerSongStatus = PlayerSongStatus;
   public itemMenuList: IMenuModel[] = [];
 
   constructor(
