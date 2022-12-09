@@ -22,6 +22,7 @@ body {
     Context Menu        sp-z-7      sp-bg-05
     NavBar              sp-z-5      sp-bg-04
     Player Overlay      sp-z-6      sp-bg-04
+    View Modal          sp-z-3      sp-bg-03
     List Image Backdrop sp-z-1      N/A
     View Container      N/A         sp-bg-01
     Body                N/A         sp-bg
@@ -38,7 +39,7 @@ body {
 }
 
 .sp-z-3 {
-    z-index: 300 !important;
+    z-index: 300 !important; /* View Modal */
 }
 
 .sp-z-4 {

@@ -22,8 +22,12 @@ export interface IMusicModel {
 }
 
 export interface IMusicSearchTerms {
+  /** Artist names to search for. */
   artists: string[];
+  /** Album names to search for. */
   albums: string[];
+  /** Titles to search for. */
   titles: string[];
+  /** A term that will be used to search for artists, albums or titles. */
   wildcard: string;
 }

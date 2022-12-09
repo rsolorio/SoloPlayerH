@@ -122,7 +122,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // All list base components should have a search feature
     const navbar = this.navbarService.getState();
     navbar.rightIcon = {
-      icon:this.filterNoCriteriaIcon,
+      icon: this.filterNoCriteriaIcon,
+      action: () => {
+        this.model.showModal = !this.model.showModal;
+      }
     };
 
     // By default, the clear will perform a search with no search value

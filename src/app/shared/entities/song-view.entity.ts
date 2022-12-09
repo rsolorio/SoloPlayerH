@@ -23,6 +23,9 @@ import { SongEntity } from './song.entity';
     .addSelect('song.mediaNumber', 'mediaNumber')
     .addSelect('song.seconds', 'seconds')
     .addSelect('song.favorite', 'favorite')
+    .addSelect('song.bitrate', 'bitrate')
+    .addSelect('song.vbr', 'vbr')
+    .addSelect('song.lyrics', 'lyrics')
     .addSelect('album.name', 'primaryAlbumName')
     .addSelect('artist.name', 'primaryArtistName')
 })
@@ -55,4 +58,10 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   favorite: boolean;
   @ViewColumn()
   seconds: number;
+  @ViewColumn()
+  bitrate: number;
+  @ViewColumn()
+  vbr: boolean;
+  @ViewColumn()
+  lyrics: string;
 }

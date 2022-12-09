@@ -45,6 +45,9 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     return from(this.db.getList(SongViewEntity, listModel.criteria));
   }
 
+  /**
+   * Gets an object that defines the search terms for specific artists, albums, titles, or just generic values.
+   */
   private buildSearchTerms(searchTerm: string): IMusicSearchTerms {
     const musicSearch: IMusicSearchTerms = {
       artists: [],
@@ -191,8 +194,11 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
   }
 
   private buildArtistAlbumTitleCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
     const criteria: ICriteriaValueBaseModel[] = [];
+    if (!searchTerm) {
+      return criteria;
+    }
+    const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
 
     let criteriaValue = new CriteriaValueBase('primaryArtistName', criteriaSearchTerm, CriteriaOperator.Like);
     criteriaValue.OrOperator = true;

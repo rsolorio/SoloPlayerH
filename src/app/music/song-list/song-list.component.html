@@ -8,6 +8,9 @@
 (itemRender)="onItemRender($event)">
   <ng-template #infoTemplate let-item="item">
     <span class="sp-text-medium sp-no-select">{{item.name}}</span>
+    <span *ngIf="item.vbr" class="sp-text-tiny sp-no-select sp-title-batch">VBR</span>
+    <span *ngIf="item.bitrate === 320000" class="sp-text-tiny sp-no-select sp-title-batch">320 KBPS</span>
+    <span *ngIf="item.lyrics" class="sp-text-tiny sp-no-select sp-title-batch">LYRICS</span>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
       <i class="mdi-account mdi">&nbsp;</i>{{item.artistName}}&nbsp;&nbsp;<i class="mdi-album mdi">&nbsp;</i>{{item.albumName}}

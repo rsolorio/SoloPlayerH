@@ -1,6 +1,5 @@
-<div *ngIf="model.paginationModel.items.length === 0"></div>
 <table
-*ngIf="model.paginationModel.items.length > 0"
+*ngIf="model.paginationModel.items.length > 0 && !model.showModal"
 spIntersectionObserver
 class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-full-width">
   <!--
@@ -24,7 +23,7 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
   *ngFor="let item of model.paginationModel.items"
   spIntersectionObserverTarget
   (intersectionChange)="onIntersectionChange($event, item)"
-  [ngClass]="{ 'sp-selected-item': item.selected }">
+  [ngClass]="{ 'sp-bg-02': item.selected }">
     <!-- Real content -->
     <ng-container *ngIf="item.canBeRendered">
       <!-- Image -->
@@ -57,3 +56,11 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
     </ng-container>
   </tr>
 </table>
+<div *ngIf="model.showModal" class="sp-list-modal sp-full-width sp-full-height sp-z-3 sp-bg-03">
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <input type="text" style="width: 300px;" />
+</div>
