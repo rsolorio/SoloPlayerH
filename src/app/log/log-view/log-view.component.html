@@ -1,0 +1,19 @@
+<table class="sp-table-list sp-color-on-bg-high sp-full-width sp-table-container sp-text-small">
+  <thead>
+    <tr>
+      <th class="sp-column-type">Type</th>
+      <th class="">Message</th>
+      <th class="">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+    *ngFor="let logItem of logItems"
+    (click)="onLogItemClick(logItem)"
+    [ngClass]="{ 'sp-clickable': logItem.data }">
+      <td class="sp-column-type"><i [ngClass]="logItem.type"></i></td>
+      <td class="sp-text-center-v">{{logItem.message}}</td>
+      <td class="sp-text-center-v">{{logItem.dateTime}}</td>
+    </tr>
+  </tbody>
+</table>

@@ -3,6 +3,7 @@ import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { ElectronService } from 'src/app/core/services/electron/electron.service';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { LogService } from 'src/app/core/services/log/log.service';
 import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFileInfo } from 'src/app/shared/services/file/file.interface';
@@ -22,14 +23,15 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   constructor(
     private electron: ElectronService,
     private scanner: ScanService,
-    private events: EventsService) {
+    private events: EventsService,
+    private log: LogService) {
       super();
     }
 
   ngOnInit(): void {
     this.initializeSettings();
     this.subs.sink = this.events.onEvent<IFileInfo>(AppEvent.ScanFile).subscribe(fileInfo => {
-      console.log(fileInfo.path);
+      this.log.info('ScanFile event fired.',  fileInfo.path);
     });
   }
 

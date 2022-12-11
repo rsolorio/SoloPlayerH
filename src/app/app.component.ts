@@ -9,6 +9,7 @@ import { IWindowSize, IWindowSizeChangedEvent } from './core/services/utility/ut
 import { UtilityService } from './core/services/utility/utility.service';
 import { DatabaseService } from './shared/services/database/database.service';
 import { LogService } from './core/services/log/log.service';
+import { FeatureDetectionService } from './core/services/feature-detection/feature-detection.service';
 
 /**
  * The main app component.
@@ -31,17 +32,19 @@ export class AppComponent implements OnInit {
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
-    private router: Router)
+    private router: Router,
+    private featureService: FeatureDetectionService)
   {
     doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
     dbService.dataSource.initialize().then(ds => {
-      console.log('Database initialized!');
+      this.log.info('Database initialized!');
     });
   }
 
   public ngOnInit(): void {
     this.watchRouteChange();
     this.utilities.setAppVersion('0.0.1');
+    this.log.info('Feature info initialized.', this.featureService.get());
   }
 
   @HostListener('window:scroll', ['$event'])

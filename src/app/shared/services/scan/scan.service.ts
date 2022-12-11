@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity, PlaylistEntity, PlaylistSongEntity } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
@@ -21,7 +22,8 @@ export class ScanService {
     private metadataService: MusicMetadataService,
     private utilities: UtilityService,
     private db: DatabaseService,
-    private events: EventsService) { }
+    private events: EventsService,
+    private log: LogService) { }
 
   scan(folderPath: string, extension: string): Promise<IFileInfo[]> {
     return new Promise(resolve => {
@@ -456,7 +458,7 @@ export class ScanService {
       return playlistSong;
     }
 
-    console.log('Playlist audio file not found: ' + songFilePath);
+    this.log.warn('Playlist audio file not found.', songFilePath);
     return null;
   }
 }

@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeViewComponent } from './home/home-view/home-view.component';
+import { LogViewComponent } from './log/log-view/log-view.component';
+import { LogModule } from './log/log.module';
 import { AlbumListComponent } from './music/album-list/album-list.component';
 import { ArtistListComponent } from './music/artist-list/artist-list.component';
 import { ClassificationListComponent } from './music/classification-list/classification-list.component';
@@ -20,6 +22,7 @@ const routes: Routes = [
   { path: 'genres', component: ClassificationListComponent },
   { path: 'songs', component: SongListComponent },
   { path: 'playlists', component: PlaylistListComponent },
+  { path: 'log', component: LogViewComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
@@ -27,7 +30,8 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
     MusicModule,
-    SettingsModule
+    SettingsModule,
+    LogModule
   ],
   exports: [RouterModule]
 })
