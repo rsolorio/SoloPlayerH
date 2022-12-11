@@ -16,7 +16,7 @@ export class LogViewComponent implements OnInit {
     private navBarService: NavBarStateService) { }
 
   ngOnInit(): void {
-    this.logItems = this.log.get();
+    this.reloadLogEntries();
     this.initializeNavbar();
   }
 
@@ -44,7 +44,11 @@ export class LogViewComponent implements OnInit {
       },
       rightIcon: {
         icon: 'mdi mdi-eraser',
-        action: () => { this.log.clear(); }
+        action: () => {
+          this.log.clear();
+          this.reloadLogEntries();
+          this.navBarService.showToast('Log entries deleted.');
+        }
       }
     });
   }
@@ -52,5 +56,9 @@ export class LogViewComponent implements OnInit {
   public onLogItemClick(logItem: ILogEntry) {
     if (logItem.data) {
     }
+  }
+
+  private reloadLogEntries(): void {
+    this.logItems = this.log.get();
   }
 }

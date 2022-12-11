@@ -76,7 +76,7 @@ export class LogService {
     const entry: ILogEntry = {
       message,
       type,
-      dateTime: new Date().toLocaleString()
+      dateTime: new Date()
     };
 
     let color = '';

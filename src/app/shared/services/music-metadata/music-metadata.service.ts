@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { readFileSync, readFile } from 'fs';
-import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
+// import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
+import * as musicMetadata from 'music-metadata-browser';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { IFileInfo } from '../file/file.interface';
 import { IAudioInfo } from './music-metadata.interface';
@@ -22,11 +23,11 @@ export class MusicMetadataService {
       const fileBuffer = readFileSync(fileInfo.path);
       const info: IAudioInfo = {
         fileInfo,
-        metadata: await parseBuffer(fileBuffer),
+        metadata: await musicMetadata.parseBuffer(fileBuffer),
         fullyParsed: false
       };
       if (enforceDuration && !info.metadata.format.duration) {
-        info.metadata = await parseBuffer(fileBuffer, null, { duration: true});
+        info.metadata = await musicMetadata.parseBuffer(fileBuffer, null, { duration: true});
         info.fullyParsed = true;
       }
       return info;
@@ -55,10 +56,10 @@ export class MusicMetadataService {
           resolve(result);
         }
         else {
-          parseBuffer(data).then(metadata => {
+          musicMetadata.parseBuffer(data).then(metadata => {
             result.metadata = metadata;
             if (enforceDuration && !metadata.format.duration) {
-              parseBuffer(data, null, { duration: true}).then(metadata2 => {
+              musicMetadata.parseBuffer(data, null, { duration: true}).then(metadata2 => {
                 result.metadata = metadata2;
                 result.fullyParsed = true;
                 resolve(result);
@@ -79,11 +80,11 @@ export class MusicMetadataService {
     });
   }
 
-  public getId3v24Tags(metadata: IAudioMetadata): ITag[] {
+  public getId3v24Tags(metadata: musicMetadata.IAudioMetadata): musicMetadata.ITag[] {
     return metadata.native['ID3v2.4'];
   }
 
-  public getTag<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T {
+  public getTag<T>(tagId: string, tags: musicMetadata.ITag[], isUserDefined?: boolean): T {
     let result = null;
     if (tags && tags.length) {
       const actualTagId = isUserDefined ? 'TXXX:' + tagId.toUpperCase() : tagId.toUpperCase();
@@ -99,7 +100,7 @@ export class MusicMetadataService {
     return result as T;
   }
 
-  public getTags<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T[] {
+  public getTags<T>(tagId: string, tags: musicMetadata.ITag[], isUserDefined?: boolean): T[] {
     const result: T[] = [];
 
     if (tags && tags.length) {
@@ -117,7 +118,7 @@ export class MusicMetadataService {
     return result;
   }
 
-  public getId3v24Identifier(metadata: IAudioMetadata): string {
+  public getId3v24Identifier(metadata: musicMetadata.IAudioMetadata): string {
     let result: string = null;
     const tags = this.getId3v24Tags(metadata);
     for (const tag of tags) {
@@ -131,8 +132,8 @@ export class MusicMetadataService {
     return result;
   }
 
-  public getPictureDataUrl(audioMetadata: IAudioMetadata, type?: string): string {
-    let picture: IPicture = null;
+  public getPictureDataUrl(audioMetadata: musicMetadata.IAudioMetadata, type?: string): string {
+    let picture: musicMetadata.IPicture = null;
     if (audioMetadata.common.picture && audioMetadata.common.picture.length) {
       if (type) {
         picture = audioMetadata.common.picture.find(item => {

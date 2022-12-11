@@ -1,19 +1,21 @@
 <table class="sp-table-list sp-color-on-bg-high sp-full-width sp-table-container sp-text-small">
   <thead>
     <tr>
+      <!-- Headers are "text-align:center" by default, but we want Message and Date match the rows. -->
       <th class="sp-column-type">Type</th>
-      <th class="">Message</th>
-      <th class="">Date</th>
+      <th class="sp-column-data">Message</th>
+      <th class="sp-column-data">Date</th>
     </tr>
   </thead>
   <tbody>
+    <!-- Rows are "text-align:left" by default, but we want the log icon to be centered. -->
     <tr
     *ngFor="let logItem of logItems"
     (click)="onLogItemClick(logItem)"
     [ngClass]="{ 'sp-clickable': logItem.data }">
       <td class="sp-column-type"><i [ngClass]="logItem.type"></i></td>
-      <td class="sp-text-center-v">{{logItem.message}}</td>
-      <td class="sp-text-center-v">{{logItem.dateTime}}</td>
+      <td class="sp-column-data sp-text-center-v">{{logItem.message}}</td>
+      <td class="sp-column-data sp-text-center-v">{{logItem.dateTime | readableDateTime}}</td>
     </tr>
   </tbody>
 </table>

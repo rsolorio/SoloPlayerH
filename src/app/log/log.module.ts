@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogViewComponent } from './log-view/log-view.component';
+import { CoreModule } from '../core/core.module';
 
 
 @NgModule({
@@ -8,7 +9,8 @@ import { LogViewComponent } from './log-view/log-view.component';
     LogViewComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    CoreModule
   ]
 })
 export class LogModule { }

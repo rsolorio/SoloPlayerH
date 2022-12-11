@@ -200,11 +200,20 @@ export class UtilityService {
     return Math.floor((utc1 - utc2) / this.msPerDay);
   }
 
-  public toReadableDate(date: Date): string {
+  public toReadableDate(date: Date, dateSeparator?: string): string {
     const yearText = date.toLocaleString('default', { year: 'numeric'});
-    const monthText = date.toLocaleString('default', { month: 'short'});
-    const dayText = date.toLocaleString('default', { day: 'numeric'});
-    return `${yearText}-${monthText}-${dayText}`;
+    const monthText = date.toLocaleString('default', { month: '2-digit'});
+    const dayText = date.toLocaleString('default', { day: '2-digit'});
+
+    if (!dateSeparator) {
+      dateSeparator = '-';
+    }
+    return `${yearText}${dateSeparator}${monthText}${dateSeparator}${dayText}`;
+  }
+
+  public toReadableDateAndTime(date: Date, dateSeparator?: string): string {
+    const readableDate = this.toReadableDate(date, dateSeparator);
+    return `${readableDate}, ${date.toLocaleTimeString()}`;
   }
 
   /**

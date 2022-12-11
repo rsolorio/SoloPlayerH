@@ -3,6 +3,6 @@ import { LogType } from './log.enum';
 export interface ILogEntry {
     message: string;
     type: LogType;
-    dateTime: string;
+    dateTime: Date;
     data?: string;
 }
