@@ -73,4 +73,9 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
 
   @OneToMany(type => PlaylistSongEntity, playlistSong => playlistSong.song)
   playlistSongs: Relation<PlaylistSongEntity[]>;
+
+  // Empty properties from ISongModel interface
+  primaryAlbumId: string;
+  primaryArtistId: string;
+  classificationId: string;
 }

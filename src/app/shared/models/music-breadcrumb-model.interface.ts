@@ -22,5 +22,6 @@ export enum BreadcrumbEventType {
   Add,
   AddMultiple,
   Remove,
-  RemoveMultiple
+  RemoveMultiple,
+  Replace
 }

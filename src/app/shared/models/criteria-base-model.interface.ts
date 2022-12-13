@@ -12,6 +12,7 @@ export interface ICriteriaValueBaseModel {
     OrOperator: boolean;
     SortDirection: CriteriaSortDirection;
     SortSequence: number;
+    IgnoreInSelect?: boolean;
 }
 
 export enum CriteriaOperator {

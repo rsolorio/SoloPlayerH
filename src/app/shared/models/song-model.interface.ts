@@ -23,4 +23,7 @@ export interface ISongModel extends IListItemModel {
   seconds: number;
   primaryAlbum: IAlbumModel;
   playerStatus: PlayerSongStatus;
+  primaryAlbumId: string;
+  primaryArtistId: string;
+  classificationId: string;
 }

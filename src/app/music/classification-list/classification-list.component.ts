@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
-import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
+import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
-import { SearchWildcard } from 'src/app/shared/models/search.enum';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
@@ -21,7 +21,7 @@ import { ClassificationListBroadcastService } from './classification-list-broadc
   styleUrls: ['./classification-list.component.scss']
 })
 export class ClassificationListComponent extends CoreComponent implements OnInit {
-
+  @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public appEvent = AppEvent;
   public itemMenuList: IMenuModel[] = [];
   public isGenreList = false;
@@ -63,6 +63,15 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       caption: 'Play',
       icon: 'mdi-play mdi',
       action: param => {}
+    });
+
+    this.itemMenuList.push({
+      caption: 'Select',
+      icon: 'mdi-select mdi',
+      action: param => {
+        const classification = param as IClassificationModel;
+        classification.selected = true;
+      }
     });
 
     this.itemMenuList.push({
@@ -113,10 +122,20 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   private addBreadcrumb(classification: IClassificationModel): void {
-    const criteriaItem = new CriteriaValueBase('classificationId', classification.id, CriteriaOperator.Equals);
+    const criteria: ICriteriaValueBaseModel[] = [];
+    const criteriaValue = new CriteriaValueBase('classificationId', classification.id);
+    criteriaValue.IgnoreInSelect = true;
+    criteria.push(criteriaValue);
+    const selectedItems = this.spListBaseComponent.getSelectedItems();
+    if (selectedItems.length) {
+      for (const item of selectedItems) {
+        criteria.push(new CriteriaValueBase('classificationId', item.id));
+      }
+    }
     this.breadcrumbsService.add({
-      caption: classification.name,
-      criteriaList: [ criteriaItem ],
+      // TODO: what should be the same for multiple classifications?
+      caption: criteria.length ? 'Various' : classification.name,
+      criteriaList: criteria,
       source: BreadcrumbSource.Classification
     });
   }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IStateService } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from '../../models/events.enum';
 import { PlayerListModel } from '../../models/player-list-model.class';
@@ -44,7 +45,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
 
   constructor(
     private events: EventsService,
-    private utilities: UtilityService)
+    private utilities: UtilityService,
+    private log: LogService)
   {
     this.htmlAudio = new Audio();
     this.subscribeToAudioEvents();
@@ -272,7 +274,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
 
   private setMediaSessionListeners() {
     if (!this.isMediaSessionSupported() || !this.state.mediaSessionEnabled) {
-      // this.log.warn('MediaSession not supported.');
+      this.log.warn('MediaSession not supported.');
       return;
     }
 
@@ -341,7 +343,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       this.registerEvent(HtmlMediaEvent.Custom, 'Load success');
     }
     catch (error) {
-      // this.log.error('Load audio error', error);
+      this.log.error('Load audio error', error);
     }
   }
 
@@ -349,7 +351,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     this.htmlAudio.play().then(() => {
       this.registerEvent(HtmlMediaEvent.Custom, 'Play success');
     }).catch(error => {
-      // this.log.error('Play audio error', error);
+      this.log.error('Play audio error', error);
     });
     if (startTime && startTime > 0) {
       this.htmlAudio.currentTime = startTime;
@@ -451,7 +453,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
   private subscribeToAudioEvents() {
     this.htmlAudio.addEventListener(HtmlMediaEvent.TimeUpdate, () => {
       if (this.htmlAudio.currentTime) {
-        // this.log.debug('timeupdate ' + this.html5Audio.currentTime);
+        this.log.debug('timeupdate ' + this.htmlAudio.currentTime);
       }
       else {
         this.registerEvent(HtmlMediaEvent.TimeUpdate, '01 - time has been set to 0');
@@ -549,7 +551,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
 
     this.htmlAudio.addEventListener(HtmlMediaEvent.Error, (errorInfo) => {
       this.registerEvent(HtmlMediaEvent.Error);
-      //this.log.error('Error event raised.', errorInfo);
+      this.log.error('Error event raised.', errorInfo);
       this.state.hasError = true;
     });
 

@@ -51,7 +51,10 @@ export class PlayerListModel {
       playerStatus: PlayerSongStatus.Empty,
       imageSrc: DefaultImageSrc.Small,
       canBeRendered: false,
-      selected: false
+      selected: false,
+      primaryAlbumId: null,
+      primaryArtistId: null,
+      classificationId: null
     },
     playlist: null
   };

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, Type } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -136,8 +136,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     };
 
     if (navbar.componentType) {
-      this.navbarService.loadComponent(navbar.componentType);
-      navbar.mode = NavbarDisplayMode.Component;
+      this.showComponent(navbar.componentType);
     }
     else if (navbar.title) {
       navbar.mode = NavbarDisplayMode.Title;
@@ -153,6 +152,15 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         }
       }
     ];
+  }
+
+  public showComponent(componentType: Type<any>): void {
+    this.navbarService.loadComponent(componentType);
+    this.navbarService.getState().mode = NavbarDisplayMode.Component;
+  }
+
+  public getSelectedItems():IListItemModel[] {
+    return this.model.paginationModel.items.filter(item => item.selected);
   }
 
   private toggleSearch(navbar: INavbarModel): void {

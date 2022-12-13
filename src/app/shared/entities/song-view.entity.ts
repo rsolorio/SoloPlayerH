@@ -64,4 +64,7 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   vbr: boolean;
   @ViewColumn()
   lyrics: string;
+
+  // Empty properties from ISongModel interface
+  classificationId: string;
 }

@@ -4,7 +4,11 @@ import { SongBaseEntity } from './song-base.entity';
 
 /**
  * This view combines the song entity with the songArtist entity.
- * It is intended to be used by filtering using the artistId column;
+ * It can be used to determine which artists are related with a particular song filtering by id (songId).
+ * It can be used to get all the songs associated with one artist filtering by artistId.
+ * However, it cannot be used with multiple artists since it will not return unique song rows
+ * since the artistId column is part of the query and it causes the song rows to be duplicated;
+ * for instance, if two artists are associated with one song, you will get two song rows.
  * Fields: id, name, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, albumName, artistName, titleSort, primaryAlbumId, primaryArtistId, artistId
  * TODO: use standard typeorm syntax to create query, example: PlaylistSongViewEntity
  */
@@ -52,4 +56,7 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   primaryArtistId: string;
   @ViewColumn()
   artistId: string;
+
+  // Empty properties from ISongModel interface
+  classificationId: string;
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
@@ -149,6 +150,9 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   private addBreadcrumb(artist: IArtistModel): void {
     const columnName = this.isAlbumArtist ? 'primaryArtistId' : 'artistId';
     const criteriaItem = new CriteriaValueBase(columnName, artist.id, CriteriaOperator.Equals);
+    if (columnName === 'artistId') {
+      criteriaItem.IgnoreInSelect = true;
+    }
     this.breadcrumbsService.add({
       caption: artist.name,
       criteriaList: [ criteriaItem ],
@@ -166,6 +170,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     }
     else {
       this.loadAllArtists();
+      this.navbarService.getState().mode = NavbarDisplayMode.Title;
     }
   }
 

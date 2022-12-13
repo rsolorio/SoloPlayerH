@@ -37,6 +37,7 @@ export class CriteriaValueBase implements ICriteriaValueBaseModel {
   public OrOperator = false;
   public SortDirection = CriteriaSortDirection.Ascending;
   public SortSequence = 0;
+  public IgnoreInSelect = false;
 
   /**
    * Creates a new CriteriaValueBase object.

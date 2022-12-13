@@ -11,8 +11,9 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlayerOverlayStateService } from 'src/app/player/player-overlay/player-overlay-state.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
+import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { BreadcrumbEventType } from 'src/app/shared/models/music-breadcrumb-model.interface';
+import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
@@ -21,6 +22,10 @@ import { MusicMetadataService } from 'src/app/shared/services/music-metadata/mus
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { SongListBroadcastService } from './song-list-broadcast.service';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { SongArtistViewEntity } from 'src/app/shared/entities';
+import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 
 @Component({
   selector: 'sp-song-list',
@@ -44,7 +49,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private menuService: MenuService,
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
-    private queueService: PromiseQueueService
+    private queueService: PromiseQueueService,
+    private db: DatabaseService
   ) {
     super();
   }
@@ -54,7 +60,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.initializeItemMenu();
 
     this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.MusicBreadcrumbUpdated).subscribe(eventType => {
-      if (eventType === BreadcrumbEventType.RemoveMultiple) {
+      if (eventType === BreadcrumbEventType.RemoveMultiple || eventType === BreadcrumbEventType.Replace) {
         this.loadData();
       }
     });
@@ -92,7 +98,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.itemMenuList.push({
       caption: 'Play',
       icon: 'mdi-play mdi',
-      action: param => {}
+      action: param => {
+        this.playSong(param as ISongModel);
+      }
     });
 
     this.itemMenuList.push({
@@ -100,7 +108,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-web mdi',
       action: param => {
         const song = param as ISongModel;
-        this.utility.googleSearch(song.name);
+        this.utility.googleSearch(`${song.artistName} ${song.name}`);
       }
     });
 
@@ -114,9 +122,65 @@ export class SongListComponent extends CoreComponent implements OnInit {
         }
       }
     });
+
+    this.itemMenuList.push({
+      caption: 'Album Artist Songs',
+      icon: 'mdi-account-badge mdi',
+      action: param => {
+        const song = param as ISongModel;
+        const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
+        const criteriaItem = new CriteriaValueBase('primaryArtistId', primaryArtistId);
+        this.breadcrumbsService.replace([{
+          caption: song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name,
+          criteriaList: [ criteriaItem ],
+          source: BreadcrumbSource.AlbumArtist
+        }]);
+      }
+    });
+
+    this.itemMenuList.push({
+      caption: 'Feat. Artists Songs',
+      icon: 'mdi-account-music mdi',
+      action: param => {
+        const song = param as ISongModel;
+        const criteriaValue = new CriteriaValueBase('id', song.id);
+        this.db.getList(SongArtistViewEntity, [criteriaValue]).then(songArtistRows => {
+          const criteria: ICriteriaValueBaseModel[] = [];
+          for (var songArtist of songArtistRows) {
+            // Ignore the primary artist
+            const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
+            if (songArtist.artistId !== primaryArtistId) {
+              console.log(songArtist.artistId);
+              criteria.push(new CriteriaValueBase('artistId', songArtist.artistId));
+            }
+          }
+
+          const artistName = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
+          if (criteria.length) {
+            this.breadcrumbsService.replace([{
+              // TODO: what should be the caption?
+              caption: criteria.length ? 'Various' : artistName,
+              criteriaList: criteria,
+              source: BreadcrumbSource.Artist
+            }]);
+          }
+        });
+      }
+    });
+  }
+
+  private showBreadcrumbs(): void {
+    const navbar = this.navbarService.getState();
+    if (navbar.componentType !== MusicBreadcrumbsComponent || navbar.mode !== NavbarDisplayMode.Component) {
+      this.spListBaseComponent.showComponent(MusicBreadcrumbsComponent);
+    }
   }
 
   public onItemContentClick(song: ISongModel): void {
+    this.playSong(song);
+  }
+
+  private playSong(song: ISongModel): void {
     this.menuService.hideSlideMenu();
     this.loadSongInPlayer(song, true, false);
   }
@@ -164,9 +228,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
   private loadData(): void {
     if (this.breadcrumbsService.hasBreadcrumbs()) {
       this.loadSongs();
+      this.showBreadcrumbs();
     }
     else {
       this.loadAllSongs();
+      this.navbarService.getState().mode = NavbarDisplayMode.Title;
     }
   }
 

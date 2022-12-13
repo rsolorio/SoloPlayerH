@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral, SelectQueryBuilder } from 'typeorm';
+import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { createHash } from 'crypto';
 import { IClassificationModel } from '../../models/classification-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
@@ -117,22 +117,41 @@ export class DatabaseService {
     });
   }
 
-  public async getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: ICriteriaValueBaseModel[]): Promise<T[]> {
+  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: ICriteriaValueBaseModel[]): Promise<T[]> {
     const entityTempName = 'getListEntity';
-    const queryBuilder = this.dataSource.getRepository(entity).createQueryBuilder(entityTempName);
-    return this.applyCriteria(queryBuilder, entityTempName, criteria).getMany();
+    const repo = this.dataSource.getRepository(entity);
+    return this.createQueryBuilder(repo, entityTempName, criteria).getMany();
   }
 
-  private applyCriteria<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
+  private createQueryBuilder<T>(
+    repo: Repository<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
   ): SelectQueryBuilder<T> {
+    let queryBuilder = repo.createQueryBuilder(entityName);
+
     if (!criteria || !criteria.length) {
       return queryBuilder;
+    }
+
+    // Build select
+    let hasColumns = false;
+    for (const column of repo.metadata.columns) {
+      const criteriaValue = criteria.find(item => item.ColumnName === column.databaseName);
+      if (!criteriaValue || !criteriaValue.IgnoreInSelect) {
+        const columnName = `${entityName}.${column.databaseName}`;
+        if (hasColumns) {
+          queryBuilder.addSelect(columnName);
+        }
+        else {
+          queryBuilder.select(columnName);
+          hasColumns = true;
+        }
+      }
     }
 
     // Build where clause
     let hasWhere = false;
     const whereCriteria = criteria.filter(criteriaItem => criteriaItem.Operator !== CriteriaOperator.None);
+    // TODO: group criteria by column and then use brackets feature
     whereCriteria.forEach(criteriaItem => {
       const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${criteriaItem.ColumnName}`;
       const parameter = {};
