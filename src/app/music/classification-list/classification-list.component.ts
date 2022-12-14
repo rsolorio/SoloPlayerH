@@ -124,18 +124,22 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   private addBreadcrumb(classification: IClassificationModel): void {
     const criteria: ICriteriaValueBaseModel[] = [];
     const criteriaValue = new CriteriaValueBase('classificationId', classification.id);
+    criteriaValue.DisplayName = classification.classificationType;
+    criteriaValue.DisplayValue = classification.name;
     criteriaValue.IgnoreInSelect = true;
     criteria.push(criteriaValue);
     const selectedItems = this.spListBaseComponent.getSelectedItems();
     if (selectedItems.length) {
       for (const item of selectedItems) {
-        const criteriaItem = new CriteriaValueBase('classificationId', item.id);
+        const classification = item as IClassificationModel;
+        const criteriaItem = new CriteriaValueBase('classificationId', classification.id);
+        criteriaItem.DisplayName = classification.classificationType;
+        criteriaItem.DisplayValue = classification.name;
         criteriaItem.IgnoreInSelect = true;
         criteria.push(criteriaItem);
       }
     }
     this.breadcrumbsService.add({
-      caption: classification.name,
       criteriaList: criteria,
       source: BreadcrumbSource.Classification
     });

@@ -409,6 +409,14 @@ A longer duration allows to properly see the transition in the whole page. */
     vertical-align: middle !important;
 }
 
+.sp-text-super-v {
+    vertical-align: super;
+}
+
+.sp-text-sub-v {
+    vertical-align: sub;
+}
+
 .sp-text-bold {
     font-weight: bold;
 }

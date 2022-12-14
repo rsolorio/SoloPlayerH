@@ -23,6 +23,7 @@ export class MusicBreadcrumbsStateService {
   }
 
   public add(newBreadcrumb: IMusicBreadcrumbModel): void {
+    this.setupTooltip(newBreadcrumb);
     // First make sure all current breadcrumbs will not be marked as last
     for (const breadcrumb of this.state) {
       breadcrumb.last = false;
@@ -65,7 +66,7 @@ export class MusicBreadcrumbsStateService {
     return result;
   }
 
-  public replace(breadcrumbs: IMusicBreadcrumbModel[]): void {
+  public replace(breadcrumbs: IMusicBreadcrumbModel[], forceReload?: boolean): void {
     this.clear();
     this.eventsEnabled = false;
     for (var breadcrumb of breadcrumbs) {
@@ -73,6 +74,9 @@ export class MusicBreadcrumbsStateService {
     }
     this.eventsEnabled = true;
     this.events.broadcast(AppEvent.MusicBreadcrumbUpdated, BreadcrumbEventType.Replace);
+    if (forceReload) {
+      this.reload();
+    }
   }
 
   public getLast(): IMusicBreadcrumbModel {
@@ -94,5 +98,25 @@ export class MusicBreadcrumbsStateService {
       }
     }
     return result;
+  }
+
+  public setupTooltip(breadcrumb: IMusicBreadcrumbModel): void {
+    if (breadcrumb.tooltip) {
+      return;
+    }
+
+    if (breadcrumb.criteriaList.length) {
+      breadcrumb.tooltip = '';
+      for (const criteriaItem of breadcrumb.criteriaList) {
+        if (breadcrumb.tooltip) {
+          breadcrumb.tooltip += ', ';
+        }
+        breadcrumb.tooltip += criteriaItem.DisplayValue;
+      }
+    }
+  }
+
+  public reload() {
+    this.events.broadcast(AppEvent.MusicBreadcrumbUpdated, BreadcrumbEventType.Updated);
   }
 }

@@ -38,6 +38,8 @@ export class CriteriaValueBase implements ICriteriaValueBaseModel {
   public SortDirection = CriteriaSortDirection.Ascending;
   public SortSequence = 0;
   public IgnoreInSelect = false;
+  public DisplayName?: string;
+  public DisplayValue?: string;
 
   /**
    * Creates a new CriteriaValueBase object.

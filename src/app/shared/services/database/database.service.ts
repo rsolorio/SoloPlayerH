@@ -36,6 +36,12 @@ import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 })
 export class DatabaseService {
 
+  private columnDisplayNames: { [columnName: string]: string } = {
+    'artistId': 'Artist',
+    'primaryArtistId': 'Album Artist',
+    'primaryAlbumId': 'Album',
+    'classificationId': 'Classification'
+  };
   public dataSource: DataSource;
 
   constructor(private utilities: UtilityService) {
@@ -65,6 +71,10 @@ export class DatabaseService {
       logging: ['query', 'error', 'warn']
     };
     this.dataSource = new DataSource(options);
+  }
+
+  public displayName(columnName: string): string {
+    return this.columnDisplayNames[columnName];
   }
 
   public hash(value: string): string {

@@ -130,11 +130,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const song = param as ISongModel;
         const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
         const criteriaItem = new CriteriaValueBase('primaryArtistId', primaryArtistId);
+        criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
+        criteriaItem.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
         this.breadcrumbsService.replace([{
-          caption: song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name,
           criteriaList: [ criteriaItem ],
           source: BreadcrumbSource.AlbumArtist
-        }]);
+        }], true);
       }
     });
 
@@ -146,23 +147,22 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const criteriaValue = new CriteriaValueBase('id', song.id);
         this.db.getList(SongArtistViewEntity, [criteriaValue]).then(songArtistRows => {
           const criteria: ICriteriaValueBaseModel[] = [];
-          let firstArtistName = '';
           for (var songArtist of songArtistRows) {
             // Ignore the primary artist
             const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
             if (songArtist.artistId !== primaryArtistId) {
-              firstArtistName = firstArtistName ? firstArtistName : songArtist.artistName;
               const criteriaItem = new CriteriaValueBase('artistId', songArtist.artistId);
               criteriaItem.IgnoreInSelect = true;
+              criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
+              criteriaItem.DisplayValue = songArtist.artistName;
               criteria.push(criteriaItem);
             }
           }
           if (criteria.length) {
             this.breadcrumbsService.replace([{
-              caption: firstArtistName,
               criteriaList: criteria,
               source: BreadcrumbSource.Artist
-            }]);
+            }], true);
           }
         });
       }

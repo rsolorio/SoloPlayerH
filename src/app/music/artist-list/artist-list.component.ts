@@ -8,12 +8,11 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
-import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
-import { SearchWildcard } from 'src/app/shared/models/search.enum';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
@@ -35,7 +34,8 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private loadingService: LoadingViewStateService,
     private breadcrumbsService: MusicBreadcrumbsStateService,
     private navbarService: NavBarStateService,
-    private events: EventsService
+    private events: EventsService,
+    private db: DatabaseService
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoutes.AlbumArtists);
@@ -149,12 +149,13 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private addBreadcrumb(artist: IArtistModel): void {
     const columnName = this.isAlbumArtist ? 'primaryArtistId' : 'artistId';
-    const criteriaItem = new CriteriaValueBase(columnName, artist.id, CriteriaOperator.Equals);
+    const criteriaItem = new CriteriaValueBase(columnName, artist.id);
+    criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
+    criteriaItem.DisplayValue = artist.name;
     if (columnName === 'artistId') {
       criteriaItem.IgnoreInSelect = true;
     }
     this.breadcrumbsService.add({
-      caption: artist.name,
       criteriaList: [ criteriaItem ],
       source: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
     });

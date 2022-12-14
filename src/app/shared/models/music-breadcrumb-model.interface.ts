@@ -3,7 +3,8 @@ import { ICriteriaValueBaseModel } from "./criteria-base-model.interface";
 export interface IMusicBreadcrumbModel {
   source: BreadcrumbSource;
   sequence?: number;
-  caption: string;
+  caption?: string;
+  tooltip?: string;
   icon?: string;
   last?: boolean;
   criteriaList: ICriteriaValueBaseModel[];
@@ -23,5 +24,6 @@ export enum BreadcrumbEventType {
   AddMultiple,
   Remove,
   RemoveMultiple,
-  Replace
+  Replace,
+  Updated
 }

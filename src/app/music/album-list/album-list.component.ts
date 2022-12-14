@@ -134,18 +134,20 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     if (!hasAlbumArtist) {
       const albumView = album as AlbumViewEntity;
       if (albumView && albumView.primaryArtistId) {
-        const item = new CriteriaValueBase('primaryArtistId', albumView.primaryArtistId, CriteriaOperator.Equals);
+        const criteriaItem = new CriteriaValueBase('primaryArtistId', albumView.primaryArtistId);
+        criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
+        criteriaItem.DisplayValue = album.artistName;
         this.breadcrumbsService.add({
-          caption: album.artistName,
-          criteriaList: [ item ],
+          criteriaList: [ criteriaItem ],
           source: BreadcrumbSource.AlbumArtist
         });
       }
     }
 
-    const criteriaItem = new CriteriaValueBase('primaryAlbumId', album.id, CriteriaOperator.Equals);
+    const criteriaItem = new CriteriaValueBase('primaryAlbumId', album.id);
+    criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
+    criteriaItem.DisplayValue = album.name;
     this.breadcrumbsService.add({
-      caption: album.name,
       criteriaList: [ criteriaItem ],
       source: BreadcrumbSource.Album
     });

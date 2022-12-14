@@ -1,12 +1,13 @@
 <div #breadcrumbsContainer class="sp-breadcrumbs sp-scrollbar-hidden" (scroll)="onContainerScroll()">
   <div *ngFor="let breadcrumb of model;let isLast = last;" (click)="onClick(breadcrumb)" class="sp-breadcrumb">
-    <div class="sp-breadcrumb-content sp-bg-09 sp-clickable">
+    <div class="sp-breadcrumb-content sp-bg-09 sp-clickable" [title]="breadcrumb.tooltip">
       <!-- Icon -->
       <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon"></i>
       <!-- Caption -->
       <span *ngIf="breadcrumb.caption" class="sp-text-large">{{breadcrumb.caption}}</span>
+      <span *ngIf="!breadcrumb.caption" class="sp-text-large">{{breadcrumb.criteriaList[0].DisplayValue}}</span>
       <!-- Multiple info -->
-      <span *ngIf="breadcrumb.criteriaList.length > 1" class="sp-text-large">&nbsp;(+{{breadcrumb.criteriaList.length - 1}})</span>
+      <span *ngIf="breadcrumb.criteriaList.length > 1" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaList.length - 1}}</span>
       <!-- Close icon -->
       <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>
       <i *ngIf="isLast" class="mdi-close mdi sp-color-on-bg-low sp-text-medium"></i>
