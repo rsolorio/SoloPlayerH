@@ -129,12 +129,13 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     const selectedItems = this.spListBaseComponent.getSelectedItems();
     if (selectedItems.length) {
       for (const item of selectedItems) {
-        criteria.push(new CriteriaValueBase('classificationId', item.id));
+        const criteriaItem = new CriteriaValueBase('classificationId', item.id);
+        criteriaItem.IgnoreInSelect = true;
+        criteria.push(criteriaItem);
       }
     }
     this.breadcrumbsService.add({
-      // TODO: what should be the same for multiple classifications?
-      caption: criteria.length ? 'Various' : classification.name,
+      caption: classification.name,
       criteriaList: criteria,
       source: BreadcrumbSource.Classification
     });

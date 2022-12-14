@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, DataSource, DataSourceOptions, EntityTarget, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { createHash } from 'crypto';
+import { groupBy } from 'lodash';
 import { IClassificationModel } from '../../models/classification-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -24,6 +25,7 @@ import {
 } from '../../entities';
 import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
 import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
+import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -132,9 +134,17 @@ export class DatabaseService {
       return queryBuilder;
     }
 
-    // Build select
+    this.buildSelect(queryBuilder, entityName, criteria, repo.metadata.columns);
+    queryBuilder = this.buildWhere(queryBuilder, entityName, criteria);
+    queryBuilder = this.buildOrderBy(queryBuilder, entityName, criteria);
+    return queryBuilder;
+  }
+
+  private buildSelect<T>(
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[], columns: ColumnMetadata[]
+  ) {
     let hasColumns = false;
-    for (const column of repo.metadata.columns) {
+    for (const column of columns) {
       const criteriaValue = criteria.find(item => item.ColumnName === column.databaseName);
       if (!criteriaValue || !criteriaValue.IgnoreInSelect) {
         const columnName = `${entityName}.${column.databaseName}`;
@@ -147,30 +157,49 @@ export class DatabaseService {
         }
       }
     }
+  }
 
-    // Build where clause
-    let hasWhere = false;
+  private buildWhere<T>(
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
+  ): SelectQueryBuilder<T> {
+    let hasFirstLevelWhere = false;
     const whereCriteria = criteria.filter(criteriaItem => criteriaItem.Operator !== CriteriaOperator.None);
-    // TODO: group criteria by column and then use brackets feature
-    whereCriteria.forEach(criteriaItem => {
-      const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${criteriaItem.ColumnName}`;
-      const parameter = {};
-      parameter[criteriaItem.ColumnName] = criteriaItem.ColumnValue;
-      if (hasWhere) {
-        if (criteriaItem.OrOperator) {
-          queryBuilder = queryBuilder.orWhere(where, parameter);
+    const groupedCriteria = groupBy(whereCriteria, 'ColumnName');
+    for (const columnName of Object.keys(groupedCriteria)) {
+      const columnCriteria = groupedCriteria[columnName];
+      let hasSecondLevelWhere = false;
+      const brackets = new Brackets(qb => {
+        // Make sure we have unique parameters even if the column is the same
+        let parameterIndex = 0;
+        for (const criteriaItem of columnCriteria) {
+          parameterIndex++;
+          const parameterName = criteriaItem.ColumnName + parameterIndex.toString();
+          const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${parameterName}`;
+          const parameter = {};
+          parameter[parameterName] = criteriaItem.ColumnValue;
+          if (hasSecondLevelWhere) {
+            qb = qb.orWhere(where, parameter);
+          }
+          else {
+            qb = qb.where(where, parameter);
+            hasSecondLevelWhere = true;
+          }
         }
-        else {
-          queryBuilder = queryBuilder.andWhere(where, parameter);
-        }
+      });
+      if (hasFirstLevelWhere) {
+        queryBuilder = queryBuilder.andWhere(brackets);
       }
       else {
-        queryBuilder = queryBuilder.where(where, parameter);
-        hasWhere = true;
+        queryBuilder = queryBuilder.where(brackets);
+        hasFirstLevelWhere = true;
       }
-    });
+    }
+    return queryBuilder;
+  }
 
-    // Order by
+  private buildOrderBy<T>(
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
+  ): SelectQueryBuilder<T> {
     let hasOrderBy = false;
     const orderByCriteria = criteria.filter(criteriaItem => criteriaItem.SortSequence > 0);
     this.utilities.sort(orderByCriteria, 'SortSequence').forEach(orderByItem => {

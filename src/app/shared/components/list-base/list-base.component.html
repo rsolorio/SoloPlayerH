@@ -23,7 +23,7 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
   *ngFor="let item of model.paginationModel.items"
   spIntersectionObserverTarget
   (intersectionChange)="onIntersectionChange($event, item)"
-  [ngClass]="{ 'sp-bg-02': item.selected }">
+  [ngClass]="{ 'sp-bg-03': item.selected }">
     <!-- Real content -->
     <ng-container *ngIf="item.canBeRendered">
       <!-- Image -->

@@ -5,6 +5,8 @@
       <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon"></i>
       <!-- Caption -->
       <span *ngIf="breadcrumb.caption" class="sp-text-large">{{breadcrumb.caption}}</span>
+      <!-- Multiple info -->
+      <span *ngIf="breadcrumb.criteriaList.length > 1" class="sp-text-large">&nbsp;(+{{breadcrumb.criteriaList.length - 1}})</span>
       <!-- Close icon -->
       <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>
       <i *ngIf="isLast" class="mdi-close mdi sp-color-on-bg-low sp-text-medium"></i>

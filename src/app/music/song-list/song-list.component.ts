@@ -146,20 +146,20 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const criteriaValue = new CriteriaValueBase('id', song.id);
         this.db.getList(SongArtistViewEntity, [criteriaValue]).then(songArtistRows => {
           const criteria: ICriteriaValueBaseModel[] = [];
+          let firstArtistName = '';
           for (var songArtist of songArtistRows) {
             // Ignore the primary artist
             const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
             if (songArtist.artistId !== primaryArtistId) {
-              console.log(songArtist.artistId);
-              criteria.push(new CriteriaValueBase('artistId', songArtist.artistId));
+              firstArtistName = firstArtistName ? firstArtistName : songArtist.artistName;
+              const criteriaItem = new CriteriaValueBase('artistId', songArtist.artistId);
+              criteriaItem.IgnoreInSelect = true;
+              criteria.push(criteriaItem);
             }
           }
-
-          const artistName = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
           if (criteria.length) {
             this.breadcrumbsService.replace([{
-              // TODO: what should be the caption?
-              caption: criteria.length ? 'Various' : artistName,
+              caption: firstArtistName,
               criteriaList: criteria,
               source: BreadcrumbSource.Artist
             }]);
