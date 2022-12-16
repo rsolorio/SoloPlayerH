@@ -13,7 +13,7 @@ import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-mo
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
+import { BreadcrumbEventType, BreadcrumbSource, IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
@@ -96,14 +96,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private initializeItemMenu(): void {
     this.itemMenuList.push({
-      caption: 'Play',
-      icon: 'mdi-play mdi',
-      action: param => {
-        this.playSong(param as ISongModel);
-      }
-    });
-
-    this.itemMenuList.push({
       caption: 'Search...',
       icon: 'mdi-web mdi',
       action: param => {
@@ -165,6 +157,34 @@ export class SongListComponent extends CoreComponent implements OnInit {
             }], true);
           }
         });
+      }
+    });
+
+    this.itemMenuList.push({
+      caption: 'Album Songs',
+      icon: 'mdi-album mdi',
+      action: param => {
+        const song = param as ISongModel;
+        // Primary Artist
+        const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
+        const artistCriteria = new CriteriaValueBase('primaryArtistId', primaryArtistId);
+        artistCriteria.DisplayName = this.db.displayName(artistCriteria.ColumnName);
+        artistCriteria.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
+        const artistBreadcrumb: IMusicBreadcrumbModel = {
+          criteriaList: [ artistCriteria ],
+          source: BreadcrumbSource.AlbumArtist
+        };
+        // Album
+        const primaryAlbumId = song.primaryAlbumId ? song.primaryAlbumId : song.primaryAlbum.id;
+        const albumCriteria = new CriteriaValueBase('primaryAlbumId', primaryAlbumId);
+        albumCriteria.DisplayName = this.db.displayName(albumCriteria.ColumnName);
+        albumCriteria.DisplayValue = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
+        const albumBreadcrumb: IMusicBreadcrumbModel = {
+          criteriaList: [ albumCriteria ],
+          source: BreadcrumbSource.Album
+        };
+        // Breadcrumbs
+        this.breadcrumbsService.replace([ artistBreadcrumb, albumBreadcrumb ], true);
       }
     });
   }
