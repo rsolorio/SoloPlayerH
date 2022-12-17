@@ -201,3 +201,20 @@ You can configure how the tag information is retrieved and where it will be stor
 - classificationId
 
 ### PlayHistory table
+
+## Dependencies
+This is a list of key dependencies in the project.
+
+- [object-hash](https://www.npmjs.com/package/object-hash)
+  - Creates the deterministic ids of the entities using their name info.
+- @mdi/font
+  - The base font icon library.
+- [music-metadata-browser](https://www.npmjs.com/package/music-metadata-browser)
+  - The library used to retrieve all audio metadata information.
+- primeng
+  - The component library that provides some special functionality.
+    - Context/dropdown menus
+- sqlite3
+  - SQLite client.
+- typeorm
+  - ORM for SQLite.

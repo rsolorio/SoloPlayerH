@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { readFileSync, readFile } from 'fs';
 // import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
-import * as musicMetadata from 'music-metadata-browser';
+ import * as musicMetadata from 'music-metadata-browser';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { IFileInfo } from '../file/file.interface';
 import { IAudioInfo } from './music-metadata.interface';

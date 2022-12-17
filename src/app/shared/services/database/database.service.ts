@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Brackets, DataSource, DataSourceOptions, EntityTarget, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
-import { createHash } from 'crypto';
+import * as objectHash from 'object-hash'
 import { groupBy } from 'lodash';
 import { IClassificationModel } from '../../models/classification-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
@@ -78,7 +78,8 @@ export class DatabaseService {
   }
 
   public hash(value: string): string {
-    return createHash('sha1').update(value).digest('base64');
+    // Defaults to sha1 with hex encoding
+    return objectHash(value);
   }
 
   public hashArtist(artist: ArtistEntity): void {
