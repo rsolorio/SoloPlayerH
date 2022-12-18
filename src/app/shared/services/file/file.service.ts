@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subscriber } from 'rxjs';
-import { readdirSync, statSync, readFileSync } from 'fs';
+import { readdirSync, statSync, readFileSync, readFile } from 'fs';
 import { join, resolve, extname } from 'path';
 import { IFileInfo } from './file.interface';
 
@@ -10,6 +10,19 @@ import { IFileInfo } from './file.interface';
 export class FileService {
 
   constructor() { }
+
+  getBuffer(filePath: string): Promise<Buffer> {
+    return new Promise<Buffer>((resolve, reject) => {
+      readFile(filePath, (readError, data) => {
+        if (readError) {
+          reject(readError);
+        }
+        else {
+          resolve(data);
+        }
+      });
+    });
+  }
 
   getFilesAsync(directoryPath: string): Observable<IFileInfo> {
     const result = new Observable<IFileInfo>(observer => {

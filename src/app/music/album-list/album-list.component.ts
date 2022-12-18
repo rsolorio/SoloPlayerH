@@ -10,12 +10,12 @@ import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
-import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { FileService } from 'src/app/shared/services/file/file.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
 import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
@@ -38,6 +38,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private breadcrumbsService: MusicBreadcrumbsStateService,
     private navbarService: NavBarStateService,
     private events: EventsService,
+    private fileService: FileService,
     private metadataService: MusicMetadataService,
     private db: DatabaseService,
     private queueService: PromiseQueueService
@@ -209,7 +210,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     if (songList && songList.length) {
       // Get any of the songs associated with the album
       const song = songList[0];
-      const audioInfo = await this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] });
+      const buffer = await this.fileService.getBuffer(song.filePath);
+      const audioInfo = await this.metadataService.getMetadata(buffer);
       album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
     }
   }

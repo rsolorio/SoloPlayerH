@@ -43,13 +43,14 @@ export class ScanService {
   }
 
   public async processAudioFile(fileInfo: IFileInfo): Promise<IAudioInfo> {
-    const info = await this.metadataService.getMetadataAsync(fileInfo, true);
-    if (!info || info.error) {
-      return info;
+    const buffer = await this.fileService.getBuffer(fileInfo.path);
+    const audioInfo = await this.metadataService.getMetadata(buffer, true);
+    if (!audioInfo || audioInfo.error) {
+      return audioInfo;
     }
 
     // PRIMARY ALBUM ARTIST
-    const primaryArtist = this.processAlbumArtist(info);
+    const primaryArtist = this.processAlbumArtist(audioInfo);
     const existingArtist = await ArtistEntity.findOneBy({ id: primaryArtist.id });
     if (existingArtist) {
       // Only update if the existing artist has empty fields
@@ -66,7 +67,7 @@ export class ScanService {
     }
 
     // MULTIPLE ARTISTS
-    const artists = this.processArtists(info);
+    const artists = this.processArtists(audioInfo);
     for (const artist of artists) {
       // Skip the primary artist because it has been already added or updated in the previous step
       if (artist.name !== primaryArtist.name) {
@@ -77,24 +78,24 @@ export class ScanService {
     }
 
     // PRIMARY ALBUM
-    const primaryAlbum = this.processAlbum(primaryArtist, info);
+    const primaryAlbum = this.processAlbum(primaryArtist, audioInfo);
     await this.db.add(primaryAlbum, AlbumEntity);
 
     // GENRES
     // TODO: add default genre if no one found
-    const genres = this.processGenres(info);
+    const genres = this.processGenres(audioInfo);
     for (const genre of genres) {
       await this.db.add(genre, ClassificationEntity);
     }
 
     // CLASSIFICATIONS
-    const classifications = this.processClassifications(info);
+    const classifications = this.processClassifications(audioInfo);
     for (const classification of classifications) {
       await this.db.add(classification, ClassificationEntity);
     }
 
     // SONG - ARTISTS/GENRES/CLASSIFICATIONS
-    const song = this.processSong(primaryAlbum, info);
+    const song = this.processSong(primaryAlbum, audioInfo, fileInfo);
     // Make sure the primary artist is part of the song artists
     if (!artists.find(a => a.id === primaryArtist.id)) {
       artists.push(primaryArtist);
@@ -106,7 +107,7 @@ export class ScanService {
     // TODO: if the song already exists, update data
     await this.db.add(song, SongEntity);
 
-    return info;
+    return audioInfo;
   }
 
   private processAlbumArtist(audioInfo: IAudioInfo): ArtistEntity {
@@ -174,9 +175,9 @@ export class ScanService {
     return album;
   }
 
-  private processSong(album: AlbumEntity, audioInfo: IAudioInfo): SongEntity {
+  private processSong(album: AlbumEntity, audioInfo: IAudioInfo, fileInfo: IFileInfo): SongEntity {
     const song = new SongEntity();
-    song.filePath = audioInfo.fileInfo.path;
+    song.filePath = fileInfo.path;
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
     const id = this.metadataService.getTag<IIdentifierTag>('UFID', id3v2Tags);
@@ -188,7 +189,7 @@ export class ScanService {
       song.name = audioInfo.metadata.common.title;
     }
     else {
-      song.name = audioInfo.fileInfo.name;
+      song.name = fileInfo.name;
     }
 
     song.primaryAlbum = album;
@@ -207,13 +208,13 @@ export class ScanService {
       song.grouping = audioInfo.metadata.common.grouping;
     }
 
-    song.addDate = audioInfo.fileInfo.addDate;
+    song.addDate = fileInfo.addDate;
     const addDate = this.metadataService.getTag<string>('AddDate', id3v2Tags, true);
     if (addDate) {
       song.addDate = new Date(addDate);
     }
 
-    song.changeDate = audioInfo.fileInfo.changeDate;
+    song.changeDate = fileInfo.changeDate;
     const changeDate = this.metadataService.getTag<string>('ChangeDate', id3v2Tags, true);
     if (changeDate) {
       song.changeDate = new Date(changeDate);

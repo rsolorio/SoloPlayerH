@@ -3,13 +3,13 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
-import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { CriteriaSortDirection } from 'src/app/shared/models/criteria-base-model.interface';
 import { addSorting, CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { FileService } from 'src/app/shared/services/file/file.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { PlaylistListBroadcastService } from './playlist-list-broadcast.service';
 
@@ -26,8 +26,8 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   constructor(
     private broadcastService: PlaylistListBroadcastService,
     private navbarService: NavBarStateService,
-    private events: EventsService,
     private loadingService: LoadingViewStateService,
+    private fileService: FileService,
     private metadataService: MusicMetadataService,
     private db: DatabaseService,
     private utilities: UtilityService
@@ -102,8 +102,10 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       if (playlistWithSongs.playlistSongs && playlistWithSongs.playlistSongs.length) {
         playlistWithSongs.playlistSongs = this.utilities.sort(playlistWithSongs.playlistSongs, 'sequence');
         const track = playlistWithSongs.playlistSongs[0];
-        this.metadataService.getMetadataAsync({ path: track.song.filePath, size: 0, parts: [] }).then(audioInfo => {
-          playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
+        this.fileService.getBuffer(track.song.filePath).then(buffer => {
+          this.metadataService.getMetadata(buffer).then(audioInfo => {
+            playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
+          });
         });
       }
 

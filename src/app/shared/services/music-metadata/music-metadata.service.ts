@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { readFileSync, readFile } from 'fs';
-// import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
- import * as musicMetadata from 'music-metadata-browser';
+import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { IFileInfo } from '../file/file.interface';
 import { IAudioInfo } from './music-metadata.interface';
 
 @Injectable({
@@ -18,73 +15,40 @@ export class MusicMetadataService {
 
   constructor(private log: LogService) { }
 
-  public async getMetadata(fileInfo: IFileInfo, enforceDuration?: boolean): Promise<IAudioInfo> {
+  public async getMetadata(data: Buffer, enforceDuration?: boolean): Promise<IAudioInfo> {
+    const result: IAudioInfo = {
+      metadata: null,
+      fullyParsed: false
+    };
+
     try {
-      const fileBuffer = readFileSync(fileInfo.path);
-      const info: IAudioInfo = {
-        fileInfo,
-        metadata: await musicMetadata.parseBuffer(fileBuffer),
-        fullyParsed: false
-      };
-      if (enforceDuration && !info.metadata.format.duration) {
-        info.metadata = await musicMetadata.parseBuffer(fileBuffer, null, { duration: true});
-        info.fullyParsed = true;
+      result.metadata = await parseBuffer(data);
+    }
+    catch (error) {
+      this.log.error('Parse buffer failure while getting metadata.', error);
+      result.error = error;
+    }
+
+    if (enforceDuration && !result.metadata.format.duration && !result.error) {
+      this.log.warn('Duration not found. Re-parsing the data.');
+      try {
+        result.metadata = await parseBuffer(data,  null, { duration: true});
+        result.fullyParsed = true;
       }
-      return info;
+      catch (error) {
+        this.log.error('Parse buffer failure while getting metadata.', error);
+        result.error = error;
+      }
     }
-    catch (ex) {
-      this.log.error('Failure getting metadata.', ex);
-      return {
-        fileInfo,
-        metadata: null,
-        fullyParsed: false,
-        error: ex
-      };
-    }
+
+    return result;
   }
 
-  public getMetadataAsync(fileInfo: IFileInfo, enforceDuration?: boolean): Promise<IAudioInfo> {
-    return new Promise<IAudioInfo>(resolve => {
-      const result: IAudioInfo = {
-        fileInfo,
-        metadata: null,
-        fullyParsed: false
-      };
-      readFile(fileInfo.path, (readError, data) => {
-        if (readError) {
-          result.error = readError;
-          resolve(result);
-        }
-        else {
-          musicMetadata.parseBuffer(data).then(metadata => {
-            result.metadata = metadata;
-            if (enforceDuration && !metadata.format.duration) {
-              musicMetadata.parseBuffer(data, null, { duration: true}).then(metadata2 => {
-                result.metadata = metadata2;
-                result.fullyParsed = true;
-                resolve(result);
-              }, parseError2 => {
-                result.error = parseError2;
-                resolve(result);
-              });
-            }
-            else {
-              resolve(result);
-            }
-          }, parseError1 => {
-            result.error = parseError1;
-            resolve(result);
-          });
-        }
-      });
-    });
-  }
-
-  public getId3v24Tags(metadata: musicMetadata.IAudioMetadata): musicMetadata.ITag[] {
+  public getId3v24Tags(metadata: IAudioMetadata): ITag[] {
     return metadata.native['ID3v2.4'];
   }
 
-  public getTag<T>(tagId: string, tags: musicMetadata.ITag[], isUserDefined?: boolean): T {
+  public getTag<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T {
     let result = null;
     if (tags && tags.length) {
       const actualTagId = isUserDefined ? 'TXXX:' + tagId.toUpperCase() : tagId.toUpperCase();
@@ -100,7 +64,7 @@ export class MusicMetadataService {
     return result as T;
   }
 
-  public getTags<T>(tagId: string, tags: musicMetadata.ITag[], isUserDefined?: boolean): T[] {
+  public getTags<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T[] {
     const result: T[] = [];
 
     if (tags && tags.length) {
@@ -118,7 +82,7 @@ export class MusicMetadataService {
     return result;
   }
 
-  public getId3v24Identifier(metadata: musicMetadata.IAudioMetadata): string {
+  public getId3v24Identifier(metadata: IAudioMetadata): string {
     let result: string = null;
     const tags = this.getId3v24Tags(metadata);
     for (const tag of tags) {
@@ -132,8 +96,8 @@ export class MusicMetadataService {
     return result;
   }
 
-  public getPictureDataUrl(audioMetadata: musicMetadata.IAudioMetadata, type?: string): string {
-    let picture: musicMetadata.IPicture = null;
+  public getPictureDataUrl(audioMetadata: IAudioMetadata, type?: string): string {
+    let picture: IPicture = null;
     if (audioMetadata.common.picture && audioMetadata.common.picture.length) {
       if (type) {
         picture = audioMetadata.common.picture.find(item => {

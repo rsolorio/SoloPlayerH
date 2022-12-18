@@ -26,6 +26,7 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { SongArtistViewEntity } from 'src/app/shared/entities';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
+import { FileService } from 'src/app/shared/services/file/file.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -41,6 +42,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   constructor(
     private broadcastService: SongListBroadcastService,
     private utility: UtilityService,
+    private fileService: FileService,
     private metadataService: MusicMetadataService,
     private loadingService: LoadingViewStateService,
     private breadcrumbsService: MusicBreadcrumbsStateService,
@@ -278,7 +280,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public async setSongImage(song: ISongModel): Promise<void> {
-    const audioInfo = await this.metadataService.getMetadataAsync({ path: song.filePath, size: 0, parts: [] });
+    const buffer = await this.fileService.getBuffer(song.filePath);
+    const audioInfo = await this.metadataService.getMetadata(buffer);
     song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);
   }
 }
