@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subscriber } from 'rxjs';
-import { readdirSync, statSync, readFileSync, readFile } from 'fs';
+import { readdir, stat, readFile, Stats } from 'fs';
 import { join, resolve, extname } from 'path';
 import { IFileInfo } from './file.interface';
 
@@ -24,26 +24,35 @@ export class FileService {
     });
   }
 
-  getFilesAsync(directoryPath: string): Observable<IFileInfo> {
+  getFiles(directoryPath: string): Observable<IFileInfo> {
     const result = new Observable<IFileInfo>(observer => {
-      this.pushFiles(directoryPath, observer);
-      observer.complete();
+      this.pushFiles(directoryPath, observer).then(() => {
+        observer.complete();
+      });
     });
     return result;
   }
 
-  getFileContent(filePath: string): string {
-    const fileData = readFileSync(filePath, { encoding: 'utf8' });
-    return this.removeBom(fileData.toString());
+  getFileContent(filePath: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      readFile(filePath, { encoding: 'utf8' }, (readError, data) => {
+        if (readError) {
+          reject(readError);
+        }
+        else {
+          resolve(this.removeBom(data.toString()));
+        }
+      });
+    });
   }
 
-  private pushFiles(directoryPath: string, observer: Subscriber<IFileInfo>): void {
-    const items = readdirSync(directoryPath);
+  private async pushFiles(directoryPath: string, observer: Subscriber<IFileInfo>): Promise<void> {
+    const items = await this.getDirItems(directoryPath);
     for (const item of items) {
       const itemPath = join(directoryPath, item);
-      const fileStat = statSync(itemPath);
+      const fileStat = await this.getStats(itemPath);
       if (fileStat.isDirectory()) {
-        this.pushFiles(itemPath, observer);
+        await this.pushFiles(itemPath, observer);
       }
       else {
         const parts = itemPath.split('\\').reverse();
@@ -65,21 +74,30 @@ export class FileService {
     }
   }
 
-  getFiles(directoryPath: string, filePaths: string[]): void {
-    if (!filePaths) {
-      filePaths = [];
-    }
+  private getDirItems(directoryPath: string): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+      readdir(directoryPath, (readError, items) => {
+        if (readError) {
+          reject(readError);
+        }
+        else {
+          resolve(items);
+        }
+      });
+    });
+  }
 
-    const items = readdirSync(directoryPath);
-    for (const item of items) {
-      const itemPath = join(directoryPath, item);
-      if (statSync(itemPath).isDirectory()) {
-        this.getFiles(itemPath, filePaths);
-      }
-      else {
-        filePaths.push(itemPath);
-      }
-    }
+  private getStats(path: string): Promise<Stats> {
+    return new Promise<Stats>((resolve, reject) => {
+      stat(path, (readError, stats) => {
+        if (readError) {
+          reject(readError);
+        }
+        else {
+          resolve(stats);
+        }
+      });
+    });
   }
 
   getAbsolutePath(locationPath: string, endPath: string): string {

@@ -28,7 +28,7 @@ export class ScanService {
   scan(folderPath: string, extension: string): Promise<IFileInfo[]> {
     return new Promise(resolve => {
       const files: IFileInfo[] = [];
-      this.fileService.getFilesAsync(folderPath).subscribe({
+      this.fileService.getFiles(folderPath).subscribe({
         next: fileInfo => {
           if (fileInfo.extension.toLowerCase() == extension.toLowerCase()) {
             files.push(fileInfo);
@@ -376,7 +376,8 @@ export class ScanService {
   }
 
   public async processPlaylistFile(fileInfo: IFileInfo): Promise<any> {
-    const fileContent = this.fileService.getFileContent(fileInfo.path);
+    const fileContent = await this.fileService.getFileContent(fileInfo.path);
+    // Remove \r and then split by \n
     const fileLines = fileContent.replace(/(\r)/gm, '').split('\n');
     if (fileLines.length) {
       const firstLine = fileLines[0].toUpperCase();
