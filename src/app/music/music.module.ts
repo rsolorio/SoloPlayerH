@@ -9,6 +9,8 @@ import { ClassificationListComponent } from './classification-list/classificatio
 import { SongListComponent } from './song-list/song-list.component';
 import { MusicBreadcrumbsComponent } from './music-breadcrumbs/music-breadcrumbs.component';
 import { PlaylistListComponent } from './playlist-list/playlist-list.component';
+import { FileService } from '../shared/services/file/file.service';
+import { FileNodeService } from '../shared/services/file/file-node.service';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,7 @@ import { PlaylistListComponent } from './playlist-list/playlist-list.component';
     FormsModule,
     SharedModule
   ],
-  entryComponents: []
+  entryComponents: [],
+  providers: [ { provide: FileService, useClass: FileNodeService }]
 })
 export class MusicModule { }

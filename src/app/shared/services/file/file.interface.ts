@@ -1,4 +1,6 @@
 export interface IFileInfo {
+  /** Flag that determines if the item is a directory. */
+  isDirectory: boolean;
   /** Full file path. */
   path: string;
   /** The parent directory path. */

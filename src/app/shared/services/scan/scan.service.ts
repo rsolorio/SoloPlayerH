@@ -376,7 +376,7 @@ export class ScanService {
   }
 
   public async processPlaylistFile(fileInfo: IFileInfo): Promise<any> {
-    const fileContent = await this.fileService.getFileContent(fileInfo.path);
+    const fileContent = await this.fileService.getText(fileInfo.path);
     // Remove \r and then split by \n
     const fileLines = fileContent.replace(/(\r)/gm, '').split('\n');
     if (fileLines.length) {

@@ -55,6 +55,14 @@ export class FeatureDetectionService {
     return this.feature;
   }
 
+  public isElectron(): boolean {
+    return this.feature.platform.app === AppType.Electron;
+  }
+
+  public isCordova(): boolean {
+    return this.feature.platform.app === AppType.Cordova;
+  }
+
   /**
    * Determines if the browser running the app is from a mobile device.
    */

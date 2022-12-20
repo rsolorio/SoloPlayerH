@@ -11,6 +11,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TransitionImageComponent } from './components/transition-image/transition-image.component';
 import { QuickFilterComponent } from './components/quick-filter/quick-filter.component';
+import { FileService } from './services/file/file.service';
+import { FileNodeService } from './services/file/file-node.service';
 
 
 
@@ -38,6 +40,7 @@ import { QuickFilterComponent } from './components/quick-filter/quick-filter.com
     IntersectionObserverDirective,
     IntersectionObserverTargetDirective
   ],
-  entryComponents: [ QuickSearchComponent ]
+  entryComponents: [ QuickSearchComponent ],
+  providers: [ { provide: FileService, useClass: FileNodeService }]
 })
 export class SharedModule { }
