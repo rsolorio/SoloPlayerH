@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ElectronService } from './electron.service';
+import { DialogCordovaService } from './dialog-cordova.service';
 
-describe('ElectronService', () => {
-  let service: ElectronService;
+describe('DialogCordovaService', () => {
+  let service: DialogCordovaService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ElectronService);
+    service = TestBed.inject(DialogCordovaService);
   });
 
   it('should be created', () => {

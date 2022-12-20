@@ -12,7 +12,6 @@ import { IconMenuComponent } from './components/icon-menu/icon-menu.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { SideBarMenuComponent } from './components/side-bar-menu/side-bar-menu.component';
-import { ElectronService } from './services/electron/electron.service';
 import { SideBarHostComponent } from './components/side-bar-host/side-bar-host.component';
 import { ReadableDateTimePipe } from './pipes/readable-date-time.pipe';
 
@@ -47,6 +46,6 @@ import { ReadableDateTimePipe } from './pipes/readable-date-time.pipe';
     ReadableDateTimePipe,
     SideBarHostComponent
   ],
-  providers: [ ElectronService ]
+  providers: [ ]
 })
 export class CoreModule { }

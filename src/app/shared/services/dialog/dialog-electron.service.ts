@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { ipcRenderer } from 'electron';
+import { DialogService } from './dialog.service';
 import { dialog } from '@electron/remote';
 import * as remoteRenderer from '@electron/remote/renderer';
+import { IDialogOptions } from './dialog.interface';
+import { ipcRenderer } from 'electron';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ElectronService {
+export class DialogElectronService extends DialogService {
+
   ipc: typeof ipcRenderer;
 
   get isElectron(): boolean {
@@ -19,6 +22,7 @@ export class ElectronService {
   }
 
   constructor() {
+    super();
     if (this.isElectron) {
       this.ipc = window.require('electron').ipcRenderer;
     }
@@ -28,9 +32,12 @@ export class ElectronService {
     remoteRenderer.getCurrentWebContents().openDevTools();
   }
 
-  openFolderDialog(options?: Electron.OpenDialogSyncOptions): string[] {
-    options = options ? options : {};
-    options.properties = ['openDirectory'];
-    return dialog.showOpenDialogSync(remoteRenderer.getCurrentWindow(), options);
+  openFolderDialog(options?: IDialogOptions): string[] {
+    const electronDialogOptions: Electron.OpenDialogSyncOptions = {};
+    if (options) {
+      electronDialogOptions.title = options.title;
+    }
+    electronDialogOptions.properties = ['openDirectory'];
+    return dialog.showOpenDialogSync(remoteRenderer.getCurrentWindow(), electronDialogOptions);
   }
 }

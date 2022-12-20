@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ElectronService } from 'src/app/core/services/electron/electron.service';
-import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 
 @Component({
   selector: 'sp-home-view',
@@ -9,7 +7,7 @@ import { MusicMetadataService } from 'src/app/shared/services/music-metadata/mus
 })
 export class HomeViewComponent implements OnInit {
 
-  constructor(public electronService: ElectronService, public metadataService: MusicMetadataService) { }
+  constructor() { }
 
   ngOnInit(): void {
   }
@@ -18,6 +16,5 @@ export class HomeViewComponent implements OnInit {
   }
 
   public onTest2(): void {
-    this.electronService.openDevTools();
   }
 }

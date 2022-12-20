@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { ElectronService } from 'src/app/core/services/electron/electron.service';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { PlaylistEntity, PlaylistSongEntity, SongEntity, SongViewEntity } from 'src/app/shared/entities';
+import { PlaylistEntity, PlaylistSongEntity, SongViewEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { IFileInfo } from 'src/app/shared/services/file/file.interface';
 import { IAudioInfo } from 'src/app/shared/services/music-metadata/music-metadata.interface';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
@@ -22,7 +22,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   public transitionSrc: string = null;
   public settingsInfo: ISettingCategory[];
   constructor(
-    private electron: ElectronService,
+    private dialog: DialogService,
     private scanner: ScanService,
     private events: EventsService,
     private log: LogService,
@@ -59,7 +59,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
               ''
             ],
             action: setting => {
-              const selectedFolders = this.electron.openFolderDialog();
+              const selectedFolders = this.dialog.openFolderDialog();
               if (selectedFolders && selectedFolders.length) {
                 const selectedFolderPath = selectedFolders[0];
                 if (selectedFolderPath) {
@@ -77,7 +77,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
               ''
             ],
             action: setting => {
-              const selectedFolders = this.electron.openFolderDialog();
+              const selectedFolders = this.dialog.openFolderDialog();
               if (selectedFolders && selectedFolders.length) {
                 const selectedFolderPath = selectedFolders[0];
                 if (selectedFolderPath) {
@@ -101,7 +101,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             dataType: 'text',
             descriptions: ['Open developer tools.'],
             action: () => {
-              this.electron.openDevTools();
+              this.dialog.openDevTools();
             }
           },
           {

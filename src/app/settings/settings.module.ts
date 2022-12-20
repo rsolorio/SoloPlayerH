@@ -4,6 +4,8 @@ import { SettingsViewComponent } from './settings-view/settings-view.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CoreModule } from '../core/core.module';
+import { DialogService } from '../shared/services/dialog/dialog.service';
+import { DialogElectronService } from '../shared/services/dialog/dialog-electron.service';
 
 
 
@@ -16,6 +18,7 @@ import { CoreModule } from '../core/core.module';
     CoreModule,
     FormsModule,
     SharedModule
-  ]
+  ],
+  providers: [ { provide: DialogService, useClass: DialogElectronService }]
 })
 export class SettingsModule { }
