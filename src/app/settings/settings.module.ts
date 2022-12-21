@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { CoreModule } from '../core/core.module';
 import { DialogService } from '../shared/services/dialog/dialog.service';
 import { DialogElectronService } from '../shared/services/dialog/dialog-electron.service';
+import { DialogCordovaService } from '../shared/services/dialog/dialog-cordova.service';
 
 
 

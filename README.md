@@ -218,3 +218,11 @@ This is a list of key dependencies in the project.
   - SQLite client.
 - typeorm
   - ORM for SQLite.
+
+## Scripts
+This is a list of NPM package scripts
+
+- npm start
+  - Serves and runs the application in electron
+  - Sets the browser js file of the angular dev kit to a webpack configuration that can resolve typeorm.
+    

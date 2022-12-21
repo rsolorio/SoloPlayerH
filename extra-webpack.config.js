@@ -1,3 +1,7 @@
+/**
+ * Webpack configuration for resolving typeorm.
+ * As suggested in node_modules/typeorm/typeorm-model-shim.js
+ */
 const path = require('path');
 
 module.exports = {

@@ -13,6 +13,7 @@ import { TransitionImageComponent } from './components/transition-image/transiti
 import { QuickFilterComponent } from './components/quick-filter/quick-filter.component';
 import { FileService } from './services/file/file.service';
 import { FileNodeService } from './services/file/file-node.service';
+import { FileCordovaService } from './services/file/file-cordova.service';
 
 
 

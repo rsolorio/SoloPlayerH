@@ -11,6 +11,7 @@ import { MusicBreadcrumbsComponent } from './music-breadcrumbs/music-breadcrumbs
 import { PlaylistListComponent } from './playlist-list/playlist-list.component';
 import { FileService } from '../shared/services/file/file.service';
 import { FileNodeService } from '../shared/services/file/file-node.service';
+import { FileCordovaService } from '../shared/services/file/file-cordova.service';
 
 @NgModule({
   declarations: [
