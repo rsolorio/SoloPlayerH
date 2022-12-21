@@ -27,4 +27,8 @@ export class FileCordovaService extends FileService {
   getAbsolutePath(locationPath: string, endPath: string): string {
     return null;
   }
+
+  getFileInfo(path: string): Promise<IFileInfo> {
+    return null;
+  }
 }

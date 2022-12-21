@@ -17,4 +17,8 @@ export class DialogCordovaService extends DialogService {
   openFolderDialog(options?: IDialogOptions): string[] {
     return [];
   }
+
+  openFileDialog(options?: IDialogOptions): string[] {
+    return [];
+  }
 }

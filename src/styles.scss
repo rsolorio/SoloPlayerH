@@ -222,6 +222,7 @@ body {
 // TABLES *****************************************************************************************
 .sp-table-list {
     border-spacing: 0;
+    font-family: $sp-font-family-regular;
     td {
         border-top: 1px solid $sp-color-on-background-separator;
     }

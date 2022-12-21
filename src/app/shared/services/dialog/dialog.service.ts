@@ -7,4 +7,6 @@ export abstract class DialogService {
   abstract openDevTools(): void;
 
   abstract openFolderDialog(options?: IDialogOptions): string[];
+
+  abstract openFileDialog(options?: IDialogOptions): string[];
 }

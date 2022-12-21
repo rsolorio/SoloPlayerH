@@ -3,12 +3,14 @@ import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { PlaylistEntity, PlaylistSongEntity, SongViewEntity } from 'src/app/shared/entities';
+import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { IFileInfo } from 'src/app/shared/services/file/file.interface';
+import { FileService } from 'src/app/shared/services/file/file.service';
 import { IAudioInfo } from 'src/app/shared/services/music-metadata/music-metadata.interface';
+import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
 
@@ -26,7 +28,9 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private scanner: ScanService,
     private events: EventsService,
     private log: LogService,
-    private db: DatabaseService) {
+    private db: DatabaseService,
+    private fileService: FileService,
+    private metadataService: MusicMetadataService) {
       super();
     }
 
@@ -213,6 +217,17 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     }
   }
 
+  private async logFileMetadata(): Promise<void> {
+    const selectedFiles = this.dialog.openFileDialog();
+    if (selectedFiles && selectedFiles.length) {
+      const fileInfo = await this.fileService.getFileInfo(selectedFiles[0]);
+      const buffer = await this.fileService.getBuffer(fileInfo.path);
+      const audioInfo = await this.metadataService.getMetadata(buffer, true);
+      this.log.info('File info.', fileInfo);
+      this.log.info('Audio info.', audioInfo);
+    }
+  }
+
   onTest(): void {
     // const directoryPath = 'J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna';
     // const directoryPath = 'E:\\Temp\\English';
@@ -228,9 +243,9 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
 
     // this.sidebarHostService.loadComponent(QuickSearchComponent);
     // this.sidebarService.toggleRight();
-    const repo = this.db.dataSource.getRepository(SongViewEntity);
-    console.log(repo.metadata);
     //const builder = this.db.getSongArtistBuilder();
     //this.db.getListFromBuilder(builder, []);
+
+    this.logFileMetadata();
   }
 }

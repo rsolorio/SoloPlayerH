@@ -51,7 +51,7 @@ export class FileNodeService extends FileService {
     return promises.readdir(directoryPath);
   }
 
-  private getFileInfo(path: string): Promise<IFileInfo> {
+  public getFileInfo(path: string): Promise<IFileInfo> {
     return promises.stat(path).then (fileStat => {
       const info: IFileInfo = {
         isDirectory: fileStat.isDirectory(),

@@ -13,6 +13,8 @@ export abstract class FileService {
 
   abstract getAbsolutePath(locationPath: string, endPath: string);
 
+  abstract getFileInfo(path: string): Promise<IFileInfo>;
+
   removeBom(value: string): string {
     // 0xFEFF = 65279
     if (value && value.charCodeAt(0) === 0xFEFF) {

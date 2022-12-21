@@ -40,4 +40,13 @@ export class DialogElectronService extends DialogService {
     electronDialogOptions.properties = ['openDirectory'];
     return dialog.showOpenDialogSync(remoteRenderer.getCurrentWindow(), electronDialogOptions);
   }
+
+  openFileDialog(options?: IDialogOptions): string[] {
+    const electronDialogOptions: Electron.OpenDialogSyncOptions = {};
+    if (options) {
+      electronDialogOptions.title = options.title;
+    }
+    electronDialogOptions.properties = ['openFile'];
+    return dialog.showOpenDialogSync(remoteRenderer.getCurrentWindow(), electronDialogOptions);
+  }
 }
