@@ -21,11 +21,14 @@ import {
   SongArtistViewEntity,
   PlaylistEntity,
   PlaylistSongEntity,
-  PlaylistSongViewEntity
+  PlaylistSongViewEntity,
+  ModuleOptionEntity
 } from '../../entities';
 import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
 import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
+import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
+import { timeStamp } from 'console';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -65,7 +68,8 @@ export class DatabaseService {
         PlaylistEntity,
         PlaylistSongEntity,
         PlaylistViewEntity,
-        PlaylistSongViewEntity
+        PlaylistSongViewEntity,
+        ModuleOptionEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -82,8 +86,12 @@ export class DatabaseService {
     return objectHash(value);
   }
 
+  public hashDbEntity(entity: DbEntity): void {
+    entity.id = this.hash(entity.name);
+  }
+
   public hashArtist(artist: ArtistEntity): void {
-    artist.id = this.hash(artist.name);
+    this.hashDbEntity(artist);
   }
 
   public hashAlbum(album: AlbumEntity): void {
@@ -101,7 +109,11 @@ export class DatabaseService {
   }
 
   public hashPlaylist(playlist: PlaylistEntity): void {
-    playlist.id = this.hash(playlist.name);
+    this.hashDbEntity(playlist);
+  }
+
+  public hashModuleOption(moduleOption: ModuleOptionEntity): void {
+    this.hashDbEntity(moduleOption);
   }
 
   /**
@@ -306,5 +318,88 @@ export class DatabaseService {
       .where('playlist.id = :playlistId')
       .setParameter('playlistId', playlistId)
       .getOne();
+  }
+
+  public async initializeModuleOptions(): Promise<void> {
+    await this.initArtistSplitChars();
+    await this.initGenreSplitChars();
+  }
+
+  public getModuleOptions(names?: string[]): Promise<ModuleOptionEntity[]> {
+    if (!names || !names.length) {
+      return ModuleOptionEntity.find();
+    }
+
+    let queryBuilder = this.dataSource
+      .getRepository(ModuleOptionEntity)
+      .createQueryBuilder('moduleOption');
+
+    let hasWhere = false;
+    let parameterIndex = 0;
+    for (const optionName of names) {
+      parameterIndex++;
+      const parameterName = 'name' + parameterIndex.toString();
+      const where = `moduleOption.name = ${parameterName}`;
+      const parameter = {};
+      parameter[parameterName] = optionName;
+      if (hasWhere) {
+        queryBuilder = queryBuilder.orWhere(where, parameter);
+      }
+      else {
+        queryBuilder = queryBuilder.where(where, parameter);
+        hasWhere = true;
+      }
+    }
+
+    return queryBuilder.getMany();
+  }
+
+  public getOptionTextValues(moduleOption: ModuleOptionEntity): string[] {
+    if (moduleOption.valueEditorType !== ModuleOptionEditor.Text) {
+      // TODO:
+    }
+    return JSON.parse(moduleOption.values) as string[];
+  }
+
+  private async initArtistSplitChars(): Promise<void> {
+    const option = new ModuleOptionEntity();
+    option.name = ModuleOptionName.ArtistSplitCharacters;
+    this.hashDbEntity(option);
+
+    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
+    if (existingOption) {
+      return;
+    }
+
+    option.moduleName = 'Music';
+    option.title = 'Artist Split Characters';
+    option.description = 'Symbols to be used to split the Artist tag into multiple artists.';
+    option.valueEditorType = ModuleOptionEditor.Text;
+    option.multipleValues = true;
+    option.system = false;
+    option.values = JSON.stringify([]);
+
+    await option.save();
+  }
+
+  private async initGenreSplitChars(): Promise<void> {
+    const option = new ModuleOptionEntity();
+    option.name = ModuleOptionName.GenreSplitCharacters;
+    this.hashDbEntity(option);
+
+    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
+    if (existingOption) {
+      return;
+    }
+
+    option.moduleName = 'Music';
+    option.title = 'Genre Split Characters';
+    option.description = 'Symbols to be used to split the Genre tag into multiple genres.';
+    option.valueEditorType = ModuleOptionEditor.Text;
+    option.multipleValues = true;
+    option.system = false;
+    option.values = JSON.stringify(['/']);
+
+    await option.save();
   }
 }

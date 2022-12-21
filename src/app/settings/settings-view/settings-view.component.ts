@@ -161,7 +161,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       fileCount++;
       setting.descriptions[1] = `File ${fileCount} of ${files.length}.`;
       setting.descriptions[2] = fileInfo.path;
-      const audioInfo = await this.scanner.processAudioFile(fileInfo);
+      const options = await this.db.getModuleOptions();
+      const audioInfo = await this.scanner.processAudioFile(fileInfo, options);
       if (audioInfo && audioInfo.error) {
         failures.push(audioInfo);
       }

@@ -38,6 +38,9 @@ export class AppComponent implements OnInit {
     doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
     dbService.dataSource.initialize().then(ds => {
       this.log.info('Database initialized!');
+      dbService.initializeModuleOptions().then(() => {
+        this.log.info('Module options initialized!');
+      });
     });
   }
 

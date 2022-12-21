@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity, PlaylistEntity, PlaylistSongEntity } from '../../entities';
+import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity, PlaylistEntity, PlaylistSongEntity, ModuleOptionEntity } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
+import { ModuleOptionName } from '../../models/module-option.enum';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
@@ -42,7 +43,7 @@ export class ScanService {
     });
   }
 
-  public async processAudioFile(fileInfo: IFileInfo): Promise<IAudioInfo> {
+  public async processAudioFile(fileInfo: IFileInfo, options: ModuleOptionEntity[]): Promise<IAudioInfo> {
     const buffer = await this.fileService.getBuffer(fileInfo.path);
     const audioInfo = await this.metadataService.getMetadata(buffer, true);
     if (!audioInfo || audioInfo.error) {
@@ -83,7 +84,12 @@ export class ScanService {
 
     // GENRES
     // TODO: add default genre if no one found
-    const genres = this.processGenres(audioInfo);
+    let genreSplitSymbols: string[] = [];
+    const genreSplitOption = options.find(option => option.name === ModuleOptionName.GenreSplitCharacters);
+    if (genreSplitOption) {
+      genreSplitSymbols = this.db.getOptionTextValues(genreSplitOption);
+    }
+    const genres = this.processGenres(audioInfo, genreSplitSymbols);
     for (const genre of genres) {
       await this.db.add(genre, ClassificationEntity);
     }
@@ -320,18 +326,32 @@ export class ScanService {
     return artists;
   }
 
-  private processGenres(audioInfo: IAudioInfo): ClassificationEntity[] {
+  private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): ClassificationEntity[] {
     const genres: ClassificationEntity[] = [];
 
     if (audioInfo.metadata.common.genre && audioInfo.metadata.common.genre.length) {
       const classificationType = 'Genre';
       for (const genreName of audioInfo.metadata.common.genre) {
-        // TODO: also add the full genre text (including slashes) as genre
-        // Besides multiple genres in array, also support multiple genres separated by /
-        const subGenres = genreName.split('/');
-        for (const subGenreName of subGenres) {
+        // TODO: add the full genre text (including slashes) as genre if specified in a module option
+        if (splitSymbols && splitSymbols.length) {
+          for (const splitSymbol of splitSymbols) {
+            const subGenres = genreName.split(splitSymbol);
+            for (const subGenreName of subGenres) {
+              const genre = new ClassificationEntity();
+              genre.name = subGenreName;
+              genre.classificationType = classificationType;
+              this.db.hashClassification(genre);
+              const existingGenre = genres.find(g => g.id === genre.id);
+              if (!existingGenre) {
+                genres.push(genre);
+              }
+            }
+          }
+        }
+        else {
+          // No split symbols configured, just use the genre as is
           const genre = new ClassificationEntity();
-          genre.name = subGenreName;
+          genre.name = genreName;
           genre.classificationType = classificationType;
           this.db.hashClassification(genre);
           const existingGenre = genres.find(g => g.id === genre.id);

@@ -17,3 +17,4 @@ export * from './playlist.entity';
 export * from './playlist-view.entity';
 export * from './playlist-song.entity';
 export * from './playlist-song-view.entity';
+export * from './module-option.entity';
