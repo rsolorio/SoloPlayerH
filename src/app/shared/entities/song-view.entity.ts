@@ -4,7 +4,7 @@ import { SongBaseEntity } from './song-base.entity';
 import { SongEntity } from './song.entity';
 
 /**
- * Field list: id, name, filePath, titleSort, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, albumName, artistName, primaryAlbumId, primaryArtistId
+ * Field list: id, primaryAlbumId, primaryArtistId, name, filePath, titleSort, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, bitrate, vbr, lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized
  */
 @ViewEntity({
   expression: ds => ds
@@ -28,6 +28,7 @@ import { SongEntity } from './song.entity';
     .addSelect('song.lyrics', 'lyrics')
     .addSelect('album.name', 'primaryAlbumName')
     .addSelect('artist.name', 'primaryArtistName')
+    .addSelect('artist.artistStylized', 'primaryArtistStylized')
 })
 export class SongViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
@@ -48,6 +49,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   primaryAlbumName: string;
   @ViewColumn()
   primaryArtistName: string;
+  @ViewColumn()
+  primaryArtistStylized: string;
   @ViewColumn()
   titleSort: string;
   @ViewColumn()

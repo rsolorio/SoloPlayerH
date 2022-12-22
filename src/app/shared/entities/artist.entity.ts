@@ -14,6 +14,8 @@ export class ArtistEntity extends ListItemEntity implements IArtistModel {
   favorite: boolean;
   @Column()
   artistSort: string;
+  @Column()
+  artistStylized: string;
 
   @OneToMany(type => AlbumEntity, album => album.primaryArtist )
   albums: Relation<AlbumEntity[]>;

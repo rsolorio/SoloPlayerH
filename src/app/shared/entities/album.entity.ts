@@ -23,5 +23,6 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   songs: Relation<SongEntity[]>;
 
   artistName: string;
+  artistStylized: string;
   songCount: number;
 }

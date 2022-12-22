@@ -11,6 +11,7 @@ export class SongBaseEntity extends ListItemEntity {
   releaseYear: number;
   primaryAlbumName: string;
   primaryArtistName: string;
+  primaryArtistStylized: string;
   playCount: number;
   playerStatus: PlayerSongStatus;
   primaryAlbum: IAlbumModel;
@@ -27,6 +28,13 @@ export class SongBaseEntity extends ListItemEntity {
       return this.primaryAlbum.primaryArtist.name;
     }
     return this.primaryArtistName;
+  }
+
+  public get artistStylized(): string {
+    if (this.primaryAlbum && this.primaryAlbum.primaryArtist) {
+      return this.primaryAlbum.primaryArtist.artistStylized;
+    }
+    return this.primaryArtistStylized;
   }
 
   public get albumWithYear(): string {

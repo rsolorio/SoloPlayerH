@@ -5,12 +5,12 @@ import { SongBaseEntity } from './song-base.entity';
 /**
  * This view combines the song entity with the songArtist entity.
  * It is intended to be used by filtering using the artistId column;
- * Fields: id, 
+ * Fields: id, name, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, primaryAlbumName, primaryArtistName, primaryArtistStylized, titleSort, primaryAlbumId, primaryArtistId, classificationId
  */
  @ViewEntity({
   expression: `
   SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.seconds, song.favorite,
-  album.name AS primaryAlbumName, artist.name AS primaryArtistName, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songClassification.classificationId
+  album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songClassification.classificationId
   FROM song
   INNER JOIN album
   ON song.primaryAlbumId = album.id
@@ -43,6 +43,8 @@ export class SongClassificationViewEntity extends SongBaseEntity implements ISon
   primaryAlbumName: string;
   @ViewColumn()
   primaryArtistName: string;
+  @ViewColumn()
+  primaryArtistStylized: string;
   @ViewColumn()
   titleSort: string;
   @ViewColumn()

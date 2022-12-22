@@ -7,11 +7,11 @@ import { ListItemEntity } from './base.entity';
  * It is intended to be used by filtering using the classificationId column;
  * if that's not the case, the view will return duplicate artist records.
  * If using more than one classificationId values, you will need to use a DISTINCT clause.
- * Fields: id, name, artistSort, classificationId, albumCount, songCount
+ * Fields: id, name, artistSort, artistStylized, classificationId, albumCount, songCount
  */
  @ViewEntity({
   expression: `
-  SELECT artist.id, artist.name, artist.artistSort, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount
+  SELECT artist.id, artist.name, artist.artistSort, artist.artistStylized, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount
   FROM artist INNER JOIN (
     SELECT album.id, album.primaryArtistId, album.name, album.releaseYear, songClass.classificationId, COUNT(songClass.id) AS songCount
     FROM album INNER JOIN (
@@ -23,7 +23,7 @@ import { ListItemEntity } from './base.entity';
     GROUP BY album.id, album.primaryArtistId, album.name, album.releaseYear, songClass.classificationId
   ) AS albumClassification
   ON artist.id = albumClassification.primaryArtistId
-  GROUP BY artist.id, artist.name, artist.artistSort, albumClassification.classificationId
+  GROUP BY artist.id, artist.name, artist.artistSort, artist.artistStylized, albumClassification.classificationId
 `
 })
 export class ArtistClassificationViewEntity extends ListItemEntity implements IArtistModel {
@@ -35,6 +35,8 @@ export class ArtistClassificationViewEntity extends ListItemEntity implements IA
   songCount: number;
   @ViewColumn()
   artistSort: string;
+  @ViewColumn()
+  artistStylized: string;
   @ViewColumn()
   classificationId: string;
   @ViewColumn()

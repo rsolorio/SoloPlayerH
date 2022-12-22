@@ -15,6 +15,10 @@ export interface ISongModel extends IListItemModel {
   artistName: string;
   /** This is the value that comes from the artist table. */
   primaryArtistName: string;
+  /** This is a dynamic field that gets its value from either primaryArtist object or primaryArtistStylized property. */
+  artistStylized: string;
+  /** This is the value that comes from the artist table. */
+  primaryArtistStylized: string;
   titleSort: string;
   trackNumber: number;
   mediaNumber: number;

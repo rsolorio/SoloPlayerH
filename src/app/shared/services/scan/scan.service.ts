@@ -142,6 +142,9 @@ export class ScanService {
     const country = this.metadataService.getTag<string>('Country', id3v2Tags, true);
     artist.country = country ? country : this.unknownValue;
 
+    const artistStylized = this.metadataService.getTag<string>('ArtistStylized', id3v2Tags, true);
+    artist.artistStylized = artistStylized ? artistStylized : artist.name;
+
     this.db.hashArtist(artist);
     return artist;
   }
@@ -305,6 +308,7 @@ export class ScanService {
       for (const artistName of audioInfo.metadata.common.artists) {
         const artist = new ArtistEntity();
         artist.name = artistName;
+        artist.artistStylized = artistName;
         artist.favorite = false;
         artist.artistType = this.unknownValue;
         artist.country = this.unknownValue;

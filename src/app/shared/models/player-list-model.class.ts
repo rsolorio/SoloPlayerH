@@ -41,6 +41,8 @@ export class PlayerListModel {
       albumWithYear: '[Empty Album]',
       artistName: '[Empty Artist]',
       primaryArtistName: '[Empty Artist]',
+      artistStylized: '[Empty Artist]',
+      primaryArtistStylized: '[Empty Artist]',
       trackNumber: 0,
       mediaNumber: 0,
       playCountText: '',

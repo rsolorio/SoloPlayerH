@@ -9,13 +9,13 @@ import { SongBaseEntity } from './song-base.entity';
  * However, it cannot be used with multiple artists since it will not return unique song rows
  * since the artistId column is part of the query and it causes the song rows to be duplicated;
  * for instance, if two artists are associated with one song, you will get two song rows.
- * Fields: id, name, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, albumName, artistName, titleSort, primaryAlbumId, primaryArtistId, artistId
+ * Fields: id, name, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, primaryAlbumName, primaryArtistName, primaryArtistStylized, titleSort, primaryAlbumId, primaryArtistId, artistId
  * TODO: use standard typeorm syntax to create query, example: PlaylistSongViewEntity
  */
  @ViewEntity({
   expression: `
   SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.seconds, song.favorite,
-  album.name AS primaryAlbumName, artist.name AS primaryArtistName, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
+  album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
   FROM song
   INNER JOIN album
   ON song.primaryAlbumId = album.id
@@ -44,6 +44,8 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   primaryAlbumName: string;
   @ViewColumn()
   primaryArtistName: string;
+  @ViewColumn()
+  primaryArtistStylized: string;
   @ViewColumn()
   titleSort: string;
   @ViewColumn()

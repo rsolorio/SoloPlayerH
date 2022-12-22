@@ -4,7 +4,7 @@ import { ArtistEntity } from './artist.entity';
 import { ListItemEntity } from './base.entity';
 
 /**
- * Fields: id, name, artistSort, songCount
+ * Fields: id, name, artistSort, artistStylized, songCount
  */
 @ViewEntity({
   expression: ds => ds
@@ -13,6 +13,7 @@ import { ListItemEntity } from './base.entity';
     .select('artist.id', 'id')
     .addSelect('artist.name', 'name')
     .addSelect('artist.artistSort', 'artistSort')
+    .addSelect('artist.artistStylized', 'artistStylized')
     .addSelect('COUNT(artist.id)', 'songCount')
     .groupBy('artist.id')
 })
@@ -25,6 +26,8 @@ export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
   songCount: number;
   @ViewColumn()
   artistSort: string;
+  @ViewColumn()
+  artistStylized: string;
 
   artistType: string;
   country: string;
