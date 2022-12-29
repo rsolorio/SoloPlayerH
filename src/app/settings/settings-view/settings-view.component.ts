@@ -3,6 +3,8 @@ import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
@@ -30,7 +32,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private log: LogService,
     private db: DatabaseService,
     private fileService: FileService,
-    private metadataService: MusicMetadataService) {
+    private metadataService: MusicMetadataService,
+    private utility: UtilityService) {
       super();
     }
 
@@ -132,6 +135,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     });
     this.subs.add(fileScanSub, 'settingsViewScanFile');
     // Start scanning
+    const startTime = new Date().getTime();
     setting.descriptions[0] = 'Calculating file count...';
     this.scanner.scan(folderPath, '.mp3').then(mp3Files => {
       // Calculation process done, delete subscription
@@ -147,6 +151,10 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         else {
           setting.descriptions[2] = 'No errors found.';
         }
+        const endTime = new Date().getTime();
+        const timeSpan =  this.utility.toTimeSpan(endTime - startTime,
+          [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
+        this.log.info('Elapsed time: ' + this.utility.formatTimeSpan(timeSpan), timeSpan);
         setting.disabled = false;
       });
     });

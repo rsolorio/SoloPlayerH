@@ -12,6 +12,7 @@ export interface IWindowSizeChangedEvent {
 }
 
 export interface ITimeSpan {
+    total?: number;
     milliseconds?: number;
     seconds?: number;
     minutes?: number;

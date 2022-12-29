@@ -248,8 +248,10 @@ export class UtilityService {
   }
 
   public toTimeSpan(milliseconds: number, timeUnits?: Milliseconds[]): ITimeSpan {
+    const result: ITimeSpan = {
+      total: milliseconds
+    };
     let msLeft = milliseconds;
-    const result: ITimeSpan = {};
     const timeUnitsInOrder = [Milliseconds.Day, Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second, Milliseconds.Millisecond];
 
     if (!timeUnits || !timeUnits.length) {
@@ -281,6 +283,28 @@ export class UtilityService {
       }
     });
     return result;
+  }
+
+  public formatTimeSpan(timeSpan: ITimeSpan): string {
+    const result: string[] = [];
+
+    if (timeSpan.days) {
+      result.push(timeSpan.days + ' days');
+    }
+    if (timeSpan.hours) {
+      result.push(timeSpan.hours + ' hours');
+    }
+    if (timeSpan.minutes) {
+      result.push(timeSpan.minutes + ' minutes');
+    }
+    if (timeSpan.seconds) {
+      result.push(timeSpan.seconds + ' seconds');
+    }
+    if (timeSpan.milliseconds) {
+      result.push(timeSpan.milliseconds + ' milliseconds');
+    }
+
+    return result.join(', ');;
   }
 
   /**

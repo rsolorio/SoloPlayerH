@@ -54,12 +54,7 @@ export class ScanService {
     const primaryArtist = this.processAlbumArtist(audioInfo);
     const existingArtist = await ArtistEntity.findOneBy({ id: primaryArtist.id });
     if (existingArtist) {
-      // Only update if the existing artist has empty fields
-      let needsUpdate = !existingArtist.artistType && primaryArtist.artistType;
-      if (!needsUpdate) {
-        needsUpdate = !existingArtist.country && primaryArtist.country;
-      }
-      if (needsUpdate) {
+      if (this.artistNeedsUpdate(existingArtist, primaryArtist)) {
         await primaryArtist.save();
       }
     }
@@ -486,5 +481,18 @@ export class ScanService {
 
     this.log.warn('Playlist audio file not found.', songFilePath);
     return null;
+  }
+
+  private artistNeedsUpdate(existingArtist: ArtistEntity, newArtist: ArtistEntity): boolean {
+    if (!existingArtist.artistType && newArtist.artistType) {
+      return true;
+    }
+    if (!existingArtist.country && newArtist.country) {
+      return true;
+    }
+    if (existingArtist.artistStylized !== newArtist.artistStylized) {
+      return true;
+    }
+    return false;
   }
 }

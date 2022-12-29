@@ -148,7 +148,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
               const criteriaItem = new CriteriaValueBase('artistId', songArtist.artistId);
               criteriaItem.IgnoreInSelect = true;
               criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-              criteriaItem.DisplayValue = songArtist.artistName;
+              criteriaItem.DisplayValue = songArtist.artistStylized;
               criteria.push(criteriaItem);
             }
           }
@@ -171,7 +171,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
         const artistCriteria = new CriteriaValueBase('primaryArtistId', primaryArtistId);
         artistCriteria.DisplayName = this.db.displayName(artistCriteria.ColumnName);
-        artistCriteria.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
+        artistCriteria.DisplayValue = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
         const artistBreadcrumb: IMusicBreadcrumbModel = {
           criteriaList: [ artistCriteria ],
           source: BreadcrumbSource.AlbumArtist

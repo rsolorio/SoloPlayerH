@@ -151,7 +151,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     const columnName = this.isAlbumArtist ? 'primaryArtistId' : 'artistId';
     const criteriaItem = new CriteriaValueBase(columnName, artist.id);
     criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-    criteriaItem.DisplayValue = artist.name;
+    criteriaItem.DisplayValue = artist.artistStylized;
     if (columnName === 'artistId') {
       criteriaItem.IgnoreInSelect = true;
     }
