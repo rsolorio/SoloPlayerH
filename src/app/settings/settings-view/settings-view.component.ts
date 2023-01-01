@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -33,7 +34,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private db: DatabaseService,
     private fileService: FileService,
     private metadataService: MusicMetadataService,
-    private utility: UtilityService) {
+    private utility: UtilityService,
+    private loadingService: LoadingViewStateService) {
       super();
     }
 
@@ -91,6 +93,17 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
                   this.onPlaylistScan(setting, selectedFolderPath);
                 }
               }
+            }
+          },
+          {
+            name: 'Purge Database',
+            dataType: 'text',
+            descriptions: ['Deletes all data in the database and recreates the database.'],
+            action: () => {
+              this.loadingService.show();
+              this.db.purge().then(() => {
+                this.loadingService.hide();
+              });
             }
           },
           {
@@ -253,7 +266,5 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     // this.sidebarService.toggleRight();
     //const builder = this.db.getSongArtistBuilder();
     //this.db.getListFromBuilder(builder, []);
-
-    this.logFileMetadata();
   }
 }

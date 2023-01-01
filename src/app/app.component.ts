@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     @Inject(DOCUMENT) private doc: Document,
-    dbService: DatabaseService,
+    private db: DatabaseService,
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
@@ -36,18 +36,19 @@ export class AppComponent implements OnInit {
     private featureService: FeatureDetectionService)
   {
     doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
-    dbService.dataSource.initialize().then(ds => {
-      this.log.info('Database initialized!');
-      dbService.initializeModuleOptions().then(() => {
-        this.log.info('Module options initialized!');
-      });
-    });
   }
 
   public ngOnInit(): void {
-    this.watchRouteChange();
     this.utilities.setAppVersion('0.0.1');
-    this.log.info('Feature info initialized.', this.featureService.get());
+    this.watchRouteChange();
+    this.log.info('Initializing database...');
+    this.db.initialize().then(ds => {
+      this.log.info('Database initialized!');
+      this.log.info('Feature info initialized.', this.featureService.get());
+      this.db.initializeModuleOptions().then(() => {
+        this.log.info('Module options initialized!');
+      });
+    });
   }
 
   @HostListener('window:scroll', ['$event'])

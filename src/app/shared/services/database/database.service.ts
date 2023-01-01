@@ -45,7 +45,7 @@ export class DatabaseService {
     'primaryAlbumId': 'Album',
     'classificationId': 'Classification'
   };
-  public dataSource: DataSource;
+  private dataSource: DataSource;
 
   constructor(private utilities: UtilityService) {
     const options: DataSourceOptions = {
@@ -75,6 +75,22 @@ export class DatabaseService {
       logging: ['query', 'error', 'warn']
     };
     this.dataSource = new DataSource(options);
+  }
+
+  public initialize(): Promise<DataSource> {
+    return this.dataSource.initialize();
+  }
+
+  /**
+   * Deletes the data, drops the db objects and recreates the database.
+   */
+  public async purge(): Promise<DataSource> {
+    // Delete data and drop db objects
+    await this.dataSource.dropDatabase();
+    // Close any remaining connections since the init process reconnects
+    await this.dataSource.destroy();
+    // Re init
+    return this.dataSource.initialize();
   }
 
   public displayName(columnName: string): string {
