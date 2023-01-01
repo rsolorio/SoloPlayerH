@@ -20,7 +20,6 @@ export class FeatureDetectionService {
         userAgent: null
       }
     },
-    isPhone: false,
     deviceType: DeviceType.Unknown
   };
   
@@ -61,6 +60,10 @@ export class FeatureDetectionService {
 
   public isCordova(): boolean {
     return this.feature.platform.app === AppType.Cordova;
+  }
+
+  public isPhone(): boolean {
+    return this.feature.deviceType === DeviceType.Phone;
   }
 
   /**

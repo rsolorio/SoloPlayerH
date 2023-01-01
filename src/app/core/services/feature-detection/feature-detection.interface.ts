@@ -3,7 +3,6 @@ import { DeviceType, AppType } from "./feature-detection.enum";
 export interface IFeatureInfo {
   isMobileBrowser: boolean;
   platform: IFeaturePlatform;
-  isPhone: boolean;
   deviceType: DeviceType;
 }
 
