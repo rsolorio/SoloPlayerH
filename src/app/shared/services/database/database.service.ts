@@ -29,6 +29,9 @@ import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
 import { timeStamp } from 'console';
+import { EventsService } from 'src/app/core/services/events/events.service';
+import { AppEvent } from '../../models/events.enum';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -47,7 +50,10 @@ export class DatabaseService {
   };
   private dataSource: DataSource;
 
-  constructor(private utilities: UtilityService) {
+  constructor(
+    private utilities: UtilityService,
+    private events: EventsService,
+    private log: LogService) {
     const options: DataSourceOptions = {
       type: 'sqlite',
       database: 'solo-player.db',
@@ -78,7 +84,12 @@ export class DatabaseService {
   }
 
   public initialize(): Promise<DataSource> {
-    return this.dataSource.initialize();
+    this.log.info('Initializing database...');
+    return this.dataSource.initialize().then(ds => {
+      this.events.broadcast(AppEvent.DbInitialized);
+      this.log.info('Database initialized!');
+      return ds;
+    });
   }
 
   /**
@@ -90,7 +101,7 @@ export class DatabaseService {
     // Close any remaining connections since the init process reconnects
     await this.dataSource.destroy();
     // Re init
-    return this.dataSource.initialize();
+    return this.initialize();
   }
 
   public displayName(columnName: string): string {

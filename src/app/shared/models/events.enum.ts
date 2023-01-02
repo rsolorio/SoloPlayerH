@@ -20,5 +20,7 @@ export enum AppEvent {
   // Scan
   ScanFile = 'SCAN_FILE',
   ScanPlaylistCreated = 'SCAN_PLAYLIST_CREATED',
-  ScanTrackAdded = 'SCAN_TRACK_ADDED'
+  ScanTrackAdded = 'SCAN_TRACK_ADDED',
+  // DB
+  DbInitialized = 'DB_INITIALIZED'
 }

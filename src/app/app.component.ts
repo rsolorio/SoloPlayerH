@@ -10,6 +10,7 @@ import { UtilityService } from './core/services/utility/utility.service';
 import { DatabaseService } from './shared/services/database/database.service';
 import { LogService } from './core/services/log/log.service';
 import { FeatureDetectionService } from './core/services/feature-detection/feature-detection.service';
+import { AppEvent } from './shared/models/events.enum';
 
 /**
  * The main app component.
@@ -41,14 +42,15 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
     this.utilities.setAppVersion('0.0.1');
     this.watchRouteChange();
-    this.log.info('Initializing database...');
-    this.db.initialize().then(ds => {
-      this.log.info('Database initialized!');
-      this.log.info('Feature info initialized.', this.featureService.get());
+    this.log.info('Feature info initialized.', this.featureService.get());
+
+    this.events.onEvent(AppEvent.DbInitialized).subscribe(() => {
       this.db.initializeModuleOptions().then(() => {
         this.log.info('Module options initialized!');
       });
     });
+    
+    this.db.initialize();
   }
 
   @HostListener('window:scroll', ['$event'])
