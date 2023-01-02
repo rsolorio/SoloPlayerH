@@ -404,7 +404,7 @@ export class DatabaseService {
     option.valueEditorType = ModuleOptionEditor.Text;
     option.multipleValues = true;
     option.system = false;
-    option.values = JSON.stringify([]);
+    option.values = JSON.stringify(['\\']);
 
     await option.save();
   }
@@ -425,7 +425,7 @@ export class DatabaseService {
     option.valueEditorType = ModuleOptionEditor.Text;
     option.multipleValues = true;
     option.system = false;
-    option.values = JSON.stringify(['/']);
+    option.values = JSON.stringify(['\\']);
 
     await option.save();
   }
