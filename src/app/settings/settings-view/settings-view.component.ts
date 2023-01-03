@@ -182,6 +182,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<IAudioInfo[]> {
     const failures: IAudioInfo[] = [];
     let fileCount = 0;
+    await this.scanner.beforeProcess();
     for (const fileInfo of files) {
       fileCount++;
       setting.descriptions[1] = `File ${fileCount} of ${files.length}.`;
@@ -192,6 +193,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         failures.push(audioInfo);
       }
     }
+    this.scanner.afterProcess();
     return failures;
   }
 

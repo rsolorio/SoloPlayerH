@@ -17,6 +17,7 @@ import { MusicMetadataService } from '../music-metadata/music-metadata.service';
 export class ScanService {
 
   private unknownValue = 'Unknown';
+  private existingGenreArray: string[];
 
   constructor(
     private fileService: FileService,
@@ -41,6 +42,16 @@ export class ScanService {
         }
       });
     });
+  }
+
+  public async beforeProcess(): Promise<void> {
+    // Prepare global variables
+    const existingGenres = await ClassificationEntity.findBy({ classificationType: 'Genre' });
+    this.existingGenreArray = existingGenres.map(genreEntity => genreEntity.name);
+  }
+
+  public afterProcess(): void {
+    this.existingGenreArray = [];
   }
 
   public async processAudioFile(fileInfo: IFileInfo, options: ModuleOptionEntity[]): Promise<IAudioInfo> {
@@ -84,9 +95,16 @@ export class ScanService {
     if (genreSplitOption) {
       genreSplitSymbols = this.db.getOptionTextValues(genreSplitOption);
     }
-    const genres = this.processGenres(audioInfo, genreSplitSymbols);
-    for (const genre of genres) {
-      await this.db.add(genre, ClassificationEntity);
+    const newGenres: ClassificationEntity[] = [];
+    const newGenreArray = this.processGenres(audioInfo, genreSplitSymbols);
+    for (const genre of newGenreArray) {
+      // await this.db.add(genre, ClassificationEntity);
+      if (!this.existingGenreArray.includes(genre)) {
+        this.existingGenreArray.push(genre);
+        const newGenre = this.createGenre(genre);
+        newGenres.push(newGenre);
+        await newGenre.save();
+      }
     }
 
     // CLASSIFICATIONS
@@ -104,7 +122,7 @@ export class ScanService {
     // Song artists (this info will be saved in the songArtist table)
     song.artists = artists;
     // Genres and classifications
-    song.classifications = [...genres, ...classifications];
+    song.classifications = [...newGenres, ...classifications];
     // TODO: if the song already exists, update data
     await this.db.add(song, SongEntity);
 
@@ -325,42 +343,38 @@ export class ScanService {
     return artists;
   }
 
-  private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): ClassificationEntity[] {
-    const genres: ClassificationEntity[] = [];
+  private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): string[] {
+    const genres: string[] = [];
 
     if (audioInfo.metadata.common.genre && audioInfo.metadata.common.genre.length) {
-      const classificationType = 'Genre';
       for (const genreName of audioInfo.metadata.common.genre) {
-        // TODO: add the full genre text (including slashes) as genre if specified in a module option
+        // First, add the genre as it is
+        if (!genres.includes(genreName)) {
+          genres.push(genreName);
+        }
+        // Second, perform split if specified
         if (splitSymbols && splitSymbols.length) {
           for (const splitSymbol of splitSymbols) {
             const subGenres = genreName.split(splitSymbol);
             for (const subGenreName of subGenres) {
-              const genre = new ClassificationEntity();
-              genre.name = subGenreName;
-              genre.classificationType = classificationType;
-              this.db.hashClassification(genre);
-              const existingGenre = genres.find(g => g.id === genre.id);
-              if (!existingGenre) {
-                genres.push(genre);
+              if (!genres.includes(subGenreName)) {
+                genres.push(subGenreName);
               }
             }
           }
         }
-        else {
-          // No split symbols configured, just use the genre as is
-          const genre = new ClassificationEntity();
-          genre.name = genreName;
-          genre.classificationType = classificationType;
-          this.db.hashClassification(genre);
-          const existingGenre = genres.find(g => g.id === genre.id);
-          if (!existingGenre) {
-            genres.push(genre);
-          }
-        }
       }
     }
+
     return genres;
+  }
+
+  private createGenre(name: string): ClassificationEntity {
+    const genre = new ClassificationEntity();
+    genre.name = name;
+    genre.classificationType = 'Genre';
+    this.db.hashClassification(genre);
+    return genre;
   }
 
   private processClassifications(audioInfo: IAudioInfo): ClassificationEntity[] {
