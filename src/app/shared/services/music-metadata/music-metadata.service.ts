@@ -29,7 +29,7 @@ export class MusicMetadataService {
       result.error = error;
     }
 
-    if (enforceDuration && !result.metadata.format.duration && !result.error) {
+    if (!result.error && enforceDuration && !result.metadata.format.duration) {
       this.log.warn('Duration not found. Re-parsing the data.');
       try {
         result.metadata = await parseBuffer(data,  null, { duration: true});

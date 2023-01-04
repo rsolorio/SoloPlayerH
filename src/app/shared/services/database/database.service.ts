@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Brackets, DataSource, DataSourceOptions, EntityTarget, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, DataSource, DataSourceOptions, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import * as objectHash from 'object-hash'
 import { groupBy } from 'lodash';
 import { IClassificationModel } from '../../models/classification-model.interface';
@@ -50,6 +50,11 @@ export class DatabaseService {
     'classificationId': 'Classification'
   };
   private dataSource: DataSource;
+  /**
+   * Maximum number of parameters in a single statement.
+   * Just an internal constant to do the limit calculations
+   */
+  private SQLITE_MAX_VARIABLE_NUMBER = 32766;
 
   constructor(
     private utilities: UtilityService,
@@ -172,13 +177,68 @@ export class DatabaseService {
     });
   }
 
-  public bulkInsert<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): Promise<any> {
-    return this.dataSource.createQueryBuilder().insert().into(entity).values(values).execute();
+  // SQLite Bulk Actions - BEGIN
+  /*
+    You should take in consideration the SQLite limits mentioned here:
+    https://www.sqlite.org/limits.html
+    and here: https://www.sqlite.org/c3ref/c_limit_attached.html
+    The most important one for this app is:
+    Maximum Number Of Host Parameters In A Single SQL Statement (SQLITE_MAX_VARIABLE_NUMBER)
+    The default value for the variable is: 32766 for SQLite versions after 3.32.0
+    If you reach the limit you will get this error: "too many SQL variables".
+    You can do the math by getting the number of columns in a certain entity and the number of records to be inserted/updated.
+  */
+
+  /**
+   * Performs multiple insert actions in a single transaction.
+   * The values parameter gets affected by this method since a splice is performed to do this in smaller chunks if needed.
+   */
+  public async bulkInsert<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): Promise<InsertResult[]> {
+    const response: InsertResult[] = [];
+    const bulkSize = this.getBulkSize(entity, values);
+    let bulkIndex = 0;
+    while (values.length) {
+      bulkIndex++;
+      const items = values.splice(0, bulkSize);
+      this.log.info(`Bulk insert ${bulkIndex} with ${items.length} items.`);
+      const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(items).execute();
+      response.push(result);
+    }
+    return response;
   }
 
-  public bulkUpdate<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[], updateColumns: string[]): Promise<any> {
-    return this.dataSource.createQueryBuilder().insert().into(entity).values(values).orUpdate(updateColumns).execute();
+  /**
+   * Performs multiple update actions in a single transaction. The way it works is through an "upsert" mechanism;
+   * it tries to insert the data and it fails it will try to update. For this to work you have to specify the columns
+   * that will be updated if the insert fails.
+   */
+  public async bulkUpdate<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[], updateColumns: string[]): Promise<InsertResult[]> {
+    const response: InsertResult[] = [];
+    // Even though we are using just a few columns to do the update, in reality we are first performing an insert so we need to take in consideration
+    // all columns in the entity to determine the bulk size.
+    const bulkSize = this.getBulkSize(entity, values);
+    let bulkIndex = 0;
+    while (values.length) {
+      bulkIndex++;
+      const items = values.splice(0, bulkSize);
+      this.log.info(`Bulk update ${bulkIndex} with ${items.length} items.`);
+      const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(values).orUpdate(updateColumns).execute();
+      response.push(result);
+    }
+
+    return response;
   }
+
+  private getBulkSize<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): number {
+    const repo = this.dataSource.getRepository(entity);
+    const totalParameters = values.length * repo.metadata.columns.length;
+    const totalBulks = Math.ceil(totalParameters / this.SQLITE_MAX_VARIABLE_NUMBER);
+    const bulkSize = Math.ceil(values.length / totalBulks);
+    this.log.info(`Total items: ${values.length}. Total columns: ${repo.metadata.columns.length}. Total parameters: ${totalParameters}. Total bulks: ${totalBulks}. Bulk size: ${bulkSize}.`);
+    return bulkSize;
+  }
+
+  // SQLite Bulk Actions - END
 
   public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: ICriteriaValueBaseModel[]): Promise<T[]> {
     const entityTempName = 'getListEntity';

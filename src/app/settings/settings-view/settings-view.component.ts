@@ -144,7 +144,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     let fileCount = 0;
     const fileScanSub = this.events.onEvent<IFileInfo>(AppEvent.ScanFile).subscribe(fileInfo => {
       fileCount++;
-      setting.descriptions[1] = `Files found: ${fileCount}.`;
+      setting.descriptions[1] = `Files found: ${fileCount}`;
     });
     this.subs.add(fileScanSub, 'settingsViewScanFile');
     // Start scanning
@@ -182,7 +182,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<IAudioInfo[]> {
     const options = await this.db.getModuleOptions();
     const audios = await this.scanner.processAudioFiles(files, options, (count, file) => {
-      setting.descriptions[1] = `File ${count} of ${files.length}.`;
+      setting.descriptions[1] = `File ${count} of ${files.length}`;
       setting.descriptions[2] = file.path;
     });
     return audios.filter(audioInfo => audioInfo.error);
