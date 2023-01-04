@@ -13,11 +13,11 @@ export class PlaylistSongEntity extends BaseEntity {
   @Column()
   sequence: number;
 
-  @ManyToOne(type => PlaylistEntity, playlist => playlist.playlistSongs)
+  @ManyToOne(() => PlaylistEntity, playlist => playlist.playlistSongs)
   @JoinColumn({ name: 'playlistId'})
   playlist: Relation<PlaylistEntity>;
 
-  @ManyToOne(type => SongEntity, song => song.playlistSongs)
+  @ManyToOne(() => SongEntity, song => song.playlistSongs)
   @JoinColumn({ name: 'songId'})
   song: Relation<SongEntity>;
 }

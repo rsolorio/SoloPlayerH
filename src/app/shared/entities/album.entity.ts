@@ -15,11 +15,11 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   @Column()
   albumSort: string;
 
-  @ManyToOne(type => ArtistEntity, artist => artist.albums)
+  @ManyToOne(() => ArtistEntity, artist => artist.albums)
   @JoinColumn({ name: 'primaryArtistId'})
   primaryArtist: Relation<ArtistEntity>;
 
-  @OneToMany(type => SongEntity, song => song.primaryAlbum)
+  @OneToMany(() => SongEntity, song => song.primaryAlbum)
   songs: Relation<SongEntity[]>;
 
   artistName: string;

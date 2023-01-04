@@ -22,13 +22,14 @@ import {
   PlaylistEntity,
   PlaylistSongEntity,
   PlaylistSongViewEntity,
-  ModuleOptionEntity
+  ModuleOptionEntity,
+  SongArtistEntity,
+  SongClassificationEntity
 } from '../../entities';
 import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
 import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
-import { timeStamp } from 'console';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
@@ -75,7 +76,9 @@ export class DatabaseService {
         PlaylistSongEntity,
         PlaylistViewEntity,
         PlaylistSongViewEntity,
-        ModuleOptionEntity
+        ModuleOptionEntity,
+        SongArtistEntity,
+        SongClassificationEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -114,7 +117,7 @@ export class DatabaseService {
   }
 
   public hashDbEntity(entity: DbEntity): void {
-    entity.id = this.hash(entity.name);
+    entity.id = this.hash(entity.name.toLowerCase());
   }
 
   public hashArtist(artist: ArtistEntity): void {
@@ -123,16 +126,16 @@ export class DatabaseService {
 
   public hashAlbum(album: AlbumEntity): void {
     // Combine these fields to make album unique: ArtistName|AlbumName|ReleaseYear
-    album.id = this.hash(`${album.primaryArtist.name}|${album.name}|${album.releaseYear}`);
+    album.id = this.hash(`${album.primaryArtist.name.toLowerCase()}|${album.name.toLowerCase()}|${album.releaseYear}`);
   }
 
   public hashSong(song: SongEntity): void {
-    song.id = this.hash(song.filePath);
+    song.id = this.hash(song.filePath.toLowerCase());
   }
 
   public hashClassification(classification: ClassificationEntity): void {
-    // Combine these fields to make classification unique: ClassificationType:ClassificationName
-    classification.id = this.hash(`${classification.classificationType}:${classification.name}`);
+    // Combine these fields to make classification unique: ClassificationType|ClassificationName
+    classification.id = this.hash(`${classification.classificationType.toLowerCase()}|${classification.name.toLowerCase()}`);
   }
 
   public hashPlaylist(playlist: PlaylistEntity): void {
@@ -167,6 +170,14 @@ export class DatabaseService {
     return DbEntity.findOneBy({ id }).then(entity => {
       return entity !== null;
     });
+  }
+
+  public bulkInsert<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): Promise<any> {
+    return this.dataSource.createQueryBuilder().insert().into(entity).values(values).execute();
+  }
+
+  public bulkUpdate<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[], updateColumns: string[]): Promise<any> {
+    return this.dataSource.createQueryBuilder().insert().into(entity).values(values).orUpdate(updateColumns).execute();
   }
 
   public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: ICriteriaValueBaseModel[]): Promise<T[]> {

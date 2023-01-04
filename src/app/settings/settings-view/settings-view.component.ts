@@ -6,7 +6,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
+import { ClassificationEntity, PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
@@ -180,21 +180,12 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<IAudioInfo[]> {
-    const failures: IAudioInfo[] = [];
-    let fileCount = 0;
-    await this.scanner.beforeProcess();
-    for (const fileInfo of files) {
-      fileCount++;
-      setting.descriptions[1] = `File ${fileCount} of ${files.length}.`;
-      setting.descriptions[2] = fileInfo.path;
-      const options = await this.db.getModuleOptions();
-      const audioInfo = await this.scanner.processAudioFile(fileInfo, options);
-      if (audioInfo && audioInfo.error) {
-        failures.push(audioInfo);
-      }
-    }
-    this.scanner.afterProcess();
-    return failures;
+    const options = await this.db.getModuleOptions();
+    const audios = await this.scanner.processAudioFiles(files, options, (count, file) => {
+      setting.descriptions[1] = `File ${count} of ${files.length}.`;
+      setting.descriptions[2] = file.path;
+    });
+    return audios.filter(audioInfo => audioInfo.error);
   }
 
   public onPlaylistScan(setting: ISetting, folderPath: string): void {
@@ -268,5 +259,15 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     // this.sidebarService.toggleRight();
     //const builder = this.db.getSongArtistBuilder();
     //this.db.getListFromBuilder(builder, []);
+
+    this.test();
+  }
+
+  private async test(): Promise<void> {
+    const classifications = await ClassificationEntity.find();
+    for (const c of classifications) {
+      c.classificationType = 'Bye';
+    }
+    await this.db.bulkUpdate(ClassificationEntity, classifications, ['name', 'classificationType']);
   }
 }

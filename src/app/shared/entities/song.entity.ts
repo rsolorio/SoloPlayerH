@@ -1,10 +1,10 @@
-import { Column, Entity, ManyToOne, Relation, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, Relation, JoinColumn, OneToMany } from 'typeorm';
 import { ISongModel } from '../models/song-model.interface';
 import { AlbumEntity } from './album.entity';
-import { ArtistEntity } from './artist.entity';
-import { ClassificationEntity } from './classification.entity';
 import { PlaylistSongEntity } from './playlist-song.entity';
+import { SongArtistEntity } from './song-artist.entity';
 import { SongBaseEntity } from './song-base.entity';
+import { SongClassificationEntity } from './song-classification.entity';
 
 @Entity({name: 'song'})
 export class SongEntity extends SongBaseEntity implements ISongModel {
@@ -59,19 +59,17 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   @Column()
   favorite: boolean;
 
-  @ManyToOne(type => AlbumEntity, album => album.songs)
+  @ManyToOne(() => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})
   primaryAlbum: Relation<AlbumEntity>;
 
-  @ManyToMany(() => ArtistEntity, artist => artist.songs)
-  @JoinTable({ name: 'songArtist' })
-  artists: Relation<ArtistEntity[]>;
+  @OneToMany(() => SongArtistEntity, songArtist => songArtist.song)
+  songArtists: Relation<SongArtistEntity[]>;
 
-  @ManyToMany(() => ClassificationEntity, classification => classification.songs)
-  @JoinTable({ name: 'songClassification' })
-  classifications: Relation<ClassificationEntity[]>;
+  @OneToMany(() => SongClassificationEntity, songClassification => songClassification.song)
+  songClassifications: Relation<SongClassificationEntity[]>;
 
-  @OneToMany(type => PlaylistSongEntity, playlistSong => playlistSong.song)
+  @OneToMany(() => PlaylistSongEntity, playlistSong => playlistSong.song)
   playlistSongs: Relation<PlaylistSongEntity[]>;
 
   // Empty properties from ISongModel interface

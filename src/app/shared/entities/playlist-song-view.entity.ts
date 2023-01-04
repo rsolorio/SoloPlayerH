@@ -26,6 +26,7 @@ import { SongEntity } from './song.entity';
 //     .innerJoin('artist', 'artist', 'album.primaryArtistId = artist.id')
 // })
 @ViewEntity({
+  name: 'playlistSongView',
   expression: ds => ds
     .createQueryBuilder(PlaylistSongEntity, 'playlistSong')
     .innerJoinAndSelect('playlistSong.song', 'song')

@@ -7,6 +7,7 @@ import { SongEntity } from './song.entity';
  * Field list: id, primaryAlbumId, primaryArtistId, name, filePath, titleSort, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, bitrate, vbr, lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized
  */
 @ViewEntity({
+  name: 'songView',
   expression: ds => ds
     .createQueryBuilder(SongEntity, 'song')
     .innerJoin('song.primaryAlbum', 'album')

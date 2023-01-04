@@ -1,8 +1,7 @@
-import { BaseEntity, PrimaryColumn, Entity } from 'typeorm';
+import { BaseEntity, PrimaryColumn, Entity, Relation, ManyToOne } from 'typeorm';
+import { ArtistEntity } from './artist.entity';
+import { SongEntity } from './song.entity';
 
-/**
- * DEPRECATED. Use SongArtistViewEntity instead.
- */
 @Entity({name: 'songArtist'})
 export class SongArtistEntity extends BaseEntity {
   @PrimaryColumn()
@@ -10,4 +9,13 @@ export class SongArtistEntity extends BaseEntity {
 
   @PrimaryColumn()
   artistId: string;
+
+  @PrimaryColumn()
+  artistRoleTypeId: number;
+
+  @ManyToOne(() => ArtistEntity, artist => artist.songArtists)
+  artist: Relation<ArtistEntity>;
+
+  @ManyToOne(() => SongEntity, song => song.songArtists)
+  song: Relation<SongEntity>;
 }

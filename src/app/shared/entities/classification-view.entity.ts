@@ -4,9 +4,11 @@ import { ListItemEntity } from './base.entity';
 import { ClassificationEntity } from './classification.entity';
 
 @ViewEntity({
+  name: 'classificationView',
   expression: ds => ds
     .createQueryBuilder(ClassificationEntity, 'classification')
-    .innerJoin('classification.songs', 'song')
+    .innerJoin('classification.songClassifications', 'songClassification')
+    .innerJoin('songClassification.song', 'song')
     .select('classification.id', 'id')
     .addSelect('classification.name', 'name')
     .addSelect('classification.classificationType', 'classificationType')

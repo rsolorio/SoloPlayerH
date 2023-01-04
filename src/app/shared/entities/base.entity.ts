@@ -6,6 +6,11 @@ export class DbEntity extends BaseEntity implements IDbModel {
   id: string;
   @Column()
   name: string;
+
+  /** Determines if the entity needs to be updated. */
+  hasChanges?: boolean;
+  /** Determines if the entity needs to be inserted. */
+  isNew?: boolean;
 }
 
 export class ListItemEntity extends DbEntity implements IListItemModel {

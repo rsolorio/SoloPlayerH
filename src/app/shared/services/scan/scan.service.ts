@@ -2,7 +2,18 @@ import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ArtistEntity, AlbumEntity, ClassificationEntity, SongEntity, PlaylistEntity, PlaylistSongEntity, ModuleOptionEntity } from '../../entities';
+import { Not } from 'typeorm';
+import {
+  ArtistEntity,
+  AlbumEntity,
+  ClassificationEntity,
+  SongEntity,
+  PlaylistEntity,
+  PlaylistSongEntity,
+  ModuleOptionEntity,
+  SongArtistEntity,
+  SongClassificationEntity
+} from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { DatabaseService } from '../database/database.service';
@@ -17,7 +28,13 @@ import { MusicMetadataService } from '../music-metadata/music-metadata.service';
 export class ScanService {
 
   private unknownValue = 'Unknown';
-  private existingGenreArray: string[];
+  private existingArtists: ArtistEntity[];
+  private existingAlbums: AlbumEntity[];
+  private existingGenres: ClassificationEntity[];
+  private existingClassifications: ClassificationEntity[];
+  private existingSongs: SongEntity[];
+  private existingSongArtists: SongArtistEntity[];
+  private existingSongClassifications: SongClassificationEntity[];
 
   constructor(
     private fileService: FileService,
@@ -44,17 +61,77 @@ export class ScanService {
     });
   }
 
-  public async beforeProcess(): Promise<void> {
+  private async beforeProcess(): Promise<void> {
     // Prepare global variables
-    const existingGenres = await ClassificationEntity.findBy({ classificationType: 'Genre' });
-    this.existingGenreArray = existingGenres.map(genreEntity => genreEntity.name);
+    this.existingArtists = await ArtistEntity.find();
+    this.existingAlbums = await AlbumEntity.find();
+    this.existingGenres = await ClassificationEntity.findBy({ classificationType: 'Genre' });
+    this.existingClassifications = await ClassificationEntity.findBy({ classificationType: Not('Genre') });
+    this.existingSongs = await SongEntity.find();
+    this.existingSongArtists = [];
+    this.existingSongClassifications = [];
   }
 
-  public afterProcess(): void {
-    this.existingGenreArray = [];
+  private async afterProcess(): Promise<void> {
+    // Artists
+    const newArtists = this.existingArtists.filter(artist => artist.isNew);
+    if (newArtists.length) {
+      await this.db.bulkInsert(ArtistEntity, newArtists);
+    }
+    const artistsToBeUpdated = this.existingArtists.filter(artist => artist.hasChanges);
+    if (artistsToBeUpdated.length) {
+      await this.db.bulkUpdate(ArtistEntity, artistsToBeUpdated, ['artistType', 'artistSort', 'artistStylized', 'country']);
+    }
+    this.existingArtists = [];
+    // Albums
+    const newAlbums = this.existingAlbums.filter(album => album.isNew);
+    if (newAlbums.length) {
+      await this.db.bulkInsert(AlbumEntity, newAlbums);
+    }    
+    this.existingAlbums = [];
+    // Genres
+    const newGenres = this.existingGenres.filter(genre => genre.isNew);
+    if (newGenres.length) {
+      await this.db.bulkInsert(ClassificationEntity, newGenres);
+    }
+    this.existingGenres = [];
+    // Classifications
+    const newClassifications = this.existingClassifications.filter(classification => classification.isNew);
+    if (newClassifications.length) {
+      await this.db.bulkInsert(ClassificationEntity, newClassifications);
+    }
+    this.existingClassifications = [];
+    // Songs
+    const newSongs = this.existingSongs.filter(song => song.isNew);
+    if (newSongs.length) {
+      await this.db.bulkInsert(SongEntity, newSongs);
+    }
+    this.existingSongs = [];
+    // SongArtists
+    await this.db.bulkInsert(SongArtistEntity, this.existingSongArtists);
+    this.existingSongArtists = [];
+    // SongClassifications
+    await this.db.bulkInsert(SongClassificationEntity, this.existingSongClassifications);
+    this.existingSongClassifications = [];
   }
 
-  public async processAudioFile(fileInfo: IFileInfo, options: ModuleOptionEntity[]): Promise<IAudioInfo> {
+  public async processAudioFiles(files: IFileInfo[], options: ModuleOptionEntity[], beforeCallback?: (count: number, fileInfo: IFileInfo) => void): Promise<IAudioInfo[]> {
+    await this.beforeProcess();
+    let fileCount = 0;
+    const result: IAudioInfo[] = [];
+    for (const file of files) {
+      fileCount++;
+      if (beforeCallback) {
+        beforeCallback(fileCount, file);
+      }
+      const audioInfo = await this.processAudioFile(file, options);
+      result.push(audioInfo);
+    }
+    await this.afterProcess();
+    return result;
+  }
+
+  private async processAudioFile(fileInfo: IFileInfo, options: ModuleOptionEntity[]): Promise<IAudioInfo> {
     const buffer = await this.fileService.getBuffer(fileInfo.path);
     const audioInfo = await this.metadataService.getMetadata(buffer, true);
     if (!audioInfo || audioInfo.error) {
@@ -63,30 +140,13 @@ export class ScanService {
 
     // PRIMARY ALBUM ARTIST
     const primaryArtist = this.processAlbumArtist(audioInfo);
-    const existingArtist = await ArtistEntity.findOneBy({ id: primaryArtist.id });
-    if (existingArtist) {
-      if (this.artistNeedsUpdate(existingArtist, primaryArtist)) {
-        await primaryArtist.save();
-      }
-    }
-    else {
-      await primaryArtist.save();
-    }
 
     // MULTIPLE ARTISTS
-    const artists = this.processArtists(audioInfo);
-    for (const artist of artists) {
-      // Skip the primary artist because it has been already added or updated in the previous step
-      if (artist.name !== primaryArtist.name) {
-        // Only add if it does not exist, otherwise it will update an existing record
-        // and wipe out other fields
-        await this.db.add(artist, ArtistEntity);
-      }
-    }
+    const artists = this.processArtists(audioInfo, []);
 
     // PRIMARY ALBUM
-    const primaryAlbum = this.processAlbum(primaryArtist, audioInfo);
-    await this.db.add(primaryAlbum, AlbumEntity);
+    // Hack for SoloSoft: ignore 1900
+    const primaryAlbum = this.processAlbum(primaryArtist, audioInfo, [1900]);
 
     // GENRES
     // TODO: add default genre if no one found
@@ -95,23 +155,10 @@ export class ScanService {
     if (genreSplitOption) {
       genreSplitSymbols = this.db.getOptionTextValues(genreSplitOption);
     }
-    const newGenres: ClassificationEntity[] = [];
-    const newGenreArray = this.processGenres(audioInfo, genreSplitSymbols);
-    for (const genre of newGenreArray) {
-      // await this.db.add(genre, ClassificationEntity);
-      if (!this.existingGenreArray.includes(genre)) {
-        this.existingGenreArray.push(genre);
-        const newGenre = this.createGenre(genre);
-        newGenres.push(newGenre);
-        await newGenre.save();
-      }
-    }
+    const genres = this.processGenres(audioInfo, genreSplitSymbols);
 
     // CLASSIFICATIONS
     const classifications = this.processClassifications(audioInfo);
-    for (const classification of classifications) {
-      await this.db.add(classification, ClassificationEntity);
-    }
 
     // SONG - ARTISTS/GENRES/CLASSIFICATIONS
     const song = this.processSong(primaryAlbum, audioInfo, fileInfo);
@@ -119,86 +166,130 @@ export class ScanService {
     if (!artists.find(a => a.id === primaryArtist.id)) {
       artists.push(primaryArtist);
     }
-    // Song artists (this info will be saved in the songArtist table)
-    song.artists = artists;
-    // Genres and classifications
-    song.classifications = [...newGenres, ...classifications];
     // TODO: if the song already exists, update data
-    await this.db.add(song, SongEntity);
+    if (!this.existingSongs.find(s => s.id === song.id)) {
+      // await SongEntity.insert(song);
+      this.existingSongs.push(song);
+
+      // If we are adding a new song, all its artists are new as well, so push them to cache
+      for (const artist of artists) {
+        const songArtist = new SongArtistEntity();
+        songArtist.songId = song.id;
+        songArtist.artistId = artist.id;
+        songArtist.artistRoleTypeId = 1; // Performer
+        this.existingSongArtists.push(songArtist);
+      }
+      // Same for classifications
+      for (const classification of [...genres, ...classifications]) {
+        const songClassification = new SongClassificationEntity();
+        songClassification.songId = song.id;
+        songClassification.classificationId = classification.id;
+        this.existingSongClassifications.push(songClassification);
+      }
+    }
 
     return audioInfo;
   }
 
   private processAlbumArtist(audioInfo: IAudioInfo): ArtistEntity {
-    const artist = new ArtistEntity();
-
-    artist.name = this.unknownValue;
-    if (audioInfo.metadata.common.albumartist) {
-      artist.name = audioInfo.metadata.common.albumartist;
-    }
-    else if (audioInfo.metadata.common.artists && audioInfo.metadata.common.artists.length) {
-      artist.name = audioInfo.metadata.common.artists[0];
-    }
-
-    if (audioInfo.metadata.common.albumartistsort) {
-      artist.artistSort = audioInfo.metadata.common.albumartistsort;
-    }
-    else {
-      artist.artistSort = artist.name;
-    }
-    artist.favorite = false;
-
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
     const artistType = this.metadataService.getTag<string>('ArtistType', id3v2Tags, true);
-    artist.artistType = artistType ? artistType : this.unknownValue;
-
     const country = this.metadataService.getTag<string>('Country', id3v2Tags, true);
-    artist.country = country ? country : this.unknownValue;
-
     const artistStylized = this.metadataService.getTag<string>('ArtistStylized', id3v2Tags, true);
-    artist.artistStylized = artistStylized ? artistStylized : artist.name;
-
-    this.db.hashArtist(artist);
-    return artist;
-  }
-
-  private processAlbum(artist: ArtistEntity, audioInfo: IAudioInfo): AlbumEntity {
-    const album = new AlbumEntity();
-
-    album.primaryArtist = artist;
-
-    album.name = this.unknownValue;
-    if (audioInfo.metadata.common.album) {
-      album.name = audioInfo.metadata.common.album;
+    const artistSort = audioInfo.metadata.common.albumartistsort;
+    let artistName = this.unknownValue;
+    if (audioInfo.metadata.common.albumartist) {
+      artistName = audioInfo.metadata.common.albumartist;
+    }
+    else if (audioInfo.metadata.common.artists && audioInfo.metadata.common.artists.length) {
+      artistName = audioInfo.metadata.common.artists[0];
     }
 
-    album.releaseYear = 0;
-    if (audioInfo.metadata.common.year) {
-      // Hack for SoloSoft: ignore 1900
-      if (audioInfo.metadata.common.year !== 1900) {
-        album.releaseYear = audioInfo.metadata.common.year;
+    const newArtist = new ArtistEntity();
+    newArtist.isNew = true;
+    newArtist.name = artistName;
+    newArtist.artistSort = artistSort ? artistSort : newArtist.name;
+    newArtist.favorite = false;
+    newArtist.artistType = artistType ? artistType : this.unknownValue;
+    newArtist.country = country ? country : this.unknownValue;
+    newArtist.artistStylized = artistStylized ? artistStylized : artistName;
+    this.db.hashArtist(newArtist);
+
+    const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
+    if (existingArtist) {
+      if (existingArtist.artistType === this.unknownValue && existingArtist.artistType !== newArtist.artistType) {
+        existingArtist.artistType = newArtist.artistType;
+        if (!existingArtist.isNew) {
+          existingArtist.hasChanges = true;
+        }
       }
+      if (existingArtist.country === this.unknownValue && existingArtist.country !== newArtist.country) {
+        existingArtist.country = newArtist.country;
+        if (!existingArtist.isNew) {
+          existingArtist.hasChanges = true;
+        }
+      }
+      if (existingArtist.artistStylized === existingArtist.name && existingArtist.artistStylized !== newArtist.artistStylized) {
+        existingArtist.artistStylized = newArtist.artistStylized;
+        if (!existingArtist.isNew) {
+          existingArtist.hasChanges = true;
+        }
+      }
+      if (existingArtist.artistSort === existingArtist.artistSort && existingArtist.artistSort !== newArtist.artistSort) {
+        existingArtist.artistSort = newArtist.artistSort;
+        if (!existingArtist.isNew) {
+          existingArtist.hasChanges = true;
+        }
+      }
+      return existingArtist;
+    }
+
+    this.existingArtists.push(newArtist);
+    return newArtist;
+  }
+
+  private processAlbum(artist: ArtistEntity, audioInfo: IAudioInfo, ignoredYears?: number[]): AlbumEntity {
+    const newAlbum = new AlbumEntity();
+    newAlbum.isNew = true;
+    newAlbum.primaryArtist = artist;
+    newAlbum.name = this.unknownValue;
+    if (audioInfo.metadata.common.album) {
+      newAlbum.name = audioInfo.metadata.common.album;
+    }
+    newAlbum.releaseYear = 0;
+    if (audioInfo.metadata.common.year) {
+      if (!ignoredYears || !ignoredYears.length || !ignoredYears.includes(audioInfo.metadata.common.year)) {
+        newAlbum.releaseYear = audioInfo.metadata.common.year;
+      }
+    }
+    // We have enough information to hash
+    this.db.hashAlbum(newAlbum);
+
+    const existingAlbum = this.existingAlbums.find(a => a.id === newAlbum.id);
+    if (existingAlbum) {
+      // TODO: update other fields if info is missing
+      return existingAlbum;
     }
 
     if (audioInfo.metadata.common.albumsort) {
-      album.albumSort = audioInfo.metadata.common.albumsort;
+      newAlbum.albumSort = audioInfo.metadata.common.albumsort;
     }
     else {
-      album.albumSort = album.name;
+      newAlbum.albumSort = newAlbum.name;
     }
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
     const albumType = this.metadataService.getTag<string>('AlbumType', id3v2Tags, true);
-    album.albumType = albumType ? albumType : this.unknownValue;
+    newAlbum.albumType = albumType ? albumType : this.unknownValue;
 
-    album.favorite = false;
-
-    this.db.hashAlbum(album);
-    return album;
+    newAlbum.favorite = false;
+    this.existingAlbums.push(newAlbum);
+    return newAlbum;
   }
 
   private processSong(album: AlbumEntity, audioInfo: IAudioInfo, fileInfo: IFileInfo): SongEntity {
     const song = new SongEntity();
+    song.isNew = true;
     song.filePath = fileInfo.path;
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
@@ -310,55 +401,112 @@ export class ScanService {
     return song;
   }
 
-  private processArtists(audioInfo: IAudioInfo): ArtistEntity[] {
+  private processArtists(audioInfo: IAudioInfo, splitSymbols: string[]): ArtistEntity[] {
+    // This is the list of artists that will be eventually associated with a song
     const artists: ArtistEntity[] = [];
 
     if (audioInfo.metadata.common.artists && audioInfo.metadata.common.artists.length) {
       // Try to find multiple artist sorts as well
       const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
+      // Retrieving this way since the metadata only contains one artist sort
       const artistSorts = this.metadataService.getTags<string>('TSOP', id3v2Tags);
+      // Index to match the artist with the artist sort
       let artistIndex = 0;
       for (const artistName of audioInfo.metadata.common.artists) {
-        const artist = new ArtistEntity();
-        artist.name = artistName;
-        artist.artistStylized = artistName;
-        artist.favorite = false;
-        artist.artistType = this.unknownValue;
-        artist.country = this.unknownValue;
-        // Sort
-        if (artistSorts && artistSorts.length > artistIndex) {
-          // assuming sorts come in the same order as artists
-          artist.artistSort = artistSorts[artistIndex];
+        // Assuming sorts come in the same order as artists
+        const artistSort = artistSorts && artistSorts.length > artistIndex ? artistSorts[artistIndex] : artistName;
+        // Move to the next index since we are done using this one
+        artistIndex++;
+        const newArtist = this.createArtist(artistName, artistSort);
+        const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
+        if (existingArtist) {
+          if (existingArtist.artistSort === existingArtist.name && existingArtist.artistSort !== newArtist.artistSort) {
+            existingArtist.artistSort = newArtist.artistSort;
+            if (!existingArtist.isNew) {
+              existingArtist.hasChanges = true;
+            }
+          }
+          if (!artists.find(a => a.id === existingArtist.id)) {
+            artists.push(existingArtist);
+          }
         }
         else {
-          artist.artistSort = artist.name;
-        }
+          // First, add the artist as it is
+          this.existingArtists.push(newArtist);
+          artists.push(newArtist);
 
-        this.db.hashArtist(artist);
-        artists.push(artist);
-        artistIndex++;
+          // Second, perform split if specified
+          if (splitSymbols && splitSymbols.length) {
+            for (const splitSymbol of splitSymbols) {
+              const splitArtistNames = artistName.split(splitSymbol);
+              for (const splitArtistName of splitArtistNames) {
+                const newSplitArtist = this.createArtist(splitArtistName, splitArtistName);
+                const existingSplitArtist = this.existingArtists.find(a => a.id === newSplitArtist.id);
+                if (existingSplitArtist) {
+                  if (!artists.find(a => a.id === existingSplitArtist.id)) {
+                    artists.push(existingSplitArtist);
+                  }
+                }
+                else {
+                  this.existingArtists.push(newSplitArtist);
+                  artists.push(newSplitArtist);
+                }
+              }
+            }
+          }
+        }
       }
     }
 
     return artists;
   }
 
-  private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): string[] {
-    const genres: string[] = [];
+  private createArtist(artistName: string, artistSort: string): ArtistEntity {
+    const artist = new ArtistEntity();
+    artist.isNew = true;
+    artist.name = artistName;
+    artist.artistStylized = artistName;
+    artist.artistSort = artistSort;
+    artist.favorite = false;
+    artist.artistType = this.unknownValue;
+    artist.country = this.unknownValue;
+    this.db.hashArtist(artist);
+    return artist;
+  }
+
+  private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): ClassificationEntity[] {
+    const genres: ClassificationEntity[] = [];
 
     if (audioInfo.metadata.common.genre && audioInfo.metadata.common.genre.length) {
       for (const genreName of audioInfo.metadata.common.genre) {
-        // First, add the genre as it is
-        if (!genres.includes(genreName)) {
-          genres.push(genreName);
+        const newGenre = this.createGenre(genreName);
+        const existingGenre = this.existingGenres.find(g => g.id === newGenre.id);
+        if (existingGenre) {
+          if (!genres.find(g => g.id === existingGenre.id)) {
+            genres.push(existingGenre);
+          }
         }
-        // Second, perform split if specified
-        if (splitSymbols && splitSymbols.length) {
-          for (const splitSymbol of splitSymbols) {
-            const subGenres = genreName.split(splitSymbol);
-            for (const subGenreName of subGenres) {
-              if (!genres.includes(subGenreName)) {
-                genres.push(subGenreName);
+        else {
+          // First, add the genre as it is
+          this.existingGenres.push(newGenre);
+          genres.push(newGenre);
+
+          // Second, perform split if specified
+          if (splitSymbols && splitSymbols.length) {
+            for (const splitSymbol of splitSymbols) {
+              const splitGenreNames = genreName.split(splitSymbol);
+              for (const splitGenreName of splitGenreNames) {
+                const newSplitGenre = this.createGenre(splitGenreName);
+                const existingSplitGenre = this.existingGenres.find(g => g.id === newSplitGenre.id);
+                if (existingSplitGenre) {
+                  if (!genres.find(g => g.id === existingSplitGenre.id)) {
+                    genres.push(existingSplitGenre);
+                  }
+                }
+                else {
+                  this.existingGenres.push(newSplitGenre);
+                  genres.push(newSplitGenre);
+                }
               }
             }
           }
@@ -371,6 +519,7 @@ export class ScanService {
 
   private createGenre(name: string): ClassificationEntity {
     const genre = new ClassificationEntity();
+    genre.isNew = true;
     genre.name = name;
     genre.classificationType = 'Genre';
     this.db.hashClassification(genre);
@@ -391,13 +540,20 @@ export class ScanService {
             if (classificationNames) {
               const names = classificationNames.split(',');
               for (const name of names) {
-                const classification = new ClassificationEntity();
-                classification.name = name;
-                classification.classificationType = classificationType;
-                this.db.hashClassification(classification);
-                const existingClassification = classifications.find(c => c.id === classification.id);
-                if (!existingClassification) {
-                  classifications.push(classification);
+                const newClassification = new ClassificationEntity();
+                newClassification.isNew = true;
+                newClassification.name = name;
+                newClassification.classificationType = classificationType;
+                this.db.hashClassification(newClassification);
+                const existingClassification = this.existingClassifications.find(c => c.id === newClassification.id);
+                if (existingClassification) {
+                  if (!classifications.find(c => c.id === existingClassification.id)) {
+                    classifications.push(existingClassification);
+                  }
+                }
+                else {
+                  this.existingClassifications.push(newClassification);
+                  classifications.push(newClassification);
                 }
               }
             }

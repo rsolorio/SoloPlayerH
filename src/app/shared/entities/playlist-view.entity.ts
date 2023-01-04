@@ -6,6 +6,7 @@ import { ListItemEntity } from './base.entity';
  * Fields: id, name, description, favorite, songCount, seconds
  */
  @ViewEntity({
+  name: 'playlistView',
   expression: `
   SELECT playlist.id, playlist.name, playlist.description, playlist.favorite, playlistSongCalculations.songCount, playlistSongCalculations.seconds
   FROM playlist INNER JOIN (

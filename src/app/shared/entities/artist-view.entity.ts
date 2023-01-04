@@ -7,9 +7,11 @@ import { ListItemEntity } from './base.entity';
  * Fields: id, name, artistSort, artistStylized, songCount
  */
 @ViewEntity({
+  name: 'artistView',
   expression: ds => ds
     .createQueryBuilder(ArtistEntity, 'artist')
-    .innerJoin('artist.songs', 'song')
+    .innerJoin('artist.songArtists', 'songArtist')
+    .innerJoin('songArtist.song', 'song')
     .select('artist.id', 'id')
     .addSelect('artist.name', 'name')
     .addSelect('artist.artistSort', 'artistSort')

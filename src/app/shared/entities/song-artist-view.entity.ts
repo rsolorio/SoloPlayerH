@@ -13,6 +13,7 @@ import { SongBaseEntity } from './song-base.entity';
  * TODO: use standard typeorm syntax to create query, example: PlaylistSongViewEntity
  */
  @ViewEntity({
+  name: 'songArtistView',
   expression: `
   SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.trackNumber, song.mediaNumber, song.seconds, song.favorite,
   album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId

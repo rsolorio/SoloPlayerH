@@ -10,6 +10,7 @@ import { ListItemEntity } from './base.entity';
  * Fields: id, name, artistSort, artistStylized, classificationId, albumCount, songCount
  */
  @ViewEntity({
+  name: 'artistClassificationView',
   expression: `
   SELECT artist.id, artist.name, artist.artistSort, artist.artistStylized, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount
   FROM artist INNER JOIN (

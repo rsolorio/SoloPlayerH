@@ -1,7 +1,7 @@
 import { BaseEntity, PrimaryColumn, Entity } from 'typeorm';
 
 /**
- * OBSOLETE. Use songClassification instead.
+ * OBSOLETE/DEPRECATED. Use songClassification instead.
  */
 @Entity({name: 'songGenre'})
 export class SongGenreEntity extends BaseEntity {

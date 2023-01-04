@@ -13,6 +13,6 @@ export class PlaylistEntity extends ListItemEntity implements IPlaylistModel {
   songCount: number;
   seconds: number;
 
-  @OneToMany(type => PlaylistSongEntity, playlistSong => playlistSong.playlist)
+  @OneToMany(() => PlaylistSongEntity, playlistSong => playlistSong.playlist)
   playlistSongs: Relation<PlaylistSongEntity[]>;
 }

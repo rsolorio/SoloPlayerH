@@ -18,3 +18,5 @@ export * from './playlist-view.entity';
 export * from './playlist-song.entity';
 export * from './playlist-song-view.entity';
 export * from './module-option.entity';
+export * from './song-artist.entity';
+export * from './song-classification.entity';
