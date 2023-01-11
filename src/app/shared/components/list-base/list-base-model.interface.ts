@@ -6,6 +6,7 @@ export interface IListBaseModel {
   listUpdatedEvent: string;
   itemMenuList: IMenuModel[];
   paginationModel: IPaginationModel<IListItemModel>;
-  getBackdropIcon: (item: IListItemModel) => string;
+  /** Overrides the logic that determines the backdrop icon for a list item. */
+  getBackdropIcon?: (item: IListItemModel) => string;
   showModal?: boolean;
 }

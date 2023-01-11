@@ -79,6 +79,15 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     });
 
     this.itemMenuList.push({
+      caption: 'Select/Unselect',
+      icon: 'mdi-select mdi',
+      action: param => {
+        const album = param as IAlbumModel;
+        album.selected = !album.selected;
+      }
+    });
+
+    this.itemMenuList.push({
       caption: 'Search...',
       icon: 'mdi-web mdi',
       action: param => {
@@ -124,6 +133,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private addBreadcrumb(album: IAlbumModel): void {
+    // TODO: handle multiple selected albums
     // Automatically add the Album Artist breadcrumb if it does not exist
     let hasAlbumArtist = false;
     const breadcrumbs = this.breadcrumbsService.getState();

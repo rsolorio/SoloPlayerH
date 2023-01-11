@@ -24,8 +24,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     itemMenuList: [],
     paginationModel: {
       items: []
-    },
-    getBackdropIcon: () => null
+    }
   };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
   private lastNavbarRightIcon: IIconAction;
@@ -184,5 +183,16 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         this.navbarService.searchBoxFocus();
       });
     }
+  }
+
+  public getItemIcon(item: IListItemModel): string {
+    let result: string = null;
+    if (item.selected) {
+      result = 'mdi-check mdi';
+    }
+    if (this.model.getBackdropIcon) {
+      result = this.model.getBackdropIcon(item);
+    }
+    return result;
   }
 }

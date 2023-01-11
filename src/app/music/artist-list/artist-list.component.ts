@@ -77,11 +77,11 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     });
 
     this.itemMenuList.push({
-      caption: 'Select',
+      caption: 'Select/Unselect',
       icon: 'mdi-select mdi',
       action: param => {
         const artist = param as IArtistModel;
-        artist.selected = true;
+        artist.selected = !artist.selected;
       }
     });
 

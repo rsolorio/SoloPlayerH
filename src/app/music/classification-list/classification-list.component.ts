@@ -66,11 +66,11 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     });
 
     this.itemMenuList.push({
-      caption: 'Select',
+      caption: 'Select/Unselect',
       icon: 'mdi-select mdi',
       action: param => {
         const classification = param as IClassificationModel;
-        classification.selected = true;
+        classification.selected = !classification.selected;
       }
     });
 
