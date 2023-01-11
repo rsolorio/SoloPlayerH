@@ -37,6 +37,7 @@ export class FeatureDetectionService {
     if (this.initialized) {
       return this.feature;
     }
+    // TODO: according the chrome dev tools, this should be replaced with userAgentData.
     const agent = navigator.userAgent;
 
     if ('cordova' in window) {

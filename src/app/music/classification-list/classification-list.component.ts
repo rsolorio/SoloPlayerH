@@ -131,10 +131,10 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     const selectedItems = this.spListBaseComponent.getSelectedItems();
     if (selectedItems.length) {
       for (const item of selectedItems) {
-        const classification = item as IClassificationModel;
-        const criteriaItem = new CriteriaValueBase('classificationId', classification.id);
-        criteriaItem.DisplayName = classification.classificationType;
-        criteriaItem.DisplayValue = classification.name;
+        const classificationItem = item as IClassificationModel;
+        const criteriaItem = new CriteriaValueBase('classificationId', classificationItem.id);
+        criteriaItem.DisplayName = classificationItem.classificationType;
+        criteriaItem.DisplayValue = classificationItem.name;
         criteriaItem.IgnoreInSelect = true;
         criteria.push(criteriaItem);
       }

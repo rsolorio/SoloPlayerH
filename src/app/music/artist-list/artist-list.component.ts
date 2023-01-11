@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -7,7 +7,9 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
+import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
@@ -23,7 +25,7 @@ import { ArtistListBroadcastService } from './artist-list-broadcast.service';
   styleUrls: ['./artist-list.component.scss']
 })
 export class ArtistListComponent extends CoreComponent implements OnInit {
-
+  @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public appEvent = AppEvent;
   public itemMenuList: IMenuModel[] = [];
   public isAlbumArtist = false;
@@ -72,6 +74,15 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       caption: 'Play',
       icon: 'mdi-play mdi',
       action: param => {}
+    });
+
+    this.itemMenuList.push({
+      caption: 'Select',
+      icon: 'mdi-select mdi',
+      action: param => {
+        const artist = param as IArtistModel;
+        artist.selected = true;
+      }
     });
 
     this.itemMenuList.push({
@@ -148,15 +159,32 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   private addBreadcrumb(artist: IArtistModel): void {
+    const criteria: ICriteriaValueBaseModel[] = [];
     const columnName = this.isAlbumArtist ? 'primaryArtistId' : 'artistId';
-    const criteriaItem = new CriteriaValueBase(columnName, artist.id);
-    criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-    criteriaItem.DisplayValue = artist.artistStylized;
+    const criteriaValue = new CriteriaValueBase(columnName, artist.id);
+    criteriaValue.DisplayName = this.db.displayName(criteriaValue.ColumnName);
+    criteriaValue.DisplayValue = artist.artistStylized;
     if (columnName === 'artistId') {
-      criteriaItem.IgnoreInSelect = true;
+      // This column needs to be ignored in order to prevent duplicate search results
+      criteriaValue.IgnoreInSelect = true;
+    }
+    criteria.push(criteriaValue);
+
+    const selectedItems = this.spListBaseComponent.getSelectedItems();
+    if (selectedItems.length) {
+      for (const item of selectedItems) {
+        const artistItem = item as IArtistModel;
+        const criteriaItem = new CriteriaValueBase(columnName, artistItem.id);
+        criteriaItem.DisplayName = criteriaValue.DisplayName;
+        criteriaItem.DisplayValue = artistItem.name;
+        if (columnName === 'artistId') {
+          criteriaItem.IgnoreInSelect = true;
+        }
+        criteria.push(criteriaItem);
+      }
     }
     this.breadcrumbsService.add({
-      criteriaList: [ criteriaItem ],
+      criteriaList: criteria,
       source: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
     });
   }

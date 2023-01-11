@@ -11,7 +11,7 @@ export abstract class FileService {
 
   abstract getText(filePath: string): Promise<string>;
 
-  abstract getAbsolutePath(locationPath: string, endPath: string);
+  abstract getAbsolutePath(locationPath: string, endPath: string): string;
 
   abstract getFileInfo(path: string): Promise<IFileInfo>;
 
