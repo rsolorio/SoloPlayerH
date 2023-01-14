@@ -276,12 +276,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     if (song.imageSrc) {
       return;
     }
-    this.queueService.sink = this.setSongImage(song);
+    this.queueService.sink = () => this.setSongImage(song);
   }
 
   public async setSongImage(song: ISongModel): Promise<void> {
+    console.log('starting ' + song.name);
     const buffer = await this.fileService.getBuffer(song.filePath);
     const audioInfo = await this.metadataService.getMetadata(buffer);
     song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);
+    console.log('ending ' + song.name);
   }
 }

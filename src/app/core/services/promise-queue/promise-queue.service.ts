@@ -4,14 +4,14 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class PromiseQueueService {
-  private queue: Promise<any>[] = [];
+  private queue: (() => Promise<any>)[] = [];
   constructor() { }
 
-  public set sink(promise: Promise<any>) {
+  public set sink(promise: () => Promise<any>) {
     this.push(promise);
   }
 
-  public push(promise: Promise<any>): void {
+  public push(promise: () => Promise<any>): void {
     this.queue.push(promise);
 
     // If this is the only promise just run it
@@ -25,8 +25,11 @@ export class PromiseQueueService {
     if (!this.queue.length) {
       return;
     }
-    const item = this.queue.shift();
-    item.then(() => {
+    // Just get the promise to run
+    const item = this.queue[0];
+    item().then(() => {
+      // Now that it is done delete it
+      this.queue.shift();
       // Once it is done, go to the next promise
       this.runNextPromise();
     });

@@ -211,7 +211,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     if (album.imageSrc) {
       return;
     }
-    this.queueService.sink = this.setAlbumImage(album);
+    this.queueService.sink = () => this.setAlbumImage(album);
   }
 
   private async setAlbumImage(album: IAlbumModel): Promise<void> {

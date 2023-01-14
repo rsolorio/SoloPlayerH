@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'Saira Semi Condensed';
+  src: url('./SairaSemiCondensed/SairaSemiCondensed-Regular.woff2') format('woff2'),
+       url('./SairaSemiCondensed/SairaSemiCondensed-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Saira Extra Condensed';
+  src: url('./SairaExtraCondensed/SairaExtraCondensed-Thin.woff2') format('woff2'),
+      url('./SairaExtraCondensed/SairaExtraCondensed-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
