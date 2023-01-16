@@ -10,5 +10,6 @@ export interface IMediaEventEntry {
 
 export interface IHtmlPlayerEventMetadata {
   title: string;
+  src?: string;
   eventHistory: IMediaEventEntry[];
 }

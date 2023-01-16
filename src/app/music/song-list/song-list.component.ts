@@ -221,15 +221,17 @@ export class SongListComponent extends CoreComponent implements OnInit {
       // 1. Stop the player
       // 2. Load this new track list
       // 3. Load this track
-      this.playerService.stop().then(() => {
-        const trackList = this.spListBaseComponent.model.paginationModel.items as ISongModel[];
-        // For now, we are using this component only for search results,
-        // but we should have an input property to specify the title of the play list
-        playerList.loadList(trackList);
-        track = playerList.getTrack(song);
-        this.playerService.setCurrentTrack(track, play);
-        if (expand) {
-          this.playerOverlayService.expand();
+      this.playerService.stop().then(success => {
+        if (success) {
+          const trackList = this.spListBaseComponent.model.paginationModel.items as ISongModel[];
+          // For now, we are using this component only for search results,
+          // but we should have an input property to specify the title of the play list
+          playerList.loadList(trackList);
+          track = playerList.getTrack(song);
+          this.playerService.setCurrentTrack(track, play);
+          if (expand) {
+            this.playerOverlayService.expand();
+          }
         }
       });
     }
@@ -280,10 +282,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public async setSongImage(song: ISongModel): Promise<void> {
-    console.log('starting ' + song.name);
     const buffer = await this.fileService.getBuffer(song.filePath);
     const audioInfo = await this.metadataService.getMetadata(buffer);
     song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);
-    console.log('ending ' + song.name);
   }
 }

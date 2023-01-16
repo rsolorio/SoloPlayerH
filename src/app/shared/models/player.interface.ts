@@ -5,14 +5,14 @@ import { IPlaylistSongModel } from "./playlist-song-model.interface";
 
 /** Exposes the basic functionality that any audio player implementation should have. */
 export interface IPlayer {
-  play();
-  playNext();
-  playPrevious();
+  play(): Promise<boolean>;
+  playNext(): Promise<boolean>;
+  playPrevious(): Promise<boolean>;
   togglePlay();
-  stop();
+  stop(): Promise<boolean>;
   pause();
-  playByTrack(track: IPlaylistSongModel);
-  playBySequence(sequence: number);
+  playByTrack(track: IPlaylistSongModel): Promise<boolean>;
+  playBySequence(sequence: number): Promise<boolean>;
   getState(): IPlayerState;
 }
 
