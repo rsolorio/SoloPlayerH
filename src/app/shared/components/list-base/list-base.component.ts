@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, Type } from '@angular/core';
+import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, TemplateRef, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -7,6 +7,7 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IIconAction } from 'src/app/core/models/core.interface';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { FilterViewComponent } from 'src/app/filter/filter-view/filter-view.component';
 import { IListItemModel } from '../../models/base-model.interface';
 import { AppEvent } from '../../models/events.enum';
 import { IPaginationModel } from '../../models/pagination-model.interface';
@@ -18,6 +19,7 @@ import { IListBaseModel } from './list-base-model.interface';
   styleUrls: ['./list-base.component.scss']
 })
 export class ListBaseComponent extends CoreComponent implements OnInit {
+  @ViewChild('spModalHost', { read: ViewContainerRef, static: false }) public modalHostViewContainer: ViewContainerRef;
   public DefaultImageSrc = DefaultImageSrc;
   public model: IListBaseModel = {
     listUpdatedEvent: null,
@@ -53,6 +55,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   constructor(
+    private componentFactoryResolver: ComponentFactoryResolver,
     private events: EventsService,
     private loadingService: LoadingViewStateService,
     private navbarService: NavBarStateService
@@ -123,7 +126,16 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     navbar.rightIcon = {
       icon: this.filterNoCriteriaIcon,
       action: () => {
-        this.model.showModal = !this.model.showModal;
+        if (this.model.showModal) {
+          this.model.showModal = false;
+        }
+        else {
+          this.model.showModal = true;
+          // We need time to allow the view child to render before trying to do anything with the container
+          setTimeout(() => {
+            this.loadModalFilter();
+          });
+        }
       }
     };
 
@@ -194,5 +206,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       result = this.model.getBackdropIcon(item);
     }
     return result;
+  }
+
+  private loadModalFilter(): void {
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(FilterViewComponent);
+    this.modalHostViewContainer.createComponent(componentFactory);
   }
 }
