@@ -5,7 +5,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { ICriteriaValueBaseModel } from './criteria-base-model.interface';
-import { CriteriaBase, CriteriaValueBase, hasAnyCriteria } from './criteria-base.class';
+import { hasAnyCriteria } from './criteria-base.class';
 import { IPaginationModel } from './pagination-model.interface';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
@@ -13,8 +13,7 @@ import { AppEvent } from './events.enum';
 
 export interface IListBroadcastService {
   search(searchTerm?: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<any[]>;
-  searchFavorites(): Observable<any[]>;
-  getAndBroadcast(listModel: IPaginationModel<any>): Observable<any[]>;
+  send(listModel: IPaginationModel<any>): Observable<any[]>;
 }
 
 /**
@@ -25,7 +24,6 @@ export interface IListBroadcastService {
 export abstract class ListBroadcastServiceBase<TItemModel extends IDbModel>
 implements IListBroadcastService {
 
-  protected lastResult: IPaginationModel<TItemModel>;
   protected minSearchTermLength = 2;
   /**
    * The list of columns to be ignored when the service determines if
@@ -36,46 +34,21 @@ implements IListBroadcastService {
   constructor(private events: EventsService, private utilities: UtilityService) { }
 
   /**
-   * Uses the criteria to build a default pagination object which will retrieve all items from
-   * the server and the result will be eventually broadcasted.
-   * @param criteria Criteria used to get the items from the server.
-   */
-  public paginateAndBroadcast(criteria: ICriteriaValueBaseModel[], name?: string): Observable<TItemModel[]> {
-    const pagination: IPaginationModel<TItemModel> = {
-      items: [],
-      criteria,
-      name
-    };
-    return this.getAndBroadcast(pagination);
-  }
-
-  /**
    * Uses the criteria to retrieve items from the server in order to send them through a broadcast event.
    */
-  public getAndBroadcast(listModel: IPaginationModel<TItemModel>): Observable<TItemModel[]> {
+  public send(listModel: IPaginationModel<TItemModel>): Observable<TItemModel[]> {
     if (listModel.noMoreItems) {
-      this.broadcast(listModel);
+      this.innerBroadcast(listModel);
       return of(listModel.items);
     }
     return this.getItems(listModel).pipe(
       tap(response => {
         listModel.items = response;
-        this.lastResult = listModel;
-
         if (this.beforeBroadcast(response)) {
-          this.broadcast(listModel);
+          this.innerBroadcast(listModel);
         }
       })
     );
-  }
-
-  public paginateAndRedirect(criteria: ICriteriaValueBaseModel[], route: AppRoutes, name?: string): Observable<TItemModel[]> {
-    const pagination: IPaginationModel<TItemModel> = {
-      items: [],
-      criteria,
-      name
-    };
-    return this.getAndRedirect(pagination, route);
   }
 
   /**
@@ -85,16 +58,15 @@ implements IListBroadcastService {
    * @param listModel The pagination information.
    * @param route The route to redirect to.
    */
-  public getAndRedirect(listModel: IPaginationModel<TItemModel>, route: AppRoutes): Observable<TItemModel[]> {
-    if (listModel.noMoreItems) {
-      this.broadcast(listModel);
+  public redirect(listModel: IPaginationModel<TItemModel>, route: AppRoutes): Observable<TItemModel[]> {
+    if (listModel.noMoreItems || !listModel.items.length) {
+      this.innerRedirect(listModel, route);
       return of(listModel.items);
     }
     return this.getItems(listModel).pipe(
       tap(response => {
         this.mergeResponseAndResult(response, listModel);
-        this.lastResult = listModel;
-        this.redirect(listModel, route);
+        this.innerRedirect(listModel, route);
       })
     );
   }
@@ -105,7 +77,7 @@ implements IListBroadcastService {
    * @param listModel The pagination information.
    * @param route The route to redirect to.
    */
-  public redirect(listModel: IPaginationModel<TItemModel>, route: AppRoutes): void {
+  protected innerRedirect(listModel: IPaginationModel<TItemModel>, route: AppRoutes): void {
     this.utilities.navigateWithComplexParams(route, listModel);
   }
 
@@ -118,23 +90,18 @@ implements IListBroadcastService {
         searchCriteria.push(extraCriteriaItem);
       }
     }
-    return this.paginateAndBroadcast(searchCriteria);
-  }
 
-  public searchFavorites(): Observable<TItemModel[]> {
-    const criteria: ICriteriaValueBaseModel[] = [];
-    const criteriaValue = new CriteriaValueBase('Favorite', 'True');
-    criteria.push(criteriaValue);
-    return this.paginateAndBroadcast(criteria);
+    const pagination: IPaginationModel<TItemModel> = {
+      items: [],
+      criteria: searchCriteria
+    };
+    return this.send(pagination);
   }
 
   /**
-   * Loads existing items into the list component by firing the specified event.
-   * For some reason, updating the state (which is linked to the component) from another component does not trigger the change detection;
-   * we are instead broadcasting the update to the component, which is subscribed to the event and then updates the list there.
+   * Sends the listModel object through the event broadcast mechanism.
    */
-  public broadcast(listModel: IPaginationModel<TItemModel>): void {
-    this.lastResult = listModel;
+  protected innerBroadcast(listModel: IPaginationModel<TItemModel>): void {
     this.events.broadcast(this.getEventName(), listModel);
     if (hasAnyCriteria(listModel.criteria, this.ignoredColumnsInCriteria)) {
       this.events.broadcast(AppEvent.CriteriaApplied, this.getEventName());
@@ -142,13 +109,6 @@ implements IListBroadcastService {
     else {
       this.events.broadcast(AppEvent.CriteriaCleared, this.getEventName());
     }
-  }
-
-  /** Returns the last broadcasted data.
-   * This is a hack since this should be retrieved from the appropriate listener service.
-   */
-  public getLast(): IPaginationModel<TItemModel> {
-    return this.lastResult;
   }
 
   protected isSearchTermValid(searchTerm: string): boolean {
@@ -193,28 +153,6 @@ implements IListBroadcastService {
     if (!result.noMoreItems && result.totalSize) {
       // TODO: calculate number of items to determine if we need more items.
     }
-   }
-
-   protected getCriteriaBase(listModel: IPaginationModel<TItemModel>): CriteriaBase {
-     const pageNumber = listModel.pageNumber ? listModel.pageNumber : 1;
-     let pageSize = 0;
-     if (listModel.totalSize) {
-       if (listModel.pageSize) {
-        const itemCount = listModel.pageSize * (pageNumber - 1);
-        if (itemCount >= listModel.totalSize) {
-          // TODO: although this is true, this listModel object is not the one being returned,
-          // this method returns a CriteriaBase so the dev will not now that they need to look up for this value
-          listModel.noMoreItems = true;
-        }
-       }
-       else {
-        pageSize = listModel.totalSize;
-       }
-     }
-     else if (listModel.pageSize) {
-       pageSize = listModel.pageSize;
-     }
-     return new CriteriaBase(pageSize, pageNumber);
    }
 
    /**

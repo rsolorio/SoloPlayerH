@@ -291,7 +291,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         items: [],
         criteria: this.breadcrumbService.getCriteria()
       };
-      this.broadcastService.getAndBroadcast(listModel).subscribe();
+      this.broadcastService.send(listModel).subscribe();
       // This is needed in SongList because this is the only list where the breadcrumb component
       // is updated by non-user action (album songs, feat artist songs, etc) without jumping
       // to another page.
