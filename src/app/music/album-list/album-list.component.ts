@@ -1,21 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
-import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
-import { EventsService } from 'src/app/core/services/events/events.service';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
-import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
-import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
+import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/shared/services/file/file.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
@@ -34,10 +28,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   constructor(
     public broadcastService: AlbumListBroadcastService,
     private utility: UtilityService,
-    private loadingService: LoadingViewStateService,
     private breadcrumbsService: BreadcrumbsStateService,
-    private navbarService: NavBarStateService,
-    private events: EventsService,
     private fileService: FileService,
     private metadataService: MusicMetadataService,
     private db: DatabaseService,
@@ -49,11 +40,6 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.initializeItemMenu();
     this.removeUnsupportedBreadcrumbs();
-    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(eventType => {
-      if (eventType === BreadcrumbEventType.RemoveMultiple) {
-        this.loadData();
-      }
-    });
   }
 
   private initializeItemMenu(): void {
@@ -133,20 +119,24 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         const criteriaItem = new CriteriaValueBase('primaryArtistId', albumView.primaryArtistId);
         criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
         criteriaItem.DisplayValue = album.artistName;
-        this.breadcrumbsService.add({
+        // Suppress event so this component doesn't react to this change;
+        // these breadcrumbs are for another list that hasn't been loaded yet
+        this.breadcrumbsService.addOne({
           criteriaList: [ criteriaItem ],
           origin: BreadcrumbSource.AlbumArtist
-        });
+        }, { suppressEvents: true });
       }
     }
 
     const criteriaItem = new CriteriaValueBase('primaryAlbumId', album.id);
     criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
     criteriaItem.DisplayValue = album.name;
-    this.breadcrumbsService.add({
+    // Suppress event so this component doesn't react to this change;
+    // these breadcrumbs are for another list that hasn't been loaded yet
+    this.breadcrumbsService.addOne({
       criteriaList: [ criteriaItem ],
       origin: BreadcrumbSource.Album
-    });
+    }, { suppressEvents: true });
   }
 
   private showSongs(album: IAlbumModel): void {
@@ -155,31 +145,6 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   public onListInitialized(): void {
-    this.loadData();
-  }
-
-  private loadData(): void {
-    if (this.breadcrumbsService.hasBreadcrumbs()) {
-      this.loadAlbums();
-    }
-    else {
-      this.loadAllAlbums();
-      this.navbarService.getState().mode = NavbarDisplayMode.Title;
-    }
-  }
-
-  private loadAllAlbums(): void {
-    this.loadingService.show();
-    this.broadcastService.search().subscribe();
-  }
-
-  private loadAlbums(): void {
-    this.loadingService.show();
-    const listModel: IPaginationModel<IAlbumModel> = {
-      items: [],
-      criteria: this.breadcrumbsService.getCriteria()
-    };
-    this.broadcastService.getAndBroadcast(listModel).subscribe();
   }
 
   private removeUnsupportedBreadcrumbs(): void {

@@ -1,12 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
-import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
@@ -123,10 +121,12 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
         criteria.push(criteriaItem);
       }
     }
-    this.breadcrumbsService.add({
+    // Suppress event so this component doesn't react to this change;
+    // these breadcrumbs are for another list that hasn't been loaded yet
+    this.breadcrumbsService.addOne({
       criteriaList: criteria,
       origin: BreadcrumbSource.Classification
-    });
+    }, { suppressEvents: true });
   }
 
   private showAlbumArtists(classification: IClassificationModel): void {

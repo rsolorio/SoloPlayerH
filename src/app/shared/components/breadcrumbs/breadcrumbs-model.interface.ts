@@ -11,3 +11,8 @@ export interface IBreadcrumbModel {
   criteriaList: ICriteriaValueBaseModel[];
   action?: () => void;
 }
+
+export interface IBreadcrumbOptions {
+  forceReload?: boolean;
+  suppressEvents?: boolean;
+}

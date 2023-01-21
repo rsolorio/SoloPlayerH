@@ -1,21 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
-import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
-import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
-import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
-import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
+import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
 
@@ -33,10 +27,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   constructor(
     public broadcastService: ArtistListBroadcastService,
     private utility: UtilityService,
-    private loadingService: LoadingViewStateService,
     private breadcrumbsService: BreadcrumbsStateService,
-    private navbarService: NavBarStateService,
-    private events: EventsService,
     private db: DatabaseService
   ) {
     super();
@@ -47,11 +38,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.initializeItemMenu();
     this.removeUnsupportedBreadcrumbs();
-    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(eventType => {
-      if (eventType === BreadcrumbEventType.RemoveMultiple) {
-        this.loadData();
-      }
-    });
   }
 
   private initializeItemMenu(): void {
@@ -168,38 +154,15 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         criteria.push(criteriaItem);
       }
     }
-    this.breadcrumbsService.add({
+    // Suppress event so this component doesn't react to this change;
+    // these breadcrumbs are for another list that hasn't been loaded yet
+    this.breadcrumbsService.addOne({
       criteriaList: criteria,
       origin: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
-    });
+    }, { suppressEvents: true });
   }
 
   public onListInitialized(): void {
-    this.loadData();
-  }
-
-  private loadData(): void {
-    if (this.breadcrumbsService.hasBreadcrumbs()) {
-      this.loadArtists();
-    }
-    else {
-      this.loadAllArtists();
-      this.navbarService.getState().mode = NavbarDisplayMode.Title;
-    }
-  }
-
-  private loadAllArtists(): void {
-    this.loadingService.show();
-    this.broadcastService.search().subscribe();
-  }
-
-  private loadArtists(): void {
-    this.loadingService.show();
-    const listModel: IPaginationModel<IArtistModel> = {
-      items: [],
-      criteria: this.breadcrumbsService.getCriteria()
-    };
-    this.broadcastService.getAndBroadcast(listModel).subscribe();
   }
 
   private removeUnsupportedBreadcrumbs(): void {

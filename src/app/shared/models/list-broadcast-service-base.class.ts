@@ -12,8 +12,9 @@ import { IDbModel } from './base-model.interface';
 import { AppEvent } from './events.enum';
 
 export interface IListBroadcastService {
-  search(searchTerm: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<any[]>;
+  search(searchTerm?: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<any[]>;
   searchFavorites(): Observable<any[]>;
+  getAndBroadcast(listModel: IPaginationModel<any>): Observable<any[]>;
 }
 
 /**

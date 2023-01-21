@@ -8,9 +8,7 @@ export enum BreadcrumbSource {
 
 export enum BreadcrumbEventType {
   Add,
-  AddMultiple,
   Remove,
-  RemoveMultiple,
-  Replace,
-  Updated
+  Set,
+  ReloadRequested
 }

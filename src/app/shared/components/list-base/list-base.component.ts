@@ -9,6 +9,7 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { FilterViewComponent } from 'src/app/filter/filter-view/filter-view.component';
 import { IListItemModel } from '../../models/base-model.interface';
+import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { IPaginationModel } from '../../models/pagination-model.interface';
@@ -103,6 +104,17 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       this.afterListUpdated();
     });
 
+    // Breadcrumbs
+    if (this.breadcrumbsEnabled) {
+      this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(response => {
+        if (response === BreadcrumbEventType.Add || response === BreadcrumbEventType.Set || response === BreadcrumbEventType.Remove) {
+          // implement loadData (loadAll, loadFromBreadcrumbs)
+          // make sure list components properly use the bc options
+          this.loadData();
+        }
+      });
+    }
+
     this.subs.sink = this.events.onEvent<string>(AppEvent.CriteriaApplied).subscribe(response => {
       if (response === this.listUpdatedEvent) {
         const navbar = this.navbarService.getState();
@@ -129,6 +141,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
     this.initializeNavbar();
     this.initialized.emit(this.model);
+    this.loadData();
   }
 
   public onIntersectionChange(isIntersecting: boolean, item: IListItemModel): void {
@@ -267,6 +280,30 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       result = this.model.getBackdropIcon(item);
     }
     return result;
+  }
+
+  public loadData(): void {
+    // Show the animation here, it will be hidden by the broadcast service
+    this.loadingService.show();
+    if (this.breadcrumbsEnabled && this.breadcrumbService.hasBreadcrumbs()) {
+      // sends the criteria from the breadcrumbs and calls the broadcast in order to load the data.
+      const listModel: IPaginationModel<any> = {
+        items: [],
+        criteria: this.breadcrumbService.getCriteria()
+      };
+      this.broadcastService.getAndBroadcast(listModel).subscribe();
+      // This is needed in SongList because this is the only list where the breadcrumb component
+      // is updated by non-user action (album songs, feat artist songs, etc) without jumping
+      // to another page.
+      // TODO: how can we do this only for SongList
+      this.showBreadcrumbs();
+    }
+    else {
+      // Load all data by doing a search with no arguments
+      this.broadcastService.search().subscribe();
+      // Once you search display the page title
+      this.navbarService.getState().mode = NavbarDisplayMode.Title;
+    }
   }
 
   private loadModalFilter(): void {

@@ -22,7 +22,7 @@ export class BreadcrumbsComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.reload();
     this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(response => {
-      if (response === BreadcrumbEventType.Updated) {
+      if (response === BreadcrumbEventType.ReloadRequested) {
         this.reload();
       }
     });

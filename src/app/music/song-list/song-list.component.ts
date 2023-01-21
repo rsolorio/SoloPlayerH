@@ -1,9 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
-import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
@@ -13,21 +10,18 @@ import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-mo
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { SongArtistViewEntity } from 'src/app/shared/entities';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { FileService } from 'src/app/shared/services/file/file.service';
-import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
-import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
+import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 
 @Component({
   selector: 'sp-song-list',
@@ -45,10 +39,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private utility: UtilityService,
     private fileService: FileService,
     private metadataService: MusicMetadataService,
-    private loadingService: LoadingViewStateService,
     private breadcrumbsService: BreadcrumbsStateService,
-    private navbarService: NavBarStateService,
-    private events: EventsService,
     private menuService: MenuService,
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
@@ -61,12 +52,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.initializeNavbar();
     this.initializeItemMenu();
-
-    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(eventType => {
-      if (eventType === BreadcrumbEventType.RemoveMultiple || eventType === BreadcrumbEventType.Replace) {
-        this.loadData();
-      }
-    });
   }
 
   private initializeNavbar(): void {
@@ -102,10 +87,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const criteriaItem = new CriteriaValueBase('primaryArtistId', primaryArtistId);
         criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
         criteriaItem.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
-        this.breadcrumbsService.replace([{
+        // We need to force reload the breadcrumb since we are not moving to another page
+        this.breadcrumbsService.set([{
           criteriaList: [ criteriaItem ],
           origin: BreadcrumbSource.AlbumArtist
-        }], true);
+        }], { forceReload: true });
       }
     });
 
@@ -129,10 +115,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
             }
           }
           if (criteria.length) {
-            this.breadcrumbsService.replace([{
+            // We need to force reload the breadcrumb since we are not moving to another page
+            this.breadcrumbsService.set([{
               criteriaList: criteria,
               origin: BreadcrumbSource.Artist
-            }], true);
+            }], { forceReload: true });
           }
         });
       }
@@ -161,8 +148,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
           criteriaList: [ albumCriteria ],
           origin: BreadcrumbSource.Album
         };
-        // Breadcrumbs
-        this.breadcrumbsService.replace([ artistBreadcrumb, albumBreadcrumb ], true);
+        // Breadcrumbs, we need to force reload the breadcrumb since we are not moving to another page
+        this.breadcrumbsService.set([ artistBreadcrumb, albumBreadcrumb ], { forceReload: true });
       }
     });
   }
@@ -215,38 +202,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
       }
       return null;
     };
-    this.loadData();
-  }
-
-  private loadData(): void {
-    if (this.breadcrumbsService.hasBreadcrumbs()) {
-      this.loadSongs();
-      // This is needed here because this is the only list where the breadcrumb component
-      // is updated by non-user action (album songs, feat artist songs, etc) without jumping
-      // to another page.
-      this.spListBaseComponent.showBreadcrumbs();
-    }
-    else {
-      this.loadAllSongs();
-      this.navbarService.getState().mode = NavbarDisplayMode.Title;
-    }
-  }
-
-  private loadAllSongs(): void {
-    this.loadingService.show();
-    this.broadcastService.search().subscribe();
-  }
-
-  /**
-   * Sends the criteria from the breadcrumbs and calls the broadcast in order to load the data.
-   */
-  private loadSongs(): void {
-    this.loadingService.show();
-    const listModel: IPaginationModel<ISongModel> = {
-      items: [],
-      criteria: this.breadcrumbsService.getCriteria()
-    };
-    this.broadcastService.getAndBroadcast(listModel).subscribe();
   }
 
   public onItemRender(song: ISongModel): void {
