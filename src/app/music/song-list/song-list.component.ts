@@ -167,16 +167,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
     });
   }
 
-  /**
-   * Reloads the breadcrumbs component in order to show the latest data.
-   */
-  private showBreadcrumbs(): void {
-    const navbar = this.navbarService.getState();
-    if (navbar.componentType !== BreadcrumbsComponent || navbar.mode !== NavbarDisplayMode.Component) {
-      this.spListBaseComponent.showComponent(BreadcrumbsComponent);
-    }
-  }
-
   public onItemContentClick(song: ISongModel): void {
     this.playSong(song);
   }
@@ -231,7 +221,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
   private loadData(): void {
     if (this.breadcrumbsService.hasBreadcrumbs()) {
       this.loadSongs();
-      this.showBreadcrumbs();
+      // This is needed here because this is the only list where the breadcrumb component
+      // is updated by non-user action (album songs, feat artist songs, etc) without jumping
+      // to another page.
+      this.spListBaseComponent.showBreadcrumbs();
     }
     else {
       this.loadAllSongs();

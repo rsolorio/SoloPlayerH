@@ -216,6 +216,16 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     ];
   }
 
+  /**
+   * Reloads the breadcrumbs component in order to show the latest data.
+   */
+  public showBreadcrumbs(): void {
+    const navbar = this.navbarService.getState();
+    if (navbar.componentType !== BreadcrumbsComponent || navbar.mode !== NavbarDisplayMode.Component) {
+      this.showComponent(BreadcrumbsComponent);
+    }
+  }
+
   public showComponent(componentType: Type<any>): void {
     this.navbarService.loadComponent(componentType);
     this.navbarService.getState().mode = NavbarDisplayMode.Component;
