@@ -62,7 +62,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.initializeNavbar();
     this.initializeItemMenu();
 
-    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.MusicBreadcrumbUpdated).subscribe(eventType => {
+    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(eventType => {
       if (eventType === BreadcrumbEventType.RemoveMultiple || eventType === BreadcrumbEventType.Replace) {
         this.loadData();
       }

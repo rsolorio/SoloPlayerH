@@ -48,7 +48,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     this.initializeNavbar();
     this.initializeItemMenu();
     this.removeUnsupportedBreadcrumbs();
-    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.MusicBreadcrumbUpdated).subscribe(eventType => {
+    this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(eventType => {
       if (eventType === BreadcrumbEventType.RemoveMultiple) {
         this.loadData();
       }
