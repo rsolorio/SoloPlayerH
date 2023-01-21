@@ -1,13 +1,13 @@
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { IStateService } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { IPaginationModel } from './pagination-model.interface';
+import { IQueryModel } from './pagination-model.interface';
 
 /**
  * Base service class that holds and exposes a state.
  */
-export abstract class ListStateServiceBase<TItemModel> implements IStateService<IPaginationModel<TItemModel>> {
-  protected state: IPaginationModel<TItemModel>;
+export abstract class ListStateServiceBase<TItemModel> implements IStateService<IQueryModel<TItemModel>> {
+  protected state: IQueryModel<TItemModel>;
 
   constructor(private navbar: NavBarStateService, private utilities: UtilityService) {}
 
@@ -16,14 +16,14 @@ export abstract class ListStateServiceBase<TItemModel> implements IStateService<
   /**
    * Returns the state object of the service.
    */
-  public getState(): IPaginationModel<TItemModel> {
+  public getState(): IQueryModel<TItemModel> {
     if (!this.state) {
       this.state = this.buildInitialState();
     }
     return this.state;
   }
 
-  public mergeResponse(response: IPaginationModel<TItemModel>): void {
+  public mergeResponse(response: IQueryModel<TItemModel>): void {
     if (response && response.items) {
       const state = this.getState();
       state.items = response.items;
@@ -44,7 +44,7 @@ export abstract class ListStateServiceBase<TItemModel> implements IStateService<
   /**
    * Creates the default state of the service, which can be overwritten if there's an event to subscribe to.
    */
-  protected buildInitialState(): IPaginationModel<TItemModel> {
+  protected buildInitialState(): IQueryModel<TItemModel> {
     return {
       items: [],
       pageNumber: 0,
@@ -55,7 +55,7 @@ export abstract class ListStateServiceBase<TItemModel> implements IStateService<
     };
   }
 
-  protected afterStateMerge(state: IPaginationModel<TItemModel>): void {
+  protected afterStateMerge(state: IQueryModel<TItemModel>): void {
     this.navbar.showToast(`Found: ${state.items.length} item` + (state.items.length !== 1 ? 's' : ''));
   }
 

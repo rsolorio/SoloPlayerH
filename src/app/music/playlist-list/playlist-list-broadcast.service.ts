@@ -7,7 +7,7 @@ import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
+import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
@@ -44,7 +44,7 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
     return criteria;
   }
 
-  protected getItems(listModel: IPaginationModel<IPlaylistModel>): Observable<IPlaylistModel[]> {
-    return from(this.db.getList(PlaylistViewEntity, listModel.filterCriteria));
+  protected getItems(queryModel: IQueryModel<IPlaylistModel>): Observable<IPlaylistModel[]> {
+    return from(this.db.getList(PlaylistViewEntity, queryModel));
   }
 }

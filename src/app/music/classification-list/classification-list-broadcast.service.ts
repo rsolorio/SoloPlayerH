@@ -8,7 +8,7 @@ import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
+import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -52,7 +52,7 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
     return criteria;
   }
 
-  protected getItems(listModel: IPaginationModel<IClassificationModel>): Observable<IClassificationModel[]> {
-    return from(this.db.getList(ClassificationViewEntity, listModel.filterCriteria));
+  protected getItems(queryModel: IQueryModel<IClassificationModel>): Observable<IClassificationModel[]> {
+    return from(this.db.getList(ClassificationViewEntity, queryModel));
   }
 }

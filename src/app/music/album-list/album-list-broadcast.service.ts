@@ -8,7 +8,7 @@ import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from
 import { addSorting, CriteriaValueBase, hasCriteria, hasSorting } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
+import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -55,11 +55,11 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
     }
   }
 
-  protected getItems(listModel: IPaginationModel<IAlbumModel>): Observable<IAlbumModel[]> {
-    this.addDefaultSorting(listModel.filterCriteria);
-    if (hasCriteria('classificationId', listModel.filterCriteria)) {
-      return from(this.db.getList(AlbumClassificationViewEntity, listModel.filterCriteria));
+  protected getItems(queryModel: IQueryModel<IAlbumModel>): Observable<IAlbumModel[]> {
+    this.addDefaultSorting(queryModel.filterCriteria);
+    if (hasCriteria('classificationId', queryModel.filterCriteria)) {
+      return from(this.db.getList(AlbumClassificationViewEntity, queryModel));
     }
-    return from(this.db.getList(AlbumViewEntity, listModel.filterCriteria));
+    return from(this.db.getList(AlbumViewEntity, queryModel));
   }
 }

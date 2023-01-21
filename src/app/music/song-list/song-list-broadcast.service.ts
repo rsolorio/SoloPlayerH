@@ -8,7 +8,7 @@ import { addSorting, CriteriaValueBase, hasCriteria, hasSorting } from 'src/app/
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IMusicSearchTerms } from 'src/app/shared/models/music-model.interface';
-import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
+import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
@@ -34,15 +34,15 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     return this.buildCriteriaFromTerms(musicSearch);
   }
 
-  protected getItems(listModel: IPaginationModel<ISongModel>): Observable<ISongModel[]> {
-    this.addDefaultSorting(listModel.filterCriteria);
-    if (hasCriteria('artistId', listModel.filterCriteria)) {
-      return from(this.db.getList(SongArtistViewEntity, listModel.filterCriteria));
+  protected getItems(queryModel: IQueryModel<ISongModel>): Observable<ISongModel[]> {
+    this.addDefaultSorting(queryModel.filterCriteria);
+    if (hasCriteria('artistId', queryModel.filterCriteria)) {
+      return from(this.db.getList(SongArtistViewEntity, queryModel));
     }
-    if (hasCriteria('classificationId', listModel.filterCriteria)) {
-      return from(this.db.getList(SongClassificationViewEntity, listModel.filterCriteria));
+    if (hasCriteria('classificationId', queryModel.filterCriteria)) {
+      return from(this.db.getList(SongClassificationViewEntity, queryModel));
     }
-    return from(this.db.getList(SongViewEntity, listModel.filterCriteria));
+    return from(this.db.getList(SongViewEntity, queryModel));
   }
 
   /**

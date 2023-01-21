@@ -5,7 +5,7 @@ import { IListModel } from './list-model.interface';
  * Exposes a list of properties used to perform a search, hold the state of it and store the results.
  * It is a generic implementation that specifies the type of items to hold.
  */
-export interface IPaginationModel<T> extends IListModel<T> {
+export interface IQueryModel<T> extends IListModel<T> {
     /** Read only criteria needed by the system to properly retrieve the expected results. */
     systemCriteria?: ICriteriaValueBaseModel[];
     /** Criteria that comes from breadcrumbs. */

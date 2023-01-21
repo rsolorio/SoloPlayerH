@@ -10,6 +10,8 @@ import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
+import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/shared/services/file/file.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
@@ -166,7 +168,11 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
 
   private async setAlbumImage(album: IAlbumModel): Promise<void> {
     const criteriaValue = new CriteriaValueBase('primaryAlbumId', album.id);
-    const songList = await this.db.getList(SongViewEntity, [criteriaValue]);
+    const queryModel: IQueryModel<ISongModel> = {
+      filterCriteria: [criteriaValue],
+      items: []
+    };
+    const songList = await this.db.getList(SongViewEntity, queryModel);
     if (songList && songList.length) {
       // Get any of the songs associated with the album
       const song = songList[0];

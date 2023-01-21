@@ -33,6 +33,7 @@ import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { IQueryModel } from '../../models/pagination-model.interface';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -240,24 +241,35 @@ export class DatabaseService {
 
   // SQLite Bulk Actions - END
 
-  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: ICriteriaValueBaseModel[]): Promise<T[]> {
+  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, queryModel: IQueryModel<T>): Promise<T[]> {
     const entityTempName = 'getListEntity';
     const repo = this.dataSource.getRepository(entity);
-    return this.createQueryBuilder(repo, entityTempName, criteria).getMany();
+    return this.createQueryBuilder(repo, entityTempName, queryModel).getMany();
   }
 
   private createQueryBuilder<T>(
-    repo: Repository<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
+    repo: Repository<T>, entityName: string, queryModel: IQueryModel<T>
   ): SelectQueryBuilder<T> {
     let queryBuilder = repo.createQueryBuilder(entityName);
 
-    if (!criteria || !criteria.length) {
+    let allCriteria: ICriteriaValueBaseModel[] = [];
+    if (queryModel.systemCriteria) {
+      allCriteria = allCriteria.concat(queryModel.systemCriteria);
+    }
+    if (queryModel.breadcrumbCriteria) {
+      allCriteria = allCriteria.concat(queryModel.breadcrumbCriteria);
+    }
+    if (queryModel.filterCriteria) {
+      allCriteria = allCriteria.concat(queryModel.filterCriteria);
+    }
+
+    if (!allCriteria.length) {
       return queryBuilder;
     }
 
-    this.buildSelect(queryBuilder, entityName, criteria, repo.metadata.columns);
-    queryBuilder = this.buildWhere(queryBuilder, entityName, criteria);
-    queryBuilder = this.buildOrderBy(queryBuilder, entityName, criteria);
+    this.buildSelect(queryBuilder, entityName, allCriteria, repo.metadata.columns);
+    queryBuilder = this.buildWhere(queryBuilder, entityName, allCriteria);
+    queryBuilder = this.buildOrderBy(queryBuilder, entityName, allCriteria);
     return queryBuilder;
   }
 

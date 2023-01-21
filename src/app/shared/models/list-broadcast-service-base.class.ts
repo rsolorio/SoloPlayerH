@@ -6,14 +6,14 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { ICriteriaValueBaseModel } from './criteria-base-model.interface';
 import { hasAnyCriteria } from './criteria-base.class';
-import { IPaginationModel } from './pagination-model.interface';
+import { IQueryModel } from './pagination-model.interface';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
 import { AppEvent } from './events.enum';
 
 export interface IListBroadcastService {
   search(searchTerm?: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<any[]>;
-  send(listModel: IPaginationModel<any>): Observable<any[]>;
+  send(queryModel: IQueryModel<any>): Observable<any[]>;
 }
 
 /**
@@ -36,16 +36,16 @@ implements IListBroadcastService {
   /**
    * Uses the criteria to retrieve items from the server in order to send them through a broadcast event.
    */
-  public send(listModel: IPaginationModel<TItemModel>): Observable<TItemModel[]> {
-    if (listModel.noMoreItems) {
-      this.innerBroadcast(listModel);
-      return of(listModel.items);
+  public send(queryModel: IQueryModel<TItemModel>): Observable<TItemModel[]> {
+    if (queryModel.noMoreItems) {
+      this.innerBroadcast(queryModel);
+      return of(queryModel.items);
     }
-    return this.getItems(listModel).pipe(
+    return this.getItems(queryModel).pipe(
       tap(response => {
-        listModel.items = response;
+        queryModel.items = response;
         if (this.beforeBroadcast(response)) {
-          this.innerBroadcast(listModel);
+          this.innerBroadcast(queryModel);
         }
       })
     );
@@ -55,18 +55,18 @@ implements IListBroadcastService {
    * Gets the items from the server and redirects to the specified route.
    * Instead of sending data through a broadcast, this method sends data through parameters picked up
    * by a route resolver.
-   * @param listModel The pagination information.
+   * @param queryModel The query information.
    * @param route The route to redirect to.
    */
-  public redirect(listModel: IPaginationModel<TItemModel>, route: AppRoutes): Observable<TItemModel[]> {
-    if (listModel.noMoreItems || !listModel.items.length) {
-      this.innerRedirect(listModel, route);
-      return of(listModel.items);
+  public redirect(queryModel: IQueryModel<TItemModel>, route: AppRoutes): Observable<TItemModel[]> {
+    if (queryModel.noMoreItems || !queryModel.items.length) {
+      this.innerRedirect(queryModel, route);
+      return of(queryModel.items);
     }
-    return this.getItems(listModel).pipe(
+    return this.getItems(queryModel).pipe(
       tap(response => {
-        this.mergeResponseAndResult(response, listModel);
-        this.innerRedirect(listModel, route);
+        this.mergeResponseAndResult(response, queryModel);
+        this.innerRedirect(queryModel, route);
       })
     );
   }
@@ -77,8 +77,8 @@ implements IListBroadcastService {
    * @param listModel The pagination information.
    * @param route The route to redirect to.
    */
-  protected innerRedirect(listModel: IPaginationModel<TItemModel>, route: AppRoutes): void {
-    this.utilities.navigateWithComplexParams(route, listModel);
+  protected innerRedirect(queryModel: IQueryModel<TItemModel>, route: AppRoutes): void {
+    this.utilities.navigateWithComplexParams(route, queryModel);
   }
 
   /** Performs a search based on the specified term and broadcasts an event with the result. */
@@ -91,19 +91,19 @@ implements IListBroadcastService {
       }
     }
 
-    const pagination: IPaginationModel<TItemModel> = {
+    const queryModel: IQueryModel<TItemModel> = {
       items: [],
       filterCriteria: searchCriteria
     };
-    return this.send(pagination);
+    return this.send(queryModel);
   }
 
   /**
-   * Sends the listModel object through the event broadcast mechanism.
+   * Sends the queryModel object through the event broadcast mechanism.
    */
-  protected innerBroadcast(listModel: IPaginationModel<TItemModel>): void {
-    this.events.broadcast(this.getEventName(), listModel);
-    if (hasAnyCriteria(listModel.filterCriteria, this.ignoredColumnsInCriteria)) {
+  protected innerBroadcast(queryModel: IQueryModel<TItemModel>): void {
+    this.events.broadcast(this.getEventName(), queryModel);
+    if (hasAnyCriteria(queryModel.filterCriteria, this.ignoredColumnsInCriteria)) {
       this.events.broadcast(AppEvent.CriteriaApplied, this.getEventName());
     }
     else {
@@ -136,7 +136,7 @@ implements IListBroadcastService {
     return criteriaSearchTerm;
   }
 
-  protected mergeResponseAndResult(response: TItemModel[], result: IPaginationModel<TItemModel>): void {
+  protected mergeResponseAndResult(response: TItemModel[], result: IQueryModel<TItemModel>): void {
     result.items = response;
 
     if (!result.pageSize) {
@@ -183,5 +183,5 @@ implements IListBroadcastService {
    * Retrieves the items to be broadcasted.
    * This is an abstract method that has to be implemented in the sub class.
    */
-  protected abstract getItems(listModel: IPaginationModel<TItemModel>): Observable<TItemModel[]>;
+  protected abstract getItems(queryModel: IQueryModel<TItemModel>): Observable<TItemModel[]>;
 }

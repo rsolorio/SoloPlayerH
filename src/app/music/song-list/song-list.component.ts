@@ -22,6 +22,8 @@ import { FileService } from 'src/app/shared/services/file/file.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
+import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
+import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 
 @Component({
   selector: 'sp-song-list',
@@ -101,7 +103,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
       action: param => {
         const song = param as ISongModel;
         const criteriaValue = new CriteriaValueBase('id', song.id);
-        this.db.getList(SongArtistViewEntity, [criteriaValue]).then(songArtistRows => {
+        const queryModel: IQueryModel<SongArtistViewEntity> = {
+          filterCriteria: [criteriaValue],
+          items: []
+        };
+        this.db.getList(SongArtistViewEntity, queryModel).then(songArtistRows => {
           const criteria: ICriteriaValueBaseModel[] = [];
           for (var songArtist of songArtistRows) {
             // Ignore the primary artist
@@ -179,7 +185,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       // 3. Load this track
       this.playerService.stop().then(success => {
         if (success) {
-          const trackList = this.spListBaseComponent.model.paginationModel.items as ISongModel[];
+          const trackList = this.spListBaseComponent.model.queryModel.items as ISongModel[];
           // For now, we are using this component only for search results,
           // but we should have an input property to specify the title of the play list
           playerList.loadList(trackList);

@@ -12,7 +12,7 @@ import { IListItemModel } from '../../models/base-model.interface';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
-import { IPaginationModel } from '../../models/pagination-model.interface';
+import { IQueryModel } from '../../models/pagination-model.interface';
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
@@ -28,7 +28,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public model: IListBaseModel = {
     listUpdatedEvent: null,
     itemMenuList: [],
-    paginationModel: {
+    queryModel: {
       items: []
     },
     breadcrumbsEnabled: false
@@ -99,8 +99,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   ngOnInit(): void {
     // List updated
-    this.subs.sink = this.events.onEvent<IPaginationModel<any>>(this.listUpdatedEvent).subscribe(response => {
-      this.model.paginationModel = response;
+    this.subs.sink = this.events.onEvent<IQueryModel<any>>(this.listUpdatedEvent).subscribe(response => {
+      this.model.queryModel = response;
       this.afterListUpdated();
     });
 
@@ -163,7 +163,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   private afterListUpdated(): void {
     this.loadingService.hide();
-    this.navbarService.showToast(`Found: ${this.model.paginationModel.items.length} item` + (this.model.paginationModel.items.length !== 1 ? 's' : ''));
+    this.navbarService.showToast(`Found: ${this.model.queryModel.items.length} item` + (this.model.queryModel.items.length !== 1 ? 's' : ''));
   }
 
   private initializeNavbar(): void {
@@ -245,7 +245,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   public getSelectedItems():IListItemModel[] {
-    return this.model.paginationModel.items.filter(item => item.selected);
+    return this.model.queryModel.items.filter(item => item.selected);
   }
 
   private toggleSearch(navbar: INavbarModel): void {
@@ -287,11 +287,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.loadingService.show();
     if (this.breadcrumbsEnabled && this.breadcrumbService.hasBreadcrumbs()) {
       // sends the criteria from the breadcrumbs and calls the broadcast in order to load the data.
-      const listModel: IPaginationModel<any> = {
+      const queryModel: IQueryModel<any> = {
         items: [],
         filterCriteria: this.breadcrumbService.getCriteria()
       };
-      this.broadcastService.send(listModel).subscribe();
+      this.broadcastService.send(queryModel).subscribe();
       // This is needed in SongList because this is the only list where the breadcrumb component
       // is updated by non-user action (album songs, feat artist songs, etc) without jumping
       // to another page.
