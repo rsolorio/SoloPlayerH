@@ -45,7 +45,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeNavbar();
     this.initializeItemMenu();
     this.removeUnsupportedBreadcrumbs();
     this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(eventType => {
@@ -53,11 +52,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         this.loadData();
       }
     });
-  }
-
-  private initializeNavbar(): void {
-    const navbar = this.navbarService.getState();
-    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
   }
 
   private initializeItemMenu(): void {

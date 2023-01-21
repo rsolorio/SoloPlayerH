@@ -30,8 +30,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     public broadcastService: ClassificationListBroadcastService,
     private utility: UtilityService,
     private loadingService: LoadingViewStateService,
-    private breadcrumbsService: BreadcrumbsStateService,
-    private navbarService: NavBarStateService
+    private breadcrumbsService: BreadcrumbsStateService
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoutes.Genres);
@@ -39,14 +38,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   ngOnInit(): void {
-    this.initializeNavbar();
     this.initializeItemMenu();
     this.removeUnsupportedBreadcrumbs();
-  }
-
-  private initializeNavbar(): void {
-    const navbar = this.navbarService.getState();
-    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
   }
 
   private initializeItemMenu(): void {

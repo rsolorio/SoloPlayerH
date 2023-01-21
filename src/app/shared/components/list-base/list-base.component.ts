@@ -13,6 +13,7 @@ import { AppEvent } from '../../models/events.enum';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { IPaginationModel } from '../../models/pagination-model.interface';
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
+import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
 
 @Component({
@@ -193,10 +194,13 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       }
     };
 
-    if (navbar.componentType) {
+    // Determine component
+    if (this.model.breadcrumbsEnabled) {
+      navbar.componentType = this.breadcrumbService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
       this.showComponent(navbar.componentType);
     }
-    else if (navbar.title) {
+    else {
+      navbar.componentType = null;
       navbar.mode = NavbarDisplayMode.Title;
     }
 

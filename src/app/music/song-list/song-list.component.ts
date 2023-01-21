@@ -70,19 +70,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
-    const navbar = this.navbarService.getState();
-    // Component
-    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
-    // Menu
-    navbar.menuList.push({
-      caption: 'Quick Filter',
-      icon: 'mdi-filter-variant mdi'
-    });
-
-    navbar.menuList.push({
-      caption: 'Sort By',
-      icon: 'mdi-sort mdi'
-    });
   }
 
   private initializeItemMenu(): void {

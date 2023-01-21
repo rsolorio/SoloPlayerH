@@ -25,7 +25,6 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
 
   constructor(
     public broadcastService: PlaylistListBroadcastService,
-    private navbarService: NavBarStateService,
     private loadingService: LoadingViewStateService,
     private fileService: FileService,
     private metadataService: MusicMetadataService,
@@ -36,13 +35,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeNavbar();
     this.initializeItemMenu();
-  }
-
-  private initializeNavbar(): void {
-    const navbar = this.navbarService.getState();
-    navbar.componentType = null;
   }
 
   private initializeItemMenu(): void {
