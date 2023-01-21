@@ -7,16 +7,16 @@ import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
+import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
+import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
-import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
 
 @Component({
@@ -34,7 +34,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private broadcastService: ArtistListBroadcastService,
     private utility: UtilityService,
     private loadingService: LoadingViewStateService,
-    private breadcrumbsService: MusicBreadcrumbsStateService,
+    private breadcrumbsService: BreadcrumbsStateService,
     private navbarService: NavBarStateService,
     private events: EventsService,
     private db: DatabaseService
@@ -57,16 +57,11 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.title = this.isAlbumArtist ? 'Album Artists' : 'Artists';
     navbar.onSearch = searchTerm => {
       this.loadingService.show();
       this.broadcastService.search(searchTerm, this.breadcrumbsService.getCriteria()).subscribe();
     };
-    navbar.show = true;
-    navbar.leftIcon = {
-      icon: this.isAlbumArtist ? 'mdi-account-badge mdi' : 'mdi-account-music mdi'
-    };
-    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? MusicBreadcrumbsComponent : null;
+    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
   }
 
   private initializeItemMenu(): void {
@@ -185,7 +180,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     }
     this.breadcrumbsService.add({
       criteriaList: criteria,
-      source: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
+      origin: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
     });
   }
 
@@ -221,9 +216,9 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     const breadcrumbs = this.breadcrumbsService.getState();
     if (this.isAlbumArtist) {
       let unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
-        breadcrumb.source === BreadcrumbSource.Album ||
-        breadcrumb.source === BreadcrumbSource.AlbumArtist ||
-        breadcrumb.source === BreadcrumbSource.Artist);
+        breadcrumb.origin === BreadcrumbSource.Album ||
+        breadcrumb.origin === BreadcrumbSource.AlbumArtist ||
+        breadcrumb.origin === BreadcrumbSource.Artist);
       
       for (const breadcrumb of unsupportedBreadcrumbs) {
         this.breadcrumbsService.remove(breadcrumb.sequence);

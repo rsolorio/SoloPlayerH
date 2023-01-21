@@ -5,14 +5,14 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
+import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
+import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
-import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
-import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 
 @Component({
@@ -30,7 +30,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private broadcastService: ClassificationListBroadcastService,
     private utility: UtilityService,
     private loadingService: LoadingViewStateService,
-    private breadcrumbsService: MusicBreadcrumbsStateService,
+    private breadcrumbsService: BreadcrumbsStateService,
     private navbarService: NavBarStateService
   ) {
     super();
@@ -46,16 +46,11 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.title = this.isGenreList ? 'Genres' : 'Classifications';
     navbar.onSearch = searchTerm => {
       this.loadingService.show();
       this.broadcastService.search(searchTerm).subscribe();
     };
-    navbar.show = true;
-    navbar.leftIcon = {
-      icon: this.isGenreList ? 'mdi-tag-outline mdi' : 'mdi-tag-multiple-outline mdi'
-    };
-    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? MusicBreadcrumbsComponent : null;
+    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
   }
 
   private initializeItemMenu(): void {
@@ -141,7 +136,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     }
     this.breadcrumbsService.add({
       criteriaList: criteria,
-      source: BreadcrumbSource.Classification
+      origin: BreadcrumbSource.Classification
     });
   }
 

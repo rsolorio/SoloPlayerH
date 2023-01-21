@@ -13,20 +13,21 @@ import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-mo
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { BreadcrumbEventType, BreadcrumbSource, IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
-import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
-import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { SongArtistViewEntity } from 'src/app/shared/entities';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { FileService } from 'src/app/shared/services/file/file.service';
+import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
+import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
+import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 
 @Component({
   selector: 'sp-song-list',
@@ -45,7 +46,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private fileService: FileService,
     private metadataService: MusicMetadataService,
     private loadingService: LoadingViewStateService,
-    private breadcrumbsService: MusicBreadcrumbsStateService,
+    private breadcrumbsService: BreadcrumbsStateService,
     private navbarService: NavBarStateService,
     private events: EventsService,
     private menuService: MenuService,
@@ -70,20 +71,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.show = true;
-    // Title
-    navbar.title = 'Songs';
     // Search
     navbar.onSearch = searchTerm => {
       this.loadingService.show();
       this.broadcastService.search(searchTerm, this.breadcrumbsService.getCriteria()).subscribe();
     };
-    // Left icon
-    navbar.leftIcon = {
-      icon: 'mdi-music-note mdi'
-    };
     // Component
-    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? MusicBreadcrumbsComponent : null;
+    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
     // Menu
     navbar.menuList.push({
       caption: 'Quick Filter',
@@ -128,7 +122,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         criteriaItem.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
         this.breadcrumbsService.replace([{
           criteriaList: [ criteriaItem ],
-          source: BreadcrumbSource.AlbumArtist
+          origin: BreadcrumbSource.AlbumArtist
         }], true);
       }
     });
@@ -155,7 +149,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           if (criteria.length) {
             this.breadcrumbsService.replace([{
               criteriaList: criteria,
-              source: BreadcrumbSource.Artist
+              origin: BreadcrumbSource.Artist
             }], true);
           }
         });
@@ -172,18 +166,18 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const artistCriteria = new CriteriaValueBase('primaryArtistId', primaryArtistId);
         artistCriteria.DisplayName = this.db.displayName(artistCriteria.ColumnName);
         artistCriteria.DisplayValue = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
-        const artistBreadcrumb: IMusicBreadcrumbModel = {
+        const artistBreadcrumb: IBreadcrumbModel = {
           criteriaList: [ artistCriteria ],
-          source: BreadcrumbSource.AlbumArtist
+          origin: BreadcrumbSource.AlbumArtist
         };
         // Album
         const primaryAlbumId = song.primaryAlbumId ? song.primaryAlbumId : song.primaryAlbum.id;
         const albumCriteria = new CriteriaValueBase('primaryAlbumId', primaryAlbumId);
         albumCriteria.DisplayName = this.db.displayName(albumCriteria.ColumnName);
         albumCriteria.DisplayValue = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
-        const albumBreadcrumb: IMusicBreadcrumbModel = {
+        const albumBreadcrumb: IBreadcrumbModel = {
           criteriaList: [ albumCriteria ],
-          source: BreadcrumbSource.Album
+          origin: BreadcrumbSource.Album
         };
         // Breadcrumbs
         this.breadcrumbsService.replace([ artistBreadcrumb, albumBreadcrumb ], true);
@@ -191,10 +185,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
     });
   }
 
+  /**
+   * Reloads the breadcrumbs component in order to show the latest data.
+   */
   private showBreadcrumbs(): void {
     const navbar = this.navbarService.getState();
-    if (navbar.componentType !== MusicBreadcrumbsComponent || navbar.mode !== NavbarDisplayMode.Component) {
-      this.spListBaseComponent.showComponent(MusicBreadcrumbsComponent);
+    if (navbar.componentType !== BreadcrumbsComponent || navbar.mode !== NavbarDisplayMode.Component) {
+      this.spListBaseComponent.showComponent(BreadcrumbsComponent);
     }
   }
 
@@ -265,6 +262,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.broadcastService.search().subscribe();
   }
 
+  /**
+   * Sends the criteria from the breadcrumbs and calls the broadcast in order to load the data.
+   */
   private loadSongs(): void {
     this.loadingService.show();
     const listModel: IPaginationModel<ISongModel> = {
@@ -281,7 +281,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.queueService.sink = () => this.setSongImage(song);
   }
 
-  public async setSongImage(song: ISongModel): Promise<void> {
+  private async setSongImage(song: ISongModel): Promise<void> {
     const buffer = await this.fileService.getBuffer(song.filePath);
     const audioInfo = await this.metadataService.getMetadata(buffer);
     song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);

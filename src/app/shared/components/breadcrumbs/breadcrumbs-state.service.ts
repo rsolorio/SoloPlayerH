@@ -1,20 +1,21 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { AppEvent } from 'src/app/shared/models/events.enum';
-import { BreadcrumbEventType, IMusicBreadcrumbModel } from 'src/app/shared/models/music-breadcrumb-model.interface';
+import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
+import { ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
+import { AppEvent } from '../../models/events.enum';
+import { IBreadcrumbModel } from './breadcrumbs-model.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MusicBreadcrumbsStateService {
+export class BreadcrumbsStateService {
 
-  private state: IMusicBreadcrumbModel[] = [];
+  private state: IBreadcrumbModel[] = [];
   private eventsEnabled = true;
 
   constructor(private events: EventsService) { }
 
-  public getState(): IMusicBreadcrumbModel[] {
+  public getState(): IBreadcrumbModel[] {
     return this.state;
   }
 
@@ -22,7 +23,7 @@ export class MusicBreadcrumbsStateService {
     this.state = [];
   }
 
-  public add(newBreadcrumb: IMusicBreadcrumbModel): void {
+  public add(newBreadcrumb: IBreadcrumbModel): void {
     this.setupTooltip(newBreadcrumb);
     // First make sure all current breadcrumbs will not be marked as last
     for (const breadcrumb of this.state) {
@@ -36,7 +37,7 @@ export class MusicBreadcrumbsStateService {
     newBreadcrumb.sequence = this.state.length;
     // Fire event
     if (this.eventsEnabled) {
-      this.events.broadcast(AppEvent.MusicBreadcrumbUpdated, BreadcrumbEventType.Add);
+      this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.Add);
     }
   }
 
@@ -49,11 +50,11 @@ export class MusicBreadcrumbsStateService {
       lastBreadcrumb = this.getLast();
     }
     if (removeCount && this.eventsEnabled) {
-      this.events.broadcast(AppEvent.MusicBreadcrumbUpdated, BreadcrumbEventType.RemoveMultiple);
+      this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.RemoveMultiple);
     }
   }
 
-  public removeLast(): IMusicBreadcrumbModel {
+  public removeLast(): IBreadcrumbModel {
     const result = this.state.pop();
     // Now turn on the last flag on the last item
     const lastItem = this.getLast();
@@ -61,25 +62,25 @@ export class MusicBreadcrumbsStateService {
       lastItem.last = true;
     }
     if (this.eventsEnabled) {
-      this.events.broadcast(AppEvent.MusicBreadcrumbUpdated, BreadcrumbEventType.Remove);
+      this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.Remove);
     }
     return result;
   }
 
-  public replace(breadcrumbs: IMusicBreadcrumbModel[], forceReload?: boolean): void {
+  public replace(breadcrumbs: IBreadcrumbModel[], forceReload?: boolean): void {
     this.clear();
     this.eventsEnabled = false;
     for (var breadcrumb of breadcrumbs) {
       this.add(breadcrumb);
     }
     this.eventsEnabled = true;
-    this.events.broadcast(AppEvent.MusicBreadcrumbUpdated, BreadcrumbEventType.Replace);
+    this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.Replace);
     if (forceReload) {
       this.reload();
     }
   }
 
-  public getLast(): IMusicBreadcrumbModel {
+  public getLast(): IBreadcrumbModel {
     if (this.state.length) {
       return this.state[this.state.length - 1];
     }
@@ -100,7 +101,7 @@ export class MusicBreadcrumbsStateService {
     return result;
   }
 
-  public setupTooltip(breadcrumb: IMusicBreadcrumbModel): void {
+  public setupTooltip(breadcrumb: IBreadcrumbModel): void {
     if (breadcrumb.tooltip) {
       return;
     }
@@ -117,6 +118,6 @@ export class MusicBreadcrumbsStateService {
   }
 
   public reload() {
-    this.events.broadcast(AppEvent.MusicBreadcrumbUpdated, BreadcrumbEventType.Updated);
+    this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.Updated);
   }
 }

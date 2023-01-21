@@ -14,6 +14,7 @@ import { QuickFilterComponent } from './components/quick-filter/quick-filter.com
 import { FileService } from './services/file/file.service';
 import { FileNodeService } from './services/file/file-node.service';
 import { FileCordovaService } from './services/file/file-cordova.service';
+import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 
 
 
@@ -25,7 +26,8 @@ import { FileCordovaService } from './services/file/file-cordova.service';
     QuickSearchComponent,
     ListBaseComponent,
     TransitionImageComponent,
-    QuickFilterComponent
+    QuickFilterComponent,
+    BreadcrumbsComponent
   ],
   imports: [
     CommonModule,

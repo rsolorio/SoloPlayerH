@@ -8,17 +8,17 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
+import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
+import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { BreadcrumbEventType, BreadcrumbSource } from 'src/app/shared/models/music-breadcrumb-model.interface';
 import { IPaginationModel } from 'src/app/shared/models/pagination-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/shared/services/file/file.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
-import { MusicBreadcrumbsStateService } from '../music-breadcrumbs/music-breadcrumbs-state.service';
-import { MusicBreadcrumbsComponent } from '../music-breadcrumbs/music-breadcrumbs.component';
 import { AlbumListBroadcastService } from './album-list-broadcast.service';
 
 @Component({
@@ -35,7 +35,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private broadcastService: AlbumListBroadcastService,
     private utility: UtilityService,
     private loadingService: LoadingViewStateService,
-    private breadcrumbsService: MusicBreadcrumbsStateService,
+    private breadcrumbsService: BreadcrumbsStateService,
     private navbarService: NavBarStateService,
     private events: EventsService,
     private fileService: FileService,
@@ -59,16 +59,11 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.title = 'Albums';
     navbar.onSearch = searchTerm => {
       this.loadingService.show();
       this.broadcastService.search(searchTerm, this.breadcrumbsService.getCriteria()).subscribe();
     };
-    navbar.show = true;
-    navbar.leftIcon = {
-      icon: 'mdi-album mdi'
-    };
-    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? MusicBreadcrumbsComponent : null;
+    navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
   }
 
   private initializeItemMenu(): void {
@@ -150,7 +145,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         criteriaItem.DisplayValue = album.artistName;
         this.breadcrumbsService.add({
           criteriaList: [ criteriaItem ],
-          source: BreadcrumbSource.AlbumArtist
+          origin: BreadcrumbSource.AlbumArtist
         });
       }
     }
@@ -160,7 +155,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     criteriaItem.DisplayValue = album.name;
     this.breadcrumbsService.add({
       criteriaList: [ criteriaItem ],
-      source: BreadcrumbSource.Album
+      origin: BreadcrumbSource.Album
     });
   }
 
@@ -200,8 +195,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   private removeUnsupportedBreadcrumbs(): void {
     const breadcrumbs = this.breadcrumbsService.getState();
     const unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
-      breadcrumb.source === BreadcrumbSource.Album ||
-      breadcrumb.source === BreadcrumbSource.Artist);
+      breadcrumb.origin === BreadcrumbSource.Album ||
+      breadcrumb.origin === BreadcrumbSource.Artist);
     for (const breadcrumb of unsupportedBreadcrumbs) {
       this.breadcrumbsService.remove(breadcrumb.sequence);
     }

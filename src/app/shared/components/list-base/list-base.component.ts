@@ -26,7 +26,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     itemMenuList: [],
     paginationModel: {
       items: []
-    }
+    },
+    breadcrumbsEnabled: false
   };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
   private lastNavbarRightIcon: IIconAction;
@@ -52,6 +53,27 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
   get itemMenuList(): IMenuModel[] {
     return this.model.itemMenuList;
+  }
+
+  @Input() set title(val: string) {
+    this.model.title = val;
+  }
+  get title(): string {
+    return this.model.title;
+  }
+
+  @Input() set leftIcon(val: string) {
+    this.model.leftIcon = val;
+  }
+  get leftIcon(): string {
+    return this.model.leftIcon;
+  }
+
+  @Input() set breadcrumbsEnabled(val: boolean) {
+    this.model.breadcrumbsEnabled = val;
+  }
+  get breadcrumbsEnabled(): boolean {
+    return this.model.breadcrumbsEnabled;
   }
 
   constructor(
@@ -123,6 +145,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private initializeNavbar(): void {
     // All list base components should have a search feature
     const navbar = this.navbarService.getState();
+    navbar.show = true;
+    navbar.title = this.model.title;
+    navbar.leftIcon = {
+      icon: this.model.leftIcon
+    };
     navbar.rightIcon = {
       icon: this.filterNoCriteriaIcon,
       action: () => {

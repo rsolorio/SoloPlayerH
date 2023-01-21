@@ -9,4 +9,7 @@ export interface IListBaseModel {
   /** Overrides the logic that determines the backdrop icon for a list item. */
   getBackdropIcon?: (item: IListItemModel) => string;
   showModal?: boolean;
+  title?: string;
+  leftIcon?: string;
+  breadcrumbsEnabled: boolean;
 }

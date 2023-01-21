@@ -42,14 +42,9 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.title = 'Playlists';
     navbar.onSearch = searchTerm => {
       this.loadingService.show();
       this.broadcastService.search(searchTerm).subscribe();
-    };
-    navbar.show = true;
-    navbar.leftIcon = {
-      icon: 'mdi-playlist-play mdi mdi'
     };
     navbar.componentType = null;
   }
