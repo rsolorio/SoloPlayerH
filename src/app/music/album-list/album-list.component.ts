@@ -32,7 +32,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   public itemMenuList: IMenuModel[] = [];
 
   constructor(
-    private broadcastService: AlbumListBroadcastService,
+    public broadcastService: AlbumListBroadcastService,
     private utility: UtilityService,
     private loadingService: LoadingViewStateService,
     private breadcrumbsService: BreadcrumbsStateService,
@@ -59,10 +59,6 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.onSearch = searchTerm => {
-      this.loadingService.show();
-      this.broadcastService.search(searchTerm, this.breadcrumbsService.getCriteria()).subscribe();
-    };
     navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
   }
 

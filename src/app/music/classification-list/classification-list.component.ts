@@ -27,7 +27,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   public isGenreList = false;
 
   constructor(
-    private broadcastService: ClassificationListBroadcastService,
+    public broadcastService: ClassificationListBroadcastService,
     private utility: UtilityService,
     private loadingService: LoadingViewStateService,
     private breadcrumbsService: BreadcrumbsStateService,
@@ -46,10 +46,6 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.onSearch = searchTerm => {
-      this.loadingService.show();
-      this.broadcastService.search(searchTerm).subscribe();
-    };
     navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
   }
 

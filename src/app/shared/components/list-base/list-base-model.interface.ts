@@ -1,5 +1,6 @@
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { IListItemModel } from '../../models/base-model.interface';
+import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { IPaginationModel } from '../../models/pagination-model.interface';
 
 export interface IListBaseModel {
@@ -12,4 +13,5 @@ export interface IListBaseModel {
   title?: string;
   leftIcon?: string;
   breadcrumbsEnabled: boolean;
+  broadcastService?: IListBroadcastService;
 }

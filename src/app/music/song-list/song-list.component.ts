@@ -41,7 +41,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   public itemMenuList: IMenuModel[] = [];
 
   constructor(
-    private broadcastService: SongListBroadcastService,
+    public broadcastService: SongListBroadcastService,
     private utility: UtilityService,
     private fileService: FileService,
     private metadataService: MusicMetadataService,
@@ -71,11 +71,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    // Search
-    navbar.onSearch = searchTerm => {
-      this.loadingService.show();
-      this.broadcastService.search(searchTerm, this.breadcrumbsService.getCriteria()).subscribe();
-    };
     // Component
     navbar.componentType = this.breadcrumbsService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
     // Menu

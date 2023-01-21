@@ -10,7 +10,9 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { FilterViewComponent } from 'src/app/filter/filter-view/filter-view.component';
 import { IListItemModel } from '../../models/base-model.interface';
 import { AppEvent } from '../../models/events.enum';
+import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { IPaginationModel } from '../../models/pagination-model.interface';
+import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { IListBaseModel } from './list-base-model.interface';
 
 @Component({
@@ -76,11 +78,19 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     return this.model.breadcrumbsEnabled;
   }
 
+  @Input() set broadcastService(val: IListBroadcastService) {
+    this.model.broadcastService = val;
+  }
+  get broadcastService(): IListBroadcastService {
+    return this.model.broadcastService;
+  }
+
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
     private events: EventsService,
     private loadingService: LoadingViewStateService,
-    private navbarService: NavBarStateService
+    private navbarService: NavBarStateService,
+    private breadcrumbService: BreadcrumbsStateService
   ) {
     super();
   }
@@ -146,10 +156,12 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // All list base components should have a search feature
     const navbar = this.navbarService.getState();
     navbar.show = true;
+    // Title
     navbar.title = this.model.title;
     navbar.leftIcon = {
       icon: this.model.leftIcon
     };
+    // Filter icon
     navbar.rightIcon = {
       icon: this.filterNoCriteriaIcon,
       action: () => {
@@ -163,6 +175,14 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
             this.loadModalFilter();
           });
         }
+      }
+    };
+
+    // Search
+    navbar.onSearch = searchTerm => {
+      if (this.model.broadcastService) {
+        this.loadingService.show();
+        this.model.broadcastService.search(searchTerm, this.breadcrumbService.getCriteria()).subscribe();
       }
     };
 

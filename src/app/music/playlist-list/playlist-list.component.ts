@@ -24,7 +24,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   public itemMenuList: IMenuModel[] = [];
 
   constructor(
-    private broadcastService: PlaylistListBroadcastService,
+    public broadcastService: PlaylistListBroadcastService,
     private navbarService: NavBarStateService,
     private loadingService: LoadingViewStateService,
     private fileService: FileService,
@@ -42,10 +42,6 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const navbar = this.navbarService.getState();
-    navbar.onSearch = searchTerm => {
-      this.loadingService.show();
-      this.broadcastService.search(searchTerm).subscribe();
-    };
     navbar.componentType = null;
   }
 

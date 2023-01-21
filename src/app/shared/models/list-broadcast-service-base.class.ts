@@ -5,14 +5,14 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { ICriteriaValueBaseModel } from './criteria-base-model.interface';
-import { CriteriaBase, CriteriaValueBase, hasAnyCriteria, hasCriteria } from './criteria-base.class';
+import { CriteriaBase, CriteriaValueBase, hasAnyCriteria } from './criteria-base.class';
 import { IPaginationModel } from './pagination-model.interface';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
 import { AppEvent } from './events.enum';
 
 export interface IListBroadcastService {
-  search(searchTerm: string): Observable<any[]>;
+  search(searchTerm: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<any[]>;
   searchFavorites(): Observable<any[]>;
 }
 
