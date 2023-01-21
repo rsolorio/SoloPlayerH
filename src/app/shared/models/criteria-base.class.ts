@@ -8,11 +8,10 @@ import {
 export class CriteriaBase implements ICriteriaBaseModel {
   // We don't always need this but it is better to have it
   public SelectDistinct = true;
-  public RandomOrder = false;
   public MaximumRows = 0;
   public PageNumber = 1;
 
-  constructor(maximumRows?: number, pageNumber?: number, selectDistinct?: boolean, randomOrder?: boolean) {
+  constructor(maximumRows?: number, pageNumber?: number, selectDistinct?: boolean) {
     if (maximumRows !== undefined) {
       this.MaximumRows = maximumRows;
     }
@@ -21,9 +20,6 @@ export class CriteriaBase implements ICriteriaBaseModel {
     }
     if (selectDistinct !== undefined) {
       this.SelectDistinct = selectDistinct;
-    }
-    if (randomOrder !== undefined) {
-      this.RandomOrder = randomOrder;
     }
   }
 }

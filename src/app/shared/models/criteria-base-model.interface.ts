@@ -1,6 +1,5 @@
 export interface ICriteriaBaseModel {
     SelectDistinct: boolean;
-    RandomOrder: boolean;
     MaximumRows: number;
     PageNumber: number;
 }

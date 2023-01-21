@@ -53,13 +53,13 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
   }
 
   protected getItems(listModel: IPaginationModel<IArtistModel>): Observable<IArtistModel[]> {
-    this.addDefaultSorting(listModel.criteria);
+    this.addDefaultSorting(listModel.filterCriteria);
     if (this.isAlbumArtist) {
-      if (hasCriteria('classificationId', listModel.criteria)) {
-        return from(this.db.getList(ArtistClassificationViewEntity, listModel.criteria));
+      if (hasCriteria('classificationId', listModel.filterCriteria)) {
+        return from(this.db.getList(ArtistClassificationViewEntity, listModel.filterCriteria));
       }
-      return from(this.db.getList(AlbumArtistViewEntity, listModel.criteria));
+      return from(this.db.getList(AlbumArtistViewEntity, listModel.filterCriteria));
     }
-    return from(this.db.getList(ArtistViewEntity, listModel.criteria));
+    return from(this.db.getList(ArtistViewEntity, listModel.filterCriteria));
   }
 }

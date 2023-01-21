@@ -6,8 +6,12 @@ import { IListModel } from './list-model.interface';
  * It is a generic implementation that specifies the type of items to hold.
  */
 export interface IPaginationModel<T> extends IListModel<T> {
-    /** Criteria used to retrieved the list of items */
-    criteria?: ICriteriaValueBaseModel[];
+    /** Read only criteria needed by the system to properly retrieve the expected results. */
+    systemCriteria?: ICriteriaValueBaseModel[];
+    /** Criteria that comes from breadcrumbs. */
+    breadcrumbCriteria?: ICriteriaValueBaseModel[];
+    /** Any generic criteria to be applied to the filter.*/
+    filterCriteria?: ICriteriaValueBaseModel[];
     /** The current page being displayed */
     pageNumber?: number;
     /** The number of items for each page. If this is not set or zero pagination will be disabled. */
@@ -18,4 +22,6 @@ export interface IPaginationModel<T> extends IListModel<T> {
     noMoreItems?: boolean;
     /** The total number of items to return. */
     totalSize?: number;
+    /** If select distinct should be used as part of the filter. */
+    distinct?: boolean;
 }

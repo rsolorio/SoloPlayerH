@@ -289,7 +289,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       // sends the criteria from the breadcrumbs and calls the broadcast in order to load the data.
       const listModel: IPaginationModel<any> = {
         items: [],
-        criteria: this.breadcrumbService.getCriteria()
+        filterCriteria: this.breadcrumbService.getCriteria()
       };
       this.broadcastService.send(listModel).subscribe();
       // This is needed in SongList because this is the only list where the breadcrumb component

@@ -35,14 +35,14 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
   }
 
   protected getItems(listModel: IPaginationModel<ISongModel>): Observable<ISongModel[]> {
-    this.addDefaultSorting(listModel.criteria);
-    if (hasCriteria('artistId', listModel.criteria)) {
-      return from(this.db.getList(SongArtistViewEntity, listModel.criteria));
+    this.addDefaultSorting(listModel.filterCriteria);
+    if (hasCriteria('artistId', listModel.filterCriteria)) {
+      return from(this.db.getList(SongArtistViewEntity, listModel.filterCriteria));
     }
-    if (hasCriteria('classificationId', listModel.criteria)) {
-      return from(this.db.getList(SongClassificationViewEntity, listModel.criteria));
+    if (hasCriteria('classificationId', listModel.filterCriteria)) {
+      return from(this.db.getList(SongClassificationViewEntity, listModel.filterCriteria));
     }
-    return from(this.db.getList(SongViewEntity, listModel.criteria));
+    return from(this.db.getList(SongViewEntity, listModel.filterCriteria));
   }
 
   /**

@@ -28,7 +28,7 @@ export abstract class ListStateServiceBase<TItemModel> implements IStateService<
       const state = this.getState();
       state.items = response.items;
       state.name = response.name;
-      state.criteria = response.criteria;
+      state.filterCriteria = response.filterCriteria;
       state.pageNumber = response.pageNumber;
       state.pageSize = response.pageSize;
       state.totalSize = response.totalSize;

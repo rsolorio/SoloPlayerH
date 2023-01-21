@@ -53,6 +53,6 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
   }
 
   protected getItems(listModel: IPaginationModel<IClassificationModel>): Observable<IClassificationModel[]> {
-    return from(this.db.getList(ClassificationViewEntity, listModel.criteria));
+    return from(this.db.getList(ClassificationViewEntity, listModel.filterCriteria));
   }
 }

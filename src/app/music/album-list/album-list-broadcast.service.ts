@@ -56,10 +56,10 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
   }
 
   protected getItems(listModel: IPaginationModel<IAlbumModel>): Observable<IAlbumModel[]> {
-    this.addDefaultSorting(listModel.criteria);
-    if (hasCriteria('classificationId', listModel.criteria)) {
-      return from(this.db.getList(AlbumClassificationViewEntity, listModel.criteria));
+    this.addDefaultSorting(listModel.filterCriteria);
+    if (hasCriteria('classificationId', listModel.filterCriteria)) {
+      return from(this.db.getList(AlbumClassificationViewEntity, listModel.filterCriteria));
     }
-    return from(this.db.getList(AlbumViewEntity, listModel.criteria));
+    return from(this.db.getList(AlbumViewEntity, listModel.filterCriteria));
   }
 }

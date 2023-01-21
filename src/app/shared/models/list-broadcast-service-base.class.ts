@@ -93,7 +93,7 @@ implements IListBroadcastService {
 
     const pagination: IPaginationModel<TItemModel> = {
       items: [],
-      criteria: searchCriteria
+      filterCriteria: searchCriteria
     };
     return this.send(pagination);
   }
@@ -103,7 +103,7 @@ implements IListBroadcastService {
    */
   protected innerBroadcast(listModel: IPaginationModel<TItemModel>): void {
     this.events.broadcast(this.getEventName(), listModel);
-    if (hasAnyCriteria(listModel.criteria, this.ignoredColumnsInCriteria)) {
+    if (hasAnyCriteria(listModel.filterCriteria, this.ignoredColumnsInCriteria)) {
       this.events.broadcast(AppEvent.CriteriaApplied, this.getEventName());
     }
     else {
@@ -111,6 +111,7 @@ implements IListBroadcastService {
     }
   }
 
+  /** Validates the minimum length of the search term. */
   protected isSearchTermValid(searchTerm: string): boolean {
     if (searchTerm) {
       if (searchTerm.length >= this.minSearchTermLength) {

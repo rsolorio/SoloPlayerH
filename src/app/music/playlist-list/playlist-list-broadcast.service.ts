@@ -45,6 +45,6 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
   }
 
   protected getItems(listModel: IPaginationModel<IPlaylistModel>): Observable<IPlaylistModel[]> {
-    return from(this.db.getList(PlaylistViewEntity, listModel.criteria));
+    return from(this.db.getList(PlaylistViewEntity, listModel.filterCriteria));
   }
 }
