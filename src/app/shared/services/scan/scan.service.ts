@@ -476,45 +476,34 @@ export class ScanService {
 
   private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): ClassificationEntity[] {
     const genres: ClassificationEntity[] = [];
-
     if (audioInfo.metadata.common.genre && audioInfo.metadata.common.genre.length) {
       for (const genreName of audioInfo.metadata.common.genre) {
-        const newGenre = this.createGenre(genreName);
-        const existingGenre = this.existingGenres.find(g => g.id === newGenre.id);
-        if (existingGenre) {
-          if (!genres.find(g => g.id === existingGenre.id)) {
-            genres.push(existingGenre);
-          }
-        }
-        else {
-          // First, add the genre as it is
-          this.existingGenres.push(newGenre);
-          genres.push(newGenre);
-
-          // Second, perform split if specified
-          if (splitSymbols && splitSymbols.length) {
-            for (const splitSymbol of splitSymbols) {
-              const splitGenreNames = genreName.split(splitSymbol);
-              for (const splitGenreName of splitGenreNames) {
-                const newSplitGenre = this.createGenre(splitGenreName);
-                const existingSplitGenre = this.existingGenres.find(g => g.id === newSplitGenre.id);
-                if (existingSplitGenre) {
-                  if (!genres.find(g => g.id === existingSplitGenre.id)) {
-                    genres.push(existingSplitGenre);
-                  }
-                }
-                else {
-                  this.existingGenres.push(newSplitGenre);
-                  genres.push(newSplitGenre);
-                }
-              }
+        this.processGenre(genreName, genres);
+        if (splitSymbols && splitSymbols.length) {
+          for (const splitSymbol of splitSymbols) {
+            const splitGenreNames = genreName.split(splitSymbol);
+            for (const splitGenreName of splitGenreNames) {
+              this.processGenre(splitGenreName, genres);
             }
           }
         }
       }
     }
-
     return genres;
+  }
+
+  private processGenre(name: string, genres: ClassificationEntity[]): void {
+    const newGenre = this.createGenre(name);
+    const existingGenre = this.existingGenres.find(g => g.id === newGenre.id);
+    if (existingGenre) {
+      if (!genres.find(g => g.id === existingGenre.id)) {
+        genres.push(existingGenre);
+      }
+    }
+    else {
+      this.existingGenres.push(newGenre);
+      genres.push(newGenre);
+    }
   }
 
   private createGenre(name: string): ClassificationEntity {
