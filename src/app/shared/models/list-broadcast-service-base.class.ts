@@ -5,15 +5,13 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { ICriteriaValueBaseModel } from './criteria-base-model.interface';
-import { hasAnyCriteria } from './criteria-base.class';
-import { IQueryModel } from './pagination-model.interface';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
-import { AppEvent } from './events.enum';
+import { QueryModel } from './query-model.class';
 
 export interface IListBroadcastService {
-  search(searchTerm?: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<any[]>;
-  send(queryModel: IQueryModel<any>): Observable<any[]>;
+  search(queryModel: QueryModel<any>, searchTerm?: string): Observable<any[]>;
+  send(queryModel: QueryModel<any>): Observable<any[]>;
 }
 
 /**
@@ -25,23 +23,18 @@ export abstract class ListBroadcastServiceBase<TItemModel extends IDbModel>
 implements IListBroadcastService {
 
   protected minSearchTermLength = 2;
-  /**
-   * The list of columns to be ignored when the service determines if
-   * criteria has been applied when retrieving the list of items.
-   */
-  protected ignoredColumnsInCriteria: string[] = [];
 
   constructor(private events: EventsService, private utilities: UtilityService) { }
 
   /**
    * Uses the criteria to retrieve items from the server in order to send them through a broadcast event.
    */
-  public send(queryModel: IQueryModel<TItemModel>): Observable<TItemModel[]> {
+  public send(queryModel: QueryModel<TItemModel>): Observable<TItemModel[]> {
     if (queryModel.noMoreItems) {
       this.innerBroadcast(queryModel);
       return of(queryModel.items);
     }
-    return this.getItems(queryModel).pipe(
+    return this.innerGetItems(queryModel).pipe(
       tap(response => {
         queryModel.items = response;
         if (this.beforeBroadcast(response)) {
@@ -58,12 +51,12 @@ implements IListBroadcastService {
    * @param queryModel The query information.
    * @param route The route to redirect to.
    */
-  public redirect(queryModel: IQueryModel<TItemModel>, route: AppRoutes): Observable<TItemModel[]> {
+  public redirect(queryModel: QueryModel<TItemModel>, route: AppRoutes): Observable<TItemModel[]> {
     if (queryModel.noMoreItems || !queryModel.items.length) {
       this.innerRedirect(queryModel, route);
       return of(queryModel.items);
     }
-    return this.getItems(queryModel).pipe(
+    return this.innerGetItems(queryModel).pipe(
       tap(response => {
         this.mergeResponseAndResult(response, queryModel);
         this.innerRedirect(queryModel, route);
@@ -77,38 +70,22 @@ implements IListBroadcastService {
    * @param listModel The pagination information.
    * @param route The route to redirect to.
    */
-  protected innerRedirect(queryModel: IQueryModel<TItemModel>, route: AppRoutes): void {
+  protected innerRedirect(queryModel: QueryModel<TItemModel>, route: AppRoutes): void {
     this.utilities.navigateWithComplexParams(route, queryModel);
   }
 
   /** Performs a search based on the specified term and broadcasts an event with the result. */
-  public search(searchTerm?: string, extraCriteria?: ICriteriaValueBaseModel[]): Observable<TItemModel[]> {
-    const searchCriteria = this.buildCriteria(searchTerm);
-    // TODO: better logic to ensure columns are not duplicated
-    if (hasAnyCriteria(extraCriteria)) {
-      for (const extraCriteriaItem of extraCriteria) {
-        searchCriteria.push(extraCriteriaItem);
-      }
-    }
-
-    const queryModel: IQueryModel<TItemModel> = {
-      items: [],
-      filterCriteria: searchCriteria
-    };
+  public search(queryModel: QueryModel<any>, searchTerm?: string): Observable<TItemModel[]> {
+    // Completely override any previous search
+    queryModel.searchCriteria = this.buildSearchCriteria(searchTerm);
     return this.send(queryModel);
   }
 
   /**
    * Sends the queryModel object through the event broadcast mechanism.
    */
-  protected innerBroadcast(queryModel: IQueryModel<TItemModel>): void {
+  protected innerBroadcast(queryModel: QueryModel<TItemModel>): void {
     this.events.broadcast(this.getEventName(), queryModel);
-    if (hasAnyCriteria(queryModel.filterCriteria, this.ignoredColumnsInCriteria)) {
-      this.events.broadcast(AppEvent.CriteriaApplied, this.getEventName());
-    }
-    else {
-      this.events.broadcast(AppEvent.CriteriaCleared, this.getEventName());
-    }
   }
 
   /** Validates the minimum length of the search term. */
@@ -136,7 +113,7 @@ implements IListBroadcastService {
     return criteriaSearchTerm;
   }
 
-  protected mergeResponseAndResult(response: TItemModel[], result: IQueryModel<TItemModel>): void {
+  protected mergeResponseAndResult(response: TItemModel[], result: QueryModel<TItemModel>): void {
     result.items = response;
 
     if (!result.pageSize) {
@@ -160,7 +137,15 @@ implements IListBroadcastService {
     * Builds the criteria based on the specified search term.
     * @param searchTerm The search term.
     */
-  protected abstract buildCriteria(searchTerm: string): ICriteriaValueBaseModel[];
+  protected abstract buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[];
+
+  /** Any read only criteria needed for this entity. */
+  protected buildSystemCriteria(): ICriteriaValueBaseModel[] {
+    return [];
+  }
+
+  protected addSortingCriteria(queryModel: QueryModel<TItemModel>) {
+  }
 
   /**
    * Utility method that runs before broadcasting the result items.
@@ -183,5 +168,14 @@ implements IListBroadcastService {
    * Retrieves the items to be broadcasted.
    * This is an abstract method that has to be implemented in the sub class.
    */
-  protected abstract getItems(queryModel: IQueryModel<TItemModel>): Observable<TItemModel[]>;
+  protected abstract getItems(queryModel: QueryModel<TItemModel>): Observable<TItemModel[]>;
+
+  private innerGetItems(queryModel: QueryModel<TItemModel>): Observable<TItemModel[]> {
+    // Override any existing system criteria
+    queryModel.systemCriteria = this.buildSystemCriteria();
+    if (!queryModel.hasSorting()) {
+      this.addSortingCriteria(queryModel);
+    }
+    return this.getItems(queryModel);
+  }
 }

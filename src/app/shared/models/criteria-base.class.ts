@@ -28,7 +28,7 @@ export class CriteriaValueBase implements ICriteriaValueBaseModel {
   // Exposing fields as public properties since
   // making them private and exposing as getter/setter will not get properties serialized
   public ColumnName: string = null;
-  public ColumnValue;
+  public ColumnValues = [];
   public Operator = CriteriaOperator.Equals;
   public OrOperator = false;
   public SortDirection = CriteriaSortDirection.Ascending;
@@ -45,7 +45,7 @@ export class CriteriaValueBase implements ICriteriaValueBaseModel {
   constructor(columnName: string, columnValue?: any, operator?: CriteriaOperator) {
     this.ColumnName = columnName;
     if (columnValue !== undefined) {
-      this.ColumnValue = columnValue;
+      this.ColumnValues.push(columnValue);
     }
     if (operator === undefined) {
       if (columnValue === undefined) {

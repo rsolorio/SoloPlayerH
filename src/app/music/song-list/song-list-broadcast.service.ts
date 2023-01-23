@@ -4,11 +4,11 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { SongArtistViewEntity, SongViewEntity,SongClassificationViewEntity } from 'src/app/shared/entities';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { addSorting, CriteriaValueBase, hasCriteria, hasSorting } from 'src/app/shared/models/criteria-base.class';
+import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IMusicSearchTerms } from 'src/app/shared/models/music-model.interface';
-import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
+import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
@@ -29,17 +29,31 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     return AppEvent.SongListUpdated;
   }
 
-  protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
+  protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     const musicSearch = this.buildSearchTerms(searchTerm);
     return this.buildCriteriaFromTerms(musicSearch);
   }
 
-  protected getItems(queryModel: IQueryModel<ISongModel>): Observable<ISongModel[]> {
-    this.addDefaultSorting(queryModel.filterCriteria);
-    if (hasCriteria('artistId', queryModel.filterCriteria)) {
+  protected addSortingCriteria(queryModel: QueryModel<ISongModel>): void {
+    if (queryModel.hasCriteria('primaryArtistId') || queryModel.hasCriteria('artistId') || queryModel.hasCriteria('primaryAlbumId')) {
+      // First sort by year in case there are multiple albums with the same name for the same artist
+      queryModel.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+      // Album Name in case multiple albums in the same year
+      queryModel.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
+      // Now sort by album media
+      queryModel.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
+      // Then by album track
+      queryModel.addSorting('trackNumber', CriteriaSortDirection.Ascending);
+    }
+    // In case tracks don't have numbers, sort by title
+    queryModel.addSorting('name', CriteriaSortDirection.Ascending);
+  }
+
+  protected getItems(queryModel: QueryModel<ISongModel>): Observable<ISongModel[]> {
+    if (queryModel.hasCriteria('artistId')) {
       return from(this.db.getList(SongArtistViewEntity, queryModel));
     }
-    if (hasCriteria('classificationId', queryModel.filterCriteria)) {
+    if (queryModel.hasCriteria('classificationId')) {
       return from(this.db.getList(SongClassificationViewEntity, queryModel));
     }
     return from(this.db.getList(SongViewEntity, queryModel));
@@ -174,23 +188,6 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     // TODO: what to do with wildcards here?
 
     return criteria;
-  }
-
-  private addDefaultSorting(criteria: ICriteriaValueBaseModel[]): void {
-    if (!hasSorting(criteria)) {
-      if (hasCriteria('primaryArtistId', criteria) || hasCriteria('artistId', criteria) || hasCriteria('primaryAlbumId', criteria)) {
-        // First sort by year in case there are multiple albums with the same name for the same artist
-        addSorting('releaseYear', CriteriaSortDirection.Ascending, criteria);
-        // Album Name in case multiple albums in the same year
-        addSorting('primaryAlbumName', CriteriaSortDirection.Ascending, criteria);
-        // Now sort by album media
-        addSorting('mediaNumber', CriteriaSortDirection.Ascending, criteria);
-        // Then by album track
-        addSorting('trackNumber', CriteriaSortDirection.Ascending, criteria);
-      }
-      // In case tracks don't have numbers, sort by title
-      addSorting('name', CriteriaSortDirection.Ascending, criteria);
-    }
   }
 
   private buildArtistAlbumTitleCriteria(searchTerm: string): ICriteriaValueBaseModel[] {

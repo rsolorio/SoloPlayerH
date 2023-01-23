@@ -10,6 +10,12 @@ export interface IQueryModel<T> extends IListModel<T> {
     systemCriteria?: ICriteriaValueBaseModel[];
     /** Criteria that comes from breadcrumbs. */
     breadcrumbCriteria?: ICriteriaValueBaseModel[];
+    /** Any generic criteria to perform a search. */
+    searchCriteria?: ICriteriaValueBaseModel[];
+    /** Extra criteria specified by the user. */
+    userCriteria?: ICriteriaValueBaseModel[];
+    /** Criteria for specifying sorting to the final filter. */
+    sortingCriteria?: ICriteriaValueBaseModel[];
     /** Any generic criteria to be applied to the filter.*/
     filterCriteria?: ICriteriaValueBaseModel[];
     /** The current page being displayed */

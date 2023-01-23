@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
@@ -27,7 +26,6 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   constructor(
     public broadcastService: ClassificationListBroadcastService,
     private utility: UtilityService,
-    private loadingService: LoadingViewStateService,
     private breadcrumbsService: BreadcrumbsStateService
   ) {
     super();
@@ -144,9 +142,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     this.utility.navigate(AppRoutes.Songs);
   }
 
-  public onInitialized(): void {
-    this.loadingService.show();
-    this.broadcastService.search().subscribe();
+  public onListInitialized(): void {
   }
 
   private removeUnsupportedBreadcrumbs(): void {

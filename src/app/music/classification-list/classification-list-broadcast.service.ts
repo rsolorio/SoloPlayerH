@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ClassificationViewEntity } from 'src/app/shared/entities';
@@ -8,7 +8,7 @@ import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
+import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -23,36 +23,35 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
     private db: DatabaseService)
   {
     super(eventsService, utilityService);
-    this.ignoredColumnsInCriteria.push('classificationType');
   }
 
   protected getEventName(): string {
     return AppEvent.ClassificationListUpdated;
   }
 
-  protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteria: ICriteriaValueBaseModel[] = [];
-
-    let criteriaValue = new CriteriaValueBase('classificationType', 'Genre');
-    criteriaValue.Operator = this.isGenreList ? CriteriaOperator.Equals : CriteriaOperator.NotEquals;
-    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
-    criteriaValue.SortSequence = 1;
-    criteria.push(criteriaValue);
-
-    criteriaValue = new CriteriaValueBase('name');
+  protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
+    const criteria: ICriteriaValueBaseModel[] = [];    
     if (searchTerm) {
       const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
-      criteriaValue.ColumnValue = criteriaSearchTerm;
+      const criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm);
       criteriaValue.Operator = CriteriaOperator.Like;
+      criteria.push(criteriaValue);
     }
-    criteriaValue.SortSequence = 2;
-    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
-    criteria.push(criteriaValue);
-
     return criteria;
   }
 
-  protected getItems(queryModel: IQueryModel<IClassificationModel>): Observable<IClassificationModel[]> {
+  protected buildSystemCriteria(): ICriteriaValueBaseModel[] {
+    const criteriaValue = new CriteriaValueBase('classificationType', 'Genre');
+    criteriaValue.Operator = this.isGenreList ? CriteriaOperator.Equals : CriteriaOperator.NotEquals;
+    return [criteriaValue];
+  }
+
+  protected addSortingCriteria(queryModel: QueryModel<IClassificationModel>) {
+    queryModel.addSorting('classificationType', CriteriaSortDirection.Ascending);
+    queryModel.addSorting('name', CriteriaSortDirection.Ascending);
+  }
+
+  protected getItems(queryModel: QueryModel<IClassificationModel>): Observable<IClassificationModel[]> {
     return from(this.db.getList(ClassificationViewEntity, queryModel));
   }
 }

@@ -11,6 +11,7 @@ import { DatabaseService } from './shared/services/database/database.service';
 import { LogService } from './core/services/log/log.service';
 import { FeatureDetectionService } from './core/services/feature-detection/feature-detection.service';
 import { AppEvent } from './shared/models/events.enum';
+import { LogLevel } from './core/services/log/log.enum';
 
 /**
  * The main app component.
@@ -41,6 +42,7 @@ export class AppComponent implements OnInit {
 
   public ngOnInit(): void {
     this.utilities.setAppVersion('0.0.1');
+    this.log.setLevel(LogLevel.Verbose);
     this.watchRouteChange();
     this.log.info('Feature info initialized.', this.featureService.get());
 

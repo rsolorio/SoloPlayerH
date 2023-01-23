@@ -8,7 +8,7 @@ export interface ICriteriaValueBaseModel {
     /** The name of the column. */
     ColumnName: string;
     /** The value of the column. */
-    ColumnValue: any;
+    ColumnValues: any[];
     /** The operator used to compare. */
     Operator: CriteriaOperator;
     /** The AND/OR operator for joining each expression. */

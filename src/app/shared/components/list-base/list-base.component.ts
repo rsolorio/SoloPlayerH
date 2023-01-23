@@ -12,7 +12,7 @@ import { IListItemModel } from '../../models/base-model.interface';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
-import { IQueryModel } from '../../models/pagination-model.interface';
+import { QueryModel } from '../../models/query-model.class';
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
@@ -28,9 +28,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public model: IListBaseModel = {
     listUpdatedEvent: null,
     itemMenuList: [],
-    queryModel: {
-      items: []
-    },
+    queryModel: new QueryModel<any>(),
     breadcrumbsEnabled: false
   };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
@@ -99,7 +97,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   ngOnInit(): void {
     // List updated
-    this.subs.sink = this.events.onEvent<IQueryModel<any>>(this.listUpdatedEvent).subscribe(response => {
+    this.subs.sink = this.events.onEvent<QueryModel<any>>(this.listUpdatedEvent).subscribe(response => {
       this.model.queryModel = response;
       this.afterListUpdated();
     });
@@ -108,36 +106,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     if (this.breadcrumbsEnabled) {
       this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(response => {
         if (response === BreadcrumbEventType.Add || response === BreadcrumbEventType.Set || response === BreadcrumbEventType.Remove) {
-          // implement loadData (loadAll, loadFromBreadcrumbs)
-          // make sure list components properly use the bc options
           this.loadData();
         }
       });
     }
-
-    this.subs.sink = this.events.onEvent<string>(AppEvent.CriteriaApplied).subscribe(response => {
-      if (response === this.listUpdatedEvent) {
-        const navbar = this.navbarService.getState();
-        if (navbar.rightIcon && navbar.rightIcon.icon === this.filterNoCriteriaIcon) {
-          navbar.rightIcon.icon = this.filterWithCriteriaIcon;
-        }
-        else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterNoCriteriaIcon) {
-          this.lastNavbarRightIcon.icon = this.filterWithCriteriaIcon;
-        }
-      }
-    });
-
-    this.subs.sink = this.events.onEvent<string>(AppEvent.CriteriaCleared).subscribe(response => {
-      if (response === this.listUpdatedEvent) {
-        const navbar = this.navbarService.getState();
-        if (navbar.rightIcon && navbar.rightIcon.icon === this.filterWithCriteriaIcon) {
-          navbar.rightIcon.icon = this.filterNoCriteriaIcon;
-        }
-        else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterWithCriteriaIcon) {
-          this.lastNavbarRightIcon.icon = this.filterNoCriteriaIcon;
-        }
-      }
-    });
 
     this.initializeNavbar();
     this.initialized.emit(this.model);
@@ -162,8 +134,31 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   private afterListUpdated(): void {
+    this.updateFilterIcon();
     this.loadingService.hide();
     this.navbarService.showToast(`Found: ${this.model.queryModel.items.length} item` + (this.model.queryModel.items.length !== 1 ? 's' : ''));
+  }
+
+  private updateFilterIcon(): void {
+    const navbar = this.navbarService.getState();
+    if (this.model.queryModel.hasAnyCriteria()) {
+      // Display icon with criteria
+      if (navbar.rightIcon && navbar.rightIcon.icon === this.filterNoCriteriaIcon) {
+        navbar.rightIcon.icon = this.filterWithCriteriaIcon;
+      }
+      else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterNoCriteriaIcon) {
+        this.lastNavbarRightIcon.icon = this.filterWithCriteriaIcon;
+      }
+    }
+    else {
+      // Display icon without criteria
+      if (navbar.rightIcon && navbar.rightIcon.icon === this.filterWithCriteriaIcon) {
+        navbar.rightIcon.icon = this.filterNoCriteriaIcon;
+      }
+      else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterWithCriteriaIcon) {
+        this.lastNavbarRightIcon.icon = this.filterNoCriteriaIcon;
+      }
+    }
   }
 
   private initializeNavbar(): void {
@@ -196,7 +191,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     navbar.onSearch = searchTerm => {
       if (this.model.broadcastService) {
         this.loadingService.show();
-        this.model.broadcastService.search(searchTerm, this.breadcrumbService.getCriteria()).subscribe();
+        this.model.broadcastService.search(this.model.queryModel, searchTerm).subscribe();
       }
     };
 
@@ -282,16 +277,16 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     return result;
   }
 
+  /**
+   * Prepares the query data in order to retrieve the results and send them via broadcast
+   */
   public loadData(): void {
     // Show the animation here, it will be hidden by the broadcast service
     this.loadingService.show();
     if (this.breadcrumbsEnabled && this.breadcrumbService.hasBreadcrumbs()) {
-      // sends the criteria from the breadcrumbs and calls the broadcast in order to load the data.
-      const queryModel: IQueryModel<any> = {
-        items: [],
-        filterCriteria: this.breadcrumbService.getCriteria()
-      };
-      this.broadcastService.send(queryModel).subscribe();
+      // Set current breadcrumb criteria
+      this.model.queryModel.breadcrumbCriteria = this.breadcrumbService.getCriteria();
+      this.broadcastService.send(this.model.queryModel).subscribe();
       // This is needed in SongList because this is the only list where the breadcrumb component
       // is updated by non-user action (album songs, feat artist songs, etc) without jumping
       // to another page.
@@ -299,8 +294,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       this.showBreadcrumbs();
     }
     else {
+      // Clean up breadcrumb criteria
+      this.model.queryModel.breadcrumbCriteria = [];
       // Load all data by doing a search with no arguments
-      this.broadcastService.search().subscribe();
+      this.broadcastService.search(this.model.queryModel).subscribe();
       // Once you search display the page title
       this.navbarService.getState().mode = NavbarDisplayMode.Title;
     }

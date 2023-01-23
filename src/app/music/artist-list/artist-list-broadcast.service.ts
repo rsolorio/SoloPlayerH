@@ -5,10 +5,10 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AlbumArtistViewEntity, ArtistClassificationViewEntity, ArtistViewEntity } from 'src/app/shared/entities';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { addSorting, CriteriaValueBase, hasCriteria, hasSorting } from 'src/app/shared/models/criteria-base.class';
+import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
+import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -23,39 +23,33 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
     private db: DatabaseService)
   {
     super(eventsService, utilityService);
-    this.ignoredColumnsInCriteria.push('songCount');
   }
 
   protected getEventName(): string {
     return AppEvent.ArtistListUpdated;
   }
 
-  protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
+  protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     const criteria: ICriteriaValueBaseModel[] = [];
-    let criteriaValue: ICriteriaValueBaseModel;
-
     if (searchTerm) {
       const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
-      criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
+      const criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
       criteria.push(criteriaValue);
     }
-
-    criteriaValue = new CriteriaValueBase('songCount', 0, CriteriaOperator.GreaterThan);
-    criteria.push(criteriaValue);
-
     return criteria;
   }
 
-  protected addDefaultSorting(criteria: ICriteriaValueBaseModel[]): void {
-    if (!hasSorting(criteria)) {
-      addSorting('name', CriteriaSortDirection.Ascending, criteria);
-    }
+  protected buildSystemCriteria(): ICriteriaValueBaseModel[] {
+    return [new CriteriaValueBase('songCount', 0, CriteriaOperator.GreaterThan)];
   }
 
-  protected getItems(queryModel: IQueryModel<IArtistModel>): Observable<IArtistModel[]> {
-    this.addDefaultSorting(queryModel.filterCriteria);
+  protected addSortingCriteria(queryModel: QueryModel<IArtistModel>): void {
+    queryModel.addSorting('name', CriteriaSortDirection.Ascending);
+  }
+
+  protected getItems(queryModel: QueryModel<IArtistModel>): Observable<IArtistModel[]> {
     if (this.isAlbumArtist) {
-      if (hasCriteria('classificationId', queryModel.filterCriteria)) {
+      if (queryModel.hasCriteria('classificationId')) {
         return from(this.db.getList(ArtistClassificationViewEntity, queryModel));
       }
       return from(this.db.getList(AlbumArtistViewEntity, queryModel));

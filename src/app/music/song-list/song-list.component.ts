@@ -22,8 +22,7 @@ import { FileService } from 'src/app/shared/services/file/file.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
-import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
-import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
+import { QueryModel } from 'src/app/shared/models/query-model.class';
 
 @Component({
   selector: 'sp-song-list',
@@ -103,10 +102,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
       action: param => {
         const song = param as ISongModel;
         const criteriaValue = new CriteriaValueBase('id', song.id);
-        const queryModel: IQueryModel<SongArtistViewEntity> = {
-          filterCriteria: [criteriaValue],
-          items: []
-        };
+        const queryModel = new QueryModel<SongArtistViewEntity>();
+        queryModel.searchCriteria = [criteriaValue];
+        // Get the list of feat. artists
         this.db.getList(SongArtistViewEntity, queryModel).then(songArtistRows => {
           const criteria: ICriteriaValueBaseModel[] = [];
           for (var songArtist of songArtistRows) {

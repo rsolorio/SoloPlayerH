@@ -33,7 +33,7 @@ import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { IQueryModel } from '../../models/pagination-model.interface';
+import { QueryModel } from '../../models/query-model.class';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -241,35 +241,28 @@ export class DatabaseService {
 
   // SQLite Bulk Actions - END
 
-  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, queryModel: IQueryModel<T>): Promise<T[]> {
+  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, queryModel: QueryModel<T>): Promise<T[]> {
     const entityTempName = 'getListEntity';
     const repo = this.dataSource.getRepository(entity);
+    this.log.debug('getList query', queryModel);
     return this.createQueryBuilder(repo, entityTempName, queryModel).getMany();
   }
 
   private createQueryBuilder<T>(
-    repo: Repository<T>, entityName: string, queryModel: IQueryModel<T>
+    repo: Repository<T>, entityName: string, queryModel: QueryModel<T>
   ): SelectQueryBuilder<T> {
     let queryBuilder = repo.createQueryBuilder(entityName);
 
-    let allCriteria: ICriteriaValueBaseModel[] = [];
-    if (queryModel.systemCriteria) {
-      allCriteria = allCriteria.concat(queryModel.systemCriteria);
-    }
-    if (queryModel.breadcrumbCriteria) {
-      allCriteria = allCriteria.concat(queryModel.breadcrumbCriteria);
-    }
-    if (queryModel.filterCriteria) {
-      allCriteria = allCriteria.concat(queryModel.filterCriteria);
-    }
+    let allCriteria = queryModel.getAllCriteria();
 
     if (!allCriteria.length) {
       return queryBuilder;
     }
 
     this.buildSelect(queryBuilder, entityName, allCriteria, repo.metadata.columns);
-    queryBuilder = this.buildWhere(queryBuilder, entityName, allCriteria);
-    queryBuilder = this.buildOrderBy(queryBuilder, entityName, allCriteria);
+    queryBuilder = this.buildWhere(queryBuilder, entityName, queryModel);
+    // Here we only send the sorting criteria, this is how we support this
+    queryBuilder = this.buildOrderBy(queryBuilder, entityName, queryModel.sortingCriteria);
     return queryBuilder;
   }
 
@@ -293,41 +286,66 @@ export class DatabaseService {
   }
 
   private buildWhere<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, queryModel: QueryModel<T>
   ): SelectQueryBuilder<T> {
-    let hasFirstLevelWhere = false;
-    const whereCriteria = criteria.filter(criteriaItem => criteriaItem.Operator !== CriteriaOperator.None);
-    const groupedCriteria = groupBy(whereCriteria, 'ColumnName');
-    for (const columnName of Object.keys(groupedCriteria)) {
-      const columnCriteria = groupedCriteria[columnName];
-      let hasSecondLevelWhere = false;
-      const brackets = new Brackets(qb => {
-        // Make sure we have unique parameters even if the column is the same
-        let parameterIndex = 0;
-        for (const criteriaItem of columnCriteria) {
-          parameterIndex++;
-          const parameterName = criteriaItem.ColumnName + parameterIndex.toString();
-          const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${parameterName}`;
-          const parameter = {};
-          parameter[parameterName] = criteriaItem.ColumnValue;
-          if (hasSecondLevelWhere) {
-            qb = qb.orWhere(where, parameter);
-          }
-          else {
-            qb = qb.where(where, parameter);
-            hasSecondLevelWhere = true;
-          }
+    const allCriteria = [queryModel.systemCriteria, queryModel.breadcrumbCriteria, queryModel.userCriteria, queryModel.searchCriteria];
+    let hasWhere = false;
+    for (const criteria of allCriteria) {
+      const whereCriteria = criteria.filter(criteriaItem => criteriaItem.Operator !== CriteriaOperator.None);
+      if (whereCriteria.length) {
+        if (hasWhere) {
+          // All criteria will be joined with the AND clause since all criteria must be used to get the results
+          queryBuilder = queryBuilder.andWhere(this.createBrackets(entityName, whereCriteria));
         }
-      });
-      if (hasFirstLevelWhere) {
-        queryBuilder = queryBuilder.andWhere(brackets);
-      }
-      else {
-        queryBuilder = queryBuilder.where(brackets);
-        hasFirstLevelWhere = true;
+        else {
+          queryBuilder = queryBuilder.where(this.createBrackets(entityName, whereCriteria));
+          hasWhere = true;
+        }
       }
     }
     return queryBuilder;
+  }
+
+  private createBrackets(entityName: string, whereCriteria: ICriteriaValueBaseModel[]): Brackets  {
+    const result = new Brackets(qb1 => {
+      let hasFirstLevelWhere = false;
+      for (const criteriaItem of whereCriteria) {
+        let hasSecondLevelWhere = false;
+        const brackets = new Brackets(qb2 => {
+          // Typeorm requires unique parameters even if the column is the same
+          let parameterIndex = 0;
+          for (const columnValue of criteriaItem.ColumnValues) {
+            parameterIndex++;
+            const parameterName = criteriaItem.ColumnName + parameterIndex.toString();
+            const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${parameterName}`;
+            const parameter = {};
+            parameter[parameterName] = columnValue;
+            if (hasSecondLevelWhere) {
+              // The OR operator is for conditions using the same column
+              qb2 = qb2.orWhere(where, parameter);
+            }
+            else {
+              qb2 = qb2.where(where, parameter);
+              hasSecondLevelWhere = true;
+            }
+          }
+        });
+        if (hasFirstLevelWhere) {
+          // This operator will be determined by criteria item
+          if (criteriaItem.OrOperator) {
+            qb1 = qb1.orWhere(brackets);
+          }
+          else {
+            qb1 = qb1.andWhere(brackets);
+          }
+        }
+        else {
+          qb1 = qb1.where(brackets);
+          hasFirstLevelWhere = true;
+        }
+      }
+    });
+    return result;
   }
 
   private buildOrderBy<T>(

@@ -7,8 +7,8 @@ import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { IQueryModel } from 'src/app/shared/models/pagination-model.interface';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
+import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -28,13 +28,13 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
     return AppEvent.PlaylistListUpdated;
   }
 
-  protected buildCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
+  protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     const criteria: ICriteriaValueBaseModel[] = [];
 
     const criteriaValue = new CriteriaValueBase('name');
     if (searchTerm) {
       const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
-      criteriaValue.ColumnValue = criteriaSearchTerm;
+      criteriaValue.ColumnValues.push(criteriaSearchTerm);
       criteriaValue.Operator = CriteriaOperator.Like;
     }
     criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
@@ -44,7 +44,7 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
     return criteria;
   }
 
-  protected getItems(queryModel: IQueryModel<IPlaylistModel>): Observable<IPlaylistModel[]> {
+  protected getItems(queryModel: QueryModel<IPlaylistModel>): Observable<IPlaylistModel[]> {
     return from(this.db.getList(PlaylistViewEntity, queryModel));
   }
 }
