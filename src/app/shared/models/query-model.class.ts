@@ -33,6 +33,10 @@ export class QueryModel<T> implements IListModel<T> {
   public items: T[];
   /** A human readable name for this query. */
   public name: string;
+  /** Date on which this query was created. */
+  public date: Date;
+  /** Algorithm to perform a special sort in the list of items.  */
+  public sortingAlgorithm: string;
 
   constructor() {
     this.items = [];

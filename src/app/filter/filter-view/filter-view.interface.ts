@@ -1,9 +1,6 @@
-import { ICriteriaValueBaseModel } from "src/app/shared/models/criteria-base-model.interface";
+import { ISelectedDataItem } from "src/app/core/models/core.interface";
 
-export interface IFilter {
-  name: string;
-  systemCriteria: ICriteriaValueBaseModel[];
-  breadcrumbCriteria: ICriteriaValueBaseModel[];
-  userCriteria: ICriteriaValueBaseModel[];
-  fullCriteria: ICriteriaValueBaseModel[];
+export interface IFilterColumn {
+  columnName: string;
+  values: ISelectedDataItem<string>[];
 }

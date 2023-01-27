@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Brackets, DataSource, DataSourceOptions, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import * as objectHash from 'object-hash'
-import { groupBy } from 'lodash';
 import { IClassificationModel } from '../../models/classification-model.interface';
 import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -48,7 +47,13 @@ export class DatabaseService {
     'artistId': 'Artist',
     'primaryArtistId': 'Album Artist',
     'primaryAlbumId': 'Album',
-    'classificationId': 'Classification'
+    'classificationId': 'Classification',
+    'rating': 'Rating',
+    'mood': 'Mood',
+    'language': 'Language',
+    'favorite': 'Favorite',
+    'releaseDecade': 'Decade',
+    'lyrics': 'Has Lyrics'
   };
   private dataSource: DataSource;
   /**
@@ -294,7 +299,7 @@ export class DatabaseService {
       const whereCriteria = criteria.filter(criteriaItem => criteriaItem.Operator !== CriteriaOperator.None);
       if (whereCriteria.length) {
         if (hasWhere) {
-          // All criteria will be joined with the AND clause since all criteria must be used to get the results
+          // All criteria will be joined with the AND operator since all criteria must be used to get the results
           queryBuilder = queryBuilder.andWhere(this.createBrackets(entityName, whereCriteria));
         }
         else {
@@ -431,6 +436,23 @@ export class DatabaseService {
       .where('artist.id = :artistId')
       .setParameter('artistId', artistId)
       .getMany();
+  }
+
+  public async getSongValues(columnName: string): Promise<any[]> {
+    switch(columnName) {
+      case 'rating':
+        return [0, 1, 2, 3, 4, 5];
+      case 'favorite':
+      case 'hasLyrics':
+        return ['true', 'false'];
+    }
+    const results = await this.dataSource
+      .getRepository(SongEntity)
+      .createQueryBuilder('song')
+      .select(columnName)
+      .distinct(true)
+      .getRawMany();
+    return results.map(result => result[columnName]).sort();
   }
 
   public async getAllClassifications(): Promise<IClassificationModel[]> {

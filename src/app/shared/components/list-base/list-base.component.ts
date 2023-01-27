@@ -305,6 +305,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   private loadModalFilter(): void {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(FilterViewComponent);
-    this.modalHostViewContainer.createComponent(componentFactory);
+    const component = this.modalHostViewContainer.createComponent(componentFactory);
+    // Create a copy of the current query model and use it to load the data
+    const queryModelText = JSON.stringify(this.model.queryModel);
+    const queryModelCopy = JSON.parse(queryModelText) as QueryModel<any>;
+    component.instance.model = queryModelCopy;
   }
 }

@@ -1,0 +1,26 @@
+<div class="sp-full-height sp-full-width sp-chip-selection-container" *ngIf="model">
+  <table class="sp-full-height sp-full-width">
+    <tr class="sp-chip-selection-title-row">
+      <div class="sp-chip-selection-title">
+        <span class="sp-text-big">{{model.title}}</span>
+      </div>
+    </tr>
+    <tr>
+      <div class="sp-chip-container">
+        <div
+        (click)="onChipValueClick(chipValue)"
+        *ngFor="let chipValue of model.values"
+        class="sp-chip-item sp-clickable sp-bg-09"
+        [ngClass]="{ 'sp-chip-item-selected': chipValue.selected }">
+          <span class="sp-chip-text">{{chipValue.caption}}</span>
+        </div>
+      </div>
+    </tr>
+    <tr class="sp-chip-selection-toolbar-row">
+      <div class="sp-chip-selection-toolbar">
+        <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">Cancel</div>
+        <div (click)="onOkClick()" class="sp-chip-item sp-chip-item-selected sp-clickable">OK</div>
+      </div>
+    </tr>
+  </table>
+</div>

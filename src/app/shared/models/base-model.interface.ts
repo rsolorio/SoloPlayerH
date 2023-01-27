@@ -8,5 +8,4 @@ export interface IDbModel extends ISelectable {
 export interface IListItemModel extends IDbModel {
   imageSrc: string;
   canBeRendered: boolean;
-  selected: boolean;
 }

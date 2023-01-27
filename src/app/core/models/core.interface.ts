@@ -51,7 +51,6 @@ export interface ITimestampItem {
 export interface ISelectedItem extends ITimestampItem, ISelectable {
   caption: string;
   icon?: string;
-  iconSize?: number;
   data?: any;
 }
 

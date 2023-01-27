@@ -15,6 +15,8 @@ import { FileService } from './services/file/file.service';
 import { FileNodeService } from './services/file/file-node.service';
 import { FileCordovaService } from './services/file/file-cordova.service';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import { FilterModule } from '../filter/filter.module';
+import { ChipSelectionComponent } from './components/chip-selection/chip-selection.component';
 
 
 
@@ -27,14 +29,16 @@ import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.compo
     ListBaseComponent,
     TransitionImageComponent,
     QuickFilterComponent,
-    BreadcrumbsComponent
+    BreadcrumbsComponent,
+    ChipSelectionComponent
   ],
   imports: [
     CommonModule,
     CoreModule,
     FormsModule,
     BrowserModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FilterModule
   ],
   exports: [
     ListBaseComponent,

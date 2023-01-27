@@ -1,1 +1,7 @@
-<p>filter-view works!</p>
+<div *ngIf="model" class="sp-filter-container">
+  <div *ngFor="let columnName of supportedColumns" class="sp-filter-header sp-bg-04 sp-text-big">
+    {{getDisplayName(columnName)}}
+    <span (click)="onAddClick(columnName)" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
+    <span *ngFor="let columnValue of getValues(columnName)">{{columnValue}}</span>
+  </div>
+</div>

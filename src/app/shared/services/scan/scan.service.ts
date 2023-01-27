@@ -168,7 +168,6 @@ export class ScanService {
     }
     // TODO: if the song already exists, update data
     if (!this.existingSongs.find(s => s.id === song.id)) {
-      // await SongEntity.insert(song);
       this.existingSongs.push(song);
 
       // If we are adding a new song, all its artists are new as well, so push them to cache
