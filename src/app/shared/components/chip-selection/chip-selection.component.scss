@@ -8,26 +8,13 @@
   height: 60px;
 }
 
-.sp-chip-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.sp-chip-item {
-  margin-left: 5px;
-  margin-right: 5px;
-  padding: 4px 10px;
-  border-radius: 5px;
+.sp-chip-selection-title {
+  padding: 5px;
 }
 
 .sp-chip-item-selected {
   background-color: $sp-color-primary;
   color: $sp-color-on-primary;
-}
-
-.sp-chip-text {
-  display: inline-block;
-  height: 20px;
 }
 
 .sp-chip-selection-toolbar-row {
@@ -37,4 +24,5 @@
 .sp-chip-selection-toolbar {
   display: flex;
   justify-content: flex-end;
+  padding: 10px;
 }

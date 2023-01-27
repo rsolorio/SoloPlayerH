@@ -435,6 +435,23 @@ input[type="text"], input[type="search"], textarea {
     width: 100%;
 }
 
+// CHIPS ******************************************************************************************
+.sp-chip-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.sp-chip-item {
+    margin: 5px;
+    padding: 4px 10px;
+    border-radius: 5px;
+}
+
+.sp-chip-text {
+    display: inline-block;
+    height: 20px;
+}
+
 // Misc *******************************************************************************************
 .sp-cursor-pointer, .sp-clickable {
     cursor: pointer;
