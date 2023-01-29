@@ -23,6 +23,8 @@ import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/b
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { QueryModel } from 'src/app/shared/models/query-model.class';
+import { SongListStateService } from './song-list-state.service';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -40,12 +42,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private utility: UtilityService,
     private fileService: FileService,
     private metadataService: MusicMetadataService,
-    private breadcrumbsService: BreadcrumbsStateService,
+    private breadcrumbService: BreadcrumbsStateService,
     private menuService: MenuService,
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
     private queueService: PromiseQueueService,
-    private db: DatabaseService
+    private db: DatabaseService,
+    private stateService: SongListStateService,
+    private navigation: NavigationService
   ) {
     super();
   }
@@ -74,7 +78,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       action: param => {
         const song = param as ISongModel;
         if (song) {
-          this.utility.navigateWithRouteParams(AppRoutes.Songs, [song.id]);
+          this.navigation.forward(AppRoutes.Songs, { queryParams: [song.id] });
         }
       }
     });
@@ -84,15 +88,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-account-badge mdi',
       action: param => {
         const song = param as ISongModel;
-        const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-        const criteriaItem = new CriteriaValueBase('primaryArtistId', primaryArtistId);
-        criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-        criteriaItem.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
-        // We need to force reload the breadcrumb since we are not moving to another page
-        this.breadcrumbsService.set([{
-          criteriaList: [ criteriaItem ],
-          origin: BreadcrumbSource.AlbumArtist
-        }], { forceReload: true });
+        this.setBreadcrumbsForAlbumArtistSongs(song);
+        // Since we are staying in the same route, use the same query info, just update the breadcrumbs
+        const queryClone = this.stateService.getState().clone();
+        queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+        this.navigation.forward(AppRoutes.Songs, { query: queryClone });
       }
     });
 
@@ -101,29 +101,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-account-music mdi',
       action: param => {
         const song = param as ISongModel;
-        const criteriaValue = new CriteriaValueBase('id', song.id);
-        const queryModel = new QueryModel<SongArtistViewEntity>();
-        queryModel.searchCriteria = [criteriaValue];
-        // Get the list of feat. artists
-        this.db.getList(SongArtistViewEntity, queryModel).then(songArtistRows => {
-          const criteria: ICriteriaValueBaseModel[] = [];
-          for (var songArtist of songArtistRows) {
-            // Ignore the primary artist
-            const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-            if (songArtist.artistId !== primaryArtistId) {
-              const criteriaItem = new CriteriaValueBase('artistId', songArtist.artistId);
-              criteriaItem.IgnoreInSelect = true;
-              criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-              criteriaItem.DisplayValue = songArtist.artistStylized;
-              criteria.push(criteriaItem);
-            }
-          }
-          if (criteria.length) {
-            // We need to force reload the breadcrumb since we are not moving to another page
-            this.breadcrumbsService.set([{
-              criteriaList: criteria,
-              origin: BreadcrumbSource.Artist
-            }], { forceReload: true });
+        this.setBreadcrumbsForFeatArtistSongs(song).then(hasFeatArtists => {
+          if (hasFeatArtists) {
+            const queryClone = this.stateService.getState().clone();
+            queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+            this.navigation.forward(AppRoutes.Songs, { query: queryClone });
           }
         });
       }
@@ -134,28 +116,75 @@ export class SongListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-album mdi',
       action: param => {
         const song = param as ISongModel;
-        // Primary Artist
-        const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-        const artistCriteria = new CriteriaValueBase('primaryArtistId', primaryArtistId);
-        artistCriteria.DisplayName = this.db.displayName(artistCriteria.ColumnName);
-        artistCriteria.DisplayValue = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
-        const artistBreadcrumb: IBreadcrumbModel = {
-          criteriaList: [ artistCriteria ],
-          origin: BreadcrumbSource.AlbumArtist
-        };
-        // Album
-        const primaryAlbumId = song.primaryAlbumId ? song.primaryAlbumId : song.primaryAlbum.id;
-        const albumCriteria = new CriteriaValueBase('primaryAlbumId', primaryAlbumId);
-        albumCriteria.DisplayName = this.db.displayName(albumCriteria.ColumnName);
-        albumCriteria.DisplayValue = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
-        const albumBreadcrumb: IBreadcrumbModel = {
-          criteriaList: [ albumCriteria ],
-          origin: BreadcrumbSource.Album
-        };
-        // Breadcrumbs, we need to force reload the breadcrumb since we are not moving to another page
-        this.breadcrumbsService.set([ artistBreadcrumb, albumBreadcrumb ], { forceReload: true });
+        this.setBreadcrumbsForAlbumSongs(song);
+        const queryClone = this.stateService.getState().clone();
+        queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+        this.navigation.forward(AppRoutes.Songs, { query: queryClone });
       }
     });
+  }
+
+  private setBreadcrumbsForAlbumArtistSongs(song: ISongModel): void {
+    const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
+    const criteriaItem = new CriteriaValueBase('primaryArtistId', primaryArtistId);
+    criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
+    criteriaItem.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
+    // No need to react to breadcrumb events
+    this.breadcrumbService.set([{
+      criteriaList: [ criteriaItem ],
+      origin: BreadcrumbSource.AlbumArtist
+    }], { suppressEvents: true });
+  }
+
+  private async setBreadcrumbsForFeatArtistSongs(song: ISongModel): Promise<boolean> {
+    const criteriaValue = new CriteriaValueBase('id', song.id);
+    const queryModel = new QueryModel<SongArtistViewEntity>();
+    queryModel.searchCriteria = [criteriaValue];
+    // Get the list of feat. artists
+    const songArtistRows = await this.db.getList(SongArtistViewEntity, queryModel);
+    const criteria: ICriteriaValueBaseModel[] = [];
+    for (var songArtist of songArtistRows) {
+      // Ignore the primary artist
+      const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
+      if (songArtist.artistId !== primaryArtistId) {
+        const criteriaItem = new CriteriaValueBase('artistId', songArtist.artistId);
+        criteriaItem.IgnoreInSelect = true;
+        criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
+        criteriaItem.DisplayValue = songArtist.artistStylized;
+        criteria.push(criteriaItem);
+      }
+    }
+    if (criteria.length) {
+      this.breadcrumbService.set([{
+        criteriaList: criteria,
+        origin: BreadcrumbSource.Artist
+      }], { suppressEvents: true });
+      return true;
+    }
+    return false;
+  }
+
+  private setBreadcrumbsForAlbumSongs(song: ISongModel): void {
+    // Primary Artist
+    const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
+    const artistCriteria = new CriteriaValueBase('primaryArtistId', primaryArtistId);
+    artistCriteria.DisplayName = this.db.displayName(artistCriteria.ColumnName);
+    artistCriteria.DisplayValue = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
+    const artistBreadcrumb: IBreadcrumbModel = {
+      criteriaList: [ artistCriteria ],
+      origin: BreadcrumbSource.AlbumArtist
+    };
+    // Album
+    const primaryAlbumId = song.primaryAlbumId ? song.primaryAlbumId : song.primaryAlbum.id;
+    const albumCriteria = new CriteriaValueBase('primaryAlbumId', primaryAlbumId);
+    albumCriteria.DisplayName = this.db.displayName(albumCriteria.ColumnName);
+    albumCriteria.DisplayValue = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
+    const albumBreadcrumb: IBreadcrumbModel = {
+      criteriaList: [ albumCriteria ],
+      origin: BreadcrumbSource.Album
+    };
+    // Breadcrumbs
+    this.breadcrumbService.set([ artistBreadcrumb, albumBreadcrumb ], { suppressEvents: true });
   }
 
   public onItemContentClick(song: ISongModel): void {

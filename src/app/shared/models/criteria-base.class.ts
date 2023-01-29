@@ -103,6 +103,8 @@ export function addSorting(columnName: string, sortDirection: CriteriaSortDirect
     criteriaItem.Operator = CriteriaOperator.None;
     criteria.push(criteriaItem);
   }
-  criteriaItem.SortDirection = sortDirection;
+  if (sortDirection) {
+    criteriaItem.SortDirection = sortDirection;
+  }
   criteriaItem.SortSequence = lastSequence + 1;
 }

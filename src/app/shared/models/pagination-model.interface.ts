@@ -16,8 +16,6 @@ export interface IQueryModel<T> extends IListModel<T> {
     userCriteria?: ICriteriaValueBaseModel[];
     /** Criteria for specifying sorting to the final filter. */
     sortingCriteria?: ICriteriaValueBaseModel[];
-    /** Any generic criteria to be applied to the filter.*/
-    filterCriteria?: ICriteriaValueBaseModel[];
     /** The current page being displayed */
     pageNumber?: number;
     /** The number of items for each page. If this is not set or zero pagination will be disabled. */
@@ -30,4 +28,8 @@ export interface IQueryModel<T> extends IListModel<T> {
     totalSize?: number;
     /** If select distinct should be used as part of the filter. */
     distinct?: boolean;
+    /** Date on which this query was created. The value is represented in milliseconds according to the getTime method. */
+    date?: number;
+    /** Algorithm to perform a special sort in the list of items.  */
+    sortingAlgorithm?: string;
 }

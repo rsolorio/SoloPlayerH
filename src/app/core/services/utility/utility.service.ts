@@ -125,6 +125,7 @@ export class UtilityService {
    * Navigates to the specified route.
    * It accepts a list of values which should match the route parameters of the path.
    * In a resolver you can get the specified param like this: ActivatedRouteSnapshot.paramMap.get('nameOfTheRouteParam')
+   * Route param example: yourRoute/details/yourRouteParam/info
    */
   public navigateWithRouteParams(route: string | AppRoutes, params: any[]): void {
     const commands: any[] = [];
@@ -148,6 +149,8 @@ export class UtilityService {
   /**
    * Navigates to the specified route.
    * It accepts a list of query parameters.
+   * Usage: navigateWithQueryParams('yourRoute', { yourQueryParam: 'someValue' });
+   * Query param example: yourRoute?yourQueryParam=someValue
    */
   public navigateWithQueryParams(route: string | AppRoutes, queryParams: any, complexData?: any): void {
     if (complexData) {
@@ -189,8 +192,15 @@ export class UtilityService {
     return route.snapshot.data[paramName];
   }
 
+  public getCurrentRoute(): string {
+    return this.router.url;
+  }
+
   public isRouteActive(route: AppRoutes): boolean {
-    return this.router.url === route;
+    // Remove query params if any
+    const routeParts = this.router.url.split('?');
+    const root = routeParts[0];
+    return root === route;
   }
 
   /** Returns the difference in days between two dates. */

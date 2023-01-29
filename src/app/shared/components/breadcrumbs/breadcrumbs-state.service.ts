@@ -147,6 +147,10 @@ export class BreadcrumbsStateService {
     return result;
   }
 
+  public getCriteriaClone(): ICriteriaValueBaseModel[] {
+    return JSON.parse(JSON.stringify(this.getCriteria()));
+  }
+
   public setupTooltip(breadcrumb: IBreadcrumbModel): void {
     if (breadcrumb.tooltip) {
       return;

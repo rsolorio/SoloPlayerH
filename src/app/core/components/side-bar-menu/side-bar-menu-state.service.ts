@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { IMenuModel } from '../../models/menu-model.interface';
 import { AppRoutes } from '../../services/utility/utility.enum';
 import { ISideBarMenuModel } from './side-bar-menu-model.interface';
 import { UtilityService } from '../../services/utility/utility.service';
+import { EventsService } from '../../services/events/events.service';
+import { CoreEvent } from '../../services/events/events.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class SideBarMenuStateService {
     loginMenuLoaded: false
   };
 
-  constructor(private router: Router, private utility: UtilityService) {
+  constructor(private events: EventsService, private utility: UtilityService) {
   }
 
   public getState(): ISideBarMenuModel {
@@ -31,9 +32,9 @@ export class SideBarMenuStateService {
       badge,
       route,
       isSeparator: false,
-      action: () => {
+      action: menuItem => {
         if (route) {
-          this.router.navigate([route]);
+          this.events.broadcast(CoreEvent.SidebarMenuAction, menuItem);
         }
       }
     };

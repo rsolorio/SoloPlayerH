@@ -1,6 +1,7 @@
 import { CriteriaSortDirection, ICriteriaValueBaseModel } from "./criteria-base-model.interface";
 import { addSorting, hasAnyCriteria, hasCriteria, hasSorting } from "./criteria-base.class";
 import { IListModel } from './list-model.interface';
+import { IQueryModel } from "./pagination-model.interface";
 
 /**
  * Exposes a list of properties used to perform a search, hold the state of it and store the results.
@@ -31,26 +32,30 @@ export class QueryModel<T> implements IListModel<T> {
   public distinct: boolean;
   /** The result of the query. */
   public items: T[];
+  /** A unique identifier of this model. */
+  public id: string;
   /** A human readable name for this query. */
   public name: string;
-  /** Date on which this query was created. */
-  public date: Date;
+  /** Date on which this query was created. The value is represented in milliseconds according to the getTime method. */
+  public date: number;
   /** Algorithm to perform a special sort in the list of items.  */
   public sortingAlgorithm: string;
 
-  constructor() {
-    this.items = [];
-    this.pageNumber = 0;
-    this.pageSize = 0;
-    this.loadingItems = false;
-    this.noMoreItems = false;
-    this.totalSize = 0;
-    this.distinct = false;
-    this.systemCriteria = [];
-    this.breadcrumbCriteria = [];
-    this.searchCriteria = [];
-    this.userCriteria = [];
-    this.sortingCriteria = [];
+  constructor(queryInterface?: IQueryModel<T>) {
+    this.name = queryInterface && queryInterface.name ? queryInterface.name : null;
+    this.items = queryInterface && queryInterface.items ? queryInterface.items : [];
+    this.pageNumber = queryInterface && queryInterface.pageNumber ? queryInterface.pageNumber : 0;
+    this.pageSize = queryInterface && queryInterface.pageSize ? queryInterface.pageSize : 0;
+    this.loadingItems = queryInterface && queryInterface.loadingItems ? queryInterface.loadingItems : false;
+    this.noMoreItems = queryInterface && queryInterface.noMoreItems ? queryInterface.noMoreItems : false;
+    this.totalSize = queryInterface && queryInterface.totalSize ? queryInterface.totalSize : 0;
+    this.distinct = queryInterface && queryInterface.distinct ? queryInterface.distinct : false;
+    this.systemCriteria = queryInterface && queryInterface.systemCriteria ? queryInterface.systemCriteria : [];
+    this.breadcrumbCriteria = queryInterface && queryInterface.breadcrumbCriteria ? queryInterface.breadcrumbCriteria : [];
+    this.searchCriteria = queryInterface && queryInterface.searchCriteria ? queryInterface.searchCriteria : [];
+    this.userCriteria = queryInterface && queryInterface.userCriteria ? queryInterface.userCriteria : [];
+    this.sortingCriteria = queryInterface && queryInterface.sortingCriteria ? queryInterface.sortingCriteria : [];
+    this.date = queryInterface && queryInterface.date ? queryInterface.date : new Date().getTime();
   }
 
   public getAllCriteria(): ICriteriaValueBaseModel[] {
@@ -92,7 +97,26 @@ export class QueryModel<T> implements IListModel<T> {
     return hasSorting(this.sortingCriteria);
   }
 
-  public addSorting(columnName: string, sortDirection: CriteriaSortDirection): void {
+  public addSorting(columnName: string, sortDirection?: CriteriaSortDirection): void {
     addSorting(columnName, sortDirection, this.sortingCriteria);
+  }
+
+  public clone(): QueryModel<T> {
+    // First create a soft copy, without id and items
+    const copy: IQueryModel<T> = {
+      name: this.name,
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      distinct: this.distinct,
+      systemCriteria: this.systemCriteria,
+      breadcrumbCriteria: this.breadcrumbCriteria,
+      searchCriteria: this.searchCriteria,
+      userCriteria: this.userCriteria,
+      sortingCriteria: this.sortingCriteria,
+      sortingAlgorithm: this.sortingAlgorithm,
+      date: new Date().getTime(),
+      items: []
+    };
+    return new QueryModel<T>(JSON.parse(JSON.stringify(copy)));
   }
 }

@@ -15,7 +15,7 @@ export class BreadcrumbsComponent extends CoreComponent implements OnInit {
 
   public model: IBreadcrumbModel[];
 
-  constructor(private breadcrumbsService: BreadcrumbsStateService, private events: EventsService) {
+  constructor(private breadcrumbService: BreadcrumbsStateService, private events: EventsService) {
     super();
   }
 
@@ -33,15 +33,15 @@ export class BreadcrumbsComponent extends CoreComponent implements OnInit {
   public onClick(breadcrumb: IBreadcrumbModel): void {
     if (breadcrumb.last) {
       // If it's the last remove it
-      this.breadcrumbsService.remove(breadcrumb.sequence);
+      this.breadcrumbService.remove(breadcrumb.sequence);
     }
     else {
       // If it's not the last, leave it and remove trailing ones
-      this.breadcrumbsService.remove(breadcrumb.sequence + 1);
+      this.breadcrumbService.remove(breadcrumb.sequence + 1);
     }
   }
 
   public reload(): void {
-    this.model = this.breadcrumbsService.getState();
+    this.model = this.breadcrumbService.getState();
   }
 }

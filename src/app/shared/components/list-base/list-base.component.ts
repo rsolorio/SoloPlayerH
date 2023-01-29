@@ -1,4 +1,5 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, TemplateRef, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -13,6 +14,7 @@ import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { QueryModel } from '../../models/query-model.class';
+import { NavigationService } from '../../services/navigation/navigation.service';
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
@@ -40,6 +42,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @Output() public itemImageClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public initialized: EventEmitter<IListBaseModel> = new EventEmitter();
+  @Output() public beforeBroadcast: EventEmitter<QueryModel<any>> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
 
@@ -90,7 +93,9 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     private events: EventsService,
     private loadingService: LoadingViewStateService,
     private navbarService: NavBarStateService,
-    private breadcrumbService: BreadcrumbsStateService
+    private breadcrumbService: BreadcrumbsStateService,
+    private navigation: NavigationService,
+    private route: ActivatedRoute
   ) {
     super();
   }
@@ -105,11 +110,24 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // Breadcrumbs
     if (this.breadcrumbsEnabled) {
       this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(response => {
-        if (response === BreadcrumbEventType.Add || response === BreadcrumbEventType.Set || response === BreadcrumbEventType.Remove) {
-          this.loadData();
+        if (response === BreadcrumbEventType.Remove) {
+          const queryClone = this.model.queryModel.clone();
+          // Since we are staying in the same route, use the same query info, just update the breadcrumbs
+          queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+          // Navigate to the same route but with new query info
+          this.navigation.forward(this.navigation.current().route, { query: queryClone });
         }
       });
     }
+
+    // When navigating without changing the route, the component will not reload
+    // However, we can detect if the query param changed
+    this.subs.sink = this.route.queryParams.subscribe(params => {
+      // Param changed, but not the route
+      if (!this.navigation.routeChanged()) {
+        this.loadData();
+      }
+    });
 
     this.initializeNavbar();
     this.initialized.emit(this.model);
@@ -191,7 +209,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     navbar.onSearch = searchTerm => {
       if (this.model.broadcastService) {
         this.loadingService.show();
-        this.model.broadcastService.search(this.model.queryModel, searchTerm).subscribe();
+        this.model.broadcastService.search(this.model.queryModel.clone(), searchTerm).subscribe();
       }
     };
 
@@ -283,32 +301,26 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public loadData(): void {
     // Show the animation here, it will be hidden by the broadcast service
     this.loadingService.show();
-    if (this.breadcrumbsEnabled && this.breadcrumbService.hasBreadcrumbs()) {
-      // Set current breadcrumb criteria
-      this.model.queryModel.breadcrumbCriteria = this.breadcrumbService.getCriteria();
-      this.broadcastService.send(this.model.queryModel).subscribe();
-      // This is needed in SongList because this is the only list where the breadcrumb component
-      // is updated by non-user action (album songs, feat artist songs, etc) without jumping
-      // to another page.
-      // TODO: how can we do this only for SongList
-      this.showBreadcrumbs();
+    // Use a copy of the last query in case the current navigation doesn't have a query
+    const navInfo = this.navigation.current();
+    navInfo.options = navInfo.options || {};
+    if (!navInfo.options.query) {
+      navInfo.options.query = this.model.queryModel.clone();
     }
-    else {
-      // Clean up breadcrumb criteria
-      this.model.queryModel.breadcrumbCriteria = [];
-      // Load all data by doing a search with no arguments
-      this.broadcastService.search(this.model.queryModel).subscribe();
-      // Once you search display the page title
+
+    this.beforeBroadcast.emit(navInfo.options.query);
+
+    // Enable title if no breadcrumbs
+    if (!this.breadcrumbsEnabled || !this.breadcrumbService.hasBreadcrumbs()) {
       this.navbarService.getState().mode = NavbarDisplayMode.Title;
     }
+    this.broadcastService.send(navInfo.options.query).subscribe();
   }
 
   private loadModalFilter(): void {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(FilterViewComponent);
     const component = this.modalHostViewContainer.createComponent(componentFactory);
     // Create a copy of the current query model and use it to load the data
-    const queryModelText = JSON.stringify(this.model.queryModel);
-    const queryModelCopy = JSON.parse(queryModelText) as QueryModel<any>;
-    component.instance.model = queryModelCopy;
+    component.instance.model = this.model.queryModel.clone();
   }
 }

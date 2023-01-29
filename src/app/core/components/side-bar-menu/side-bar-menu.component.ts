@@ -30,7 +30,7 @@ export class SideBarMenuComponent implements OnInit {
 
   public runMenuAction(menuItem: IMenuModel): void {
     if (menuItem.action) {
-      menuItem.action();
+      menuItem.action(menuItem);
     }
     this.sidebarService.toggle(Position.Left);
   }

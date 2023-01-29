@@ -10,6 +10,8 @@ import { IClassificationModel } from 'src/app/shared/models/classification-model
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { QueryModel } from 'src/app/shared/models/query-model.class';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 
 @Component({
@@ -26,7 +28,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   constructor(
     public broadcastService: ClassificationListBroadcastService,
     private utility: UtilityService,
-    private breadcrumbsService: BreadcrumbsStateService
+    private breadcrumbService: BreadcrumbsStateService,
+    private navigation: NavigationService
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoutes.Genres);
@@ -35,7 +38,6 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   ngOnInit(): void {
     this.initializeItemMenu();
-    this.removeUnsupportedBreadcrumbs();
   }
 
   private initializeItemMenu(): void {
@@ -121,7 +123,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     }
     // Suppress event so this component doesn't react to this change;
     // these breadcrumbs are for another list that hasn't been loaded yet
-    this.breadcrumbsService.addOne({
+    this.breadcrumbService.addOne({
       criteriaList: criteria,
       origin: BreadcrumbSource.Classification
     }, { suppressEvents: true });
@@ -129,25 +131,38 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   private showAlbumArtists(classification: IClassificationModel): void {
     this.addBreadcrumb(classification);
-    this.utility.navigate(AppRoutes.AlbumArtists);
+    // The only query information that will pass from one entity to another is breadcrumbs
+    const query = new QueryModel<any>();
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+    this.navigation.forward(AppRoutes.AlbumArtists, { query: query });
   }
 
   private showAlbums(classification: IClassificationModel): void {
     this.addBreadcrumb(classification);
-    this.utility.navigate(AppRoutes.Albums);
+    const query = new QueryModel<any>();
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+    this.navigation.forward(AppRoutes.Albums, { query: query });
   }
 
   private showSongs(classification: IClassificationModel): void {
     this.addBreadcrumb(classification);
-    this.utility.navigate(AppRoutes.Songs);
+    const query = new QueryModel<any>();
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+    this.navigation.forward(AppRoutes.Songs, { query: query });
   }
 
   public onListInitialized(): void {
   }
 
-  private removeUnsupportedBreadcrumbs(): void {
-    // Classifications/genres do not support any kind of breadcrumbs
-    this.breadcrumbsService.clear();
+  public onBeforeBroadcast(query: QueryModel<IClassificationModel>): void {
+    this.removeUnsupportedBreadcrumbs(query);
   }
 
+  private removeUnsupportedBreadcrumbs(query: QueryModel<IClassificationModel>): void {
+    // Classifications/genres do not support any kind of breadcrumbs
+    this.breadcrumbService.clear();
+    // Now that breadcrumbs are updated, reflect the change in the query
+    // which will be used to broadcast
+    query.breadcrumbCriteria = [];
+  }
 }

@@ -30,18 +30,18 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
 
   protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
     const criteria: ICriteriaValueBaseModel[] = [];
-
-    const criteriaValue = new CriteriaValueBase('name');
     if (searchTerm) {
+      const criteriaValue = new CriteriaValueBase('name');
       const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
       criteriaValue.ColumnValues.push(criteriaSearchTerm);
       criteriaValue.Operator = CriteriaOperator.Like;
+      criteria.push(criteriaValue);
     }
-    criteriaValue.SortDirection = CriteriaSortDirection.Ascending;
-    criteriaValue.SortSequence = 1;
-    criteria.push(criteriaValue);
-
     return criteria;
+  }
+
+  protected addSortingCriteria(queryModel: QueryModel<IPlaylistModel>): void {
+    queryModel.addSorting('name', CriteriaSortDirection.Ascending);
   }
 
   protected getItems(queryModel: QueryModel<IPlaylistModel>): Observable<IPlaylistModel[]> {

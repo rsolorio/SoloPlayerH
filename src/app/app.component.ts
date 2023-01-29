@@ -12,6 +12,8 @@ import { LogService } from './core/services/log/log.service';
 import { FeatureDetectionService } from './core/services/feature-detection/feature-detection.service';
 import { AppEvent } from './shared/models/events.enum';
 import { LogLevel } from './core/services/log/log.enum';
+import { NavigationService } from './shared/services/navigation/navigation.service';
+import { IMenuModel } from './core/models/menu-model.interface';
 
 /**
  * The main app component.
@@ -35,7 +37,8 @@ export class AppComponent implements OnInit {
     private events: EventsService,
     private log: LogService,
     private router: Router,
-    private featureService: FeatureDetectionService)
+    private featureService: FeatureDetectionService,
+    private navigation: NavigationService)
   {
     doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
   }
@@ -45,6 +48,10 @@ export class AppComponent implements OnInit {
     this.log.setLevel(LogLevel.Verbose);
     this.watchRouteChange();
     this.log.info('Feature info initialized.', this.featureService.get());
+
+    this.events.onEvent<IMenuModel>(CoreEvent.SidebarMenuAction).subscribe(menuModel => {
+      this.navigation.forward(menuModel.route);
+    });
 
     this.events.onEvent(AppEvent.DbInitialized).subscribe(() => {
       this.db.initializeModuleOptions().then(() => {

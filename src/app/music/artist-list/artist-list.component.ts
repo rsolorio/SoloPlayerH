@@ -3,6 +3,7 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
@@ -10,7 +11,9 @@ import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
 
 @Component({
@@ -27,8 +30,9 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   constructor(
     public broadcastService: ArtistListBroadcastService,
     private utility: UtilityService,
-    private breadcrumbsService: BreadcrumbsStateService,
-    private db: DatabaseService
+    private breadcrumbService: BreadcrumbsStateService,
+    private db: DatabaseService,
+    private navigation: NavigationService
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoutes.AlbumArtists);
@@ -37,7 +41,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeItemMenu();
-    this.removeUnsupportedBreadcrumbs();
   }
 
   private initializeItemMenu(): void {
@@ -71,7 +74,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       action: param => {
         const artist = param as IArtistModel;
         if (artist) {
-          this.utility.navigateWithRouteParams(AppRoutes.Artists, [artist.id]);
+          this.navigation.forward(AppRoutes.Artists, { queryParams: [artist.id] });
         }
       }
     });
@@ -121,15 +124,20 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private showAlbums(artist: IArtistModel): void {
     this.addBreadcrumb(artist);
-    this.utility.navigate(AppRoutes.Albums);
+    // The only query information that will pass from one entity to another is breadcrumbs
+    const query = new QueryModel<any>();
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+    this.navigation.forward(AppRoutes.Albums, { query: query });
   }
 
   private showSongs(artist: IArtistModel): void {
     this.addBreadcrumb(artist);
-    this.utility.navigate(AppRoutes.Songs);
+    const query = new QueryModel<any>();
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+    this.navigation.forward(AppRoutes.Songs, { query: query });
   }
 
-  private addBreadcrumb(artist: IArtistModel): void {
+  private createBreadcrumb(artist: IArtistModel): IBreadcrumbModel {
     const criteria: ICriteriaValueBaseModel[] = [];
     const columnName = this.isAlbumArtist ? 'primaryArtistId' : 'artistId';
     const criteriaValue = new CriteriaValueBase(columnName, artist.id);
@@ -154,32 +162,49 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         criteria.push(criteriaItem);
       }
     }
-    // Suppress event so this component doesn't react to this change;
-    // these breadcrumbs are for another list that hasn't been loaded yet
-    this.breadcrumbsService.addOne({
+    return {
       criteriaList: criteria,
       origin: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
-    }, { suppressEvents: true });
+    };
+  }
+
+  /**
+   * Adds the specified artist as a new breadcrumb.
+   */
+  private addBreadcrumb(artist: IArtistModel): void {
+    // Suppress event so this component doesn't react to this change;
+    // these breadcrumbs are for another list that hasn't been loaded yet
+    this.breadcrumbService.addOne(this.createBreadcrumb(artist), { suppressEvents: true });
   }
 
   public onListInitialized(): void {
   }
 
-  private removeUnsupportedBreadcrumbs(): void {
-    const breadcrumbs = this.breadcrumbsService.getState();
+  public onBeforeBroadcast(query: QueryModel<IArtistModel>): void {
+    this.removeUnsupportedBreadcrumbs(query);
+  }
+
+  private removeUnsupportedBreadcrumbs(query: QueryModel<IArtistModel>): void {
+    if (!this.breadcrumbService.hasBreadcrumbs()) {
+      return;
+    }
+    const breadcrumbs = this.breadcrumbService.getState();
     if (this.isAlbumArtist) {
+      // Album Artists support Genre and Classification breadcrumbs
       let unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
-        breadcrumb.origin === BreadcrumbSource.Album ||
-        breadcrumb.origin === BreadcrumbSource.AlbumArtist ||
-        breadcrumb.origin === BreadcrumbSource.Artist);
+        breadcrumb.origin !== BreadcrumbSource.Genre &&
+        breadcrumb.origin !== BreadcrumbSource.Classification);
       
       for (const breadcrumb of unsupportedBreadcrumbs) {
-        this.breadcrumbsService.remove(breadcrumb.sequence);
+        this.breadcrumbService.remove(breadcrumb.sequence);
       }
     }
     else {
-      // Artist does not support any kind of breadcrumbs
-      this.breadcrumbsService.clear();
+      // Artists do not support any kind of breadcrumbs
+      this.breadcrumbService.clear();
     }
+    // Now that breadcrumbs are updated, reflect the change in the query
+    // which will be used to broadcast
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
   }
 }

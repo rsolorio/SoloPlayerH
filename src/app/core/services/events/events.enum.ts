@@ -9,4 +9,5 @@ export enum CoreEvent {
   WindowClick = 'WINDOW_CLICK',
   RouteChanging = 'ROUTE_CHANGING',
   RouteChanged = 'ROUTE_CHANGED',
+  SidebarMenuAction = 'SIDEBAR_MENU_ACTION'
 }

@@ -15,6 +15,7 @@ import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/shared/services/file/file.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AlbumListBroadcastService } from './album-list-broadcast.service';
 
 @Component({
@@ -30,18 +31,18 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   constructor(
     public broadcastService: AlbumListBroadcastService,
     private utility: UtilityService,
-    private breadcrumbsService: BreadcrumbsStateService,
+    private breadcrumbService: BreadcrumbsStateService,
     private fileService: FileService,
     private metadataService: MusicMetadataService,
     private db: DatabaseService,
-    private queueService: PromiseQueueService
+    private queueService: PromiseQueueService,
+    private navigation: NavigationService
   ) {
     super();
   }
 
   ngOnInit(): void {
     this.initializeItemMenu();
-    this.removeUnsupportedBreadcrumbs();
   }
 
   private initializeItemMenu(): void {
@@ -75,7 +76,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       action: param => {
         const album = param as IAlbumModel;
         if (album) {
-          this.utility.navigateWithRouteParams(AppRoutes.Albums, [album.id]);
+          this.navigation.forward(AppRoutes.Albums, { queryParams: [album.id] });
         }
       }
     });
@@ -109,7 +110,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     // TODO: handle multiple selected albums
     // Automatically add the Album Artist breadcrumb if it does not exist
     let hasAlbumArtist = false;
-    const breadcrumbs = this.breadcrumbsService.getState();
+    const breadcrumbs = this.breadcrumbService.getState();
     for (const breadcrumb of breadcrumbs) {
       if (hasCriteria('primaryArtistId', breadcrumb.criteriaList)) {
         hasAlbumArtist = true;
@@ -123,7 +124,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         criteriaItem.DisplayValue = album.artistName;
         // Suppress event so this component doesn't react to this change;
         // these breadcrumbs are for another list that hasn't been loaded yet
-        this.breadcrumbsService.addOne({
+        this.breadcrumbService.addOne({
           criteriaList: [ criteriaItem ],
           origin: BreadcrumbSource.AlbumArtist
         }, { suppressEvents: true });
@@ -135,7 +136,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     criteriaItem.DisplayValue = album.name;
     // Suppress event so this component doesn't react to this change;
     // these breadcrumbs are for another list that hasn't been loaded yet
-    this.breadcrumbsService.addOne({
+    this.breadcrumbService.addOne({
       criteriaList: [ criteriaItem ],
       origin: BreadcrumbSource.Album
     }, { suppressEvents: true });
@@ -143,20 +144,34 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
 
   private showSongs(album: IAlbumModel): void {
     this.addBreadcrumb(album);
-    this.utility.navigate(AppRoutes.Songs);
+    // The only query information that will pass from one entity to another is breadcrumbs
+    const query = new QueryModel<any>();
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
+    this.navigation.forward(AppRoutes.Songs, { query: query });
   }
 
   public onListInitialized(): void {
   }
 
-  private removeUnsupportedBreadcrumbs(): void {
-    const breadcrumbs = this.breadcrumbsService.getState();
-    const unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
-      breadcrumb.origin === BreadcrumbSource.Album ||
-      breadcrumb.origin === BreadcrumbSource.Artist);
-    for (const breadcrumb of unsupportedBreadcrumbs) {
-      this.breadcrumbsService.remove(breadcrumb.sequence);
+  public onBeforeBroadcast(query: QueryModel<IAlbumModel>): void {
+    this.removeUnsupportedBreadcrumbs(query);
+  }
+
+  private removeUnsupportedBreadcrumbs(query: QueryModel<IAlbumModel>): void {
+    if (!this.breadcrumbService.hasBreadcrumbs()) {
+      return;
     }
+    const breadcrumbs = this.breadcrumbService.getState();
+    const unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
+      breadcrumb.origin !== BreadcrumbSource.Classification &&
+      breadcrumb.origin !== BreadcrumbSource.Genre &&
+      breadcrumb.origin !== BreadcrumbSource.AlbumArtist);
+    for (const breadcrumb of unsupportedBreadcrumbs) {
+      this.breadcrumbService.remove(breadcrumb.sequence);
+    }
+    // Now that breadcrumbs are updated, reflect the change in the query
+    // which will be used to broadcast
+    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
   }
 
   public onItemRender(album: IAlbumModel): void {

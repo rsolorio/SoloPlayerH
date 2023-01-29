@@ -171,7 +171,7 @@ implements IListBroadcastService {
   protected abstract getItems(queryModel: QueryModel<TItemModel>): Observable<TItemModel[]>;
 
   private innerGetItems(queryModel: QueryModel<TItemModel>): Observable<TItemModel[]> {
-    // Override any existing system criteria
+    // Always override any existing system criteria
     queryModel.systemCriteria = this.buildSystemCriteria();
     if (!queryModel.hasSorting()) {
       this.addSortingCriteria(queryModel);
