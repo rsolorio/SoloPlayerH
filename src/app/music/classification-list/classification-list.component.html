@@ -1,9 +1,7 @@
 <sp-list-base
 #spListBaseComponent
-[title]="isGenreList ? 'Genres' : 'Classifications'"
 [broadcastService]="broadcastService"
 [breadcrumbsEnabled]="true"
-[leftIcon]="isGenreList ? 'mdi-tag-outline mdi' : 'mdi-tag-multiple-outline mdi'"
 [listUpdatedEvent]="appEvent.ClassificationListUpdated"
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"

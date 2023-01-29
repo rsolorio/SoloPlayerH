@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
 import { IMenuModel } from '../../models/menu-model.interface';
-import { AppRoutes } from '../../services/utility/utility.enum';
 import { ISideBarMenuModel } from './side-bar-menu-model.interface';
 import { UtilityService } from '../../services/utility/utility.service';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
+import { appRoutes } from 'src/app/app-routes';
 
 @Injectable({
   providedIn: 'root'
@@ -80,17 +80,13 @@ export class SideBarMenuStateService {
         this.clear();
         this.state.loginMenuLoaded = false;
       }
-      this.state.items.push(this.createMenuItem('Home', 'mdi-home mdi', false, null, AppRoutes.Home));
-      this.state.items.push(this.createMenuItem('Album Artists', 'mdi-account-badge mdi', false, null, AppRoutes.AlbumArtists));
-      this.state.items.push(this.createMenuItem('Artists', 'mdi-account-music mdi', false, null, AppRoutes.Artists));
-      this.state.items.push(this.createMenuItem('Albums', 'mdi-album mdi', false, null, AppRoutes.Albums));
-      this.state.items.push(this.createMenuItem('Genres', 'mdi-tag-outline mdi', false, null, AppRoutes.Genres));
-      this.state.items.push(this.createMenuItem('Classifications', 'mdi-tag-multiple-outline mdi', false, null, AppRoutes.Classifications));
-      this.state.items.push(this.createMenuItem('Songs', 'mdi-music-note mdi', false, null, AppRoutes.Songs));
-      this.state.items.push(this.createMenuItem('Playlists', 'mdi-playlist-play mdi', false, null, AppRoutes.Playlists));
-      this.state.items.push(this.createMenuItem('Filters', 'mdi-filter-outline mdi', false, null, AppRoutes.Filters));
-      this.state.items.push(this.createMenuItem('Settings', 'mdi-cogs mdi', false, null, AppRoutes.Settings));
-      this.state.items.push(this.createMenuItem('Log', 'mdi-file-document-edit-outline mdi', false, null, AppRoutes.Log));
+
+      for (const key of Object.keys(appRoutes)) {
+        const routeInfo = appRoutes[key];
+        if (!routeInfo.menuHidden) {
+          this.state.items.push(this.createMenuItem(routeInfo.name, routeInfo.icon, false, null, routeInfo.route));
+        }
+      }
 
       this.state.items.push(this.createAboutMenuItem());
       this.state.appMenuLoaded = true;

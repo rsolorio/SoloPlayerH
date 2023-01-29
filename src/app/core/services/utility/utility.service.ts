@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { IWindowSize, IWindowSizeChangedEvent, ITimeSpan } from './utility.interface';
-import { BreakpointMode, Milliseconds, AppRoutes } from './utility.enum';
+import { BreakpointMode, Milliseconds } from './utility.enum';
 import { BreakpointRanges } from './utility.class';
 import { EventsService } from '../../../core/services/events/events.service';
 import { CoreEvent } from '../../../core/services/events/events.enum';
@@ -8,6 +8,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { ISize } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
+import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 
 @Injectable({
   providedIn: 'root'
@@ -112,7 +113,7 @@ export class UtilityService {
     return this.windowSize;
   }
 
-  public navigate(route: string | AppRoutes, removeRouteParams?: boolean): void {
+  public navigate(route: string | AppRoute, removeRouteParams?: boolean): void {
     if (removeRouteParams) {
       this.router.navigateByUrl(route);
     }
@@ -127,7 +128,7 @@ export class UtilityService {
    * In a resolver you can get the specified param like this: ActivatedRouteSnapshot.paramMap.get('nameOfTheRouteParam')
    * Route param example: yourRoute/details/yourRouteParam/info
    */
-  public navigateWithRouteParams(route: string | AppRoutes, params: any[]): void {
+  public navigateWithRouteParams(route: string | AppRoute, params: any[]): void {
     const commands: any[] = [];
     // First add the route
     commands.push(route);
@@ -142,7 +143,7 @@ export class UtilityService {
    * Navigates to the specified route.
    * It accepts a set of key/value pairs as optional parameters, but values have to be strings.
    */
-  public navigateWithOptionalParams(route: string | AppRoutes, optionalParams: any): void {
+  public navigateWithOptionalParams(route: string | AppRoute, optionalParams: any): void {
     this.router.navigate([route, optionalParams]);
   }
 
@@ -152,7 +153,7 @@ export class UtilityService {
    * Usage: navigateWithQueryParams('yourRoute', { yourQueryParam: 'someValue' });
    * Query param example: yourRoute?yourQueryParam=someValue
    */
-  public navigateWithQueryParams(route: string | AppRoutes, queryParams: any, complexData?: any): void {
+  public navigateWithQueryParams(route: string | AppRoute, queryParams: any, complexData?: any): void {
     if (complexData) {
       this.router.navigate([route], { queryParams, state: complexData });
     }
@@ -179,7 +180,7 @@ export class UtilityService {
    * The caller code must understands the interface expected by the resolver and the name of the param returned by the resolver.
    * Call getResolverParam to get the param sent through this method.
    */
-  public navigateWithComplexParams(route: string | AppRoutes, complexParams: any): void {
+  public navigateWithComplexParams(route: string | AppRoute, complexParams: any): void {
     this.routerCache.set(complexParams);
     this.router.navigate([route]);
   }
@@ -193,14 +194,19 @@ export class UtilityService {
   }
 
   public getCurrentRoute(): string {
-    return this.router.url;
+    const routeParts = this.router.url.split('?');
+    return routeParts[0];
   }
 
-  public isRouteActive(route: AppRoutes): boolean {
+  public isRouteActive(route: AppRoute): boolean {
     // Remove query params if any
     const routeParts = this.router.url.split('?');
     const root = routeParts[0];
     return root === route;
+  }
+
+  public getCurrentRouteInfo(): IAppRouteInfo {
+    return appRoutes[this.getCurrentRoute()];
   }
 
   /** Returns the difference in days between two dates. */

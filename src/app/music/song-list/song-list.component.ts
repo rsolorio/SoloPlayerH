@@ -3,7 +3,6 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
-import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlayerOverlayStateService } from 'src/app/player/player-overlay/player-overlay-state.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
@@ -25,6 +24,7 @@ import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { SongListStateService } from './song-list-state.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
+import { AppRoute } from 'src/app/app-routes';
 
 @Component({
   selector: 'sp-song-list',
@@ -78,7 +78,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       action: param => {
         const song = param as ISongModel;
         if (song) {
-          this.navigation.forward(AppRoutes.Songs, { queryParams: [song.id] });
+          this.navigation.forward(AppRoute.Songs, { queryParams: [song.id] });
         }
       }
     });
@@ -92,7 +92,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         // Since we are staying in the same route, use the same query info, just update the breadcrumbs
         const queryClone = this.stateService.getState().clone();
         queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-        this.navigation.forward(AppRoutes.Songs, { query: queryClone });
+        this.navigation.forward(AppRoute.Songs, { query: queryClone });
       }
     });
 
@@ -105,7 +105,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           if (hasFeatArtists) {
             const queryClone = this.stateService.getState().clone();
             queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-            this.navigation.forward(AppRoutes.Songs, { query: queryClone });
+            this.navigation.forward(AppRoute.Songs, { query: queryClone });
           }
         });
       }
@@ -119,7 +119,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         this.setBreadcrumbsForAlbumSongs(song);
         const queryClone = this.stateService.getState().clone();
         queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-        this.navigation.forward(AppRoutes.Songs, { query: queryClone });
+        this.navigation.forward(AppRoute.Songs, { query: queryClone });
       }
     });
   }

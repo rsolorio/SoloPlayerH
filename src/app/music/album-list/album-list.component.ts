@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
-import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
@@ -76,7 +76,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       action: param => {
         const album = param as IAlbumModel;
         if (album) {
-          this.navigation.forward(AppRoutes.Albums, { queryParams: [album.id] });
+          this.navigation.forward(AppRoute.Albums, { queryParams: [album.id] });
         }
       }
     });
@@ -86,13 +86,14 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       caption: null
     });
 
+    const songRoute = appRoutes[AppRoute.Songs];
     this.itemMenuList.push({
-      caption: 'Songs',
-      icon: 'mdi-music-note mdi',
+      caption: songRoute.name,
+      icon: songRoute.icon,
       action: param => {
         const album = param as IAlbumModel;
           if (album) {
-            this.showSongs(album);
+            this.showEntity(songRoute, album);
           }
       }
     });
@@ -103,7 +104,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private onAlbumClick(album: IAlbumModel): void {
-    this.showSongs(album);
+    this.showEntity(appRoutes[AppRoute.Songs], album);
   }
 
   private addBreadcrumb(album: IAlbumModel): void {
@@ -142,12 +143,12 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     }, { suppressEvents: true });
   }
 
-  private showSongs(album: IAlbumModel): void {
+  private showEntity(routeInfo: IAppRouteInfo, album: IAlbumModel): void {
     this.addBreadcrumb(album);
     // The only query information that will pass from one entity to another is breadcrumbs
     const query = new QueryModel<any>();
     query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(AppRoutes.Songs, { query: query });
+    this.navigation.forward(routeInfo.route, { query: query });
   }
 
   public onListInitialized(): void {

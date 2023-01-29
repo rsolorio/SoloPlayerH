@@ -1,9 +1,7 @@
 <sp-list-base
 #spListBaseComponent
-[title]="isAlbumArtist ? 'Album Artists' : 'Artists'"
 [broadcastService]="broadcastService"
 [breadcrumbsEnabled]="true"
-[leftIcon]="isAlbumArtist ? 'mdi-account-badge mdi' : 'mdi-account-music mdi'"
 [listUpdatedEvent]="appEvent.ArtistListUpdated"
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"

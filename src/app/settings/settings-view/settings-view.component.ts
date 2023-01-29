@@ -53,6 +53,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
+    const routeInfo = this.utility.getCurrentRouteInfo();
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
@@ -61,9 +62,9 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           caption: 'Some Option'
         }
       ],
-      title: 'Settings',
+      title: routeInfo.name,
       leftIcon: {
-        icon: 'mdi-cogs mdi'
+        icon: routeInfo.icon
       }
     });
   }

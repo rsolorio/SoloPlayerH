@@ -3,11 +3,11 @@ import { tap } from 'rxjs/operators';
 
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { ICriteriaValueBaseModel } from './criteria-base-model.interface';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
 import { QueryModel } from './query-model.class';
+import { AppRoute } from 'src/app/app-routes';
 
 export interface IListBroadcastService {
   search(queryModel: QueryModel<any>, searchTerm?: string): Observable<any[]>;
@@ -51,7 +51,7 @@ implements IListBroadcastService {
    * @param queryModel The query information.
    * @param route The route to redirect to.
    */
-  public redirect(queryModel: QueryModel<TItemModel>, route: AppRoutes): Observable<TItemModel[]> {
+  public redirect(queryModel: QueryModel<TItemModel>, route: AppRoute): Observable<TItemModel[]> {
     if (queryModel.noMoreItems || !queryModel.items.length) {
       this.innerRedirect(queryModel, route);
       return of(queryModel.items);
@@ -70,7 +70,7 @@ implements IListBroadcastService {
    * @param listModel The pagination information.
    * @param route The route to redirect to.
    */
-  protected innerRedirect(queryModel: QueryModel<TItemModel>, route: AppRoutes): void {
+  protected innerRedirect(queryModel: QueryModel<TItemModel>, route: AppRoute): void {
     this.utilities.navigateWithComplexParams(route, queryModel);
   }
 

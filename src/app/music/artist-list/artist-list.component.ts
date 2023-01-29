@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
-import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
@@ -35,7 +35,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService
   ) {
     super();
-    this.isAlbumArtist = this.utility.isRouteActive(AppRoutes.AlbumArtists);
+    this.isAlbumArtist = this.utility.isRouteActive(AppRoute.AlbumArtists);
     this.broadcastService.isAlbumArtist = this.isAlbumArtist;
   }
 
@@ -74,7 +74,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       action: param => {
         const artist = param as IArtistModel;
         if (artist) {
-          this.navigation.forward(AppRoutes.Artists, { queryParams: [artist.id] });
+          this.navigation.forward(AppRoute.Artists, { queryParams: [artist.id] });
         }
       }
     });
@@ -84,26 +84,28 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       caption: null
     });
 
+    const albumRoute = appRoutes[AppRoute.Albums];
     if (this.isAlbumArtist) {
       this.itemMenuList.push({
-        caption: 'Albums',
-        icon: 'mdi-album mdi',
+        caption: albumRoute.name,
+        icon: albumRoute.icon,
         action: param => {
           const artist = param as IArtistModel;
           if (artist) {
-            this.showAlbums(artist);
+            this.showEntity(albumRoute, artist);
           }
         }
       });
     }
 
+    const songRoute = appRoutes[AppRoute.Songs];
     this.itemMenuList.push({
-      caption: 'Songs',
-      icon: 'mdi-music-note mdi',
+      caption: songRoute.name,
+      icon: songRoute.icon,
       action: param => {
         const artist = param as IArtistModel;
           if (artist) {
-            this.showSongs(artist);
+            this.showEntity(songRoute, artist);
           }
       }
     });
@@ -115,26 +117,19 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private onArtistClick(artist: IArtistModel): void {
     if (this.isAlbumArtist) {
-      this.showAlbums(artist);
+      this.showEntity(appRoutes[AppRoute.Albums], artist);
     }
     else {
-      this.showSongs(artist);
+      this.showEntity(appRoutes[AppRoute.Songs], artist);
     }
   }
 
-  private showAlbums(artist: IArtistModel): void {
+  private showEntity(routeInfo: IAppRouteInfo, artist: IArtistModel): void {
     this.addBreadcrumb(artist);
     // The only query information that will pass from one entity to another is breadcrumbs
     const query = new QueryModel<any>();
     query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(AppRoutes.Albums, { query: query });
-  }
-
-  private showSongs(artist: IArtistModel): void {
-    this.addBreadcrumb(artist);
-    const query = new QueryModel<any>();
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(AppRoutes.Songs, { query: query });
+    this.navigation.forward(routeInfo.route, { query: query });
   }
 
   private createBreadcrumb(artist: IArtistModel): IBreadcrumbModel {

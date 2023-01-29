@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { AppRoute } from 'src/app/app-routes';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AppRoutes } from '../../../core/services/utility/utility.enum';
 import { INavigationInfo, INavigationOptions } from './navigation.interface';
 
 @Injectable({
@@ -11,7 +11,7 @@ export class NavigationService {
    * The navigation history.
    * By default, the navigation starts with the Home route.
    */
-  private history: INavigationInfo[] = [{ route: AppRoutes.Home }]; // This first value must match the default route of your app.
+  private history: INavigationInfo[] = [{ route: AppRoute.Home }]; // This first value must match the default route of your app.
   private maxRecords = 20;
 
   constructor(private utilities: UtilityService) { }

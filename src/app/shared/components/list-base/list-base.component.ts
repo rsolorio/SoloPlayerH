@@ -8,6 +8,7 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IIconAction } from 'src/app/core/models/core.interface';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { FilterViewComponent } from 'src/app/filter/filter-view/filter-view.component';
 import { IListItemModel } from '../../models/base-model.interface';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
@@ -95,7 +96,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     private navbarService: NavBarStateService,
     private breadcrumbService: BreadcrumbsStateService,
     private navigation: NavigationService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private utilities: UtilityService
   ) {
     super();
   }
@@ -180,14 +182,29 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
+    const routeInfo = this.utilities.getCurrentRouteInfo();
     // All list base components should have a search feature
     const navbar = this.navbarService.getState();
     navbar.show = true;
     // Title
-    navbar.title = this.model.title;
-    navbar.leftIcon = {
-      icon: this.model.leftIcon
-    };
+    if (this.model.title) {
+      navbar.title = this.model.title;
+    }
+    else if (routeInfo) {
+      navbar.title = routeInfo.name;
+    }
+
+    if (this.model.leftIcon) {
+      navbar.leftIcon = {
+        icon: this.model.leftIcon
+      };
+    }
+    else if (routeInfo) {
+      navbar.leftIcon = {
+        icon: routeInfo.icon
+      };
+    }
+    
     // Filter icon
     navbar.rightIcon = {
       icon: this.filterNoCriteriaIcon,

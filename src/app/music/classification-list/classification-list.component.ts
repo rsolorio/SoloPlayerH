@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
-import { AppRoutes } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
@@ -32,7 +32,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private navigation: NavigationService
   ) {
     super();
-    this.isGenreList = this.utility.isRouteActive(AppRoutes.Genres);
+    this.isGenreList = this.utility.isRouteActive(AppRoute.Genres);
     this.broadcastService.isGenreList = this.isGenreList;
   }
 
@@ -61,35 +61,38 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       caption: null
     });
 
+    const albumArtistRoute = appRoutes[AppRoute.AlbumArtists];
     this.itemMenuList.push({
-      caption: 'Album Artists',
-      icon: 'mdi-account-music mdi',
+      caption: albumArtistRoute.name,
+      icon: albumArtistRoute.icon,
       action: param => {
         const classification = param as IClassificationModel;
         if (classification) {
-          this.showAlbumArtists(classification);
+          this.showEntity(albumArtistRoute, classification);
         }
       }
     });
 
+    const albumRoute = appRoutes[AppRoute.Albums];
     this.itemMenuList.push({
-      caption: 'Albums',
-      icon: 'mdi-album mdi',
+      caption: albumRoute.name,
+      icon: albumRoute.icon,
       action: param => {
         const classification = param as IClassificationModel;
         if (classification) {
-          this.showAlbums(classification);
+          this.showEntity(albumRoute, classification);
         }
       }
     });
 
+    const songRoute = appRoutes[AppRoute.Songs];
     this.itemMenuList.push({
-      caption: 'Songs',
-      icon: 'mdi-music-note mdi',
+      caption: songRoute.name,
+      icon: songRoute.icon,
       action: param => {
         const classification = param as IClassificationModel;
         if (classification) {
-          this.showSongs(classification);
+          this.showEntity(songRoute, classification);
         }
       }
     });
@@ -100,7 +103,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   private onClassificationClick(classification: IClassificationModel): void {
-    this.showAlbumArtists(classification);
+    this.showEntity(appRoutes[AppRoute.AlbumArtists], classification);
   }
 
   private addBreadcrumb(classification: IClassificationModel): void {
@@ -129,26 +132,12 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     }, { suppressEvents: true });
   }
 
-  private showAlbumArtists(classification: IClassificationModel): void {
+  private showEntity(routeInfo: IAppRouteInfo, classification: IClassificationModel): void {
     this.addBreadcrumb(classification);
     // The only query information that will pass from one entity to another is breadcrumbs
     const query = new QueryModel<any>();
     query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(AppRoutes.AlbumArtists, { query: query });
-  }
-
-  private showAlbums(classification: IClassificationModel): void {
-    this.addBreadcrumb(classification);
-    const query = new QueryModel<any>();
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(AppRoutes.Albums, { query: query });
-  }
-
-  private showSongs(classification: IClassificationModel): void {
-    this.addBreadcrumb(classification);
-    const query = new QueryModel<any>();
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(AppRoutes.Songs, { query: query });
+    this.navigation.forward(routeInfo.route, { query: query });
   }
 
   public onListInitialized(): void {

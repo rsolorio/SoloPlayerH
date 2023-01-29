@@ -3,6 +3,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { ILogEntry } from 'src/app/core/services/log/log.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Component({
   selector: 'sp-log-view',
@@ -13,7 +14,8 @@ export class LogViewComponent implements OnInit {
   public logItems: ILogEntry[];
   constructor(
     private log: LogService,
-    private navbarService: NavBarStateService) { }
+    private navbarService: NavBarStateService,
+    private utilities: UtilityService) { }
 
   ngOnInit(): void {
     this.reloadLogEntries();
@@ -21,6 +23,7 @@ export class LogViewComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
+    const routeInfo = this.utilities.getCurrentRouteInfo();
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
@@ -38,9 +41,9 @@ export class LogViewComponent implements OnInit {
           caption: 'Log Level'
         }
       ],
-      title: 'Event Log',
+      title: routeInfo.name,
       leftIcon: {
-        icon: 'mdi-file-document-edit-outline mdi'
+        icon: routeInfo.icon
       },
       rightIcon: {
         icon: 'mdi mdi-eraser',
