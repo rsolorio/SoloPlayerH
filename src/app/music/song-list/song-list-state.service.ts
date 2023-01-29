@@ -14,9 +14,9 @@ export class SongListStateService extends ListListenerServiceBase<ISongModel> {
   constructor(
     private utilityService: UtilityService,
     private eventService: EventsService,
-    private navBarService: NavBarStateService)
+    private navbarService: NavBarStateService)
   {
-    super(eventService, navBarService, utilityService);
+    super(eventService, navbarService, utilityService);
   }
 
   protected getEventName(): string {

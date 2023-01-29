@@ -14,6 +14,7 @@ import { AppEvent } from './shared/models/events.enum';
 import { LogLevel } from './core/services/log/log.enum';
 import { NavigationService } from './shared/services/navigation/navigation.service';
 import { IMenuModel } from './core/models/menu-model.interface';
+import { NavBarStateService } from './core/components/nav-bar/nav-bar-state.service';
 
 /**
  * The main app component.
@@ -38,6 +39,7 @@ export class AppComponent implements OnInit {
     private log: LogService,
     private router: Router,
     private featureService: FeatureDetectionService,
+    private navbarService: NavBarStateService,
     private navigation: NavigationService)
   {
     doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
@@ -51,6 +53,11 @@ export class AppComponent implements OnInit {
 
     this.events.onEvent<IMenuModel>(CoreEvent.SidebarMenuAction).subscribe(menuModel => {
       this.navigation.forward(menuModel.route);
+    });
+
+    this.events.onEvent(CoreEvent.NavbarBack).subscribe(() => {
+      this.navigation.back();
+      this.navbarService.restoreOuterLeftIcon();
     });
 
     this.events.onEvent(AppEvent.DbInitialized).subscribe(() => {

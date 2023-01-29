@@ -13,7 +13,7 @@ export class LogViewComponent implements OnInit {
   public logItems: ILogEntry[];
   constructor(
     private log: LogService,
-    private navBarService: NavBarStateService) { }
+    private navbarService: NavBarStateService) { }
 
   ngOnInit(): void {
     this.reloadLogEntries();
@@ -21,7 +21,7 @@ export class LogViewComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
-    this.navBarService.set({
+    this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
       menuList: [
@@ -47,7 +47,7 @@ export class LogViewComponent implements OnInit {
         action: () => {
           this.log.clear();
           this.reloadLogEntries();
-          this.navBarService.showToast('Log entries deleted.');
+          this.navbarService.showToast('Log entries deleted.');
         }
       }
     });

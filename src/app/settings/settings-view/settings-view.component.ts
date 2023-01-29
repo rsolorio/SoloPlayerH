@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -14,6 +16,7 @@ import { IFileInfo } from 'src/app/shared/services/file/file.interface';
 import { FileService } from 'src/app/shared/services/file/file.service';
 import { IAudioInfo } from 'src/app/shared/services/music-metadata/music-metadata.interface';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
 
@@ -35,14 +38,33 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private fileService: FileService,
     private metadataService: MusicMetadataService,
     private utility: UtilityService,
+    private navbarService: NavBarStateService,
+    private navigation: NavigationService,
     private loadingService: LoadingViewStateService) {
       super();
     }
 
   ngOnInit(): void {
+    this.initializeNavbar();
     this.initializeSettings();
     this.subs.sink = this.events.onEvent<IFileInfo>(AppEvent.ScanFile).subscribe(fileInfo => {
       this.log.info('ScanFile event fired.',  fileInfo.path);
+    });
+  }
+
+  private initializeNavbar(): void {
+    this.navbarService.set({
+      mode: NavbarDisplayMode.Title,
+      show: true,
+      menuList: [
+        {
+          caption: 'Some Option'
+        }
+      ],
+      title: 'Settings',
+      leftIcon: {
+        icon: 'mdi-cogs mdi'
+      }
     });
   }
 
@@ -263,7 +285,11 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     this.test();
   }
 
-  private async test(): Promise<void> {
+  private test(): void {
+    this.navbarService.showBackIcon();
+  }
+
+  private async testBulkUpdate(): Promise<void> {
     const classifications = await ClassificationEntity.find();
     for (const c of classifications) {
       c.classificationType = 'Bye';

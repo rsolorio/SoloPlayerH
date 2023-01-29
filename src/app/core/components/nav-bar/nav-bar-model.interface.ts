@@ -7,7 +7,7 @@ import { IIconMenuModel } from '../icon-menu/icon-menu-model.interface';
 export interface INavbarModel {
     /** Flag that determines if the nav bar should be visible or not. */
     show: boolean;
-    /** List of menu items to be displayed in the ellipsis menu on the right of the nav bar. */
+    /** List of menu items to be displayed in the ellipsis menu on the outer right of the nav bar. */
     menuList: IMenuModel[];
     /** Title text of the nav bar. */
     title?: string;
@@ -35,6 +35,14 @@ export interface INavbarModel {
     onSearch?: (searchTerm: string) => void;
     /** Event handler fired when the user clicks the clear button. */
     onSearchClear?: () => void;
+}
+
+/**
+ * Optional icons for the outer left and right icons in the navbar
+ */
+export interface INavBarOuterIcons {
+    left?: IIconAction;
+    right?: IIconAction;
 }
 
 export enum NavbarDisplayMode {

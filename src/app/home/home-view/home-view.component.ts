@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 
 @Component({
   selector: 'sp-home-view',
@@ -7,14 +9,25 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeViewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private navbarService: NavBarStateService) { }
 
   ngOnInit(): void {
+    this.initializeNavbar();
   }
 
-  public onTest1(): void {
-  }
-
-  public onTest2(): void {
+  private initializeNavbar(): void {
+    this.navbarService.set({
+      mode: NavbarDisplayMode.Title,
+      show: true,
+      menuList: [
+        {
+          caption: 'Some Option'
+        }
+      ],
+      title: 'Home',
+      leftIcon: {
+        icon: 'mdi-home mdi'
+      }
+    });
   }
 }

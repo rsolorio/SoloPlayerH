@@ -1,10 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SideBarStateService } from '../side-bar/side-bar-state.service';
 import { Position } from '../../globals.enum';
-import { INavbarModel, NavbarDisplayMode } from './nav-bar-model.interface';
+import { INavbarModel, INavBarOuterIcons, NavbarDisplayMode } from './nav-bar-model.interface';
 import { NavBarStateService } from './nav-bar-state.service';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
+import { IIconAction } from '../../models/core.interface';
 
 /**
  * Component that displays a navigation bar at the top of the application.
@@ -19,12 +20,14 @@ export class NavBarComponent implements OnInit {
   @ViewChild('spNavbarSearchBox') private navbarSearchBox: ElementRef;
   public NavbarDisplayMode = NavbarDisplayMode;
   public model: INavbarModel;
+  public outerIcons: INavBarOuterIcons;
 
   constructor(private navbarService: NavBarStateService, private sidebarService: SideBarStateService, private events: EventsService) { }
 
   public ngOnInit(): void {
     this.navbarService.saveComponentContainer(this.navbarContentViewContainer);
     this.model = this.navbarService.getState();
+    this.outerIcons = this.navbarService.getOuterIcons();
 
     // Auto hide when scrolling down
     this.events.onEvent(CoreEvent.WindowScrollDown).subscribe(() => {
@@ -42,15 +45,9 @@ export class NavBarComponent implements OnInit {
     this.sidebarService.toggle(Position.Left);
   }
 
-  public onLeftIconClick(): void {
-    if (this.model.leftIcon && this.model.leftIcon.action) {
-      this.model.leftIcon.action();
-    }
-  }
-
-  public onRightIconClick(): void {
-    if (this.model.rightIcon && this.model.rightIcon.action) {
-      this.model.rightIcon.action();
+  public onIconClick(iconAction: IIconAction): void {
+    if (iconAction.action) {
+      iconAction.action();
     }
   }
 

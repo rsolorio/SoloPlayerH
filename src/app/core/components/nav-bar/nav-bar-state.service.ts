@@ -1,9 +1,11 @@
 import { Injectable, ViewContainerRef, ComponentFactoryResolver, Type } from '@angular/core';
-import { INavbarModel, NavbarDisplayMode } from './nav-bar-model.interface';
+import { INavbarModel, INavBarOuterIcons, NavbarDisplayMode } from './nav-bar-model.interface';
 import { IMenuModel } from '../../models/menu-model.interface';
 import { IIconAction } from '../../models/core.interface';
 import { IIconMenuModel } from '../icon-menu/icon-menu-model.interface';
 import { NavBarComponent } from './nav-bar.component';
+import { EventsService } from '../../services/events/events.service';
+import { CoreEvent } from '../../services/events/events.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -14,16 +16,22 @@ export class NavBarStateService {
     menuList: [],
     mode: NavbarDisplayMode.None
   };
+
+  private outerIcons: INavBarOuterIcons = {};
   private navbarComponent: NavBarComponent;
   private componentInstance;
   private componentContainer: ViewContainerRef;
   /** Number of seconds the toast message will be displayed. */
   private toastDuration = 3;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, private events: EventsService) { }
 
   public getState(): INavbarModel {
     return this.navbarState;
+  }
+
+  public getOuterIcons(): INavBarOuterIcons {
+    return this.outerIcons;
   }
 
   public show(): void {
@@ -124,5 +132,18 @@ export class NavBarStateService {
     if (this.navbarComponent) {
       this.navbarComponent.searchBoxFocus();
     }
+  }
+
+  public showBackIcon(): void {
+    this.outerIcons.left = {
+      icon: 'mdi-arrow-left mdi',
+      action: () => {
+        this.events.broadcast(CoreEvent.NavbarBack);
+      }
+    };
+  }
+
+  public restoreOuterLeftIcon(): void {
+    this.outerIcons.left = null;
   }
 }
