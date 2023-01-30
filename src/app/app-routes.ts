@@ -25,15 +25,40 @@ export enum AppRoute {
 }
 
 export const appRoutes: { [route: string]: IAppRouteInfo; } = {};
-appRoutes[AppRoute.Home] = { route: AppRoute.Home, name: 'Home', icon: 'mdi-home mdi'};
-appRoutes[AppRoute.AlbumArtists] = { route: AppRoute.AlbumArtists, name: 'Album Artists', icon: 'mdi-account-badge mdi'};
-appRoutes[AppRoute.Artists] = { route: AppRoute.Artists, name: 'Artists', icon: 'mdi-account-music mdi'};
-appRoutes[AppRoute.Albums] = { route: AppRoute.Albums, name: 'Albums', icon: 'mdi-album mdi'};
-appRoutes[AppRoute.Genres] = { route: AppRoute.Genres, name: 'Genres', icon: 'mdi-tag-outline mdi'};
-appRoutes[AppRoute.Classifications] = { route: AppRoute.Classifications, name: 'Classifications', icon: 'mdi-tag-multiple-outline mdi'};
-appRoutes[AppRoute.Songs] = { route: AppRoute.Songs, name: 'Songs', icon: 'mdi-music-note mdi'};
-appRoutes[AppRoute.Playlists] = { route: AppRoute.Playlists, name: 'Playlists', icon: 'mdi-playlist-play mdi'};
-appRoutes[AppRoute.Filters] = { route: AppRoute.Filters, name: 'Filters', icon: 'mdi-filter-variant mdi'};
-appRoutes[AppRoute.Settings] = { route: AppRoute.Settings, name: 'Settings', icon: 'mdi-cogs mdi'};
-appRoutes[AppRoute.Log] = { route: AppRoute.Log, name: 'Event Log', icon: 'mdi-file-document-edit-outline mdi'};
-appRoutes[AppRoute.QuickFilter] = { route: AppRoute.QuickFilter, name: 'Quick Filter', icon: 'mdi-filter-outline mdi', menuHidden: true};
+appRoutes[AppRoute.Home] = { route: AppRoute.Home,
+  icon: 'mdi-home mdi',
+  name: 'Home' };
+appRoutes[AppRoute.AlbumArtists] = { route: AppRoute.AlbumArtists,
+  icon: 'mdi-account-badge mdi',
+  name: 'Album Artists' };
+appRoutes[AppRoute.Artists] = { route: AppRoute.Artists,
+  icon: 'mdi-account-music mdi',
+  name: 'Artists' };
+appRoutes[AppRoute.Albums] = { route: AppRoute.Albums,
+  icon: 'mdi-album mdi',
+  name: 'Albums' };
+appRoutes[AppRoute.Genres] = { route: AppRoute.Genres,
+  icon: 'mdi-tag-outline mdi',
+  name: 'Genres' };
+appRoutes[AppRoute.Classifications] = { route: AppRoute.Classifications,
+  icon: 'mdi-tag-multiple-outline mdi',
+  name: 'Classifications' };
+appRoutes[AppRoute.Songs] = { route: AppRoute.Songs,
+  icon: 'mdi-music-note mdi',
+  name: 'Songs' };
+appRoutes[AppRoute.Playlists] = { route: AppRoute.Playlists,
+  icon: 'mdi-playlist-play mdi',
+  name: 'Playlists' };
+appRoutes[AppRoute.Filters] = { route: AppRoute.Filters,
+  icon: 'mdi-filter-variant mdi',
+  name: 'Filters' };
+appRoutes[AppRoute.Settings] = { route: AppRoute.Settings,
+  icon: 'mdi-cogs mdi',
+  name: 'Settings' };
+appRoutes[AppRoute.Log] = { route: AppRoute.Log,
+  icon: 'mdi-file-document-edit-outline mdi',
+  name: 'Event Log' };
+appRoutes[AppRoute.QuickFilter] = { route: AppRoute.QuickFilter,
+  icon: 'mdi-filter-outline mdi',
+  name: 'Quick Filter',
+  menuHidden: true };

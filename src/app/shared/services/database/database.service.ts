@@ -33,6 +33,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { QueryModel } from '../../models/query-model.class';
+import { databaseColumns, DbColumn } from './database.columns';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -42,19 +43,6 @@ import { QueryModel } from '../../models/query-model.class';
   providedIn: 'root'
 })
 export class DatabaseService {
-
-  private columnDisplayNames: { [columnName: string]: string } = {
-    'artistId': 'Artist',
-    'primaryArtistId': 'Album Artist',
-    'primaryAlbumId': 'Album',
-    'classificationId': 'Classification',
-    'rating': 'Rating',
-    'mood': 'Mood',
-    'language': 'Language',
-    'favorite': 'Favorite',
-    'releaseDecade': 'Decade',
-    'lyrics': 'Has Lyrics'
-  };
   private dataSource: DataSource;
   /**
    * Maximum number of parameters in a single statement.
@@ -119,7 +107,7 @@ export class DatabaseService {
   }
 
   public displayName(columnName: string): string {
-    return this.columnDisplayNames[columnName];
+    return databaseColumns[columnName].caption;
   }
 
   public hash(value: string): string {
@@ -327,6 +315,7 @@ export class DatabaseService {
             parameter[parameterName] = columnValue;
             if (hasSecondLevelWhere) {
               // The OR operator is for conditions using the same column
+              // TODO: when all values are using "NOT EQUALS" the operator should be AND; maybe a valuesOperator property?
               qb2 = qb2.orWhere(where, parameter);
             }
             else {
@@ -440,10 +429,10 @@ export class DatabaseService {
 
   public async getSongValues(columnName: string): Promise<any[]> {
     switch(columnName) {
-      case 'rating':
+      case DbColumn.Rating:
         return [0, 1, 2, 3, 4, 5];
-      case 'favorite':
-      case 'hasLyrics':
+      case DbColumn.Favorite:
+      case DbColumn.HasLyrics:
         return ['true', 'false'];
     }
     const results = await this.dataSource
