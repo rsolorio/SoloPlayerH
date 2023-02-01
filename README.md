@@ -164,6 +164,7 @@ You can configure how the tag information is retrieved and where it will be stor
 - name
 - primaryArtistId
 - releaseYear
+- releaseDecade
 - favorite
 - albumSort
 - albumType

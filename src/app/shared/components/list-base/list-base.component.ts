@@ -1,5 +1,6 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, TemplateRef, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -124,7 +125,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
     // When navigating without changing the route, the component will not reload
     // However, we can detect if the query param changed
-    this.subs.sink = this.route.queryParams.subscribe(params => {
+    this.subs.sink = this.route.queryParams.subscribe(() => {
       // Param changed, but not the route
       if (!this.navigation.routeChanged()) {
         this.loadData();
@@ -209,16 +210,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     navbar.rightIcon = {
       icon: this.filterNoCriteriaIcon,
       action: () => {
-        if (this.model.showModal) {
-          this.model.showModal = false;
-        }
-        else {
-          this.model.showModal = true;
-          // We need time to allow the view child to render before trying to do anything with the container
-          setTimeout(() => {
-            this.loadModalFilter();
-          });
-        }
+        this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.queryModel.id] });
       }
     };
 
@@ -332,12 +324,5 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       this.navbarService.getState().mode = NavbarDisplayMode.Title;
     }
     this.broadcastService.send(navInfo.options.query).subscribe();
-  }
-
-  private loadModalFilter(): void {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(FilterViewComponent);
-    const component = this.modalHostViewContainer.createComponent(componentFactory);
-    // Create a copy of the current query model and use it to load the data
-    component.instance.model = this.model.queryModel.clone();
   }
 }

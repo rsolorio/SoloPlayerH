@@ -11,6 +11,8 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   @Column()
   releaseYear: number;
   @Column()
+  releaseDecade: number;
+  @Column()
   favorite: boolean;
   @Column()
   albumSort: string;

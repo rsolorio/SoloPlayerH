@@ -169,6 +169,7 @@ export class UtilityService {
 
   /**
    * Returns the value of the specified route param from the activated route.
+   * The reason why we ask for an activated route is because this service will not have an activated route on its own.
    */
   public getRouteParam(paramName: string, route: ActivatedRoute): any {
     return route.snapshot.params[paramName];

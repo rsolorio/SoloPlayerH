@@ -18,6 +18,7 @@ import { ListItemEntity } from './base.entity';
     .addSelect('album.name', 'name')
     .addSelect('album.albumSort', 'albumSort')
     .addSelect('album.releaseYear', 'releaseYear')
+    .addSelect('album.releaseDecade', 'releaseDecade')
     .addSelect('artist.name', 'artistName')
     .addSelect('artist.artistStylized', 'artistStylized')
     .addSelect('COUNT(album.id)', 'songCount')
@@ -32,6 +33,8 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   songCount: number;
   @ViewColumn()
   releaseYear: number;
+  @ViewColumn()
+  releaseDecade: number;
   @ViewColumn()
   artistName: string;
   @ViewColumn()

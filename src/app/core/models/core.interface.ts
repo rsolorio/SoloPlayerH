@@ -44,7 +44,7 @@ export interface ISelectable {
 }
 
 export interface ITimestampItem {
-  id: string;
+  id?: string;
   timestamp?: Date;
 }
 

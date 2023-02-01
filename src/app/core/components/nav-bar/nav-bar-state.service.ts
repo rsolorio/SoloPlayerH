@@ -109,6 +109,9 @@ export class NavBarStateService {
   }
 
   public showToast(message: string): void {
+    // First hide toast in case it is already running
+    this.hideToast();
+    // Now show the new message
     this.navbarState.toastMessage = message;
     this.navbarState.toastVisible = true;
     setTimeout(() => {
@@ -117,11 +120,13 @@ export class NavBarStateService {
   }
 
   private hideToast(): void {
-    this.navbarState.toastVisible = false;
-    // Remove the message so the element is removed from the DOM
-    setTimeout(() => {
-      this.navbarState.toastMessage = null;
-    }, 3000); // This time has to be equals or less than the time to fade out
+    if (this.navbarState.toastVisible) {
+      this.navbarState.toastVisible = false;
+      // Remove the message so the element is removed from the DOM
+      setTimeout(() => {
+        this.navbarState.toastMessage = null;
+      }, 3000); // This time has to be equals or less than the time to fade out
+    }
   }
 
   public register(navbar: NavBarComponent): void {

@@ -13,7 +13,7 @@ import { ListItemEntity } from './base.entity';
  @ViewEntity({
   name: 'albumClassificationView',
   expression: `
-  SELECT album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, artist.name AS artistName, artist.artistStylized AS artistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount
+  SELECT album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, album.releaseDecade, artist.name AS artistName, artist.artistStylized AS artistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount
   FROM album INNER JOIN artist
   ON album.primaryArtistId = artist.id INNER JOIN (
     SELECT song.id, song.primaryAlbumId, songClassification.classificationId
@@ -21,7 +21,7 @@ import { ListItemEntity } from './base.entity';
     ON song.id = songClassification.songId
   ) AS songClass
   ON album.id = songClass.primaryAlbumId
-  GROUP BY album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, artist.name, artist.artistStylized, songClass.classificationId
+  GROUP BY album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, album.releaseDecade, artist.name, artist.artistStylized, songClass.classificationId
 `
 })
 export class AlbumClassificationViewEntity extends ListItemEntity implements IAlbumModel {
@@ -33,6 +33,8 @@ export class AlbumClassificationViewEntity extends ListItemEntity implements IAl
   songCount: number;
   @ViewColumn()
   releaseYear: number;
+  @ViewColumn()
+  releaseDecade: number;
   @ViewColumn()
   artistName: string;
   @ViewColumn()

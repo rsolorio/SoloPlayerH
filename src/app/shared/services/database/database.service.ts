@@ -34,6 +34,7 @@ import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { QueryModel } from '../../models/query-model.class';
 import { databaseColumns, DbColumn } from './database.columns';
+import { ISelectedDataItem } from 'src/app/core/models/core.interface';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -241,6 +242,10 @@ export class DatabaseService {
     return this.createQueryBuilder(repo, entityTempName, queryModel).getMany();
   }
 
+  public getRepo<T extends ObjectLiteral>(entity: EntityTarget<T>): Repository<T> {
+    return this.dataSource.getRepository(entity);
+  }
+
   private createQueryBuilder<T>(
     repo: Repository<T>, entityName: string, queryModel: QueryModel<T>
   ): SelectQueryBuilder<T> {
@@ -288,10 +293,10 @@ export class DatabaseService {
       if (whereCriteria.length) {
         if (hasWhere) {
           // All criteria will be joined with the AND operator since all criteria must be used to get the results
-          queryBuilder = queryBuilder.andWhere(this.createBrackets(entityName, whereCriteria));
+          queryBuilder = queryBuilder.andWhere(this.createFirstLevelBrackets(entityName, whereCriteria));
         }
         else {
-          queryBuilder = queryBuilder.where(this.createBrackets(entityName, whereCriteria));
+          queryBuilder = queryBuilder.where(this.createFirstLevelBrackets(entityName, whereCriteria));
           hasWhere = true;
         }
       }
@@ -299,47 +304,67 @@ export class DatabaseService {
     return queryBuilder;
   }
 
-  private createBrackets(entityName: string, whereCriteria: ICriteriaValueBaseModel[]): Brackets  {
+  /**
+   * Creates the first level where expression that consists of different criteria columns joined together.
+   */
+  private createFirstLevelBrackets(entityName: string, whereCriteria: ICriteriaValueBaseModel[]): Brackets  {
     const result = new Brackets(qb1 => {
-      let hasFirstLevelWhere = false;
+      let hasWhere = false;
       for (const criteriaItem of whereCriteria) {
-        let hasSecondLevelWhere = false;
-        const brackets = new Brackets(qb2 => {
-          // Typeorm requires unique parameters even if the column is the same
-          let parameterIndex = 0;
-          for (const columnValue of criteriaItem.ColumnValues) {
-            parameterIndex++;
-            const parameterName = criteriaItem.ColumnName + parameterIndex.toString();
-            const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${parameterName}`;
-            const parameter = {};
-            parameter[parameterName] = columnValue;
-            if (hasSecondLevelWhere) {
-              // The OR operator is for conditions using the same column
-              // TODO: when all values are using "NOT EQUALS" the operator should be AND; maybe a valuesOperator property?
-              qb2 = qb2.orWhere(where, parameter);
-            }
-            else {
-              qb2 = qb2.where(where, parameter);
-              hasSecondLevelWhere = true;
-            }
-          }
-        });
-        if (hasFirstLevelWhere) {
+        let whereBrackets: Brackets;
+        if (criteriaItem.Operator === CriteriaOperator.IsNull || criteriaItem.Operator === CriteriaOperator.IsNotNull) {
+          // Ignore column values for these operators
+          whereBrackets = new Brackets(qb => {
+            qb.where(`${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)}`);
+          });
+        }
+        else {
+          whereBrackets = this.createSecondLevelBrackets(entityName, criteriaItem);
+        }
+        if (hasWhere) {
           // This operator will be determined by criteria item
           if (criteriaItem.OrOperator) {
-            qb1 = qb1.orWhere(brackets);
+            qb1 = qb1.orWhere(whereBrackets);
           }
           else {
-            qb1 = qb1.andWhere(brackets);
+            qb1 = qb1.andWhere(whereBrackets);
           }
         }
         else {
-          qb1 = qb1.where(brackets);
-          hasFirstLevelWhere = true;
+          qb1 = qb1.where(whereBrackets);
+          hasWhere = true;
         }
       }
     });
     return result;
+  }
+
+  /**
+   * Creates the second level where expression that consists of multiple values from one column joined together.
+   */
+  private createSecondLevelBrackets(entityName: string, criteriaItem: ICriteriaValueBaseModel): Brackets {
+    let hasWhere = false;
+    const brackets = new Brackets(qb2 => {
+      // Typeorm requires unique parameters even if the column is the same
+      let parameterIndex = 0;
+      for (const columnValue of criteriaItem.ColumnValues) {
+        parameterIndex++;
+        const parameterName = criteriaItem.ColumnName + parameterIndex.toString();
+        const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${parameterName}`;
+        const parameter = {};
+        parameter[parameterName] = columnValue;
+        if (hasWhere) {
+          // The OR operator is for conditions using the same column
+          // TODO: when all values are using "NOT EQUALS" the operator should be AND; maybe a valuesOperator property?
+          qb2 = qb2.orWhere(where, parameter);
+        }
+        else {
+          qb2 = qb2.where(where, parameter);
+          hasWhere = true;
+        }
+      }
+    });
+    return brackets;
   }
 
   private buildOrderBy<T>(
@@ -427,13 +452,19 @@ export class DatabaseService {
       .getMany();
   }
 
-  public async getSongValues(columnName: string): Promise<any[]> {
+  public async getSongValues(columnName: string): Promise<ISelectedDataItem<any>[]> {
     switch(columnName) {
       case DbColumn.Rating:
-        return [0, 1, 2, 3, 4, 5];
+        return [
+          { caption: '0', data: 0 },
+          { caption: '1', data: 1 },
+          { caption: '2', data: 2 },
+          { caption: '3', data: 3 },
+          { caption: '4', data: 4 },
+          { caption: '5', data: 5 }];
       case DbColumn.Favorite:
-      case DbColumn.HasLyrics:
-        return ['true', 'false'];
+      case DbColumn.Lyrics:
+        return [{ caption: 'Yes', data: true }, { caption: 'No', data: false }];
     }
     const results = await this.dataSource
       .getRepository(SongEntity)
@@ -441,7 +472,14 @@ export class DatabaseService {
       .select(columnName)
       .distinct(true)
       .getRawMany();
-    return results.map(result => result[columnName]).sort();
+    const items = results.map(result => {
+      const item: ISelectedDataItem<any> = {
+        caption: result[columnName],
+        data: result[columnName]
+      };
+      return item;
+    });
+    return this.utilities.sort(items, 'caption');
   }
 
   public async getAllClassifications(): Promise<IClassificationModel[]> {

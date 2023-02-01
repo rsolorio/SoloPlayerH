@@ -1,7 +1,14 @@
+import { ISelectedDataItem } from "src/app/core/models/core.interface";
+
 export interface IColumnMetadata {
   name: string;
   caption: string;
   icon?: string;
+}
+
+export interface IColumnValueSelection {
+  columnName: string;
+  values: ISelectedDataItem<string>[];
 }
 
 export enum DbColumn {
@@ -14,7 +21,7 @@ export enum DbColumn {
   Language = 'language',
   Favorite = 'favorite',
   ReleaseDecade = 'releaseDecade',
-  HasLyrics = 'hasLyrics'
+  Lyrics = 'Lyrics'
 }
 
 export const databaseColumns: { [name: string]: IColumnMetadata } = { };
@@ -27,4 +34,4 @@ databaseColumns[DbColumn.Mood] = { name: DbColumn.Mood, caption: 'Mood', icon: '
 databaseColumns[DbColumn.Language] = { name: DbColumn.Language, caption: 'Language', icon: 'mdi-translate mdi'};
 databaseColumns[DbColumn.Favorite] = { name: DbColumn.Favorite, caption: 'Favorite', icon: 'mdi-heart-outline mdi'};
 databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Release Decade', icon: 'mdi-calendar-blank-outline mdi'};
-databaseColumns[DbColumn.HasLyrics] = { name: DbColumn.HasLyrics, caption: 'HasLyrics', icon: 'mdi-script-text-outline mdi'};
+databaseColumns[DbColumn.Lyrics] = { name: DbColumn.Lyrics, caption: 'Lyrics', icon: 'mdi-script-text-outline mdi'};

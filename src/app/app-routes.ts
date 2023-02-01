@@ -21,7 +21,7 @@ export enum AppRoute {
   FilterView = '/filters/view',
   Settings = '/settings',
   Log = '/log',
-  QuickFilter = '/quickfilter'
+  Queries = '/queries'
 }
 
 export const appRoutes: { [route: string]: IAppRouteInfo; } = {};
@@ -58,7 +58,7 @@ appRoutes[AppRoute.Settings] = { route: AppRoute.Settings,
 appRoutes[AppRoute.Log] = { route: AppRoute.Log,
   icon: 'mdi-file-document-edit-outline mdi',
   name: 'Event Log' };
-appRoutes[AppRoute.QuickFilter] = { route: AppRoute.QuickFilter,
+appRoutes[AppRoute.Queries] = { route: AppRoute.Queries,
   icon: 'mdi-filter-outline mdi',
-  name: 'Quick Filter',
+  name: 'Queries',
   menuHidden: true };

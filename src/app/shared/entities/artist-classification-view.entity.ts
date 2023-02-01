@@ -14,14 +14,14 @@ import { ListItemEntity } from './base.entity';
   expression: `
   SELECT artist.id, artist.name, artist.artistSort, artist.artistStylized, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount
   FROM artist INNER JOIN (
-    SELECT album.id, album.primaryArtistId, album.name, album.releaseYear, songClass.classificationId, COUNT(songClass.id) AS songCount
+    SELECT album.id, album.primaryArtistId, album.name, songClass.classificationId, COUNT(songClass.id) AS songCount
     FROM album INNER JOIN (
       SELECT song.id, song.primaryAlbumId, songClassification.classificationId
       FROM song INNER JOIN songClassification
       ON song.id = songClassification.songId
     ) AS songClass
     ON album.id = songClass.primaryAlbumId
-    GROUP BY album.id, album.primaryArtistId, album.name, album.releaseYear, songClass.classificationId
+    GROUP BY album.id, album.primaryArtistId, album.name, songClass.classificationId
   ) AS albumClassification
   ON artist.id = albumClassification.primaryArtistId
   GROUP BY artist.id, artist.name, artist.artistSort, artist.artistStylized, albumClassification.classificationId

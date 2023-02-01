@@ -1,0 +1,22 @@
+@import "../../../styles-variables";
+
+.sp-query-editor-container {
+  margin: 0;
+}
+
+.sp-filter-header {
+  height: 42px;
+  line-height: 40px; /* This one has to match the height in order to vertically center the text. */
+  vertical-align: middle;
+  border-top: 1px solid $sp-color-overlay-04;
+  margin: 5px;
+}
+
+.sp-filter-header-text {
+  margin-left: 10px;
+}
+
+.sp-btn-add {
+  float: right;
+  margin-right: 10px;
+}

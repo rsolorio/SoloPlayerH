@@ -258,15 +258,23 @@ export class ScanService {
     newAlbum.releaseYear = 0;
     if (audioInfo.metadata.common.year) {
       if (!ignoredYears || !ignoredYears.length || !ignoredYears.includes(audioInfo.metadata.common.year)) {
+        // Is this actually the album year? Album year and song year might be different.
         newAlbum.releaseYear = audioInfo.metadata.common.year;
       }
     }
+    newAlbum.releaseDecade = this.utilities.getDecade(newAlbum.releaseYear);
     // We have enough information to hash
     this.db.hashAlbum(newAlbum);
 
     const existingAlbum = this.existingAlbums.find(a => a.id === newAlbum.id);
     if (existingAlbum) {
       // TODO: update other fields if info is missing
+
+      // Use the latest song year to set the album year
+      if (newAlbum.releaseYear > existingAlbum.releaseYear) {
+        existingAlbum.releaseYear = newAlbum.releaseYear;
+        existingAlbum.hasChanges = true;
+      }
       return existingAlbum;
     }
 

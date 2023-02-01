@@ -4,7 +4,8 @@ import { SongBaseEntity } from './song-base.entity';
 import { SongEntity } from './song.entity';
 
 /**
- * Field list: id, primaryAlbumId, primaryArtistId, name, filePath, titleSort, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, bitrate, vbr, lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized
+ * Field list: id, primaryAlbumId, primaryArtistId, name, filePath, titleSort, playCount, releaseYear, releaseDecade,
+ * trackNumber, mediaNumber, seconds, rating, language, mood, favorite, bitrate, vbr, lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized
  */
 @ViewEntity({
   name: 'songView',
@@ -20,9 +21,13 @@ import { SongEntity } from './song.entity';
     .addSelect('song.titleSort', 'titleSort')
     .addSelect('song.playCount', 'playCount')
     .addSelect('song.releaseYear', 'releaseYear')
+    .addSelect('song.releaseDecade', 'releaseDecade')
     .addSelect('song.trackNumber', 'trackNumber')
     .addSelect('song.mediaNumber', 'mediaNumber')
     .addSelect('song.seconds', 'seconds')
+    .addSelect('song.rating', 'rating')
+    .addSelect('song.language', 'language')
+    .addSelect('song.mood', 'mood')
     .addSelect('song.favorite', 'favorite')
     .addSelect('song.bitrate', 'bitrate')
     .addSelect('song.vbr', 'vbr')
@@ -43,6 +48,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   releaseYear: number;
   @ViewColumn()
+  releaseDecade: number;
+  @ViewColumn()
   trackNumber: number;
   @ViewColumn()
   mediaNumber: number;
@@ -62,6 +69,12 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   favorite: boolean;
   @ViewColumn()
   seconds: number;
+  @ViewColumn()
+  rating: number;
+  @ViewColumn()
+  language: string;
+  @ViewColumn()
+  mood: string;
   @ViewColumn()
   bitrate: number;
   @ViewColumn()
