@@ -8,7 +8,6 @@ import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-s
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
-import { SongViewEntity } from 'src/app/shared/entities';
 import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
 import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { QueryModel } from 'src/app/shared/models/query-model.class';
@@ -101,7 +100,7 @@ export class QueryEditorComponent implements OnInit {
       onOk: values => {
         let criteriaItem = this.model.userCriteria.find(item => item.ColumnName === columnName);
         if (!criteriaItem) {
-          // TODO: Operator should be null/not null if the data type is not boolean
+          // TODO: Operator should be null (NO)/not null (YES) if the data type is not boolean
           // and the editor is Yes/No
           criteriaItem = new CriteriaValueBase(columnName, null, CriteriaOperator.Equals);
           this.model.userCriteria.push(criteriaItem);

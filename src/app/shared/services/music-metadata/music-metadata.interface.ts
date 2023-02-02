@@ -23,6 +23,7 @@ export interface IPictureTag {
 }
 
 export interface IAudioInfo {
+  fileInfo?: IFileInfo;
   metadata: IAudioMetadata;
   fullyParsed: boolean;
   error?: any;

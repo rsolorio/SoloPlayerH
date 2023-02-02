@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, TemplateRef, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
@@ -10,7 +10,6 @@ import { IIconAction } from 'src/app/core/models/core.interface';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { FilterViewComponent } from 'src/app/filter/filter-view/filter-view.component';
 import { IListItemModel } from '../../models/base-model.interface';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
@@ -91,7 +90,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
     private events: EventsService,
     private loadingService: LoadingViewStateService,
     private navbarService: NavBarStateService,
@@ -157,7 +155,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private afterListUpdated(): void {
     this.updateFilterIcon();
     this.loadingService.hide();
-    this.navbarService.showToast(`Found: ${this.model.queryModel.items.length} item` + (this.model.queryModel.items.length !== 1 ? 's' : ''));
+    this.displayItemCount();
   }
 
   private updateFilterIcon(): void {
@@ -247,8 +245,19 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         action: () => {
           this.toggleSearch(navbar);
         }
+      },
+      {
+        caption: 'Show Count',
+        icon: 'mdi-counter mdi',
+        action: () => {
+          this.displayItemCount();
+        }
       }
     ];
+  }
+
+  private displayItemCount(): void {
+    this.navbarService.showToast(`Found: ${this.model.queryModel.items.length} item` + (this.model.queryModel.items.length !== 1 ? 's' : ''));
   }
 
   /**

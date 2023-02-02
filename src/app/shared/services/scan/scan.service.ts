@@ -134,6 +134,7 @@ export class ScanService {
   private async processAudioFile(fileInfo: IFileInfo, options: ModuleOptionEntity[]): Promise<IAudioInfo> {
     const buffer = await this.fileService.getBuffer(fileInfo.path);
     const audioInfo = await this.metadataService.getMetadata(buffer, true);
+    audioInfo.fileInfo = fileInfo;
     if (!audioInfo || audioInfo.error) {
       return audioInfo;
     }

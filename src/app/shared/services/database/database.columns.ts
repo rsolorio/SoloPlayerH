@@ -21,7 +21,7 @@ export enum DbColumn {
   Language = 'language',
   Favorite = 'favorite',
   ReleaseDecade = 'releaseDecade',
-  Lyrics = 'Lyrics'
+  Lyrics = 'lyrics'
 }
 
 export const databaseColumns: { [name: string]: IColumnMetadata } = { };
