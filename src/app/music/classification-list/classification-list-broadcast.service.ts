@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ClassificationViewEntity } from 'src/app/shared/entities';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
-import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
+import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
+import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -20,7 +20,8 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
   constructor(
     private eventsService: EventsService,
     private utilityService: UtilityService,
-    private db: DatabaseService)
+    private db: DatabaseService,
+    private breadcrumbService: BreadcrumbsStateService)
   {
     super(eventsService, utilityService);
   }
@@ -29,29 +30,40 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
     return AppEvent.ClassificationListUpdated;
   }
 
-  protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteria: ICriteriaValueBaseModel[] = [];    
+  protected buildSearchCriteria(searchTerm: string): CriteriaItems {
+    const result = new CriteriaItems();
     if (searchTerm) {
       const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
-      const criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm);
-      criteriaValue.Operator = CriteriaOperator.Like;
-      criteria.push(criteriaValue);
+      const criteriaItem = new CriteriaItem('name', criteriaSearchTerm, CriteriaComparison.Like);
+      result.push(criteriaItem);
     }
-    return criteria;
+    return result;
   }
 
-  protected buildSystemCriteria(): ICriteriaValueBaseModel[] {
-    const criteriaValue = new CriteriaValueBase('classificationType', 'Genre');
-    criteriaValue.Operator = this.isGenreList ? CriteriaOperator.Equals : CriteriaOperator.NotEquals;
-    return [criteriaValue];
+  protected buildSystemCriteria(): CriteriaItems {
+    const criteriaItem = new CriteriaItem('classificationType', 'Genre');
+    criteriaItem.comparison = this.isGenreList ? CriteriaComparison.Equals : CriteriaComparison.NotEquals;
+    return new CriteriaItems(criteriaItem);
   }
 
-  protected addSortingCriteria(queryModel: QueryModel<IClassificationModel>) {
-    queryModel.addSorting('classificationType', CriteriaSortDirection.Ascending);
-    queryModel.addSorting('name', CriteriaSortDirection.Ascending);
+  protected addSortingCriteria(criteria: Criteria) {
+    criteria.addSorting('classificationType');
+    criteria.addSorting('name');
   }
 
-  protected getItems(queryModel: QueryModel<IClassificationModel>): Observable<IClassificationModel[]> {
-    return from(this.db.getList(ClassificationViewEntity, queryModel));
+  protected beforeGetItems(criteria: Criteria): void {
+    this.removeUnsupportedBreadcrumbs(criteria);
+  }
+
+  private removeUnsupportedBreadcrumbs(criteria: Criteria): void {
+    // Classifications/genres do not support any kind of breadcrumbs
+    this.breadcrumbService.clear();
+    // Now that breadcrumbs are updated, reflect the change in the criteria
+    // which will be used to get the items
+    criteria.breadcrumbCriteria.clear();
+  }
+
+  protected getItems(criteria: Criteria): Observable<IClassificationModel[]> {
+    return from(this.db.getList(ClassificationViewEntity, criteria));
   }
 }

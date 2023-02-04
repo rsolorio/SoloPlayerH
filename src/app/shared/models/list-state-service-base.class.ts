@@ -1,17 +1,18 @@
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { IStateService } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { QueryModel } from './query-model.class';
+import { Criteria } from '../services/criteria/criteria.class';
+import { ICriteriaResult } from '../services/criteria/criteria.interface';
 
 export interface IListStateService {
-  getState(): QueryModel<any>;
+  getState(): ICriteriaResult<any>;
 }
 
 /**
  * Base service class that holds and exposes a state.
  */
-export abstract class ListStateServiceBase<TItemModel> implements IStateService<QueryModel<TItemModel>>, IListStateService {
-  protected state: QueryModel<TItemModel>;
+export abstract class ListStateServiceBase<TItemModel> implements IStateService<ICriteriaResult<TItemModel>>, IListStateService {
+  protected state: ICriteriaResult<TItemModel>;
 
   constructor(private navbar: NavBarStateService, private utilities: UtilityService) {}
 
@@ -20,28 +21,19 @@ export abstract class ListStateServiceBase<TItemModel> implements IStateService<
   /**
    * Returns the state object of the service.
    */
-  public getState(): QueryModel<TItemModel> {
+  public getState(): ICriteriaResult<TItemModel> {
     if (!this.state) {
       this.state = this.buildInitialState();
     }
     return this.state;
   }
 
-  public mergeResponse(response: QueryModel<TItemModel>): void {
+  public mergeResponse(response: ICriteriaResult<TItemModel>): void {
     if (response && response.items) {
       const state = this.getState();
       state.items = response.items;
       state.name = response.name;
-      state.systemCriteria = response.systemCriteria;
-      state.breadcrumbCriteria = response.breadcrumbCriteria;
-      state.searchCriteria = response.searchCriteria;
-      state.userCriteria = response.userCriteria;
-      state.sortingCriteria = response.sortingCriteria;
-      state.pageNumber = response.pageNumber;
-      state.pageSize = response.pageSize;
-      state.totalSize = response.totalSize;
-      state.loadingItems = response.loadingItems;
-      state.noMoreItems = response.noMoreItems;
+      state.criteria = response.criteria;
       this.afterStateMerge(state);
       this.utilities.scrollToTop(this.getScrollContainerId());
     }
@@ -52,11 +44,14 @@ export abstract class ListStateServiceBase<TItemModel> implements IStateService<
   /**
    * Creates the default state of the service, which can be overwritten if there's an event to subscribe to.
    */
-  protected buildInitialState(): QueryModel<TItemModel> {
-    return new QueryModel<TItemModel>();
+  protected buildInitialState(): ICriteriaResult<TItemModel> {
+    return {
+      criteria: new Criteria(),
+      items: []
+    };
   }
 
-  protected afterStateMerge(state: QueryModel<TItemModel>): void {
+  protected afterStateMerge(state: ICriteriaResult<TItemModel>): void {
     this.navbar.showToast(`Found: ${state.items.length} item` + (state.items.length !== 1 ? 's' : ''));
   }
 

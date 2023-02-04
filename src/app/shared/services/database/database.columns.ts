@@ -1,14 +1,7 @@
-import { ISelectedDataItem } from "src/app/core/models/core.interface";
-
 export interface IColumnMetadata {
   name: string;
   caption: string;
   icon?: string;
-}
-
-export interface IColumnValueSelection {
-  columnName: string;
-  values: ISelectedDataItem<string>[];
 }
 
 export enum DbColumn {

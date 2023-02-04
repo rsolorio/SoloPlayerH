@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { AlbumArtistViewEntity, ArtistClassificationViewEntity, ArtistViewEntity } from 'src/app/shared/entities';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
-import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
+import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
+import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
+import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -20,7 +21,8 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
   constructor(
     private eventsService: EventsService,
     private utilityService: UtilityService,
-    private db: DatabaseService)
+    private db: DatabaseService,
+    private breadcrumbService: BreadcrumbsStateService)
   {
     super(eventsService, utilityService);
   }
@@ -29,31 +31,61 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
     return AppEvent.ArtistListUpdated;
   }
 
-  protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteria: ICriteriaValueBaseModel[] = [];
+  protected buildSearchCriteria(searchTerm: string): CriteriaItems {
+    const result = new CriteriaItems();
     if (searchTerm) {
       const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
-      const criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
-      criteria.push(criteriaValue);
+      const criteriaItem = new CriteriaItem('name', criteriaSearchTerm, CriteriaComparison.Like);
+      result.push(criteriaItem);
     }
-    return criteria;
+    return result;
   }
 
-  protected buildSystemCriteria(): ICriteriaValueBaseModel[] {
-    return [new CriteriaValueBase('songCount', 0, CriteriaOperator.GreaterThan)];
+  protected buildSystemCriteria(): CriteriaItems {
+    const result = new CriteriaItems();
+    result.push(new CriteriaItem('songCount', 0, CriteriaComparison.GreaterThan));
+    return result;
   }
 
-  protected addSortingCriteria(queryModel: QueryModel<IArtistModel>): void {
-    queryModel.addSorting('name', CriteriaSortDirection.Ascending);
+  protected addSortingCriteria(criteria: Criteria): void {
+    criteria.addSorting('name');
   }
 
-  protected getItems(queryModel: QueryModel<IArtistModel>): Observable<IArtistModel[]> {
+  protected beforeGetItems(criteria: Criteria): void {
+    this.removeUnsupportedBreadcrumbs(criteria);
+  }
+
+  private removeUnsupportedBreadcrumbs(criteria: Criteria): void {
+    if (!this.breadcrumbService.hasBreadcrumbs()) {
+      return;
+    }
+    const breadcrumbs = this.breadcrumbService.getState();
     if (this.isAlbumArtist) {
-      if (queryModel.hasCriteria('classificationId')) {
-        return from(this.db.getList(ArtistClassificationViewEntity, queryModel));
+      // Album Artists support Genre and Classification breadcrumbs
+      let unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
+        breadcrumb.origin !== BreadcrumbSource.Genre &&
+        breadcrumb.origin !== BreadcrumbSource.Classification);
+      
+      for (const breadcrumb of unsupportedBreadcrumbs) {
+        this.breadcrumbService.remove(breadcrumb.sequence);
       }
-      return from(this.db.getList(AlbumArtistViewEntity, queryModel));
     }
-    return from(this.db.getList(ArtistViewEntity, queryModel));
+    else {
+      // Artists do not support any kind of breadcrumbs
+      this.breadcrumbService.clear();
+    }
+    // Now that breadcrumbs are updated, reflect the change in the query
+    // which will be used to broadcast
+    criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+  }
+
+  protected getItems(criteria: Criteria): Observable<IArtistModel[]> {
+    if (this.isAlbumArtist) {
+      if (criteria.hasComparison(false, 'classificationId')) {
+        return from(this.db.getList(ArtistClassificationViewEntity, criteria));
+      }
+      return from(this.db.getList(AlbumArtistViewEntity, criteria));
+    }
+    return from(this.db.getList(ArtistViewEntity, criteria));
   }
 }

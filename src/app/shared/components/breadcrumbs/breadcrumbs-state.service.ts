@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
-import { ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
 import { AppEvent } from '../../models/events.enum';
+import { CriteriaItems } from '../../services/criteria/criteria.class';
 import { IBreadcrumbModel, IBreadcrumbOptions } from './breadcrumbs-model.interface';
 
 @Injectable({
@@ -137,18 +137,12 @@ export class BreadcrumbsStateService {
     return this.state.length > 0;
   }
 
-  public getCriteria(): ICriteriaValueBaseModel[] {
-    const result: ICriteriaValueBaseModel[] = [];
+  public getCriteria(): CriteriaItems {
+    const result = new CriteriaItems();
     for (const breadcrumb of this.state) {
-      for (const criteriaItem of breadcrumb.criteriaList) {
-        result.push(criteriaItem);
-      }
+      result.push(breadcrumb.criteriaItem);
     }
     return result;
-  }
-
-  public getCriteriaClone(): ICriteriaValueBaseModel[] {
-    return JSON.parse(JSON.stringify(this.getCriteria()));
   }
 
   public setupTooltip(breadcrumb: IBreadcrumbModel): void {
@@ -156,13 +150,13 @@ export class BreadcrumbsStateService {
       return;
     }
 
-    if (breadcrumb.criteriaList.length) {
+    if (breadcrumb.criteriaItem.columnValues.length) {
       breadcrumb.tooltip = '';
-      for (const criteriaItem of breadcrumb.criteriaList) {
+      for (const valuePair of breadcrumb.criteriaItem.columnValues) {
         if (breadcrumb.tooltip) {
           breadcrumb.tooltip += ', ';
         }
-        breadcrumb.tooltip += criteriaItem.DisplayValue;
+        breadcrumb.tooltip += valuePair.caption;
       }
     }
   }

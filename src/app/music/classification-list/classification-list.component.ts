@@ -7,10 +7,8 @@ import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/b
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
-import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
+import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 
@@ -107,51 +105,36 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   private addBreadcrumb(classification: IClassificationModel): void {
-    const criteria: ICriteriaValueBaseModel[] = [];
-    const criteriaValue = new CriteriaValueBase('classificationId', classification.id);
-    criteriaValue.DisplayName = classification.classificationType;
-    criteriaValue.DisplayValue = classification.name;
-    criteriaValue.IgnoreInSelect = true;
-    criteria.push(criteriaValue);
+    const criteriaItem = new CriteriaItem('classificationId', classification.id);
+    criteriaItem.displayName = classification.classificationType;
+    criteriaItem.columnValues[0].caption = classification.name;
+    criteriaItem.ignoreInSelect = true;
     const selectedItems = this.spListBaseComponent.getSelectedItems();
     if (selectedItems.length) {
       for (const item of selectedItems) {
         const classificationItem = item as IClassificationModel;
-        const criteriaItem = new CriteriaValueBase('classificationId', classificationItem.id);
-        criteriaItem.DisplayName = classificationItem.classificationType;
-        criteriaItem.DisplayValue = classificationItem.name;
-        criteriaItem.IgnoreInSelect = true;
-        criteria.push(criteriaItem);
+        criteriaItem.columnValues.push({
+          value: classificationItem.id,
+          caption: classificationItem.name
+        });
       }
     }
     // Suppress event so this component doesn't react to this change;
     // these breadcrumbs are for another list that hasn't been loaded yet
     this.breadcrumbService.addOne({
-      criteriaList: criteria,
+      criteriaItem: criteriaItem,
       origin: BreadcrumbSource.Classification
     }, { suppressEvents: true });
   }
 
   private showEntity(routeInfo: IAppRouteInfo, classification: IClassificationModel): void {
     this.addBreadcrumb(classification);
-    // The only query information that will pass from one entity to another is breadcrumbs
-    const query = new QueryModel<any>();
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(routeInfo.route, { query: query });
+    // The only criteria information that will pass from one entity to another is breadcrumbs
+    const criteria = new Criteria();
+    criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+    this.navigation.forward(routeInfo.route, { criteria: criteria });
   }
 
   public onListInitialized(): void {
-  }
-
-  public onBeforeBroadcast(query: QueryModel<IClassificationModel>): void {
-    this.removeUnsupportedBreadcrumbs(query);
-  }
-
-  private removeUnsupportedBreadcrumbs(query: QueryModel<IClassificationModel>): void {
-    // Classifications/genres do not support any kind of breadcrumbs
-    this.breadcrumbService.clear();
-    // Now that breadcrumbs are updated, reflect the change in the query
-    // which will be used to broadcast
-    query.breadcrumbCriteria = [];
   }
 }

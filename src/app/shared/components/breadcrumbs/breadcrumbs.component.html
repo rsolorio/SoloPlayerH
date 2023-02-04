@@ -5,9 +5,9 @@
       <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon"></i>
       <!-- Caption -->
       <span *ngIf="breadcrumb.caption" class="sp-text-large">{{breadcrumb.caption}}</span>
-      <span *ngIf="!breadcrumb.caption" class="sp-text-large">{{breadcrumb.criteriaList[0].DisplayValue}}</span>
+      <span *ngIf="!breadcrumb.caption" class="sp-text-large">{{breadcrumb.criteriaItem.columnValues[0].caption}}</span>
       <!-- Multiple info -->
-      <span *ngIf="breadcrumb.criteriaList.length > 1" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaList.length - 1}}</span>
+      <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaItem.columnValues.length - 1}}</span>
       <!-- Close icon -->
       <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>
       <i *ngIf="isLast" class="mdi-close mdi sp-color-on-bg-low sp-text-medium"></i>

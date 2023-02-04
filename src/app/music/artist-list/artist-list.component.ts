@@ -8,10 +8,8 @@ import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/b
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
-import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
+import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
@@ -126,39 +124,35 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private showEntity(routeInfo: IAppRouteInfo, artist: IArtistModel): void {
     this.addBreadcrumb(artist);
-    // The only query information that will pass from one entity to another is breadcrumbs
-    const query = new QueryModel<any>();
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(routeInfo.route, { query: query });
+    // The only criteria information that will pass from one entity to another is breadcrumbs
+    const criteria = new Criteria();
+    criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+    this.navigation.forward(routeInfo.route, { criteria: criteria });
   }
 
   private createBreadcrumb(artist: IArtistModel): IBreadcrumbModel {
-    const criteria: ICriteriaValueBaseModel[] = [];
+    // Add clicked artist
     const columnName = this.isAlbumArtist ? 'primaryArtistId' : 'artistId';
-    const criteriaValue = new CriteriaValueBase(columnName, artist.id);
-    criteriaValue.DisplayName = this.db.displayName(criteriaValue.ColumnName);
-    criteriaValue.DisplayValue = artist.artistStylized;
+    const criteriaItem = new CriteriaItem(columnName, artist.id);
+    criteriaItem.displayName = this.db.displayName(criteriaItem.columnName);
+    criteriaItem.columnValues[0].caption = artist.artistStylized;
     if (columnName === 'artistId') {
       // This column needs to be ignored in order to prevent duplicate search results
-      criteriaValue.IgnoreInSelect = true;
+      criteriaItem.ignoreInSelect = true;
     }
-    criteria.push(criteriaValue);
-
+    // Add other selected artists
     const selectedItems = this.spListBaseComponent.getSelectedItems();
     if (selectedItems.length) {
       for (const item of selectedItems) {
         const artistItem = item as IArtistModel;
-        const criteriaItem = new CriteriaValueBase(columnName, artistItem.id);
-        criteriaItem.DisplayName = criteriaValue.DisplayName;
-        criteriaItem.DisplayValue = artistItem.name;
-        if (columnName === 'artistId') {
-          criteriaItem.IgnoreInSelect = true;
-        }
-        criteria.push(criteriaItem);
+        criteriaItem.columnValues.push({
+          value: artistItem.id,
+          caption: artistItem.name
+        });
       }
     }
     return {
-      criteriaList: criteria,
+      criteriaItem: criteriaItem,
       origin: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
     };
   }
@@ -173,33 +167,5 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   public onListInitialized(): void {
-  }
-
-  public onBeforeBroadcast(query: QueryModel<IArtistModel>): void {
-    this.removeUnsupportedBreadcrumbs(query);
-  }
-
-  private removeUnsupportedBreadcrumbs(query: QueryModel<IArtistModel>): void {
-    if (!this.breadcrumbService.hasBreadcrumbs()) {
-      return;
-    }
-    const breadcrumbs = this.breadcrumbService.getState();
-    if (this.isAlbumArtist) {
-      // Album Artists support Genre and Classification breadcrumbs
-      let unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
-        breadcrumb.origin !== BreadcrumbSource.Genre &&
-        breadcrumb.origin !== BreadcrumbSource.Classification);
-      
-      for (const breadcrumb of unsupportedBreadcrumbs) {
-        this.breadcrumbService.remove(breadcrumb.sequence);
-      }
-    }
-    else {
-      // Artists do not support any kind of breadcrumbs
-      this.breadcrumbService.clear();
-    }
-    // Now that breadcrumbs are updated, reflect the change in the query
-    // which will be used to broadcast
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
   }
 }

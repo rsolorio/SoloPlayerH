@@ -1,15 +1,15 @@
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { ICriteriaResult } from '../services/criteria/criteria.interface';
 import { ListStateServiceBase } from './list-state-service-base.class';
-import { QueryModel } from './query-model.class';
 
 /**
  * Base service class that holds a state and listens for an event fired by a broadcast action
  * in order to update its state.
  */
 export abstract class ListListenerServiceBase<TItemModel> extends ListStateServiceBase<TItemModel> {
-  protected state: QueryModel<TItemModel>;
+  protected state: ICriteriaResult<TItemModel>;
 
   constructor(private events: EventsService, private navBar: NavBarStateService, private utilsService: UtilityService) {
       super(navBar, utilsService);
@@ -25,7 +25,7 @@ export abstract class ListListenerServiceBase<TItemModel> extends ListStateServi
   protected subscribe(): void {
     const eventName = this.getEventName();
     if (eventName) {
-      this.events.onEvent<QueryModel<TItemModel>>(eventName).subscribe(response => {
+      this.events.onEvent<ICriteriaResult<TItemModel>>(eventName).subscribe(response => {
         this.mergeResponse(response);
       });
     }

@@ -8,10 +8,8 @@ import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/b
 import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
-import { CriteriaValueBase, hasCriteria } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
-import { ISongModel } from 'src/app/shared/models/song-model.interface';
+import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/shared/services/file/file.service';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
@@ -108,71 +106,50 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private addBreadcrumb(album: IAlbumModel): void {
-    // TODO: handle multiple selected albums
     // Automatically add the Album Artist breadcrumb if it does not exist
     let hasAlbumArtist = false;
     const breadcrumbs = this.breadcrumbService.getState();
     for (const breadcrumb of breadcrumbs) {
-      if (hasCriteria('primaryArtistId', breadcrumb.criteriaList)) {
+      if (breadcrumb.criteriaItem.columnName === 'primaryArtistId') {
         hasAlbumArtist = true;
       }
     }
     if (!hasAlbumArtist) {
       const albumView = album as AlbumViewEntity;
       if (albumView && albumView.primaryArtistId) {
-        const criteriaItem = new CriteriaValueBase('primaryArtistId', albumView.primaryArtistId);
-        criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-        criteriaItem.DisplayValue = album.artistName;
+        const criteriaItem = new CriteriaItem('primaryArtistId', albumView.primaryArtistId);
+        criteriaItem.displayName = this.db.displayName(criteriaItem.columnName);
+        criteriaItem.columnValues[0].caption = album.artistName;
         // Suppress event so this component doesn't react to this change;
         // these breadcrumbs are for another list that hasn't been loaded yet
         this.breadcrumbService.addOne({
-          criteriaList: [ criteriaItem ],
+          criteriaItem: criteriaItem,
           origin: BreadcrumbSource.AlbumArtist
         }, { suppressEvents: true });
       }
     }
 
-    const criteriaItem = new CriteriaValueBase('primaryAlbumId', album.id);
-    criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-    criteriaItem.DisplayValue = album.name;
+    // TODO: handle multiple selected albums
+    const criteriaItem = new CriteriaItem('primaryAlbumId', album.id);
+    criteriaItem.displayName = this.db.displayName(criteriaItem.columnName);
+    criteriaItem.columnValues[0].caption = album.name;
     // Suppress event so this component doesn't react to this change;
     // these breadcrumbs are for another list that hasn't been loaded yet
     this.breadcrumbService.addOne({
-      criteriaList: [ criteriaItem ],
+      criteriaItem: criteriaItem,
       origin: BreadcrumbSource.Album
     }, { suppressEvents: true });
   }
 
   private showEntity(routeInfo: IAppRouteInfo, album: IAlbumModel): void {
     this.addBreadcrumb(album);
-    // The only query information that will pass from one entity to another is breadcrumbs
-    const query = new QueryModel<any>();
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-    this.navigation.forward(routeInfo.route, { query: query });
+    // The only criteria information that will pass from one entity to another is breadcrumbs
+    const criteria = new Criteria();
+    criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+    this.navigation.forward(routeInfo.route, { criteria: criteria });
   }
 
   public onListInitialized(): void {
-  }
-
-  public onBeforeBroadcast(query: QueryModel<IAlbumModel>): void {
-    this.removeUnsupportedBreadcrumbs(query);
-  }
-
-  private removeUnsupportedBreadcrumbs(query: QueryModel<IAlbumModel>): void {
-    if (!this.breadcrumbService.hasBreadcrumbs()) {
-      return;
-    }
-    const breadcrumbs = this.breadcrumbService.getState();
-    const unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
-      breadcrumb.origin !== BreadcrumbSource.Classification &&
-      breadcrumb.origin !== BreadcrumbSource.Genre &&
-      breadcrumb.origin !== BreadcrumbSource.AlbumArtist);
-    for (const breadcrumb of unsupportedBreadcrumbs) {
-      this.breadcrumbService.remove(breadcrumb.sequence);
-    }
-    // Now that breadcrumbs are updated, reflect the change in the query
-    // which will be used to broadcast
-    query.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
   }
 
   public onItemRender(album: IAlbumModel): void {
@@ -183,10 +160,10 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private async setAlbumImage(album: IAlbumModel): Promise<void> {
-    const criteriaValue = new CriteriaValueBase('primaryAlbumId', album.id);
-    const queryModel = new QueryModel<ISongModel>();
-    queryModel.searchCriteria = [criteriaValue];
-    const songList = await this.db.getList(SongViewEntity, queryModel);
+    const criteriaValue = new CriteriaItem('primaryAlbumId', album.id);
+    const criteria = new Criteria();
+    criteria.searchCriteria.push(criteriaValue);
+    const songList = await this.db.getList(SongViewEntity, criteria);
     if (songList && songList.length) {
       // Get any of the songs associated with the album
       const song = songList[0];

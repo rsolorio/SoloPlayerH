@@ -1,5 +1,9 @@
+import { IValuePair } from "src/app/core/models/core.interface";
 import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaSortingAlgorithm } from "./criteria.enum";
 
+/**
+ * Criteria object.
+ */
 export class Criteria {
   paging = new CriteriaPaging();
   /** Read only criteria needed by the system to properly retrieve the expected results. */
@@ -15,13 +19,26 @@ export class Criteria {
   /** Algorithm to perform a special sort in the list of items. */
   sortingAlgorithm = CriteriaSortingAlgorithm.None;
   /** Date on which this object was created. The value is represented in milliseconds according to the getTime method. */
-  date = new Date().getTime();
+  date: number;
+  /** Unique identifier of this object. */
+  id: string;
+  /** A descriptive name for this object. */
+  name: string;
+
+  constructor() {
+    this.setId();
+  }
 
   public clone(): Criteria {
-    const criteriaText = JSON.stringify(this);
     const result = new Criteria();
-    Object.assign(result, JSON.parse(criteriaText));
-    result.date = new Date().getTime();
+    result.paging = Object.assign(result.paging, JSON.parse(JSON.stringify(this.paging)));
+    result.systemCriteria = this.systemCriteria.clone();
+    result.breadcrumbCriteria = this.breadcrumbCriteria.clone();
+    result.searchCriteria = this.searchCriteria.clone();
+    result.userCriteria = this.userCriteria.clone();
+    result.sortingCriteria = this.sortingCriteria.clone();
+    result.sortingAlgorithm = this.sortingAlgorithm;
+    result.name = this.name;
     return result;
   }
 
@@ -56,8 +73,25 @@ export class Criteria {
       this.searchCriteria.ignoredInSelect(columnName) ||
       this.userCriteria.ignoredInSelect(columnName);
   }
+
+  private setId(): void {
+    // Id example: 2023-01-10|11:25:33:990
+    const now = new Date();
+    const yearText = now.toLocaleString('default', { year: 'numeric'});
+    const monthText = now.toLocaleString('default', { month: '2-digit'});
+    const dayText = now.toLocaleString('default', { day: '2-digit'});
+    const hoursText = now.getHours().toLocaleString('default', { minimumIntegerDigits: 2});
+    const minutesText = now.getMinutes().toLocaleString('default', { minimumIntegerDigits: 2});
+    const secondsText = now.getSeconds().toLocaleString('default', { minimumIntegerDigits: 2});
+    const msText = now.getMilliseconds().toLocaleString('default', { minimumIntegerDigits: 3 });
+    this.id = `${yearText}-${monthText}-${dayText}|${hoursText}:${minutesText}:${secondsText}:${msText}`;
+    this.date = now.getTime();
+  }
 }
 
+/**
+ * CriteriaPaging object.
+ */
 export class CriteriaPaging {
   /** If SELECT DISTINCT should be applied. */
   distinct = false;
@@ -79,11 +113,14 @@ export class CriteriaPaging {
   }
 }
 
+/**
+ * CriteriaItem object.
+ */
 export class CriteriaItem {
   /** The name of the column. */
   columnName: string;
   /** The values to compare the column to. */
-  columnValues: any[] = [];
+  columnValues: IValuePair[] = [];
   /** The comparison operator between the column and the value. */
   comparison = CriteriaComparison.Equals;
   /** The join operator that will be used to chain all comparisons of the same column with multiple values. */
@@ -104,7 +141,10 @@ export class CriteriaItem {
   constructor(columnName: string, columnValue?: any, comparison?: CriteriaComparison) {
     this.columnName = columnName;
     if (columnValue !== undefined) {
-      this.columnValues.push(columnValue);
+      this.columnValues.push({
+        value: columnValue,
+        caption: columnValue.toString()
+      });
     }
     if (comparison === undefined) {
       if (columnValue === undefined) {
@@ -117,7 +157,21 @@ export class CriteriaItem {
   }
 }
 
+/**
+ * CriteriaItems object.
+ */
 export class CriteriaItems extends Array<CriteriaItem> {
+
+  public clone(): CriteriaItems {
+    const itemsText = JSON.stringify(this);
+    const result = new CriteriaItems();
+    Object.assign(result, JSON.parse(itemsText));
+    return result;
+  }
+
+  public clear(): void {
+    this.length = 0;
+  }
 
   public hasComparison(columnName?: string): boolean {
     if (columnName) {

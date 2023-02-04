@@ -3,13 +3,12 @@ import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { SongArtistViewEntity, SongViewEntity,SongClassificationViewEntity } from 'src/app/shared/entities';
-import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IMusicSearchTerms } from 'src/app/shared/models/music-model.interface';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
+import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
+import { CriteriaComparison, CriteriaJoinOperator } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -29,34 +28,34 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     return AppEvent.SongListUpdated;
   }
 
-  protected buildSearchCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
+  protected buildSearchCriteria(searchTerm: string): CriteriaItems {
     const musicSearch = this.buildSearchTerms(searchTerm);
     return this.buildCriteriaFromTerms(musicSearch);
   }
 
-  protected addSortingCriteria(queryModel: QueryModel<ISongModel>): void {
-    if (queryModel.hasCriteria('primaryArtistId') || queryModel.hasCriteria('artistId') || queryModel.hasCriteria('primaryAlbumId')) {
+  protected addSortingCriteria(criteria: Criteria): void {
+    if (criteria.hasComparison(false, 'primaryArtistId') || criteria.hasComparison(false, 'artistId') || criteria.hasComparison(false, 'primaryAlbumId')) {
       // First sort by year in case there are multiple albums with the same name for the same artist
-      queryModel.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+      criteria.addSorting('releaseYear');
       // Album Name in case multiple albums in the same year
-      queryModel.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
+      criteria.addSorting('primaryAlbumName');
       // Now sort by album media
-      queryModel.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
+      criteria.addSorting('mediaNumber');
       // Then by album track
-      queryModel.addSorting('trackNumber', CriteriaSortDirection.Ascending);
+      criteria.addSorting('trackNumber');
     }
     // In case tracks don't have numbers, sort by title
-    queryModel.addSorting('name', CriteriaSortDirection.Ascending);
+    criteria.addSorting('name');
   }
 
-  protected getItems(queryModel: QueryModel<ISongModel>): Observable<ISongModel[]> {
-    if (queryModel.hasCriteria('artistId')) {
-      return from(this.db.getList(SongArtistViewEntity, queryModel));
+  protected getItems(criteria: Criteria): Observable<ISongModel[]> {
+    if (criteria.hasComparison(false, 'artistId')) {
+      return from(this.db.getList(SongArtistViewEntity, criteria));
     }
-    if (queryModel.hasCriteria('classificationId')) {
-      return from(this.db.getList(SongClassificationViewEntity, queryModel));
+    if (criteria.hasComparison(false, 'classificationId')) {
+      return from(this.db.getList(SongClassificationViewEntity, criteria));
     }
-    return from(this.db.getList(SongViewEntity, queryModel));
+    return from(this.db.getList(SongViewEntity, criteria));
   }
 
   /**
@@ -161,54 +160,54 @@ export class SongListBroadcastService extends ListBroadcastServiceBase<ISongMode
     return musicSearch;
   }
 
-  private buildCriteriaFromTerms(searchTerms: IMusicSearchTerms): ICriteriaValueBaseModel[] {
+  private buildCriteriaFromTerms(searchTerms: IMusicSearchTerms): CriteriaItems {
     if (!searchTerms.artists.length && !searchTerms.albums.length && !searchTerms.titles.length) {
       return this.buildArtistAlbumTitleCriteria(searchTerms.wildcard);
     }
 
-    const criteria: ICriteriaValueBaseModel[] = [];
+    const criteriaItems = new CriteriaItems();
 
     searchTerms.artists.forEach(artist => {
       const searchTerm = this.normalizeCriteriaSearchTerm(artist, true);
-      const criteriaValue = new CriteriaValueBase('primaryArtistName', searchTerm, CriteriaOperator.Like);
-      criteria.push(criteriaValue);
+      const criteriaItem = new CriteriaItem('primaryArtistName', searchTerm, CriteriaComparison.Like);
+      criteriaItems.push(criteriaItem);
     });
 
     searchTerms.albums.forEach(album => {
       const searchTerm = this.normalizeCriteriaSearchTerm(album, true);
-      const criteriaValue = new CriteriaValueBase('primaryAlbumName', searchTerm, CriteriaOperator.Like);
-      criteria.push(criteriaValue);
+      const criteriaItem = new CriteriaItem('primaryAlbumName', searchTerm, CriteriaComparison.Like);
+      criteriaItems.push(criteriaItem);
     });
 
     searchTerms.titles.forEach(title => {
       const searchTerm = this.normalizeCriteriaSearchTerm(title, true);
-      const criteriaValue = new CriteriaValueBase('name', searchTerm, CriteriaOperator.Like);
-      criteria.push(criteriaValue);
+      const criteriaItem = new CriteriaItem('name', searchTerm, CriteriaComparison.Like);
+      criteriaItems.push(criteriaItem);
     });
     // TODO: what to do with wildcards here?
 
-    return criteria;
+    return criteriaItems;
   }
 
-  private buildArtistAlbumTitleCriteria(searchTerm: string): ICriteriaValueBaseModel[] {
-    const criteria: ICriteriaValueBaseModel[] = [];
+  private buildArtistAlbumTitleCriteria(searchTerm: string): CriteriaItems {
+    const criteriaItems = new CriteriaItems();
     if (!searchTerm) {
-      return criteria;
+      return criteriaItems;
     }
     const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
 
-    let criteriaValue = new CriteriaValueBase('primaryArtistName', criteriaSearchTerm, CriteriaOperator.Like);
-    criteriaValue.OrOperator = true;
-    criteria.push(criteriaValue);
+    let criteriaItem = new CriteriaItem('primaryArtistName', criteriaSearchTerm, CriteriaComparison.Like);
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItems.push(criteriaItem);
 
-    criteriaValue = new CriteriaValueBase('primaryAlbumName', criteriaSearchTerm, CriteriaOperator.Like);
-    criteriaValue.OrOperator = true;
-    criteria.push(criteriaValue);
+    criteriaItem = new CriteriaItem('primaryAlbumName', criteriaSearchTerm, CriteriaComparison.Like);
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItems.push(criteriaItem);
 
-    criteriaValue = new CriteriaValueBase('name', criteriaSearchTerm, CriteriaOperator.Like);
-    criteriaValue.OrOperator = true;
-    criteria.push(criteriaValue);
+    criteriaItem = new CriteriaItem('name', criteriaSearchTerm, CriteriaComparison.Like);
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItems.push(criteriaItem);
 
-    return criteria;
+    return criteriaItems;
   }
 }

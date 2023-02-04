@@ -62,11 +62,8 @@ export class NavigationService {
 
   private navigate(route: string, options?: INavigationOptions): void {
     if (options) {
-      if (options.query) {
-        if (!options.query.id) {
-          options.query.id = this.utilities.newGuid();
-        }
-        this.utilities.navigateWithQueryParams(route, { queryId: options.query.id });
+      if (options.criteria) {
+        this.utilities.navigateWithQueryParams(route, { queryId: options.criteria.id });
       }
       else if (options.routeParams) {
         this.utilities.navigateWithRouteParams(route, options.routeParams);

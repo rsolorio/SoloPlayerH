@@ -48,24 +48,13 @@ export interface ITimestampItem {
   timestamp?: Date;
 }
 
-export interface ISelectedItem extends ITimestampItem, ISelectable {
-  caption: string;
+export interface IValuePair {
+  value: any;
+  caption?: string;
+}
+
+export interface ISelectableValue extends IValuePair, ISelectable {
   icon?: string;
-  data?: any;
-}
-
-export interface ISelectedDataItem<TData> extends ISelectedItem {
-  data: TData;
-}
-
-export interface ISelectedItemTransform {
-  selectedData: any;
-  mapFn?: (item: any) => ISelectedItem;
-}
-
-export interface ISelectionDataItemTransform<TData> extends ISelectedItemTransform {
-  selectedData: TData;
-  mapFn?: <TItem>(item: TItem) => ISelectedDataItem<TData>;
 }
 
 export interface IStateService<T> {

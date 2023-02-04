@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Brackets, DataSource, DataSourceOptions, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import * as objectHash from 'object-hash'
 import { IClassificationModel } from '../../models/classification-model.interface';
-import { CriteriaOperator, CriteriaSortDirection, ICriteriaValueBaseModel } from '../../models/criteria-base-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import {
   ArtistEntity,
@@ -32,9 +31,10 @@ import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { QueryModel } from '../../models/query-model.class';
 import { databaseColumns, DbColumn } from './database.columns';
-import { ISelectedDataItem } from 'src/app/core/models/core.interface';
+import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection } from '../criteria/criteria.enum';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -235,11 +235,11 @@ export class DatabaseService {
 
   // SQLite Bulk Actions - END
 
-  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, queryModel: QueryModel<T>): Promise<T[]> {
+  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: Criteria): Promise<T[]> {
     const entityTempName = 'getListEntity';
     const repo = this.dataSource.getRepository(entity);
-    this.log.debug('getList query', queryModel);
-    return this.createQueryBuilder(repo, entityTempName, queryModel).getMany();
+    this.log.debug('getList criteria', criteria);
+    return this.createQueryBuilder(repo, entityTempName, criteria).getMany();
   }
 
   public getRepo<T extends ObjectLiteral>(entity: EntityTarget<T>): Repository<T> {
@@ -247,30 +247,27 @@ export class DatabaseService {
   }
 
   private createQueryBuilder<T>(
-    repo: Repository<T>, entityName: string, queryModel: QueryModel<T>
+    repo: Repository<T>, entityName: string, criteria: Criteria
   ): SelectQueryBuilder<T> {
     let queryBuilder = repo.createQueryBuilder(entityName);
 
-    let allCriteria = queryModel.getAllCriteria();
-
-    if (!allCriteria.length) {
+    if (!criteria.hasItems()) {
       return queryBuilder;
     }
 
-    this.buildSelect(queryBuilder, entityName, allCriteria, repo.metadata.columns);
-    queryBuilder = this.buildWhere(queryBuilder, entityName, queryModel);
+    this.buildSelect(queryBuilder, entityName, criteria, repo.metadata.columns);
+    queryBuilder = this.buildWhere(queryBuilder, entityName, criteria);
     // Here we only send the sorting criteria, this is how we support this
-    queryBuilder = this.buildOrderBy(queryBuilder, entityName, queryModel.sortingCriteria);
+    queryBuilder = this.buildOrderBy(queryBuilder, entityName, criteria.sortingCriteria);
     return queryBuilder;
   }
 
   private buildSelect<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[], columns: ColumnMetadata[]
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: Criteria, columns: ColumnMetadata[]
   ) {
     let hasColumns = false;
     for (const column of columns) {
-      const criteriaValue = criteria.find(item => item.ColumnName === column.databaseName);
-      if (!criteriaValue || !criteriaValue.IgnoreInSelect) {
+      if (!criteria.ignoredInSelect(column.databaseName)) {
         const columnName = `${entityName}.${column.databaseName}`;
         if (hasColumns) {
           queryBuilder.addSelect(columnName);
@@ -284,12 +281,13 @@ export class DatabaseService {
   }
 
   private buildWhere<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, queryModel: QueryModel<T>
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: Criteria
   ): SelectQueryBuilder<T> {
-    const allCriteria = [queryModel.systemCriteria, queryModel.breadcrumbCriteria, queryModel.userCriteria, queryModel.searchCriteria];
+    const allCriteria = [criteria.systemCriteria, criteria.breadcrumbCriteria, criteria.userCriteria, criteria.searchCriteria];
     let hasWhere = false;
     for (const criteria of allCriteria) {
-      const whereCriteria = criteria.filter(criteriaItem => criteriaItem.Operator !== CriteriaOperator.None);
+      // This is safe guard since criteria should not have none comparisons
+      const whereCriteria = criteria.filter(criteriaItem => criteriaItem.comparison !== CriteriaComparison.None);
       if (whereCriteria.length) {
         if (hasWhere) {
           // All criteria will be joined with the AND operator since all criteria must be used to get the results
@@ -307,15 +305,15 @@ export class DatabaseService {
   /**
    * Creates the first level where expression that consists of different criteria columns joined together.
    */
-  private createFirstLevelBrackets(entityName: string, whereCriteria: ICriteriaValueBaseModel[]): Brackets  {
+  private createFirstLevelBrackets(entityName: string, whereCriteria: CriteriaItem[]): Brackets  {
     const result = new Brackets(qb1 => {
       let hasWhere = false;
       for (const criteriaItem of whereCriteria) {
         let whereBrackets: Brackets;
-        if (criteriaItem.Operator === CriteriaOperator.IsNull || criteriaItem.Operator === CriteriaOperator.IsNotNull) {
+        if (criteriaItem.comparison === CriteriaComparison.IsNull || criteriaItem.comparison === CriteriaComparison.IsNotNull) {
           // Ignore column values for these operators
           whereBrackets = new Brackets(qb => {
-            qb.where(`${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)}`);
+            qb.where(`${entityName}.${criteriaItem.columnName} ${this.getComparisonText(criteriaItem.comparison)}`);
           });
         }
         else {
@@ -323,11 +321,12 @@ export class DatabaseService {
         }
         if (hasWhere) {
           // This operator will be determined by criteria item
-          if (criteriaItem.OrOperator) {
-            qb1 = qb1.orWhere(whereBrackets);
+          // The auto setting should be AND since most of the times you will need to join expressions with that operator
+          if (criteriaItem.expressionOperator === CriteriaJoinOperator.Auto || criteriaItem.expressionOperator === CriteriaJoinOperator.And) {
+            qb1 = qb1.andWhere(whereBrackets);
           }
           else {
-            qb1 = qb1.andWhere(whereBrackets);
+            qb1 = qb1.orWhere(whereBrackets);
           }
         }
         else {
@@ -342,17 +341,17 @@ export class DatabaseService {
   /**
    * Creates the second level where expression that consists of multiple values from one column joined together.
    */
-  private createSecondLevelBrackets(entityName: string, criteriaItem: ICriteriaValueBaseModel): Brackets {
+  private createSecondLevelBrackets(entityName: string, criteriaItem: CriteriaItem): Brackets {
     let hasWhere = false;
     const brackets = new Brackets(qb2 => {
       // Typeorm requires unique parameters even if the column is the same
       let parameterIndex = 0;
-      for (const columnValue of criteriaItem.ColumnValues) {
+      for (const valuePair of criteriaItem.columnValues) {
         parameterIndex++;
-        const parameterName = criteriaItem.ColumnName + parameterIndex.toString();
-        const where = `${entityName}.${criteriaItem.ColumnName} ${this.getOperatorText(criteriaItem.Operator)} :${parameterName}`;
+        const parameterName = criteriaItem.columnName + parameterIndex.toString();
+        const where = `${entityName}.${criteriaItem.columnName} ${this.getComparisonText(criteriaItem.comparison)} :${parameterName}`;
         const parameter = {};
-        parameter[parameterName] = columnValue;
+        parameter[parameterName] = valuePair.value;
         if (hasWhere) {
           // The OR operator is for conditions using the same column
           // TODO: when all values are using "NOT EQUALS" the operator should be AND; maybe a valuesOperator property?
@@ -368,13 +367,14 @@ export class DatabaseService {
   }
 
   private buildOrderBy<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: ICriteriaValueBaseModel[]
+    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteriaItems: CriteriaItems
   ): SelectQueryBuilder<T> {
     let hasOrderBy = false;
-    const orderByCriteria = criteria.filter(criteriaItem => criteriaItem.SortSequence > 0);
-    this.utilities.sort(orderByCriteria, 'SortSequence').forEach(orderByItem => {
-      const column = `${entityName}.${orderByItem.ColumnName}`;
-      const order = orderByItem.SortDirection === CriteriaSortDirection.Ascending ? 'ASC' : 'DESC';
+    // This is a sage guard since this should only receive sorting items
+    const orderByCriteria = criteriaItems.filter(criteriaItem => criteriaItem.sortSequence > 0);
+    this.utilities.sort(orderByCriteria, 'sortSequence').forEach(orderByItem => {
+      const column = `${entityName}.${orderByItem.columnName}`;
+      const order = orderByItem.sortDirection === CriteriaSortDirection.Ascending ? 'ASC' : 'DESC';
       if (hasOrderBy) {
         queryBuilder = queryBuilder.addOrderBy(column, order);
       }
@@ -386,27 +386,27 @@ export class DatabaseService {
     return queryBuilder;
   }
 
-  private getOperatorText(operator: CriteriaOperator): string {
-    switch (operator) {
-      case CriteriaOperator.None:
+  private getComparisonText(comparison: CriteriaComparison): string {
+    switch (comparison) {
+      case CriteriaComparison.None:
         return null;
-      case CriteriaOperator.Equals:
+      case CriteriaComparison.Equals:
         return '=';
-      case CriteriaOperator.NotEquals:
+      case CriteriaComparison.NotEquals:
         return '<>';
-      case CriteriaOperator.GreaterThan:
+      case CriteriaComparison.GreaterThan:
         return '>';
-      case CriteriaOperator.GreaterThanOrEqualTo:
+      case CriteriaComparison.GreaterThanOrEqualTo:
         return '>=';
-      case CriteriaOperator.LessThan:
+      case CriteriaComparison.LessThan:
         return '<';
-      case CriteriaOperator.LessThanOrEqualTo:
+      case CriteriaComparison.LessThanOrEqualTo:
         return '<=';
-      case CriteriaOperator.Like:
+      case CriteriaComparison.Like:
         return 'LIKE';
-      case CriteriaOperator.IsNull:
+      case CriteriaComparison.IsNull:
         return 'IS NULL';
-      case CriteriaOperator.IsNotNull:
+      case CriteriaComparison.IsNotNull:
         return 'IS NOT NULL';
     }
   }
@@ -452,19 +452,19 @@ export class DatabaseService {
       .getMany();
   }
 
-  public async getSongValues(columnName: string): Promise<ISelectedDataItem<any>[]> {
+  public async getSongValues(columnName: string): Promise<ISelectableValue[]> {
     switch(columnName) {
       case DbColumn.Rating:
         return [
-          { caption: '0', data: 0 },
-          { caption: '1', data: 1 },
-          { caption: '2', data: 2 },
-          { caption: '3', data: 3 },
-          { caption: '4', data: 4 },
-          { caption: '5', data: 5 }];
+          { caption: '0', value: 0 },
+          { caption: '1', value: 1 },
+          { caption: '2', value: 2 },
+          { caption: '3', value: 3 },
+          { caption: '4', value: 4 },
+          { caption: '5', value: 5 }];
       case DbColumn.Favorite:
       case DbColumn.Lyrics:
-        return [{ caption: 'Yes', data: true }, { caption: 'No', data: false }];
+        return [{ caption: 'Yes', value: true }, { caption: 'No', value: false }];
     }
     const results = await this.dataSource
       .getRepository(SongEntity)
@@ -473,9 +473,9 @@ export class DatabaseService {
       .distinct(true)
       .getRawMany();
     const items = results.map(result => {
-      const item: ISelectedDataItem<any> = {
+      const item: ISelectableValue = {
         caption: result[columnName],
-        data: result[columnName]
+        value: result[columnName]
       };
       return item;
     });

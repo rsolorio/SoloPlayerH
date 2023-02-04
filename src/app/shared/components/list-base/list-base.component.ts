@@ -14,7 +14,8 @@ import { IListItemModel } from '../../models/base-model.interface';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
-import { QueryModel } from '../../models/query-model.class';
+import { Criteria } from '../../services/criteria/criteria.class';
+import { ICriteriaResult } from '../../services/criteria/criteria.interface';
 import { NavigationService } from '../../services/navigation/navigation.service';
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
@@ -31,7 +32,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public model: IListBaseModel = {
     listUpdatedEvent: null,
     itemMenuList: [],
-    queryModel: new QueryModel<any>(),
+    criteriaResult: {
+      criteria: new Criteria(),
+      items: []
+    },
     breadcrumbsEnabled: false
   };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
@@ -43,7 +47,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @Output() public itemImageClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public initialized: EventEmitter<IListBaseModel> = new EventEmitter();
-  @Output() public beforeBroadcast: EventEmitter<QueryModel<any>> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
 
@@ -103,8 +106,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   ngOnInit(): void {
     // List updated
-    this.subs.sink = this.events.onEvent<QueryModel<any>>(this.listUpdatedEvent).subscribe(response => {
-      this.model.queryModel = response;
+    this.subs.sink = this.events.onEvent<ICriteriaResult<any>>(this.listUpdatedEvent).subscribe(response => {
+      this.model.criteriaResult = response;
       this.afterListUpdated();
     });
 
@@ -112,11 +115,12 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     if (this.breadcrumbsEnabled) {
       this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(response => {
         if (response === BreadcrumbEventType.Remove) {
-          const queryClone = this.model.queryModel.clone();
-          // Since we are staying in the same route, use the same query info, just update the breadcrumbs
-          queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-          // Navigate to the same route but with new query info
-          this.navigation.forward(this.navigation.current().route, { query: queryClone });
+          // Create a brand new criteria but with the same info by cloning the existing one
+          const criteriaClone = this.model.criteriaResult.criteria.clone();
+          // Since there was a breadcrumb update, set the new value also with a copy
+          criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+          // Navigate to the same route but with the new object
+          this.navigation.forward(this.navigation.current().route, { criteria: criteriaClone });
         }
       });
     }
@@ -160,7 +164,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   private updateFilterIcon(): void {
     const navbar = this.navbarService.getState();
-    if (this.model.queryModel.hasAnyCriteria()) {
+    if (this.model.criteriaResult.criteria.hasComparison(true)) {
       // Display icon with criteria
       if (navbar.rightIcon && navbar.rightIcon.icon === this.filterNoCriteriaIcon) {
         navbar.rightIcon.icon = this.filterWithCriteriaIcon;
@@ -208,7 +212,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     navbar.rightIcon = {
       icon: this.filterNoCriteriaIcon,
       action: () => {
-        this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.queryModel.id] });
+        this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
       }
     };
 
@@ -216,7 +220,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     navbar.onSearch = searchTerm => {
       if (this.model.broadcastService) {
         this.loadingService.show();
-        this.model.broadcastService.search(this.model.queryModel.clone(), searchTerm).subscribe();
+        this.model.broadcastService.search(this.model.criteriaResult.criteria.clone(), searchTerm).subscribe();
       }
     };
 
@@ -257,7 +261,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   private displayItemCount(): void {
-    this.navbarService.showToast(`Found: ${this.model.queryModel.items.length} item` + (this.model.queryModel.items.length !== 1 ? 's' : ''));
+    this.navbarService.showToast(`Found: ${this.model.criteriaResult.items.length} item` + (this.model.criteriaResult.items.length !== 1 ? 's' : ''));
   }
 
   /**
@@ -276,7 +280,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   public getSelectedItems():IListItemModel[] {
-    return this.model.queryModel.items.filter(item => item.selected);
+    return this.model.criteriaResult.items.filter(item => item.selected);
   }
 
   private toggleSearch(navbar: INavbarModel): void {
@@ -322,16 +326,15 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // Use a copy of the last query in case the current navigation doesn't have a query
     const navInfo = this.navigation.current();
     navInfo.options = navInfo.options || {};
-    if (!navInfo.options.query) {
-      navInfo.options.query = this.model.queryModel.clone();
+    if (!navInfo.options.criteria) {
+      navInfo.options.criteria = this.model.criteriaResult.criteria.clone();
     }
 
-    this.beforeBroadcast.emit(navInfo.options.query);
-
-    // Enable title if no breadcrumbs
-    if (!this.breadcrumbsEnabled || !this.breadcrumbService.hasBreadcrumbs()) {
-      this.navbarService.getState().mode = NavbarDisplayMode.Title;
-    }
-    this.broadcastService.send(navInfo.options.query).subscribe();
+    this.broadcastService.send(navInfo.options.criteria).subscribe(() => {
+      // Enable title if no breadcrumbs
+      if (!this.breadcrumbsEnabled || !this.breadcrumbService.hasBreadcrumbs()) {
+        this.navbarService.getState().mode = NavbarDisplayMode.Title;
+      }
+    });
   }
 }

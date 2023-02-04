@@ -7,7 +7,6 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlayerOverlayStateService } from 'src/app/player/player-overlay/player-overlay-state.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
@@ -16,15 +15,15 @@ import { MusicMetadataService } from 'src/app/shared/services/music-metadata/mus
 import { SongListBroadcastService } from './song-list-broadcast.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { SongArtistViewEntity } from 'src/app/shared/entities';
-import { ICriteriaValueBaseModel } from 'src/app/shared/models/criteria-base-model.interface';
 import { FileService } from 'src/app/shared/services/file/file.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
 import { SongListStateService } from './song-list-state.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
+import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 
 @Component({
   selector: 'sp-song-list',
@@ -90,9 +89,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const song = param as ISongModel;
         this.setBreadcrumbsForAlbumArtistSongs(song);
         // Since we are staying in the same route, use the same query info, just update the breadcrumbs
-        const queryClone = this.stateService.getState().clone();
-        queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-        this.navigation.forward(AppRoute.Songs, { query: queryClone });
+        const criteriaClone = this.stateService.getState().criteria.clone();
+        criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+        this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
       }
     });
 
@@ -103,9 +102,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
         const song = param as ISongModel;
         this.setBreadcrumbsForFeatArtistSongs(song).then(hasFeatArtists => {
           if (hasFeatArtists) {
-            const queryClone = this.stateService.getState().clone();
-            queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-            this.navigation.forward(AppRoute.Songs, { query: queryClone });
+            const criteriaClone = this.stateService.getState().criteria.clone();
+            criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+            this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
           }
         });
       }
@@ -117,46 +116,45 @@ export class SongListComponent extends CoreComponent implements OnInit {
       action: param => {
         const song = param as ISongModel;
         this.setBreadcrumbsForAlbumSongs(song);
-        const queryClone = this.stateService.getState().clone();
-        queryClone.breadcrumbCriteria = this.breadcrumbService.getCriteriaClone();
-        this.navigation.forward(AppRoute.Songs, { query: queryClone });
+        const criteriaClone = this.stateService.getState().criteria.clone();
+        criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+        this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
       }
     });
   }
 
   private setBreadcrumbsForAlbumArtistSongs(song: ISongModel): void {
     const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-    const criteriaItem = new CriteriaValueBase('primaryArtistId', primaryArtistId);
-    criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-    criteriaItem.DisplayValue = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
+    const criteriaItem = new CriteriaItem('primaryArtistId', primaryArtistId);
+    criteriaItem.displayName = this.db.displayName(criteriaItem.columnName);
+    criteriaItem.columnValues[0].caption = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
     // No need to react to breadcrumb events
     this.breadcrumbService.set([{
-      criteriaList: [ criteriaItem ],
+      criteriaItem: criteriaItem,
       origin: BreadcrumbSource.AlbumArtist
     }], { suppressEvents: true });
   }
 
   private async setBreadcrumbsForFeatArtistSongs(song: ISongModel): Promise<boolean> {
-    const criteriaValue = new CriteriaValueBase('id', song.id);
-    const queryModel = new QueryModel<SongArtistViewEntity>();
-    queryModel.searchCriteria = [criteriaValue];
+    const criteria = new Criteria();
+    criteria.searchCriteria.push(new CriteriaItem('id', song.id))
     // Get the list of feat. artists
-    const songArtistRows = await this.db.getList(SongArtistViewEntity, queryModel);
-    const criteria: ICriteriaValueBaseModel[] = [];
+    const songArtistRows = await this.db.getList(SongArtistViewEntity, criteria);
+    const criteriaItem = new CriteriaItem('artistId');
+    criteriaItem.comparison = CriteriaComparison.Equals;
     for (var songArtist of songArtistRows) {
       // Ignore the primary artist
       const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
       if (songArtist.artistId !== primaryArtistId) {
-        const criteriaItem = new CriteriaValueBase('artistId', songArtist.artistId);
-        criteriaItem.IgnoreInSelect = true;
-        criteriaItem.DisplayName = this.db.displayName(criteriaItem.ColumnName);
-        criteriaItem.DisplayValue = songArtist.artistStylized;
-        criteria.push(criteriaItem);
+        criteriaItem.columnValues.push({
+          value: songArtist.artistId,
+          caption: songArtist.artistStylized
+        });
       }
     }
-    if (criteria.length) {
+    if (criteriaItem.columnValues.length) {
       this.breadcrumbService.set([{
-        criteriaList: criteria,
+        criteriaItem: criteriaItem,
         origin: BreadcrumbSource.Artist
       }], { suppressEvents: true });
       return true;
@@ -167,20 +165,20 @@ export class SongListComponent extends CoreComponent implements OnInit {
   private setBreadcrumbsForAlbumSongs(song: ISongModel): void {
     // Primary Artist
     const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-    const artistCriteria = new CriteriaValueBase('primaryArtistId', primaryArtistId);
-    artistCriteria.DisplayName = this.db.displayName(artistCriteria.ColumnName);
-    artistCriteria.DisplayValue = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
+    const artistCriteria = new CriteriaItem('primaryArtistId', primaryArtistId);
+    artistCriteria.displayName = this.db.displayName(artistCriteria.columnName);
+    artistCriteria.columnValues[0].caption = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
     const artistBreadcrumb: IBreadcrumbModel = {
-      criteriaList: [ artistCriteria ],
+      criteriaItem: artistCriteria,
       origin: BreadcrumbSource.AlbumArtist
     };
     // Album
     const primaryAlbumId = song.primaryAlbumId ? song.primaryAlbumId : song.primaryAlbum.id;
-    const albumCriteria = new CriteriaValueBase('primaryAlbumId', primaryAlbumId);
-    albumCriteria.DisplayName = this.db.displayName(albumCriteria.ColumnName);
-    albumCriteria.DisplayValue = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
+    const albumCriteria = new CriteriaItem('primaryAlbumId', primaryAlbumId);
+    albumCriteria.displayName = this.db.displayName(albumCriteria.columnName);
+    albumCriteria.columnValues[0].caption = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
     const albumBreadcrumb: IBreadcrumbModel = {
-      criteriaList: [ albumCriteria ],
+      criteriaItem: albumCriteria,
       origin: BreadcrumbSource.Album
     };
     // Breadcrumbs
@@ -212,7 +210,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       // 3. Load this track
       this.playerService.stop().then(success => {
         if (success) {
-          const trackList = this.spListBaseComponent.model.queryModel.items as ISongModel[];
+          const trackList = this.spListBaseComponent.model.criteriaResult.items as ISongModel[];
           // For now, we are using this component only for search results,
           // but we should have an input property to specify the title of the play list
           playerList.loadList(trackList);

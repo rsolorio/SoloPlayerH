@@ -1,12 +1,12 @@
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { IListItemModel } from '../../models/base-model.interface';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
-import { QueryModel } from '../../models/query-model.class';
+import { ICriteriaResult } from '../../services/criteria/criteria.interface';
 
 export interface IListBaseModel {
   listUpdatedEvent: string;
   itemMenuList: IMenuModel[];
-  queryModel: QueryModel<IListItemModel>;
+  criteriaResult: ICriteriaResult<IListItemModel>;
   showModal?: boolean;
   title?: string;
   leftIcon?: string;

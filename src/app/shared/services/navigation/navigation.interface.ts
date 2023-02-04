@@ -1,4 +1,4 @@
-import { QueryModel } from "../../models/query-model.class";
+import { Criteria } from "../criteria/criteria.class";
 
 export interface INavigationInfo {
   route: string;
@@ -6,7 +6,7 @@ export interface INavigationInfo {
 }
 
 export interface INavigationOptions {
-  query?: QueryModel<any>;
+  criteria?: Criteria;
   queryParams?: any;
   routeParams?: any[];
 }

@@ -1,5 +1,5 @@
 <table
-*ngIf="model.queryModel.items.length > 0 && !model.showModal"
+*ngIf="model.criteriaResult.items.length > 0 && !model.showModal"
 spIntersectionObserver
 class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-full-width">
   <!--
@@ -20,7 +20,7 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
   </tr>
   <!-- Actual rows -->
   <tr
-  *ngFor="let item of model.queryModel.items"
+  *ngFor="let item of model.criteriaResult.items"
   spIntersectionObserverTarget
   (intersectionChange)="onIntersectionChange($event, item)"
   [ngClass]="{ 'sp-bg-03': item.selected }">

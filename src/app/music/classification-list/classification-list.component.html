@@ -6,7 +6,6 @@
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"
 (initialized)="onListInitialized()"
-(beforeBroadcast)="onBeforeBroadcast($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <span *ngIf="isGenreList" class="sp-text-medium sp-no-select">{{item.name}}</span>

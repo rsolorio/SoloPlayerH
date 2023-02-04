@@ -5,7 +5,6 @@
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"
 (initialized)="onListInitialized()"
-(beforeBroadcast)="onBeforeBroadcast($event)"
 (itemRender)="onItemRender($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">

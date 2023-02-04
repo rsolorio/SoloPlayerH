@@ -1,5 +1,5 @@
 import { BreadcrumbSource } from "../../models/breadcrumbs.enum";
-import { ICriteriaValueBaseModel } from "../../models/criteria-base-model.interface";
+import { CriteriaItem } from "../../services/criteria/criteria.class";
 
 export interface IBreadcrumbModel {
   origin: BreadcrumbSource;
@@ -8,7 +8,7 @@ export interface IBreadcrumbModel {
   tooltip?: string;
   icon?: string;
   last?: boolean;
-  criteriaList: ICriteriaValueBaseModel[];
+  criteriaItem: CriteriaItem;
   action?: () => void;
 }
 

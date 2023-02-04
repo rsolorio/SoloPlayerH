@@ -8,9 +8,8 @@ import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-s
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
-import { CriteriaOperator } from 'src/app/shared/models/criteria-base-model.interface';
-import { CriteriaValueBase } from 'src/app/shared/models/criteria-base.class';
-import { QueryModel } from 'src/app/shared/models/query-model.class';
+import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { databaseColumns, DbColumn, IColumnMetadata } from 'src/app/shared/services/database/database.columns';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -21,7 +20,7 @@ import { NavigationService } from 'src/app/shared/services/navigation/navigation
   styleUrls: ['./query-editor.component.scss']
 })
 export class QueryEditorComponent implements OnInit {
-  public model: QueryModel<any>;
+  public model: Criteria;
   public supportedColumns: IColumnMetadata[] = [];
   constructor(
     private sidebarService: SideBarStateService,
@@ -40,7 +39,7 @@ export class QueryEditorComponent implements OnInit {
     // but we should get everything from the route param: query object, entity, etc
     // Clone the object so we don't affect the original value
     const previousNavInfo = this.navigation.previous();
-    this.model = previousNavInfo.options.query.clone();
+    this.model = previousNavInfo.options.criteria.clone();
 
     if (previousNavInfo.route === AppRoute.Songs) {
       this.supportedColumns = [
@@ -73,7 +72,7 @@ export class QueryEditorComponent implements OnInit {
       rightIcon: {
         icon: 'mdi-content-save mdi',
         action: () => {
-          this.navigation.previous().options.query = this.model;
+          this.navigation.previous().options.criteria = this.model;
           this.navbarService.showToast('Saved!');
         }
       }
@@ -81,9 +80,9 @@ export class QueryEditorComponent implements OnInit {
   }
 
   getValues(columnName: string): string[] {
-    const criteriaItem = this.model.userCriteria.find(item => item.ColumnName === columnName);
+    const criteriaItem = this.model.userCriteria.find(item => item.columnName === columnName);
     if (criteriaItem) {
-      return criteriaItem.ColumnValues;
+      return criteriaItem.columnValues.map(pair => pair.caption);
     }
     return [];
   }
@@ -98,22 +97,23 @@ export class QueryEditorComponent implements OnInit {
       values: [],
       singleSelect: columnName === DbColumn.Favorite,
       onOk: values => {
-        let criteriaItem = this.model.userCriteria.find(item => item.ColumnName === columnName);
+        let criteriaItem = this.model.userCriteria.find(item => item.columnName === columnName);
         if (!criteriaItem) {
           // TODO: Operator should be null (NO)/not null (YES) if the data type is not boolean
           // and the editor is Yes/No
-          criteriaItem = new CriteriaValueBase(columnName, null, CriteriaOperator.Equals);
+          criteriaItem = new CriteriaItem(columnName);
+          criteriaItem.comparison = CriteriaComparison.None;
           this.model.userCriteria.push(criteriaItem);
         }
-        criteriaItem.ColumnValues = values.map(value => value.data.toString());
+        criteriaItem.columnValues = values;
       }
     };
-    const criteriaItem = this.model.userCriteria.find(item => item.ColumnName === columnName);
+    const criteriaItem = this.model.userCriteria.find(item => item.columnName === columnName);
+    const userValues = criteriaItem ? criteriaItem.columnValues.map(pair => pair.value) : [];
     const availableValues = await this.db.getSongValues(columnName);
-    for (const value of availableValues) {
-      let selected = criteriaItem && criteriaItem.ColumnValues.includes(value.data.toString());
-      value.selected = selected;
-      chipSelectionModel.values.push(value);
+    for (const valuePair of availableValues) {
+      valuePair.selected = userValues.includes(valuePair.value);
+      chipSelectionModel.values.push(valuePair);
     }
     this.sidebarHostService.loadComponent(ChipSelectionComponent, chipSelectionModel);
     this.sidebarService.toggleRight();
