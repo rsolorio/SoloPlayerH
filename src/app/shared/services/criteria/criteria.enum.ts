@@ -37,3 +37,9 @@ export enum CriteriaDataType {
   Number,
   Boolean
 }
+
+export enum CriteriaValueEditor {
+  Multiple,
+  Single,
+  YesNo
+}

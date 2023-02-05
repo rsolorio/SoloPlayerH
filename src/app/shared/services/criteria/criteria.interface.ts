@@ -1,6 +1,7 @@
+import { ISelectableValue } from "src/app/core/models/core.interface";
 import { IListModel } from "../../models/list-model.interface";
 import { Criteria } from "./criteria.class";
-import { CriteriaDataType } from "./criteria.enum";
+import { CriteriaDataType, CriteriaValueEditor } from "./criteria.enum";
 
 export interface ICriteriaColumn {
   name: string;
@@ -11,4 +12,11 @@ export interface ICriteriaColumn {
 
 export interface ICriteriaResult<T> extends IListModel<T> {
   criteria: Criteria;
+}
+
+export interface ICriteriaValueSelector {
+  column: ICriteriaColumn;
+  editor: CriteriaValueEditor;
+  values: ISelectableValue[];
+  getValues: () => Promise<ISelectableValue[]>;
 }

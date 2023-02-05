@@ -175,15 +175,25 @@ export class CriteriaItems extends Array<CriteriaItem> {
 
   public hasComparison(columnName?: string): boolean {
     if (columnName) {
-      const items = this.filter(item => item.columnName === columnName);
-      for (const item of items) {
-        if (item.comparison !== CriteriaComparison.None) {
-          return true;
-        }
-      }
-      return false;
+      return this.getComparisons().filter(item => item.columnName === columnName).length > 0;
     }
-    return this.filter(item => item.comparison !== CriteriaComparison.None).length > 0;
+    return this.getComparisons().length > 0;
+  }
+
+  public getComparisons(): CriteriaItem[] {
+    const result: CriteriaItem[] = [];
+    const itemsWithComparison = this.filter(item => item.comparison !== CriteriaComparison.None);
+    for (const item of itemsWithComparison) {
+      if (item.comparison === CriteriaComparison.IsNull || item.comparison === CriteriaComparison.IsNotNull) {
+        // These comparisons do not need a list of values to compare to
+        result.push(item);
+      }
+      else if (item.columnValues.length) {
+        // The rest need a list of values to compare to
+        result.push(item);
+      }
+    }
+    return result;
   }
 
   public hasSorting(): boolean {

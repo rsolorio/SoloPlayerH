@@ -1,12 +1,12 @@
 <div *ngIf="model" class="sp-query-editor-container sp-font-family-regular">
-  <div *ngFor="let column of supportedColumns" class="">
+  <div *ngFor="let selector of supportedSelectors" class="">
     <div class="sp-filter-header sp-text-big sp-bg-04">
-      <span class="sp-filter-header-text">{{column.caption}}</span>
-      <span (click)="onAddClick(column)" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
+      <span class="sp-filter-header-text">{{selector.column.caption}}</span>
+      <span (click)="onAddClick(selector)" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
     </div>
     <div class="sp-chip-container">
-      <div class="sp-chip-item sp-bg-09" *ngFor="let columnValue of getValues(column.name)">
-        <span class="sp-chip-text sp-text-large">{{columnValue}}</span>
+      <div class="sp-chip-item sp-bg-09" *ngFor="let valuePair of getSelectedValues(selector)">
+        <span class="sp-chip-text sp-text-large">{{valuePair.caption}}</span>
       </div>
     </div>
   </div>

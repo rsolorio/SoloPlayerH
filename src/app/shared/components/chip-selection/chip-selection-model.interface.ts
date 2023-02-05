@@ -1,10 +1,9 @@
 import { ISelectableValue } from "src/app/core/models/core.interface";
+import { ICriteriaValueSelector } from "../../services/criteria/criteria.interface";
 
 export interface IChipSelectionModel {
-  title: string;
-  values: ISelectableValue[];
-  /** If true, the selection mode will be single. */
-  singleSelect?: boolean;
+  title?: string;
+  selector: ICriteriaValueSelector;
   onCancel?: () => void;
   onOk: (values: ISelectableValue[]) => void;
 }

@@ -19,7 +19,7 @@ import { ModuleOptionName } from '../../models/module-option.enum';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
-import { IAudioInfo, IIdentifierTag, IPopularimeterTag } from '../music-metadata/music-metadata.interface';
+import { IAudioInfo, IIdentifierTag, IMemoTag, IPopularimeterTag } from '../music-metadata/music-metadata.interface';
 import { MusicMetadataService } from '../music-metadata/music-metadata.service';
 
 @Injectable({
@@ -353,6 +353,9 @@ export class ScanService {
       song.mood = mood;
     }
 
+    // Popularimeter that can have rating and/or play count
+    const popularimeter = this.metadataService.getTag<IPopularimeterTag>('POPM', id3v2Tags);
+
     // Rating
     song.rating = 0;
     if (audioInfo.metadata.common.rating && audioInfo.metadata.common.rating.length) {
@@ -365,25 +368,39 @@ export class ScanService {
         song.rating = Math.round(ratingItem.rating * 5);
       }
     }
+    else if (popularimeter && popularimeter.rating) {
+      // This is a 0-255 value, convert to 0-1 value
+      const value = popularimeter.rating / 255;
+      // Convert to a 0-5 value
+      song.rating = Math.round(value * 5);
+    }
 
     // Play Count (PCNT)
     song.playCount = 0;
-    const playCount = this.metadataService.getTag<number>('PCNT', id3v2Tags, true);
+    const playCount = this.metadataService.getTag<number>('PCNT', id3v2Tags);
     if (playCount) {
       song.playCount = playCount;
     }
-    // Play Count (Popularimeter)
-    if (!song.playCount) {
-      const popularimeter = this.metadataService.getTag<IPopularimeterTag>('POPM', id3v2Tags, true);
-      if (popularimeter && popularimeter.counter) {
-        song.playCount = popularimeter.counter;
-      }
+    else if (popularimeter && popularimeter.counter) {
+      song.playCount = popularimeter.counter;
     }
-
-    // TODO: get lyrics from text file
+    
     const lyrics = audioInfo.metadata.common.lyrics;
     if (lyrics && lyrics.length) {
       song.lyrics = lyrics[0];
+    }
+
+    if (audioInfo.metadata.common.lyrics && audioInfo.metadata.common.lyrics.length) {
+      song.lyrics = audioInfo.metadata.common.lyrics[0];
+    }
+    else {
+      const unsyncLyrics = this.metadataService.getTag<IMemoTag>('USLT', id3v2Tags);
+      if (unsyncLyrics) {
+        song.lyrics = unsyncLyrics.text;
+      }
+      else {
+        // TODO: get lyrics from text file
+      }
     }
 
     if (audioInfo.metadata.common.titlesort) {

@@ -34,7 +34,8 @@ import { LogService } from 'src/app/core/services/log/log.service';
 import { databaseColumns, DbColumn } from './database.columns';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
-import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaValueEditor } from '../criteria/criteria.enum';
+import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -45,6 +46,7 @@ import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection } from 
 })
 export class DatabaseService {
   private dataSource: DataSource;
+  private valueSelectors: { [columnName: string]: ICriteriaValueSelector } = { };
   /**
    * Maximum number of parameters in a single statement.
    * Just an internal constant to do the limit calculations
@@ -84,6 +86,7 @@ export class DatabaseService {
       logging: ['query', 'error', 'warn']
     };
     this.dataSource = new DataSource(options);
+    this.setValueSelectors();
   }
 
   public initialize(): Promise<DataSource> {
@@ -287,7 +290,7 @@ export class DatabaseService {
     let hasWhere = false;
     for (const criteria of allCriteria) {
       // This is safe guard since criteria should not have none comparisons
-      const whereCriteria = criteria.filter(criteriaItem => criteriaItem.comparison !== CriteriaComparison.None);
+      const whereCriteria = criteria.getComparisons();
       if (whereCriteria.length) {
         if (hasWhere) {
           // All criteria will be joined with the AND operator since all criteria must be used to get the results
@@ -578,5 +581,78 @@ export class DatabaseService {
     option.values = JSON.stringify(['\\']);
 
     await option.save();
+  }
+
+  public selector(columnName: string): ICriteriaValueSelector {
+    return this.valueSelectors[columnName];
+  }
+
+  private setValueSelectors(): void {
+    this.valueSelectors[DbColumn.Rating] = {
+      column: databaseColumns[DbColumn.Rating],
+      editor: CriteriaValueEditor.Multiple,
+      values: [],
+      getValues: () => {
+        return Promise.resolve([
+          { caption: '0', value: 0 },
+          { caption: '1', value: 1 },
+          { caption: '2', value: 2 },
+          { caption: '3', value: 3 },
+          { caption: '4', value: 4 },
+          { caption: '5', value: 5 }
+        ]);
+      }
+    };
+
+    this.valueSelectors[DbColumn.Mood] = {
+      column: databaseColumns[DbColumn.Mood],
+      editor: CriteriaValueEditor.Multiple,
+      values: [],
+      getValues: () => {
+        return this.getSongValues(DbColumn.Mood);
+      }
+    };
+
+    this.valueSelectors[DbColumn.Language] = {
+      column: databaseColumns[DbColumn.Language],
+      editor: CriteriaValueEditor.Multiple,
+      values: [],
+      getValues: () => {
+        return this.getSongValues(DbColumn.Language);
+      }
+    };
+
+    this.valueSelectors[DbColumn.Favorite] = {
+      column: databaseColumns[DbColumn.Favorite],
+      editor: CriteriaValueEditor.YesNo,
+      values: [],
+      getValues: () => {
+        return Promise.resolve([
+          { caption: 'Yes', value: true },
+          { caption: 'No', value: false }
+        ]);
+      }
+    };
+
+    this.valueSelectors[DbColumn.ReleaseDecade] = {
+      column: databaseColumns[DbColumn.ReleaseDecade],
+      editor: CriteriaValueEditor.Multiple,
+      values: [],
+      getValues: () => {
+        return this.getSongValues(DbColumn.ReleaseDecade);
+      }
+    };
+
+    this.valueSelectors[DbColumn.Lyrics] = {
+      column: databaseColumns[DbColumn.Lyrics],
+      editor: CriteriaValueEditor.YesNo,
+      values: [],
+      getValues: () => {
+        return Promise.resolve([
+          { caption: 'Yes', value: true },
+          { caption: 'No', value: false }
+        ]);
+      }
+    };
   }
 }

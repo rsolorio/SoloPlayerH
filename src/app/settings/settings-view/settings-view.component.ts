@@ -287,14 +287,6 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   private test(): void {
-    this.navbarService.showBackIcon();
-  }
-
-  private async testBulkUpdate(): Promise<void> {
-    const classifications = await ClassificationEntity.find();
-    for (const c of classifications) {
-      c.classificationType = 'Bye';
-    }
-    await this.db.bulkUpdate(ClassificationEntity, classifications, ['name', 'classificationType']);
+    this.logFileMetadata();
   }
 }
