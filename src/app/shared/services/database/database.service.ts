@@ -35,7 +35,7 @@ import { databaseColumns, DbColumn } from './database.columns';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
 import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaValueEditor } from '../criteria/criteria.enum';
-import { ICriteriaValueSelector } from '../criteria/criteria.interface';
+import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -47,6 +47,7 @@ import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 export class DatabaseService {
   private dataSource: DataSource;
   private valueSelectors: { [columnName: string]: ICriteriaValueSelector } = { };
+  private comparisons: { [id: number]: IComparison} = { };
   /**
    * Maximum number of parameters in a single statement.
    * Just an internal constant to do the limit calculations
@@ -87,6 +88,7 @@ export class DatabaseService {
     };
     this.dataSource = new DataSource(options);
     this.setValueSelectors();
+    this.setComparisons();
   }
 
   public initialize(): Promise<DataSource> {
@@ -316,7 +318,7 @@ export class DatabaseService {
         if (criteriaItem.comparison === CriteriaComparison.IsNull || criteriaItem.comparison === CriteriaComparison.IsNotNull) {
           // Ignore column values for these operators
           whereBrackets = new Brackets(qb => {
-            qb.where(`${entityName}.${criteriaItem.columnName} ${this.getComparisonText(criteriaItem.comparison)}`);
+            qb.where(`${entityName}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text}`);
           });
         }
         else {
@@ -352,7 +354,7 @@ export class DatabaseService {
       for (const valuePair of criteriaItem.columnValues) {
         parameterIndex++;
         const parameterName = criteriaItem.columnName + parameterIndex.toString();
-        const where = `${entityName}.${criteriaItem.columnName} ${this.getComparisonText(criteriaItem.comparison)} :${parameterName}`;
+        const where = `${entityName}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text} :${parameterName}`;
         const parameter = {};
         parameter[parameterName] = valuePair.value;
         if (hasWhere) {
@@ -387,31 +389,6 @@ export class DatabaseService {
       }
     });
     return queryBuilder;
-  }
-
-  private getComparisonText(comparison: CriteriaComparison): string {
-    switch (comparison) {
-      case CriteriaComparison.None:
-        return null;
-      case CriteriaComparison.Equals:
-        return '=';
-      case CriteriaComparison.NotEquals:
-        return '<>';
-      case CriteriaComparison.GreaterThan:
-        return '>';
-      case CriteriaComparison.GreaterThanOrEqualTo:
-        return '>=';
-      case CriteriaComparison.LessThan:
-        return '<';
-      case CriteriaComparison.LessThanOrEqualTo:
-        return '<=';
-      case CriteriaComparison.Like:
-        return 'LIKE';
-      case CriteriaComparison.IsNull:
-        return 'IS NULL';
-      case CriteriaComparison.IsNotNull:
-        return 'IS NOT NULL';
-    }
   }
 
   public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {
@@ -653,6 +630,107 @@ export class DatabaseService {
           { caption: 'No', value: false }
         ]);
       }
+    };
+
+    // Fake sort by column
+    this.valueSelectors[DbColumn.SortBy] = {
+      column: databaseColumns[DbColumn.SortBy],
+      editor: CriteriaValueEditor.Multiple,
+      values: [],
+      getValues: () => {
+        return Promise.resolve([
+          { caption: databaseColumns[DbColumn.TrackNumber].caption, value: DbColumn.TrackNumber },
+          { caption: databaseColumns[DbColumn.MediaNumber].caption, value: DbColumn.MediaNumber },
+          { caption: databaseColumns[DbColumn.Title].caption, value: DbColumn.Title },
+          { caption: databaseColumns[DbColumn.Rating].caption, value: DbColumn.Rating },
+          { caption: databaseColumns[DbColumn.PlayCount].caption, value: DbColumn.PlayCount },
+          { caption: databaseColumns[DbColumn.Seconds].caption, value: DbColumn.Seconds },
+          { caption: databaseColumns[DbColumn.AlbumName].caption, value: DbColumn.AlbumName },
+          { caption: databaseColumns[DbColumn.AlbumArtistName].caption, value: DbColumn.AlbumArtistName },
+        ]);
+      }
+    };
+
+    this.valueSelectors[DbColumn.SortAlgorithm] = {
+      column: databaseColumns[DbColumn.SortAlgorithm],
+      editor: CriteriaValueEditor.Single,
+      values: [],
+      getValues: () => {
+        return Promise.resolve([]);
+      }
+    };
+  }
+
+  public comparison(criteriaComparison: CriteriaComparison): IComparison {
+    return this.comparisons[criteriaComparison];
+  }
+
+  private setComparisons(): void {
+    this.comparisons[CriteriaComparison.None] = {
+      id: CriteriaComparison.None,
+      text: '',
+      caption: 'None',
+      icon: ''
+    };
+    this.comparisons[CriteriaComparison.Equals] = {
+      id: CriteriaComparison.Equals,
+      text: '=',
+      caption: 'Equals',
+      icon: 'mdi-equal mdi'
+    };
+    this.comparisons[CriteriaComparison.NotEquals] = {
+      id: CriteriaComparison.NotEquals,
+      text: '<>',
+      caption: 'Not Equals',
+      icon: 'mdi-code-tags mdi'
+    };
+    this.comparisons[CriteriaComparison.GreaterThan] = {
+      id: CriteriaComparison.GreaterThan,
+      text: '>',
+      caption: 'Greater Than',
+      icon: 'mdi-greater-than mdi'
+    };
+    this.comparisons[CriteriaComparison.GreaterThanOrEqualTo] = {
+      id: CriteriaComparison.GreaterThanOrEqualTo,
+      text: '>=',
+      caption: 'Greater Than Or Equal To',
+      icon: 'mdi-greater-than-or-equal mdi'
+    };
+    this.comparisons[CriteriaComparison.LessThan] = {
+      id: CriteriaComparison.LessThan,
+      text: '<',
+      caption: 'Less Than',
+      icon: 'mdi-less-than mdi'
+    };
+    this.comparisons[CriteriaComparison.LessThanOrEqualTo] = {
+      id: CriteriaComparison.LessThanOrEqualTo,
+      text: '<=',
+      caption: 'Less Than Or Equal To',
+      icon: 'mdi-less-than-or-equal mdi'
+    };
+    this.comparisons[CriteriaComparison.Like] = {
+      id: CriteriaComparison.Like,
+      text: 'LIKE',
+      caption: 'Like',
+      icon: 'mdi-thumb-up-outline mdi'
+    };
+    this.comparisons[CriteriaComparison.NotLike] = {
+      id: CriteriaComparison.NotLike,
+      text: 'NOT LIKE',
+      caption: 'Not Like',
+      icon: 'mdi-thumb-down-outline mdi'
+    };
+    this.comparisons[CriteriaComparison.IsNull] = {
+      id: CriteriaComparison.IsNull,
+      text: 'IS NULL',
+      caption: 'Is Null',
+      icon: 'mdi-circle-outline mdi'
+    };
+    this.comparisons[CriteriaComparison.IsNotNull] = {
+      id: CriteriaComparison.IsNotNull,
+      text: 'IS NOT NULL',
+      caption: 'Is Not Null',
+      icon: 'mdi-circle-off-outline mdi'
     };
   }
 }

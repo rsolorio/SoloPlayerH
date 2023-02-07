@@ -3,11 +3,24 @@ import { IListModel } from "../../models/list-model.interface";
 import { Criteria } from "./criteria.class";
 import { CriteriaDataType, CriteriaValueEditor } from "./criteria.enum";
 
-export interface ICriteriaColumn {
+export interface IColumn {
   name: string;
   caption: string;
   dataType: CriteriaDataType;
   icon?: string;
+}
+
+export interface IComparison {
+  id: number;
+  text: string;
+  caption: string;
+  icon?: string;
+}
+
+export interface ISortingAlgorithm {
+  id: number;
+  name: string;
+  sort: (items: any[]) => any[];
 }
 
 export interface ICriteriaResult<T> extends IListModel<T> {
@@ -15,7 +28,7 @@ export interface ICriteriaResult<T> extends IListModel<T> {
 }
 
 export interface ICriteriaValueSelector {
-  column: ICriteriaColumn;
+  column: IColumn;
   editor: CriteriaValueEditor;
   values: ISelectableValue[];
   getValues: () => Promise<ISelectableValue[]>;
