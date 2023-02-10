@@ -7,6 +7,11 @@ export interface ISongModel extends IListItemModel {
   playCount: number;
   releaseYear: number;
   favorite: boolean;
+  rating: number;
+  mood: string;
+  language: string;
+  lyrics: string;
+  releaseDecade: number;
   /** This is a dynamic field that gets its value from either primaryAlbum object or primaryAlbumName property. */
   albumName: string;
   /** This is the value that comes from the album table. */

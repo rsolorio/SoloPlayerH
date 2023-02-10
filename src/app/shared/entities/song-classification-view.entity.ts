@@ -5,12 +5,15 @@ import { SongBaseEntity } from './song-base.entity';
 /**
  * This view combines the song entity with the songArtist entity.
  * It is intended to be used by filtering using the artistId column;
- * Fields: id, name, filePath, playCount, releaseYear, releaseDecade, trackNumber, mediaNumber, seconds, favorite, primaryAlbumName, primaryArtistName, primaryArtistStylized, titleSort, primaryAlbumId, primaryArtistId, classificationId
+ * Fields: id, name, filePath, playCount, releaseYear, releaseDecade,
+ * trackNumber, mediaNumber, seconds, favorite, rating, mood, language,
+ * lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized,
+ * titleSort, primaryAlbumId, primaryArtistId, classificationId
  */
  @ViewEntity({
   name: 'songClassificationView',
   expression: `
-  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.releaseDecade, song.trackNumber, song.mediaNumber, song.seconds, song.favorite,
+  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.releaseDecade, song.trackNumber, song.mediaNumber, song.seconds, song.favorite, song.rating, song.mood, song.language, song.lyrics,
   album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songClassification.classificationId
   FROM song
   INNER JOIN album
@@ -42,6 +45,14 @@ export class SongClassificationViewEntity extends SongBaseEntity implements ISon
   seconds: number;
   @ViewColumn()
   favorite: boolean;
+  @ViewColumn()
+  rating: number;
+  @ViewColumn()
+  mood: string;
+  @ViewColumn()
+  language: string;
+  @ViewColumn()
+  lyrics: string;
   @ViewColumn()
   primaryAlbumName: string;
   @ViewColumn()

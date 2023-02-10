@@ -21,7 +21,7 @@ export enum DbColumn {
   ReleaseDecade = 'releaseDecade',
   Lyrics = 'lyrics',
   SortBy = 'sortBy', // fake column for sorting purposes
-  SortAlgorithm = 'sortAlgorithm', // fake column for sorting purposes
+  TransformAlgorithm = 'transformAlgorithm', // fake column for sorting purposes
 }
 
 export const databaseColumns: { [name: string]: IColumn } = { };
@@ -44,4 +44,4 @@ databaseColumns[DbColumn.ReleaseYear] = { name: DbColumn.ReleaseYear, caption: '
 databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Release Decade', icon: 'mdi-calendar-blank-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.Lyrics] = { name: DbColumn.Lyrics, caption: 'Lyrics', icon: 'mdi-script-text-outline mdi', dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.SortBy] = { name: DbColumn.SortBy, caption: 'Sort By', icon: 'mdi-sort mdi', dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.SortAlgorithm] = { name: DbColumn.SortAlgorithm, caption: 'Sort Algorithm', icon: 'mdi-sort-alphabetical-variant mdi', dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.TransformAlgorithm] = { name: DbColumn.TransformAlgorithm, caption: 'Transform', icon: 'mdi-sort-alphabetical-variant mdi', dataType: CriteriaDataType.String };

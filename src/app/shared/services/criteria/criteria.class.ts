@@ -1,5 +1,5 @@
 import { IValuePair } from "src/app/core/models/core.interface";
-import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaSortingAlgorithm } from "./criteria.enum";
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from "./criteria.enum";
 
 /**
  * Criteria object.
@@ -17,7 +17,7 @@ export class Criteria {
   /** Criteria for specifying sorting to the final filter. */
   sortingCriteria = new CriteriaItems();
   /** Algorithm to perform a special sort in the list of items. */
-  sortingAlgorithm = CriteriaSortingAlgorithm.None;
+  transformAlgorithm = CriteriaTransformAlgorithm.None;
   /** Date on which this object was created. The value is represented in milliseconds according to the getTime method. */
   date: number;
   /** Unique identifier of this object. */
@@ -37,7 +37,7 @@ export class Criteria {
     result.searchCriteria = this.searchCriteria.clone();
     result.userCriteria = this.userCriteria.clone();
     result.sortingCriteria = this.sortingCriteria.clone();
-    result.sortingAlgorithm = this.sortingAlgorithm;
+    result.transformAlgorithm = this.transformAlgorithm;
     result.name = this.name;
     return result;
   }

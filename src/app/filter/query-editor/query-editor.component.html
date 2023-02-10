@@ -26,5 +26,15 @@
       <i class="mdi-close mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onSortCloseClick(criteriaItem)"></i>
     </div>
   </div>
-  <!-- SORT ALGORITHM -->
+  <!-- TRANSFORM ALGORITHM -->
+  <div class="sp-filter-header sp-text-big sp-bg-04">
+    <span class="sp-filter-header-text">{{transformSelector.column.caption}}</span>
+    <span (click)="onAlgorithmEditClick()" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
+  </div>
+  <div class="sp-chip-container">
+    <div class="sp-chip-item sp-bg-09">
+      <span class="sp-chip-text sp-text-large">{{algorithmCaption(model.transformAlgorithm)}}</span>&nbsp;
+      <i class="mdi-pencil-outline mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onAlgorithmEditClick()"></i>
+    </div>
+  </div>
 </div>

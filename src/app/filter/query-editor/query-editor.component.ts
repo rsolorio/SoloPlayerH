@@ -9,7 +9,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
-import { CriteriaComparison, CriteriaDataType, CriteriaValueEditor } from 'src/app/shared/services/criteria/criteria.enum';
+import { CriteriaComparison, CriteriaDataType, CriteriaTransformAlgorithm, CriteriaValueEditor } from 'src/app/shared/services/criteria/criteria.enum';
 import { ICriteriaValueSelector } from 'src/app/shared/services/criteria/criteria.interface';
 import { DbColumn } from 'src/app/shared/services/database/database.columns';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
@@ -24,7 +24,7 @@ export class QueryEditorComponent implements OnInit {
   public model: Criteria;
   public supportedSelectors: ICriteriaValueSelector[] = [];
   public sortBySelector: ICriteriaValueSelector;
-  public sortAlgorithmSelector: ICriteriaValueSelector;
+  public transformSelector: ICriteriaValueSelector;
   constructor(
     private db: DatabaseService,
     private utilities: UtilityService,
@@ -75,15 +75,19 @@ export class QueryEditorComponent implements OnInit {
       }
     }
 
-    // Sorts
+    // Sort By
     this.sortBySelector = this.db.selector(DbColumn.SortBy);
     this.sortBySelector.values = await this.sortBySelector.getValues();
     for (const valuePair of this.sortBySelector.values) {
       const criteriaItem = criteriaClone.sortingCriteria.find(item => item.columnName === valuePair.value);
       valuePair.selected = criteriaItem && criteriaItem.sortSequence > 0;
     }
-    this.sortAlgorithmSelector = this.db.selector(DbColumn.SortAlgorithm);
-    this.sortAlgorithmSelector.values = await this.sortAlgorithmSelector.getValues();
+    // Transform
+    this.transformSelector = this.db.selector(DbColumn.TransformAlgorithm);
+    this.transformSelector.values = await this.transformSelector.getValues();
+    for (const valuePair of this.transformSelector.values) {
+      valuePair.selected = valuePair.value === criteriaClone.transformAlgorithm;
+    }
 
     return criteriaClone;
   }
@@ -214,5 +218,25 @@ export class QueryEditorComponent implements OnInit {
 
   public columnCaption(columnName: string): string {
     return this.db.displayName(columnName);
+  }
+
+  public onAlgorithmEditClick(): void {
+    const chipSelectionModel: IChipSelectionModel = {
+      selector: this.transformSelector,
+      onOk: values => {
+        // Only one value should be selected
+        const selectedValuePair = values[0];
+        this.model.transformAlgorithm = selectedValuePair.value;
+      }
+    };
+    this.chipSelectionService.showInPanel(chipSelectionModel);
+  }
+
+  public algorithmCaption(algorithm: CriteriaTransformAlgorithm): string {
+    const valuePair = this.transformSelector.values.find(item => item.value === algorithm);
+    if (valuePair) {
+      return valuePair.caption;
+    }
+    return '';
   }
 }

@@ -11,6 +11,8 @@ import { PlaylistListComponent } from './playlist-list/playlist-list.component';
 import { FileService } from '../shared/services/file/file.service';
 import { FileNodeService } from '../shared/services/file/file-node.service';
 import { FileCordovaService } from '../shared/services/file/file-cordova.service';
+import { ListTransformService } from '../shared/services/list-transform/list-transform.service';
+import { SongValidatorFactory } from './transform-validators/song-validator-factory';
 
 @NgModule({
   declarations: [
@@ -29,4 +31,8 @@ import { FileCordovaService } from '../shared/services/file/file-cordova.service
   entryComponents: [],
   providers: [ { provide: FileService, useClass: FileNodeService }]
 })
-export class MusicModule { }
+export class MusicModule {
+  constructor(transformService: ListTransformService) {
+    transformService.register(new SongValidatorFactory());
+  }
+}

@@ -25,11 +25,15 @@ export enum CriteriaSortDirection {
   Descending
 }
 
-export enum CriteriaSortingAlgorithm {
+export enum CriteriaTransformAlgorithm {
   None,
-  DifferentArtist,
-  DifferentLanguage,
-  DifferentDecadeGenre
+  AlternateArtist,
+  AlternateLanguageArtist,
+  AlternateDecadeGenre,
+  AlternateLanguage,
+  LimitDuration,
+  LimitFileSize,
+  LimitSongsPerArtist
 }
 
 export enum CriteriaDataType {

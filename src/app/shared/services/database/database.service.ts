@@ -34,8 +34,9 @@ import { LogService } from 'src/app/core/services/log/log.service';
 import { databaseColumns, DbColumn } from './database.columns';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
-import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaValueEditor } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm, CriteriaValueEditor } from '../criteria/criteria.enum';
 import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
+import { ListTransformService } from '../list-transform/list-transform.service';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -57,7 +58,8 @@ export class DatabaseService {
   constructor(
     private utilities: UtilityService,
     private events: EventsService,
-    private log: LogService) {
+    private log: LogService,
+    private transformService: ListTransformService) {
     const options: DataSourceOptions = {
       type: 'sqlite',
       database: 'solo-player.db',
@@ -240,11 +242,13 @@ export class DatabaseService {
 
   // SQLite Bulk Actions - END
 
-  public getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: Criteria): Promise<T[]> {
+  public async getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: Criteria): Promise<T[]> {
     const entityTempName = 'getListEntity';
     const repo = this.dataSource.getRepository(entity);
     this.log.debug('getList criteria', criteria);
-    return this.createQueryBuilder(repo, entityTempName, criteria).getMany();
+    const result = await this.createQueryBuilder(repo, entityTempName, criteria).getMany();
+    const transformedResult = this.transformService.transform(result, criteria.transformAlgorithm);
+    return transformedResult;
   }
 
   public getRepo<T extends ObjectLiteral>(entity: EntityTarget<T>): Repository<T> {
@@ -651,12 +655,16 @@ export class DatabaseService {
       }
     };
 
-    this.valueSelectors[DbColumn.SortAlgorithm] = {
-      column: databaseColumns[DbColumn.SortAlgorithm],
+    this.valueSelectors[DbColumn.TransformAlgorithm] = {
+      column: databaseColumns[DbColumn.TransformAlgorithm],
       editor: CriteriaValueEditor.Single,
       values: [],
       getValues: () => {
-        return Promise.resolve([]);
+        return Promise.resolve([
+          { caption: 'None', value: CriteriaTransformAlgorithm.None },
+          { caption: 'Alternate Artist', value: CriteriaTransformAlgorithm.AlternateArtist },
+          { caption: 'Alternate Language', value: CriteriaTransformAlgorithm.AlternateLanguage }
+        ]);
       }
     };
   }
