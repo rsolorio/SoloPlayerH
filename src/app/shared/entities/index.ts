@@ -20,3 +20,4 @@ export * from './playlist-song-view.entity';
 export * from './module-option.entity';
 export * from './song-artist.entity';
 export * from './song-classification.entity';
+export * from './play-history.entity';

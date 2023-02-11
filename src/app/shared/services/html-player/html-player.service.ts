@@ -489,7 +489,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
   private subscribeToAudioEvents() {
     this.htmlAudio.addEventListener(HtmlMediaEvent.TimeUpdate, () => {
       if (this.htmlAudio.currentTime) {
-        this.log.debug('timeupdate ' + this.htmlAudio.currentTime);
+        // this.log.debug('timeupdate ' + this.htmlAudio.currentTime);
       }
       else {
         this.registerEvent(HtmlMediaEvent.TimeUpdate, '01 - time has been set to 0');

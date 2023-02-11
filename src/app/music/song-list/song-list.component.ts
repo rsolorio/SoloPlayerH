@@ -54,11 +54,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeNavbar();
     this.initializeItemMenu();
-  }
-
-  private initializeNavbar(): void {
   }
 
   private initializeItemMenu(): void {
@@ -233,6 +229,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       }
       return null;
     };
+    // TODO: Add new menu: Save As Playlist, Save As Filter
   }
 
   public onItemRender(song: ISongModel): void {

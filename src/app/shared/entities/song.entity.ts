@@ -37,6 +37,8 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   @Column({ nullable: true })
   grouping: string;
   @Column()
+  initialPlayCount: number;
+  @Column()
   playCount: number;
   @Column()
   rating: number;

@@ -180,6 +180,7 @@ You can configure how the tag information is retrieved and where it will be stor
 ### SongArtist table
 - songId
 - artistId
+- artistRoleTypeId
 
 ### Playlist table
 - id
@@ -202,6 +203,8 @@ You can configure how the tag information is retrieved and where it will be stor
 - classificationId
 
 ### PlayHistory table
+- songId
+- playDate
 
 ## Dependencies
 This is a list of key dependencies in the project.

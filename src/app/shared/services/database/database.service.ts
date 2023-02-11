@@ -22,7 +22,8 @@ import {
   PlaylistSongViewEntity,
   ModuleOptionEntity,
   SongArtistEntity,
-  SongClassificationEntity
+  SongClassificationEntity,
+  PlayHistoryEntity
 } from '../../entities';
 import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
 import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
@@ -83,7 +84,8 @@ export class DatabaseService {
         PlaylistSongViewEntity,
         ModuleOptionEntity,
         SongArtistEntity,
-        SongClassificationEntity
+        SongClassificationEntity,
+        PlayHistoryEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -740,5 +742,18 @@ export class DatabaseService {
       caption: 'Is Not Null',
       icon: 'mdi-circle-off-outline mdi'
     };
+  }
+
+  public async increasePlayCount(songId: string): Promise<number> {
+    // Increase play count
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.playCount++;
+    await song.save();
+    // Add play record
+    const playRecord = new PlayHistoryEntity();
+    playRecord.songId = songId;
+    playRecord.playDate = new Date();
+    await playRecord.save();
+    return song.playCount;
   }
 }

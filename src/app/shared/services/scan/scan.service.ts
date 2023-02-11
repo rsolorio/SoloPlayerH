@@ -384,6 +384,8 @@ export class ScanService {
     else if (popularimeter && popularimeter.counter) {
       song.playCount = popularimeter.counter;
     }
+    // This will only be set once just for tracking purposes
+    song.initialPlayCount = song.playCount;
     
     const lyrics = audioInfo.metadata.common.lyrics;
     if (lyrics && lyrics.length) {

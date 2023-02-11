@@ -4,6 +4,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus } from 'src/app/shared/models/player.enum';
 import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { PlayerOverlayStateService } from './player-overlay-state.service';
 import { PlayerOverlayMode } from './player-overlay.enum';
 import { IPlayerOverlayModel } from './player-overlay.interface';
@@ -21,8 +22,9 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
   public model: IPlayerOverlayModel;
   constructor(
     private playerOverlayService: PlayerOverlayStateService,
-    private events: EventsService
-  ) {
+    private events: EventsService,
+    private db: DatabaseService)
+  {
     super();
   }
 
@@ -51,7 +53,9 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
       switch (eventArgs.newValue) {
         case PlayerStatus.Playing:
           if (eventArgs.oldValue !== PlayerStatus.Paused) {
-            // TODO: increase play count in the db and/or file
+            this.db.increasePlayCount(eventArgs.track.songId).then(newPlayCount => {
+              eventArgs.track.song.playCount = newPlayCount;
+            });
           }
           break;
       }
