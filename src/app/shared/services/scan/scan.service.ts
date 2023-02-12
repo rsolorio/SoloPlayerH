@@ -676,17 +676,4 @@ export class ScanService {
     this.log.warn('Playlist audio file not found.', audioFilePath);
     return null;
   }
-
-  private artistNeedsUpdate(existingArtist: ArtistEntity, newArtist: ArtistEntity): boolean {
-    if (!existingArtist.artistType && newArtist.artistType) {
-      return true;
-    }
-    if (!existingArtist.country && newArtist.country) {
-      return true;
-    }
-    if (existingArtist.artistStylized !== newArtist.artistStylized) {
-      return true;
-    }
-    return false;
-  }
 }

@@ -12,14 +12,13 @@ body {
     Component           Z-Index     Background
     ------------------  ----------- ----------
     Breadcrumb          N/A         sp-bg-09
-    Menu Item (active)  N/A         sp-bg-08
     Sidebar             sp-z-9      sp-bg-06
     Loading View        sp-z-8      N/A
     Context Menu        sp-z-7      sp-bg-05
     NavBar              sp-z-5      sp-bg-04
     Player Overlay      sp-z-6      sp-bg-04
-    View Modal          sp-z-3      sp-bg-03
-    View Selected Item  N/A         sp-bg-03
+    View Selected Item  N/A         sp-bg-04
+    View Modal          sp-z-3      N/A
     List Image Backdrop sp-z-1      N/A
     View Container      N/A         sp-bg-01
     Body                N/A         sp-bg
@@ -65,7 +64,16 @@ body {
 
 // BACKGROUND *************************************************************************************
 // Hack: blend the main bg color and the overlay color by using a solid gradient and an actual color
-// The bigger the class number the lighter the color
+// The bigger the class number the lighter the color; the bg color is always the same, but the overlay
+// color increases opacity.
+// This is the solid gradient:
+// background-image: linear-gradient(0, $sp-color-background, $sp-color-background);
+// This is the setting that blends two colors to get a solid gradient:
+// background-blend-mode: overlay;
+// This is the overlay color:
+// background-color: $sp-color-overlay-01;
+// This is the text color:
+// color: $sp-color-on-background-high;
 .sp-bg {
     background-color: $sp-color-background;
     color: $sp-color-on-background-high;
@@ -132,6 +140,11 @@ body {
     background-color: $sp-color-overlay-09;
     background-blend-mode: overlay;
     color: $sp-color-on-background-high;
+}
+
+.sp-bg-primary {
+    background-color: $sp-color-primary;
+    color: $sp-color-on-primary;
 }
 
 // COLORS *****************************************************************************************

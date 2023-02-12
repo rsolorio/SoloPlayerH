@@ -66,7 +66,8 @@ $sp-color-pink: #e83e8c;
 $sp-color-orange: #ff8800;
 $sp-color-yellow: #e9ff25;
 $sp-color-red: #cc0000;
-$sp-color-cyan: #02f1f1;
+$sp-color-cyan: #00bcd4;
+$sp-color-cyan2: #007C7C;
 $sp-color-gray-light: #999;
 $sp-color-gray: #555;
 $sp-color-muted: #6c757d;
@@ -76,7 +77,9 @@ $sp-color-black: #060606;
 $sp-color-gray-super-light: #e9ecef;
 
 /* THEME */
-// Overlay
+// Overlay: a color with certain opacity.
+// Overlay 0 is practically applying no color since opacity is 0.
+// Overlay 9 is applying the color with the max opacity allowed.
 $sp-color-overlay: $sp-color-white;
 $sp-color-overlay-hover: rgba($sp-color-overlay, $sp-opacity-hover);
 $sp-color-overlay-01: rgba($sp-color-overlay, $sp-opacity-01);
@@ -97,7 +100,7 @@ $sp-color-on-background-low: rgba($sp-color-white, $sp-opacity-low);
 $sp-color-on-background-separator: rgba($sp-color-white, $sp-opacity-separator);
 // Primary
 $sp-color-primary: $sp-color-cyan;
-$sp-color-on-primary: $sp-color-black;
+$sp-color-on-primary: $sp-color-gray-dark;
 // Primary Variant
 $sp-color-primary-variant: $sp-color-blue-light;
 $sp-color-on-primary-variant: $sp-color-black;
