@@ -585,21 +585,25 @@ export class ScanService {
     // Remove \r and then split by \n
     const fileLines = fileContent.replace(/(\r)/gm, '').split('\n');
     if (fileLines.length) {
+      let tracks: PlaylistSongEntity[];
       const firstLine = fileLines[0].toUpperCase();
 
       if (firstLine === '[PLAYLIST]') {
         const playlist = await this.createPlaylist(fileInfo.name);
         if (playlist) {
-          return this.processPls(playlist, fileInfo, fileLines);
+          tracks = await this.processPls(playlist, fileInfo, fileLines);
         }
-        
       }
 
       if (firstLine === '#EXTM3U') {
         const playlist = await this.createPlaylist(fileInfo.name);
         if (playlist) {
-          return this.processM3u(playlist, fileInfo, fileLines);
+          tracks = await this.processM3u(playlist, fileInfo, fileLines);
         }
+      }
+
+      if (tracks && tracks.length) {
+        this.db.bulkInsert(PlaylistSongEntity, tracks);
       }
     }
 
@@ -621,51 +625,55 @@ export class ScanService {
     return playlist;
   }
 
-  private async processPls(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<any> {
-    let songSequence = 1;
+  private async processPls(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<PlaylistSongEntity[]> {
+    const tracks: PlaylistSongEntity[] = [];
+    let trackSequence = 1;
     for (const line of lines) {
-      if (line.startsWith('File')) {
+      if (line.toLowerCase().startsWith('file')) {
         const lineParts = line.split('=');
         if (lineParts.length > 1) {
           // TODO: validate proper audio extension
-          const audioFilePath = this.fileService.getAbsolutePath(fileInfo.directoryPath, lineParts[1]);
-          const track = await this.addPlaylistSong(playlist, audioFilePath, songSequence);
-          if (track) {
-            songSequence++;
-            this.events.broadcast(AppEvent.ScanTrackAdded, track);
+          const relativeFilePath = lineParts[1];
+          const playlistSong = await this.createPlaylistSong(playlist, fileInfo.directoryPath, relativeFilePath, trackSequence);
+          if (playlistSong) {
+            trackSequence++;
+            tracks.push(playlistSong);
+            this.events.broadcast(AppEvent.ScanTrackAdded, playlistSong);
           }
         }
       }
     }
+    return tracks;
   }
 
-  private async processM3u(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<any> {
-    let songSequence = 1;
+  private async processM3u(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<PlaylistSongEntity[]> {
+    const tracks: PlaylistSongEntity[] = [];
+    let trackSequence = 1;
     for (const line of lines) {
-      if (!line.startsWith('#EXTINF')) {
-        const audioFilePath = this.fileService.getAbsolutePath(fileInfo.directoryPath, line);
-        const track = await this.addPlaylistSong(playlist, audioFilePath, songSequence);
-        if (track) {
-          songSequence++;
-          this.events.broadcast(AppEvent.ScanTrackAdded, track);
+      const lineLowerCase = line.toLowerCase();
+      if (!lineLowerCase.startsWith('#extinf') && !line.startsWith('#extm3u') && line.endsWith('.mp3')) {
+        const playlistSong = await this.createPlaylistSong(playlist, fileInfo.directoryPath, line, trackSequence);
+        if (playlistSong) {
+          trackSequence++;
+          tracks.push(playlistSong);
+          this.events.broadcast(AppEvent.ScanTrackAdded, playlistSong);
         }
       }
     }
+    return tracks;
   }
 
-  private async addPlaylistSong(playlist: PlaylistEntity, songFilePath: string, sequence: number): Promise<PlaylistSongEntity> {
-    const song = await SongEntity.findOneBy({ filePath: songFilePath });
+  private async createPlaylistSong(playlist: PlaylistEntity, playlistDirectoryPath: string, relativeFilePath: string, sequence: number): Promise<PlaylistSongEntity> {
+    const audioFilePath = this.fileService.getAbsolutePath(playlistDirectoryPath, relativeFilePath);
+    const song = await SongEntity.findOneBy({ filePath: audioFilePath });
     if (song) {
       const playlistSong = new PlaylistSongEntity();
       playlistSong.playlist = playlist;
       playlistSong.song = song;
       playlistSong.sequence = sequence;
-      await playlistSong.save();
-      playlistSong.song = song;
       return playlistSong;
     }
-
-    this.log.warn('Playlist audio file not found.', songFilePath);
+    this.log.warn('Playlist audio file not found.', audioFilePath);
     return null;
   }
 
