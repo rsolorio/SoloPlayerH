@@ -1,4 +1,8 @@
-<div #breadcrumbsContainer class="sp-breadcrumbs sp-scrollbar-hidden" (scroll)="onContainerScroll()">
+<i
+  [ngClass]="{ 'sp-invisible': !leftScrollIndicatorVisible }"
+  class="mdi-arrow-left-circle mdi sp-scroll-icon sp-scroll-icon-left sp-clickable"
+  (click)="onScrollLeftClick()"></i>
+<div #breadcrumbsContainer class="sp-breadcrumbs sp-scrollbar-hidden" [ngClass]="containerClass" (scroll)="onContainerScroll()" (wheel)="onContainerWheel($event)">
   <div *ngFor="let breadcrumb of model;let isLast = last;" (click)="onClick(breadcrumb)" class="sp-breadcrumb">
     <div class="sp-breadcrumb-content sp-bg-09 sp-clickable" [title]="breadcrumb.tooltip">
       <!-- Icon -->
@@ -16,3 +20,7 @@
     <i *ngIf="!isLast" class="mdi-chevron-right mdi"></i>
   </div>
 </div>
+<i
+[ngClass]="{ 'sp-invisible': !rightScrollIndicatorVisible }"
+class="mdi-arrow-right-circle mdi sp-scroll-icon sp-scroll-icon-right sp-clickable"
+(click)="onScrollRightClick()"></i>

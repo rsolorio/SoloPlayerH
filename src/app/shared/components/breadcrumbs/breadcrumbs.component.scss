@@ -2,6 +2,7 @@
 
 :host {
   width: 100%;
+  position: relative;
 }
 
 .sp-breadcrumbs {
@@ -9,12 +10,48 @@
   display: flex;
   flex-wrap: nowrap;
   font-family: $sp-font-family-regular;
+}
+
+.sp-bc-icon-null {
   margin-left: 5px;
   margin-right: 5px;
+}
+
+.sp-bc-icon-right {
+  margin-left: 5px;
+  margin-right: 20px;
+}
+
+.sp-bc-icon-left {
+  margin-left: 20px;
+  margin-right: 5px;
+}
+
+.sp-bc-icon-both {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.sp-breadcrumb {
+  flex: 0 0 auto; // Equivalent to flex:none. Not allowed to shrink in overflow.
 }
 
 .sp-breadcrumb-content {
   display: inline-block;
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.sp-scroll-icon {
+  position: absolute;
+  top: 6px;
+  color: $sp-color-primary;
+}
+
+.sp-scroll-icon-right {
+  right: 0;
+}
+
+.sp-scroll-icon-left {
+  left: 0;
 }
