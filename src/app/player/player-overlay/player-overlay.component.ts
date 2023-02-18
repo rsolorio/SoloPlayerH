@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ColorG } from 'src/app/core/models/color-g.class';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus } from 'src/app/shared/models/player.enum';
 import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
+import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { PlayerOverlayStateService } from './player-overlay-state.service';
 import { PlayerOverlayMode } from './player-overlay.enum';
@@ -20,10 +22,13 @@ import { IPlayerOverlayModel } from './player-overlay.interface';
 export class PlayerOverlayComponent extends CoreComponent implements OnInit {
   public PlayerOverlayMode = PlayerOverlayMode;
   public model: IPlayerOverlayModel;
+  // TODO: this should have the same color as the small player so the color transition looks better
+  public backgroundColor = ColorG.black.rgbFormula;
   constructor(
     private playerOverlayService: PlayerOverlayStateService,
     private events: EventsService,
-    private db: DatabaseService)
+    private db: DatabaseService,
+    private cd: ChangeDetectorRef)
   {
     super();
   }
@@ -64,13 +69,13 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
 
   private subscribeToFullPlayerImageLoaded() {
     // TODO: implement color palette, should we do this in the player full?
-    // this.subs.sink = this.events.onEvent<IBucketPalette>(AppEvent.FullPlayerPaletteLoaded)
-    // .subscribe(newPalette => {
-    //   if (this.playerOverlayService.getState().mode === PlayerOverlayMode.Full) {
-    //     this.backgroundColor = newPalette.background.selected.rgbFormula;
-    //     // A simple observable doesn't actually fire change detection so let's do it here
-    //     this.cd.detectChanges();
-    //   }
-    // });
+    this.subs.sink = this.events.onEvent<BucketPalette>(AppEvent.FullPlayerPaletteLoaded)
+    .subscribe(newPalette => {
+      if (this.playerOverlayService.getState().mode === PlayerOverlayMode.Full) {
+        this.backgroundColor = newPalette.background.selected.rgbFormula;
+        // A simple observable doesn't actually fire change detection so let's do it here
+        this.cd.detectChanges();
+      }
+    });
   }
 }

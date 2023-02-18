@@ -1,6 +1,10 @@
 import { Component, ViewChild, ElementRef, Output, EventEmitter, Input, OnDestroy, AfterViewInit, Renderer2 } from '@angular/core';
+import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
+import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
 import { ICoordinate, ISize } from 'src/app/core/models/core.interface';
+import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
+import { ColorUtilityService } from '../../services/color-utility/color-utility.service';
 import { ImageUtilityService } from '../../services/image-utility/image-utility.service';
 import { IImageLoadedEventArgs, ILoadingImageModel } from './loading-image-model.interface';
 
@@ -33,6 +37,8 @@ export class LoadingImageComponent implements OnDestroy, AfterViewInit {
   @Output() public loadError: EventEmitter<Event> = new EventEmitter();
   /** Fires when the img element is clicked. */
   @Output() public imageClick: EventEmitter<Event> = new EventEmitter();
+  /** Fires when a new image palette has been loaded from the image. */
+  @Output() public colorsLoaded: EventEmitter<ColorG[]> = new EventEmitter();
 
   get src(): string {
     return this.model.src;
@@ -106,7 +112,11 @@ export class LoadingImageComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  constructor(private imageUtility: ImageUtilityService, private renderer: Renderer2) { }
+  constructor(
+    private imageUtility: ImageUtilityService,
+    private renderer: Renderer2,
+    private colorUtility: ColorUtilityService,
+    private worker: WorkerService) { }
 
   public ngAfterViewInit(): void {
     this.subscribeToParentResize(this.model.autoSize);
@@ -128,6 +138,9 @@ export class LoadingImageComponent implements OnDestroy, AfterViewInit {
 
     this.loadSuccess.emit(imageLoadedEvent);
 
+    // These values are false by default
+    // The first one has to be set in the markup of the component
+    // The second one has to be set by consuming the loadSuccess event and changing the property
     if (this.paletteEnabled || imageLoadedEvent.paletteEnabled) {
       // imageLoadedEvent.newValue = this.colorUtility.createPalette(this.imageReference.nativeElement);
       // this.paletteLoaded.emit(imageLoadedEvent.newValue);
@@ -170,24 +183,19 @@ export class LoadingImageComponent implements OnDestroy, AfterViewInit {
    * Loads the color palette of the current image and fires the "paletteLoaded" event.
    */
   public loadPalette(): void {
-    // if (this.colorUtility.isWorkerSupported()) {
-    //   this.isLoading = true;
-    //   const colorData = this.colorUtility.getColorData(this.imageReference.nativeElement);
-    //   this.worker.run<IColorExtractionData, IColorG[]>(OrgWorkerName.ColorPalette, colorData).then(response => {
-    //     const colors = ColorG.fromColorObjects(response);
-    //     // const newPalette = this.colorUtility.buildPalette(
-    //     //   colors[0], colors, this.colorUtility.getDefaultServiceName(), ColorSort.Contrast);
-    //     // this.paletteLoaded.emit(newPalette);
-    //     this.colorsLoaded.emit(colors);
-    //     this.isLoading = false;
-    //   });
-    // }
-    // else {
-    //   // const newPalette = this.colorUtility.createPalette(this.imageReference.nativeElement);
-    //   // this.paletteLoaded.emit(newPalette);
-    //   const colors = this.colorUtility.getColors(this.imageReference.nativeElement);
-    //   this.colorsLoaded.emit(colors);
-    // }
+    if (this.colorUtility.isWorkerSupported()) {
+      this.isLoading = true;
+      const colorData = this.colorUtility.getColorData(this.imageReference.nativeElement);
+      this.worker.run<IColorExtractionData, IColorG[]>(WorkerName.ColorPalette, colorData).then(response => {
+        const colors = ColorG.fromColorObjects(response);
+        this.colorsLoaded.emit(colors);
+        this.isLoading = false;
+      });
+    }
+    else {
+      const colors = this.colorUtility.getColors(this.imageReference.nativeElement);
+      this.colorsLoaded.emit(colors);
+    }
   }
 
   public next(): void {

@@ -69,8 +69,7 @@ export interface IColorInfoMatch extends IColorInfo {
 }
 
 export interface IColorBucket {
-  name?: string;
-  group?: string;
+  groups: string[];
   dominance: number;
   colors: ColorG[];
   selected?: ColorG;
@@ -102,12 +101,7 @@ export class ColorG implements IColorG {
   /** Closest named color information. */
   private _closest: IColorInfoMatch;
   /** RGBA value of this color. */
-  private _rgba: IRgbaColor = {
-    r: 0,
-    g: 0,
-    b: 0,
-    a: 1
-  };
+  private _rgba = this.createDefaultRgba();
   public hex: string;
   private _lab: ILabColor;
   /** Generic tag. */
@@ -117,6 +111,9 @@ export class ColorG implements IColorG {
    * the dominance will be the number of colors used to get the value.
    */
   public dominance = 0;
+
+  private _contrastColor = this.createDefaultRgba();
+  private _contrast = 0;
 
   private constructor() {
   }
@@ -254,7 +251,7 @@ export class ColorG implements IColorG {
       // 2. The color is not similar to any bucket
       if (colorBucketIndex === colorBuckets.length) {
         // So create a new bucket and add it to the list of buckets
-        closestColorBucket = { colors: [], dominance: 0 };
+        closestColorBucket = { colors: [], dominance: 0, groups: [] };
         colorBuckets.push(closestColorBucket);
       }
       else {
@@ -264,8 +261,8 @@ export class ColorG implements IColorG {
       // Add the color to the bucket
       closestColorBucket.colors.push(color);
       closestColorBucket.dominance += color.dominance;
-      if (getGroupFn && !closestColorBucket.group) {
-        closestColorBucket.group = getGroupFn(color);
+      if (getGroupFn) {
+        closestColorBucket.groups.push(getGroupFn(color));
       }
     }
 
@@ -489,6 +486,40 @@ export class ColorG implements IColorG {
     return this._closest;
   }
 
+    /** Color used to calculate the contrast. Default color is black. */
+    public get contrastColor(): IRgbaColor {
+      return this._contrastColor;
+    }
+  
+    /** Color used to calculate the contrast. Default color is black. */
+    public set contrastColor(color: IRgbaColor) {
+      this._contrastColor = color;
+      // Reset the contrast
+      this._contrast = 0;
+    }
+  
+    /**
+     * Determines the contrast ratio against the contrastColor property.
+     * @returns From 1 (low) to 21 (high).
+     */
+    public get contrast(): number {
+      if (this._contrast) {
+        return this._contrast;
+      }
+      if (!this._contrastColor) {
+        this._contrastColor = this.createDefaultRgba();
+      }
+      // https://stackoverflow.com/questions/9733288/how-to-programmatically-calculate-the-contrast-ratio-between-two-colors
+      // Minimal contrast ratio: 4.5 or 3 for larger sizes
+      const lum1 = this.luminance;
+      const lum2 = ColorG.fromRgbaObject(this.contrastColor).luminance;
+      const brightest = Math.max(lum1, lum2);
+      const darkest = Math.min(lum1, lum2);
+      this._contrast = (brightest + 0.05) / (darkest + 0.05);
+      return this._contrast;
+    }
+  
+
   // PUBLIC METHODS ///////////////////////////////////////////////////////////////////////////////
 
   public equals(color: ColorG): boolean {
@@ -564,22 +595,11 @@ export class ColorG implements IColorG {
     return DeltaE00.get(deltaArgs);
   }
 
-  /**
-   * Determines the contrast ratio with the specified color.
-   * @param color The color to compare to.
-   * @returns From 1 (low) to 21 (high).
-   */
-  public contrast(color: ColorG): number {
-    // https://stackoverflow.com/questions/9733288/how-to-programmatically-calculate-the-contrast-ratio-between-two-colors
-    // Minimal contrast ratio: 4.5 or 3 for larger sizes
-    const lum1 = this.luminance;
-    const lum2 = color.luminance;
-    const brightest = Math.max(lum1, lum2);
-    const darkest = Math.min(lum1, lum2);
-    return (brightest + 0.05) / (darkest + 0.05);
-  }
+  // PRIVATE ////////////////////////////////////////////////////////////////////////////////////
 
-// PRIVATE ////////////////////////////////////////////////////////////////////////////////////
+  private createDefaultRgba(): IRgbaColor {
+    return { r: 0, g: 0, b: 0, a: 1 };
+  }
 
   private fromRgba(r: number, g: number, b: number, a?: number) {
     if (a === undefined || a === null) {
@@ -607,6 +627,10 @@ export class ColorG implements IColorG {
     this.fromRgba(color.r, color.g, color.b);
   }
 
+  /**
+   * Sets the private rgba property.
+   * All other "from" methods end up calling this one.
+   */
   private fromRgbaObject(color: IRgbaColor) {
     this.rgba.r = color.r;
     this.rgba.g = color.g;
