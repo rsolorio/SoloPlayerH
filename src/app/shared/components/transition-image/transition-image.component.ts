@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ITransitionImageModel } from './transition-image-model.interface';
 
 @Component({
@@ -7,6 +7,8 @@ import { ITransitionImageModel } from './transition-image-model.interface';
   styleUrls: ['./transition-image.component.scss']
 })
 export class TransitionImageComponent {
+
+  @Output() public imageLoaded: EventEmitter<void> = new EventEmitter();
 
   public model: ITransitionImageModel = {
     defaultImageSrc: null,
@@ -32,5 +34,6 @@ export class TransitionImageComponent {
 
   public onTransitionImageLoad(e: Event): void {
     this.model.transitionImageLoaded = true;
+    this.imageLoaded.emit();
   }
 }

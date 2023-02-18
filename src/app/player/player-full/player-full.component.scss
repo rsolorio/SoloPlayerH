@@ -1,0 +1,76 @@
+@import "../../../styles-variables";
+
+.sp-tr-navbar {
+  height: $sp-navbar-height;
+}
+
+.sp-td-navbar-icon {
+  width: 42px;
+  text-align: center;
+}
+
+.sp-tr-song-info {
+  height: 80px;
+  text-align: center;
+}
+
+.sp-play-count {
+  vertical-align: super;
+  font-weight: bold;
+}
+
+.sp-tr-toolbar {
+  height: 55px;
+}
+
+.sp-img-container {
+  position: relative;
+}
+
+.sp-img {
+  object-fit: contain;
+  position: absolute;
+}
+
+.sp-td-toolbar {
+  text-align: center;
+  width: 20%; // this will be applied to the 5 TDs in the child table
+}
+
+.sp-tr-time-slider {
+  height: 26px;
+}
+
+.progress {
+  height: 5px;
+}
+
+.progress-bar {
+  transition: width 1s 0s linear;
+}
+
+.sp-tr-play-controls {
+  height: 110px;
+  text-align: center;
+}
+
+.sp-td-play-control {
+  width: 20%;
+}
+
+.sp-play-pause {
+  height: 80px;
+  width: 80px;
+}
+
+.sp-play-pause-button {
+  border-radius: 50%;
+  box-shadow: 0px 0px 20px;
+  margin: 0 auto; // this will horizontally center div in the td
+}
+
+.sp-play-pause-icon {
+  vertical-align: middle;
+  text-align: center;
+  display: table-cell;
+}

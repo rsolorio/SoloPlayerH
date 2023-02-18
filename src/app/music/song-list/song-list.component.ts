@@ -132,7 +132,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private async setBreadcrumbsForFeatArtistSongs(song: ISongModel): Promise<boolean> {
-    const criteria = new Criteria();
+    const criteria = new Criteria('Search Results');
     criteria.searchCriteria.push(new CriteriaItem('id', song.id))
     // Get the list of feat. artists
     const songArtistRows = await this.db.getList(SongArtistViewEntity, criteria);
@@ -185,6 +185,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.playSong(song);
   }
 
+  public onItemImageClick(song: ISongModel): void {
+    this.menuService.hideSlideMenu();
+    this.loadSongInPlayer(song, false, true);
+  }
+
   private playSong(song: ISongModel): void {
     this.menuService.hideSlideMenu();
     this.loadSongInPlayer(song, true, false);
@@ -210,6 +215,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           // For now, we are using this component only for search results,
           // but we should have an input property to specify the title of the play list
           playerList.loadList(trackList);
+          playerList.name = this.spListBaseComponent.model.criteriaResult.criteria.name;
           track = playerList.getTrack(song);
           this.playerService.setCurrentTrack(track, play);
           if (expand) {

@@ -1,6 +1,7 @@
 import { DefaultImageSrc } from "src/app/core/globals.enum";
 import { IEventArgs } from "src/app/core/models/core.interface";
 import { EventsService } from "src/app/core/services/events/events.service";
+import { IDbModel } from "./base-model.interface";
 import { AppEvent } from "./events.enum";
 import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";
 import { IPlaylistSongModel } from "./playlist-song-model.interface";
@@ -9,7 +10,7 @@ import { ISongModel } from "./song-model.interface";
 /**
  * Class responsible for handling the access to the tracks and updating the playlist status.
  */
-export class PlayerListModel {
+export class PlayerListModel implements IDbModel {
   constructor(private events: EventsService) {
     this.play = PlayMode.Sequence;
     this.repeat = RepeatMode.All;
@@ -65,6 +66,10 @@ export class PlayerListModel {
     },
     playlist: null
   };
+
+  // IDbModel
+  public id: string;
+  public name: string;
 
   // Public Properties **************************************************************************
   public play: PlayMode;

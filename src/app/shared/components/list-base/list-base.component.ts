@@ -33,7 +33,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     listUpdatedEvent: null,
     itemMenuList: [],
     criteriaResult: {
-      criteria: new Criteria(),
+      criteria: new Criteria('Search Results'),
       items: []
     },
     breadcrumbsEnabled: false
@@ -154,6 +154,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   public onContentClick(item: IListItemModel): void {
     this.itemContentClick.emit(item);
+  }
+
+  public onImageLoaded(): void {
+    
   }
 
   private afterListUpdated(): void {

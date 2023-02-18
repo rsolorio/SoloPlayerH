@@ -25,12 +25,13 @@ export class Criteria {
   /** A descriptive name for this object. */
   name: string;
 
-  constructor() {
+  constructor(name?: string) {
+    this.name = name;
     this.setId();
   }
 
   public clone(): Criteria {
-    const result = new Criteria();
+    const result = new Criteria(this.name);
     result.paging = Object.assign(result.paging, JSON.parse(JSON.stringify(this.paging)));
     result.systemCriteria = this.systemCriteria.clone();
     result.breadcrumbCriteria = this.breadcrumbCriteria.clone();
@@ -38,7 +39,6 @@ export class Criteria {
     result.userCriteria = this.userCriteria.clone();
     result.sortingCriteria = this.sortingCriteria.clone();
     result.transformAlgorithm = this.transformAlgorithm;
-    result.name = this.name;
     return result;
   }
 

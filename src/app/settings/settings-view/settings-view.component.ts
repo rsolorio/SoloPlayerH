@@ -181,7 +181,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       this.processAudioFiles(mp3Files, setting).then(failures => {
         setting.descriptions[0] = 'Scan process done.';
         if (failures.length) {
-          console.log(failures);
+          this.log.debug('Scan failures', failures);
           setting.descriptions[2] = 'File errors found: ' + failures.length;
         }
         else {
@@ -249,7 +249,6 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
 
   private async processPlaylistFiles(files: IFileInfo[]): Promise<any> {
     for (const fileInfo of files) {
-      console.log('Processing ' + fileInfo.path);
       await this.scanner.processPlaylistFile(fileInfo);
     }
   }

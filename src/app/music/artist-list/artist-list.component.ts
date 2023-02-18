@@ -125,7 +125,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   private showEntity(routeInfo: IAppRouteInfo, artist: IArtistModel): void {
     this.addBreadcrumb(artist);
     // The only criteria information that will pass from one entity to another is breadcrumbs
-    const criteria = new Criteria();
+    const criteria = new Criteria('Search Results');
     criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
     this.navigation.forward(routeInfo.route, { criteria: criteria });
   }

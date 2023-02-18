@@ -6,6 +6,7 @@ import { CoreComponent } from '../core/models/core-component.class';
 import { IPlayerState } from '../shared/models/player.interface';
 import { PlayerStatus, PlayMode, RepeatMode } from '../shared/models/player.enum';
 import { HtmlPlayerService } from '../shared/services/html-player/html-player.service';
+import { MenuService } from '../core/services/menu/menu.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -22,7 +23,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   constructor(
     private playerServiceBase: HtmlPlayerService,
-    private playerOverlayServiceBase: PlayerOverlayStateService) {
+    private playerOverlayServiceBase: PlayerOverlayStateService,
+    private menuServiceBase: MenuService) {
       super();
     }
 
@@ -61,5 +63,11 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   public onTogglePlaylist() {
     this.model.playerList.isVisible = !this.model.playerList.isVisible;
+  }
+
+  public onCollapseClick() {
+    this.menuServiceBase.hideSlideMenu();
+    this.model.playerList.isVisible = false;
+    this.playerOverlayServiceBase.restore();
   }
 }

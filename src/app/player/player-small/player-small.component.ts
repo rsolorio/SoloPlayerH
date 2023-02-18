@@ -8,6 +8,7 @@ import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-play
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { DefaultImageSrc } from 'src/app/core/globals.enum';
+import { MenuService } from 'src/app/core/services/menu/menu.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -24,9 +25,10 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
     private utilities: UtilityService,
-    private events: EventsService
+    private events: EventsService,
+    private menuService: MenuService
   ) {
-    super(playerService, playerOverlayService);
+    super(playerService, playerOverlayService, menuService);
   }
 
   public ngOnInit() {

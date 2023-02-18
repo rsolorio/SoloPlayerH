@@ -1,1 +1,140 @@
-<p>player-full works!</p>
+<table *ngIf="model" class="sp-full-height sp-full-width sp-table sp-table-support-overflow-ellipsis">
+  <!-- Navbar -->
+  <tr class="sp-tr-navbar">
+    <!-- Collapse button -->
+    <td class="sp-td-navbar-icon" (click)="onCollapseClick()">
+      <i class="mdi-chevron-down mdi sp-cursor-pointer sp-text-xlarge-fixed"></i>
+    </td>
+    <!-- Middle content -->
+    <td>
+      <table class="sp-full-width sp-full-height"><tr>
+        <!-- Playlist name -->
+        <td class="sp-font-family-regular sp-text-overflow-ellipsis">
+          <i class="mdi-playlist-music-outline mdi sp-text-xlarge-fixed sp-cursor-pointer"></i>
+          <span class="sp-text-large" style="line-height: 36px;vertical-align: top;">&nbsp;{{model.playerList.name}}</span>  
+        </td>
+      </tr></table>
+    </td>
+    <!-- Menu -->
+    <td class="sp-td-navbar-icon sp-text-xlarge-fixed">
+      <sp-icon-menu [items]="menuList" [context]="model.playerList.current.song"></sp-icon-menu>
+    </td>
+  </tr>
+  <!-- Image / Playlist / Lyrics -->
+  <tr>
+    <td colspan="3" style="padding: 0;">
+      <div class="sp-img-container sp-full-height sp-full-width">
+        <img [src]="model.playerList.current.song.imageSrc" class="sp-img sp-full-height sp-full-width">
+      </div>
+    </td>
+  </tr>
+  <!-- Song Info -->
+  <tr class="sp-tr-song-info sp-font-family-regular">
+    <td colspan="3" class="sp-text-overflow-ellipsis">
+      <!-- Title and Song Count -->
+      <i class="sp-text-large mdi mdi-music"></i>
+      <span
+      class="sp-text-large sp-text-bold">&nbsp;{{model.playerList.current?.song.name}}</span>
+      <span
+      class="sp-text-small sp-play-count">&nbsp;{{model.playerList.current?.song.playCount}}</span>
+      <br>
+      <!-- Artist Name -->
+      <i class="mdi-account-music mdi sp-text-medium"></i>
+      <span class="sp-text-medium">&nbsp;{{model.playerList.current?.song.artistName}}&nbsp;</span>
+      <!-- Artist Type -->
+      <ng-container *ngIf="model.playerList.current?.song.artistType">
+        <i class="mdi-microphone mdi sp-text-medium"></i>
+        <span
+        class="sp-text-medium">&nbsp;{{model.playerList.current?.song.artistType}}
+        </span>
+      </ng-container>
+      <br>
+      <!-- Album -->
+      <i class="sp-text-medium mdi mdi-album"></i>
+      <span class="sp-text-medium">&nbsp;{{model.playerList.current?.song.albumName}}&nbsp;&nbsp;</span>
+      <!-- Year -->
+      <i class="sp-text-medium mdi mdi-calendar"></i>
+      <span class="sp-text-medium">&nbsp;{{model.playerList.current?.song.releaseYear}}&nbsp;&nbsp;</span>
+      <!-- Genre -->
+      <i class="sp-text-medium mdi mdi-tag"></i>
+      <span class="sp-text-medium">&nbsp;Genre</span>
+    </td>
+  </tr>
+  <!-- Toolbar -->
+  <tr class="sp-tr-toolbar sp-bg-dim-black-high">
+    <td colspan="3" class="sp-td-toolbar sp-full-width sp-text-big">
+      <table class="sp-full-width">
+        <tr>
+          <!-- Link icon -->
+          <td>
+            <i class="mdi-link-variant mdi sp-cursor-pointer"></i>
+          </td>
+          <!-- Lyrics icon -->
+          <td>
+            <i class="mdi-script-text-outline mdi sp-cursor-pointer"></i>
+          </td>
+          <!-- Rating icon -->
+          <td>
+            <i class="mdi-star mdi sp-cursor-pointer"></i>
+          </td>
+          <!-- Mood icon -->
+          <td>
+            <i class="mdi-emoticon-happy-outline mdi sp-cursor-pointer"></i>
+          </td>
+          <!-- Favorite icon -->
+          <td>
+            <i class="mdi-heart mdi sp-cursor-pointer"></i>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <!-- Time Slider -->
+  <tr class="sp-tr-time-slider sp-font-family-regular sp-bg-dim-black-high">
+    <!-- Elapsed -->
+    <td class="sp-td-nav-bar-icon sp-text-medium">
+      <span>00:00</span>
+    </td>
+    <!-- Progress Bar -->
+    <td class="sp-full-width">
+        <div style="background-color: #6c757d;" class="progress">
+            <div [style.width.%]="50" style="background-color: #fff;" class="progress-bar" role="progressbar"></div>
+        </div>
+    </td>
+    <!-- Duration -->
+    <td class="sp-td-nav-bar-icon sp-text-medium">
+        <span>00:00</span>
+    </td>
+  </tr>
+  <!-- Play Controls -->
+  <tr class="sp-tr-play-controls sp-text-big sp-bg-dim-black-high">
+    <td colspan="3">
+      <table class="sp-full-width">
+        <tr>
+          <td class="sp-td-play-control">
+            <!-- <i class="mdi-shuffle-disabled mdi"></i> -->
+            <i class="mdi-shuffle mdi"></i>
+          </td>
+          <td (click)="onPrevious()" class="sp-td-play-control">
+              <i class="mdi-skip-previous mdi"></i>
+          </td>
+          <td class="sp-td-play-control">
+              <div (click)="onPlayPause()" class="sp-play-pause sp-play-pause-button">
+                  <!-- <i class="mdi-loading mdi-spin mdi sp-play-pause sp-play-pause-icon"></i> -->
+                  <i class="mdi-play mdi sp-play-pause sp-play-pause-icon"></i>
+                  <!-- <i class="mdi-pause mdi sp-play-pause sp-play-pause-icon"></i> -->
+              </div>
+          </td>
+          <td (click)="onForward()" class="sp-td-play-control">
+              <i class="mdi-skip-next mdi"></i>
+          </td>
+          <td class="sp-td-play-control">
+              <i class="mdi-repeat mdi"></i>
+              <!-- <i class="mdi-repeat-once mdi"></i> -->
+              <!-- <i class="mdi-repeat-off mdi"></i> -->
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

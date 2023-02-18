@@ -144,7 +144,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   private showEntity(routeInfo: IAppRouteInfo, album: IAlbumModel): void {
     this.addBreadcrumb(album);
     // The only criteria information that will pass from one entity to another is breadcrumbs
-    const criteria = new Criteria();
+    const criteria = new Criteria('Search Results');
     criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
     this.navigation.forward(routeInfo.route, { criteria: criteria });
   }
@@ -161,7 +161,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
 
   private async setAlbumImage(album: IAlbumModel): Promise<void> {
     const criteriaValue = new CriteriaItem('primaryAlbumId', album.id);
-    const criteria = new Criteria();
+    const criteria = new Criteria('Search Results');
     criteria.searchCriteria.push(criteriaValue);
     const songList = await this.db.getList(SongViewEntity, criteria);
     if (songList && songList.length) {

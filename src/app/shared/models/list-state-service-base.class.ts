@@ -46,7 +46,7 @@ export abstract class ListStateServiceBase<TItemModel> implements IStateService<
    */
   protected buildInitialState(): ICriteriaResult<TItemModel> {
     return {
-      criteria: new Criteria(),
+      criteria: new Criteria('Search Results'),
       items: []
     };
   }
