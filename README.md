@@ -32,6 +32,9 @@ Each list view supports quick filters which allow you to filter by the most comm
 ### Tag Mapping
 You can configure how the tag information is retrieved and where it will be stored.
 
+### Album Art Color Palette
+The application gets a list of dominant colors for each album art, and you can customize the player view using this color palette.
+
 ### And More...
 - 0-5 rating mechanism
 - Favorites

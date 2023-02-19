@@ -37,20 +37,33 @@
   width: 20%; // this will be applied to the 5 TDs in the child table
 }
 
+.sp-td-progress-bar {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 .sp-tr-time-slider {
   height: 26px;
 }
 
-.progress {
-  height: 5px;
+.sp-progress-bar {
+  appearance: none;
+  height: 4px;
+  vertical-align: inherit;
 }
 
-.progress-bar {
-  transition: width 1s 0s linear;
+.sp-progress-bar::-webkit-progress-bar {
+  background-color: $sp-color-overlay-01;
+  border-radius: 2px;
+}
+
+.sp-progress-bar::-webkit-progress-value {
+  background-color: $sp-color-white;
+  border-radius: 2px;
 }
 
 .sp-tr-play-controls {
-  height: 110px;
+  height: 100px;
   text-align: center;
 }
 
@@ -65,7 +78,7 @@
 
 .sp-play-pause-button {
   border-radius: 50%;
-  box-shadow: 0px 0px 20px;
+  background-color: $sp-color-overlay-01;
   margin: 0 auto; // this will horizontally center div in the td
 }
 
@@ -73,4 +86,9 @@
   vertical-align: middle;
   text-align: center;
   display: table-cell;
+}
+
+.sp-player-overlay {
+  color: $sp-color-on-background;
+  background-color: $sp-dim-black-mid;
 }

@@ -82,77 +82,80 @@
     </td>
   </tr>
   <!-- Toolbar -->
-  <tr class="sp-tr-toolbar sp-bg-dim-black-high">
+  <tr class="sp-tr-toolbar sp-player-overlay">
     <td colspan="3" class="sp-td-toolbar sp-full-width sp-text-big">
       <table class="sp-full-width">
         <tr>
           <!-- Link icon -->
           <td>
-            <i class="mdi-link-variant mdi sp-cursor-pointer"></i>
+            <i *ngIf="!model.playerList.current.song.url" class="mdi-link-variant-off mdi sp-cursor-pointer"></i>
+            <i *ngIf="model.playerList.current.song.url" class="mdi-link-variant mdi sp-cursor-pointer"></i>
           </td>
           <!-- Lyrics icon -->
           <td>
-            <i class="mdi-script-text-outline mdi sp-cursor-pointer"></i>
+            <i *ngIf="!model.playerList.current.song.lyrics" class="mdi-script-outline mdi sp-cursor-pointer"></i>
+            <i *ngIf="model.playerList.current.song.lyrics" class="mdi-script-text-outline mdi sp-cursor-pointer"></i>
           </td>
           <!-- Rating icon -->
           <td>
-            <i class="mdi-star mdi sp-cursor-pointer"></i>
+            <i *ngIf="!model.playerList.current.song.rating" class="mdi-star-outline mdi sp-cursor-pointer"></i>
+            <i *ngIf="model.playerList.current.song.rating > 0 && model.playerList.current.song.rating < 5" class="mdi-star-half-full mdi sp-cursor-pointer"></i>
+            <i *ngIf="model.playerList.current.song.rating === 5"class="mdi-star mdi sp-cursor-pointer"></i>
           </td>
           <!-- Mood icon -->
           <td>
-            <i class="mdi-emoticon-happy-outline mdi sp-cursor-pointer"></i>
+            <i *ngIf="!model.playerList.current.song.mood || model.playerList.current.song.mood === 'No Mood'" class="mdi-emoticon-neutral-outline mdi sp-cursor-pointer"></i>
+            <i *ngIf="model.playerList.current.song.mood && model.playerList.current.song.mood !== 'No Mood'" class="mdi-emoticon-happy-outline mdi sp-cursor-pointer"></i>
           </td>
           <!-- Favorite icon -->
           <td>
-            <i class="mdi-heart mdi sp-cursor-pointer"></i>
+            <i *ngIf="!model.playerList.current.song.favorite" class="mdi-heart-outline mdi sp-cursor-pointer"></i>
+            <i *ngIf="model.playerList.current.song.favorite" class="mdi-heart mdi sp-cursor-pointer"></i>
           </td>
         </tr>
       </table>
     </td>
   </tr>
   <!-- Time Slider -->
-  <tr class="sp-tr-time-slider sp-font-family-regular sp-bg-dim-black-high">
+  <tr class="sp-tr-time-slider sp-font-family-regular sp-player-overlay">
     <!-- Elapsed -->
     <td class="sp-td-nav-bar-icon sp-text-medium">
-      <span>00:00</span>
+      <span>{{ model.elapsedSeconds | duration }}</span>
     </td>
     <!-- Progress Bar -->
-    <td class="sp-full-width">
-        <div style="background-color: #6c757d;" class="progress">
-            <div [style.width.%]="50" style="background-color: #fff;" class="progress-bar" role="progressbar"></div>
-        </div>
+    <td class="sp-td-progress-bar sp-full-width">
+        <progress class="sp-progress-bar sp-full-width" [value]="model.elapsedPercentage" max="100"></progress>
     </td>
     <!-- Duration -->
     <td class="sp-td-nav-bar-icon sp-text-medium">
-        <span>00:00</span>
+        <span>{{ model.playerList.current.song.seconds | duration }}</span>
     </td>
   </tr>
   <!-- Play Controls -->
-  <tr class="sp-tr-play-controls sp-text-big sp-bg-dim-black-high">
+  <tr class="sp-tr-play-controls sp-text-big sp-player-overlay">
     <td colspan="3">
       <table class="sp-full-width">
         <tr>
           <td class="sp-td-play-control">
-            <!-- <i class="mdi-shuffle-disabled mdi"></i> -->
-            <i class="mdi-shuffle mdi"></i>
+            <i *ngIf="model.playerList.play === PlayMode.Sequence" class="mdi-shuffle-disabled mdi"></i>
+            <i *ngIf="model.playerList.play === PlayMode.Random" class="mdi-shuffle mdi"></i>
           </td>
           <td (click)="onPrevious()" class="sp-td-play-control">
               <i class="mdi-skip-previous mdi"></i>
           </td>
           <td class="sp-td-play-control">
               <div (click)="onPlayPause()" class="sp-play-pause sp-play-pause-button">
-                  <!-- <i class="mdi-loading mdi-spin mdi sp-play-pause sp-play-pause-icon"></i> -->
-                  <i class="mdi-play mdi sp-play-pause sp-play-pause-icon"></i>
-                  <!-- <i class="mdi-pause mdi sp-play-pause sp-play-pause-icon"></i> -->
+                  <i *ngIf="model.status !== PlayerStatus.Playing" class="mdi-play mdi sp-play-pause sp-play-pause-icon"></i>
+                  <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-play-pause sp-play-pause-icon"></i>
               </div>
           </td>
           <td (click)="onForward()" class="sp-td-play-control">
               <i class="mdi-skip-next mdi"></i>
           </td>
           <td class="sp-td-play-control">
-              <i class="mdi-repeat mdi"></i>
-              <!-- <i class="mdi-repeat-once mdi"></i> -->
-              <!-- <i class="mdi-repeat-off mdi"></i> -->
+              <i *ngIf="model.playerList.repeat === RepeatMode.All" class="mdi-repeat mdi"></i>
+              <i *ngIf="model.playerList.repeat === RepeatMode.One" class="mdi-repeat-once mdi"></i>
+              <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" class="mdi-repeat-off mdi"></i>
           </td>
         </tr>
       </table>

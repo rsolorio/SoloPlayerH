@@ -48,10 +48,3 @@ export enum ColorSort {
   Contrast = 'Contrast',
   Luminance = 'Luminance'
 }
-
-export enum ColorType {
-  None = -1,
-  Background = 0,
-  Primary = 1,
-  Secondary = 2
-}

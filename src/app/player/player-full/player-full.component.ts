@@ -5,6 +5,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
@@ -18,6 +19,9 @@ import { PlayerOverlayStateService } from '../player-overlay/player-overlay-stat
 })
 export class PlayerFullComponent extends PlayerComponentBase {
   @ViewChild('imageElement') private imageReference: ElementRef;
+  public PlayerStatus = PlayerStatus;
+  public RepeatMode = RepeatMode;
+  public PlayMode = PlayMode;
   public palette: BucketPalette;
   private imageColors: ColorG[];
   public isLoadingPalette = false;
