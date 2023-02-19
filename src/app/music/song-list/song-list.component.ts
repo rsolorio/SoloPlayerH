@@ -248,6 +248,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
   private async setSongImage(song: ISongModel): Promise<void> {
     const buffer = await this.fileService.getBuffer(song.filePath);
     const audioInfo = await this.metadataService.getMetadata(buffer);
-    song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata);
+    song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, ['single', 'front']);
   }
 }

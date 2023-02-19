@@ -96,19 +96,23 @@ export class MusicMetadataService {
     return result;
   }
 
-  public getPictureDataUrl(audioMetadata: IAudioMetadata, type?: string): string {
+  public getPictureDataUrl(audioMetadata: IAudioMetadata, types?: string[]): string {
     let picture: IPicture = null;
     if (audioMetadata.common.picture && audioMetadata.common.picture.length) {
-      if (type) {
-        picture = audioMetadata.common.picture.find(item => {
-          return item.type && item.type.toLowerCase() === type.toLowerCase();
-        });
+      if (types && types.length) {
+        for (const type of types) {
+          if (!picture) {
+            picture = audioMetadata.common.picture.find(item => {
+              return item.type && item.type.toLowerCase() === type.toLowerCase();
+            });
 
-        // If not found by type, use description
-        if (!picture) {
-          picture = audioMetadata.common.picture.find(item => {
-            return item.description && item.description.toLowerCase() === type.toLowerCase();
-          });
+            // If not found by type, use description
+            if (!picture) {
+              picture = audioMetadata.common.picture.find(item => {
+                return item.description && item.description.toLowerCase() === type.toLowerCase();
+              });
+            }
+          }
         }
       }
       else {

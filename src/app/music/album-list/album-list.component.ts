@@ -169,7 +169,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       const song = songList[0];
       const buffer = await this.fileService.getBuffer(song.filePath);
       const audioInfo = await this.metadataService.getMetadata(buffer);
-      album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
+      album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, ['front']);
     }
   }
 }

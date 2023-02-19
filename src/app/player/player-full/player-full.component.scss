@@ -20,7 +20,7 @@
 }
 
 .sp-tr-toolbar {
-  height: 55px;
+  height: 50px;
 }
 
 .sp-img-container {
@@ -43,7 +43,7 @@
 }
 
 .sp-tr-time-slider {
-  height: 26px;
+  height: 30px;
 }
 
 .sp-progress-bar {
@@ -58,7 +58,7 @@
 }
 
 .sp-progress-bar::-webkit-progress-value {
-  background-color: $sp-color-white;
+  background-color: $sp-color-on-background;
   border-radius: 2px;
 }
 

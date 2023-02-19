@@ -209,27 +209,35 @@ The application gets a list of dominant colors for each album art, and you can c
 - songId
 - playDate
 
-## Dependencies
-This is a list of key dependencies in the project.
-
-- [object-hash](https://www.npmjs.com/package/object-hash)
-  - Creates the deterministic ids of the entities using their name info.
-- @mdi/font
-  - The base font icon library.
-- [music-metadata-browser](https://www.npmjs.com/package/music-metadata-browser)
-  - The library used to retrieve all audio metadata information.
-- primeng
-  - The component library that provides some special functionality.
-    - Context/dropdown menus
-- sqlite3
-  - SQLite client.
-- typeorm
-  - ORM for SQLite.
-
 ## Scripts
 This is a list of NPM package scripts
 
 - npm start
   - Serves and runs the application in electron
   - Sets the browser js file of the angular dev kit to a webpack configuration that can resolve typeorm.
-    
+
+## Dependencies
+This is a list of key dependencies in the project.
+
+- [object-hash](https://www.npmjs.com/package/object-hash)
+  - Creates the deterministic ids of the entities using their name info.
+- [@mdi/font](https://pictogrammers.com/library/mdi/)
+  - The base font icon library.
+- [music-metadata-browser](https://www.npmjs.com/package/music-metadata-browser)
+  - The library used to retrieve all audio metadata information.
+- [primeng](https://primeng.org/setup)
+  - The component library that provides some special functionality.
+    - Context/dropdown menus
+- sqlite3
+  - SQLite client.
+- [typeorm](https://typeorm.io/)
+  - ORM for SQLite.
+
+## Fonts
+This is a list of free fonts used in this project.
+
+- [Saira](https://fonts.google.com/specimen/Saira)
+  - Semi Condensed
+  - Extra Condensed
+- [Digital-7](https://www.1001fonts.com/digital-7-font.html)
+  - Mono

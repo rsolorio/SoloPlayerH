@@ -42,42 +42,43 @@
   <tr class="sp-tr-song-info sp-font-family-regular">
     <td colspan="3" class="sp-text-overflow-ellipsis">
       <!-- Title and Song Count -->
-      <i class="sp-text-large mdi mdi-music" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="sp-text-xlarge mdi mdi-music" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
-      class="sp-text-large sp-text-bold"
+      class="sp-text-xlarge sp-text-bold"
       [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.name}}</span>
       <span
-      class="sp-text-small sp-play-count"
+      class="sp-text-medium sp-play-count"
       [ngStyle]="palette.secondary.selected.cssColor">&nbsp;{{model.playerList.current?.song.playCount}}</span>
       <br>
       <!-- Artist Name -->
-      <i class="mdi-account-music mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="mdi-account-music mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
-      class="sp-text-medium"
+      class="sp-text-large"
       [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.artistName}}&nbsp;</span>
       <!-- Artist Type -->
       <ng-container *ngIf="model.playerList.current?.song.artistType">
-        <i class="mdi-microphone mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <i class="mdi-microphone mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
-        class="sp-text-medium"
+        class="sp-text-large"
         [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.artistType}}
         </span>
       </ng-container>
       <br>
       <!-- Album -->
-      <i class="sp-text-medium mdi mdi-album" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="sp-text-large mdi mdi-album" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
-      class="sp-text-medium"
+      class="sp-text-large"
       [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.albumName}}&nbsp;&nbsp;</span>
+      <br>
       <!-- Year -->
-      <i class="sp-text-medium mdi mdi-calendar" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="sp-text-large mdi mdi-calendar" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
-      class="sp-text-medium"
+      class="sp-text-large"
       [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.releaseYear}}&nbsp;&nbsp;</span>
       <!-- Genre -->
-      <i class="sp-text-medium mdi mdi-tag" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="sp-text-large mdi mdi-tag" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
-      class="sp-text-medium"
+      class="sp-text-large"
       [ngStyle]="palette.primary.selected.cssColor">&nbsp;Genre</span>
     </td>
   </tr>
@@ -117,20 +118,20 @@
     </td>
   </tr>
   <!-- Time Slider -->
-  <tr class="sp-tr-time-slider sp-font-family-regular sp-player-overlay">
+  <tr class="sp-tr-time-slider sp-font-family-regular sp-player-overlay"><td colspan="3"><table class="sp-table"><tr>
     <!-- Elapsed -->
-    <td class="sp-td-nav-bar-icon sp-text-medium">
+    <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
       <span>{{ model.elapsedSeconds | duration }}</span>
     </td>
     <!-- Progress Bar -->
     <td class="sp-td-progress-bar sp-full-width">
-        <progress class="sp-progress-bar sp-full-width" [value]="model.elapsedPercentage" max="100"></progress>
+      <progress class="sp-progress-bar sp-full-width" [value]="model.elapsedPercentage" max="100"></progress>
     </td>
     <!-- Duration -->
-    <td class="sp-td-nav-bar-icon sp-text-medium">
+    <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
         <span>{{ model.playerList.current.song.seconds | duration }}</span>
     </td>
-  </tr>
+  </tr></table></td></tr>
   <!-- Play Controls -->
   <tr class="sp-tr-play-controls sp-text-big sp-player-overlay">
     <td colspan="3">

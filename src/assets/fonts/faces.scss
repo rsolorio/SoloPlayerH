@@ -15,3 +15,12 @@
   font-style: normal;
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'Digital-7Mono';
+  src: url('./Digital-7Mono/Digital-7Mono.woff2') format('woff2'),
+      url('./Digital-7Mono/Digital-7Mono.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}

@@ -70,7 +70,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
         const track = playlistWithSongs.playlistSongs[0];
         this.fileService.getBuffer(track.song.filePath).then(buffer => {
           this.metadataService.getMetadata(buffer).then(audioInfo => {
-            playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, 'front');
+            playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, ['front']);
           });
         });
       }
