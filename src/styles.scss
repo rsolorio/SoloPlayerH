@@ -539,6 +539,10 @@ input[type="text"], input[type="search"], textarea {
     overflow-x: hidden;
 }
 
+.sp-no-padding {
+    padding: 0;
+}
+
 @keyframes ripple {
     to {
         transform: scale(4);
@@ -552,6 +556,19 @@ input[type="text"], input[type="search"], textarea {
     transform: scale(0);
     animation: ripple 600ms linear;
     background-color: $sp-color-on-background-medium;
+}
+
+@keyframes fadeInOut {
+	0% {
+        opacity: 1;
+    }
+	100% {
+        opacity: 0;
+    }
+}
+
+.sp-fade-in-out {
+    animation: fadeInOut 500ms cubic-bezier(.78,.01,.4,.98) infinite alternate;
 }
 
 // Browser overrides //////////////////////////////////////////////////////////////////////////////

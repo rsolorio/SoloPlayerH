@@ -44,6 +44,7 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
   protected buildSystemCriteria(): CriteriaItems {
     const result = new CriteriaItems();
     result.push(new CriteriaItem('songCount', 0, CriteriaComparison.GreaterThan));
+    // result.push(new CriteriaItem('name', 'Unknown', CriteriaComparison.NotEquals));
     return result;
   }
 

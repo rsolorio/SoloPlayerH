@@ -16,7 +16,6 @@
 
 .sp-play-count {
   vertical-align: super;
-  font-weight: bold;
 }
 
 .sp-tr-toolbar {
@@ -34,7 +33,7 @@
 
 .sp-td-toolbar {
   text-align: center;
-  width: 20%; // this will be applied to the 5 TDs in the child table
+  border-top: 1px solid $sp-color-overlay-01;
 }
 
 .sp-td-progress-bar {

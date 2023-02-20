@@ -69,7 +69,6 @@ export class PlayerFullComponent extends PlayerComponentBase {
   private setupPalette(colors: ColorG[]): void {
     this.imageColors = colors;
     this.palette = new BucketPalette(this.imageColors);
-    console.log(this.palette);
     this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
   }
 }
