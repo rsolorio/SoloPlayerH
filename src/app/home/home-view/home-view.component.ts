@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 
 @Component({
   selector: 'sp-home-view',
@@ -10,10 +11,14 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 })
 export class HomeViewComponent implements OnInit {
 
-  constructor(private utilities: UtilityService, private navbarService: NavBarStateService) { }
+  constructor(
+    private utilities: UtilityService,
+    private navbarService: NavBarStateService,
+    private breadcrumbService: BreadcrumbsStateService) { }
 
   ngOnInit(): void {
     this.initializeNavbar();
+    this.breadcrumbService.clear();
   }
 
   private initializeNavbar(): void {

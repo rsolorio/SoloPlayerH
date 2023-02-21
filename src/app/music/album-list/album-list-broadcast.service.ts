@@ -18,12 +18,12 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumModel> {
 
   constructor(
-    private eventsService: EventsService,
-    private utilityService: UtilityService,
+    private events: EventsService,
+    private utilities: UtilityService,
     private db: DatabaseService,
-    private breadcrumbService: BreadcrumbsStateService)
+    private breadcrumbs: BreadcrumbsStateService)
   {
-    super(eventsService, utilityService);
+    super(events, utilities, breadcrumbs);
   }
 
   protected getEventName(): string {
@@ -57,25 +57,23 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
   }
 
   protected beforeGetItems(criteria: Criteria): void {
-    this.removeUnsupportedBreadcrumbs(criteria);
+    this.removeUnsupportedBreadcrumbs();
+    super.beforeGetItems(criteria);
   }
 
-  private removeUnsupportedBreadcrumbs(criteria: Criteria): void {
-    if (!this.breadcrumbService.hasBreadcrumbs()) {
+  private removeUnsupportedBreadcrumbs(): void {
+    if (!this.breadcrumbs.hasBreadcrumbs()) {
       return;
     }
-    const breadcrumbs = this.breadcrumbService.getState();
-    const unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
+    const allBreadcrumbs = this.breadcrumbs.getState();
+    const unsupportedBreadcrumbs = allBreadcrumbs.filter(breadcrumb =>
       breadcrumb.origin !== BreadcrumbSource.Classification &&
       breadcrumb.origin !== BreadcrumbSource.Genre &&
       breadcrumb.origin !== BreadcrumbSource.AlbumArtist);
     for (const breadcrumb of unsupportedBreadcrumbs) {
       // Do we need to suppress events?
-      this.breadcrumbService.remove(breadcrumb.sequence);
+      this.breadcrumbs.remove(breadcrumb.sequence);
     }
-    // Now that breadcrumbs are updated, reflect the change in the criteria
-    // which will be used to get the items
-    criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
   }
 
   protected getItems(criteria: Criteria): Observable<IAlbumModel[]> {

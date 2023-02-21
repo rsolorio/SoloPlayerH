@@ -19,12 +19,12 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
 
   public isAlbumArtist = false;
   constructor(
-    private eventsService: EventsService,
-    private utilityService: UtilityService,
+    private events: EventsService,
+    private utilities: UtilityService,
     private db: DatabaseService,
-    private breadcrumbService: BreadcrumbsStateService)
+    private breadcrumbs: BreadcrumbsStateService)
   {
-    super(eventsService, utilityService);
+    super(events, utilities, breadcrumbs);
   }
 
   protected getEventName(): string {
@@ -52,31 +52,29 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
   }
 
   protected beforeGetItems(criteria: Criteria): void {
-    this.removeUnsupportedBreadcrumbs(criteria);
+    this.removeUnsupportedBreadcrumbs();
+    super.beforeGetItems(criteria);
   }
 
-  private removeUnsupportedBreadcrumbs(criteria: Criteria): void {
-    if (!this.breadcrumbService.hasBreadcrumbs()) {
+  private removeUnsupportedBreadcrumbs(): void {
+    if (!this.breadcrumbs.hasBreadcrumbs()) {
       return;
     }
-    const breadcrumbs = this.breadcrumbService.getState();
+    const allBreadcrumbs = this.breadcrumbs.getState();
     if (this.isAlbumArtist) {
       // Album Artists support Genre and Classification breadcrumbs
-      let unsupportedBreadcrumbs = breadcrumbs.filter(breadcrumb =>
+      let unsupportedBreadcrumbs = allBreadcrumbs.filter(breadcrumb =>
         breadcrumb.origin !== BreadcrumbSource.Genre &&
         breadcrumb.origin !== BreadcrumbSource.Classification);
       
       for (const breadcrumb of unsupportedBreadcrumbs) {
-        this.breadcrumbService.remove(breadcrumb.sequence);
+        this.breadcrumbs.remove(breadcrumb.sequence);
       }
     }
     else {
       // Artists do not support any kind of breadcrumbs
-      this.breadcrumbService.clear();
+      this.breadcrumbs.clear();
     }
-    // Now that breadcrumbs are updated, reflect the change in the query
-    // which will be used to broadcast
-    criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
   }
 
   protected getItems(criteria: Criteria): Observable<IArtistModel[]> {

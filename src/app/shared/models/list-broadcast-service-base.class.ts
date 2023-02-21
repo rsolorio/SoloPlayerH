@@ -8,6 +8,7 @@ import { IDbModel } from './base-model.interface';
 import { AppRoute } from 'src/app/app-routes';
 import { ICriteriaResult } from '../services/criteria/criteria.interface';
 import { Criteria, CriteriaItems } from '../services/criteria/criteria.class';
+import { BreadcrumbsStateService } from '../components/breadcrumbs/breadcrumbs-state.service';
 
 export interface IListBroadcastService {
   search(criteria: Criteria, searchTerm?: string): Observable<ICriteriaResult<any>>;
@@ -24,7 +25,10 @@ implements IListBroadcastService {
 
   protected minSearchTermLength = 2;
 
-  constructor(private events: EventsService, private utilities: UtilityService) { }
+  constructor(
+    private eventsService: EventsService,
+    private utilityService: UtilityService,
+    private breadcrumbService: BreadcrumbsStateService) { }
 
   /**
    * Uses the criteria to retrieve items from the server in order to send them through a broadcast event.
@@ -73,7 +77,7 @@ implements IListBroadcastService {
    * @param route The route to redirect to.
    */
   protected innerRedirect(criteriaResult: ICriteriaResult<TItemModel>, route: AppRoute): void {
-    this.utilities.navigateWithComplexParams(route, criteriaResult);
+    this.utilityService.navigateWithComplexParams(route, criteriaResult);
   }
 
   /** Performs a search based on the specified term and broadcasts an event with the result. */
@@ -85,9 +89,13 @@ implements IListBroadcastService {
 
   /**
    * Utility method that runs before calling the getItems method.
+   * By default it sets the breadcrumb criteria value from the breadcrumb service.
    * It can be overridden in order to update the criteria object before getting the items.
    */
-  protected beforeGetItems(criteria: Criteria): void {}
+  protected beforeGetItems(criteria: Criteria): void {
+    // This service will honor what the breadcrumb service has as criteria
+    criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+  }
 
   /**
    * Utility method that runs before broadcasting the result items.
@@ -104,7 +112,7 @@ implements IListBroadcastService {
    * Sends the criteria result object through the event broadcast mechanism.
    */
   protected innerBroadcast(criteriaResult: ICriteriaResult<TItemModel>): void {
-    this.events.broadcast(this.getEventName(), criteriaResult);
+    this.eventsService.broadcast(this.getEventName(), criteriaResult);
   }
 
   /** Validates the minimum length of the search term. */
