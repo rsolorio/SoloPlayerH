@@ -1,4 +1,4 @@
-<table *ngIf="model" class="sp-full-height sp-full-width sp-table sp-table-support-overflow-ellipsis">
+<table *ngIf="model && model.playerList && model.playerList.current" class="sp-full-height sp-full-width sp-table sp-table-support-overflow-ellipsis">
   <!-- Navbar -->
   <tr class="sp-tr-navbar">
     <!-- Collapse button -->
@@ -45,22 +45,22 @@
       <i class="sp-text-xlarge mdi mdi-music" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
       class="sp-text-xlarge sp-text-bold"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.name}}</span>
+      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.name}}</span>
       <span
       class="sp-text-medium sp-play-count"
-      [ngStyle]="palette.secondary.selected.cssColor">&nbsp;{{model.playerList.current?.song.playCount}}</span>
+      [ngStyle]="palette.secondary.selected.cssColor">&nbsp;{{model.playerList.current.song.playCount}}</span>
       <br>
       <!-- Artist Name -->
       <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.artistName}}&nbsp;</span>
+      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.artistName}}&nbsp;</span>
       <!-- Artist Type -->
-      <ng-container *ngIf="model.playerList.current?.song.artistType">
+      <ng-container *ngIf="model.playerList.current.song.artistType">
         <i class="mdi-microphone mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.artistType}}
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.artistType}}
         </span>
       </ng-container>
       <br>
@@ -68,18 +68,22 @@
       <i class="sp-text-large mdi mdi-album" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.albumName}}&nbsp;&nbsp;</span>
+      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.albumName}}&nbsp;&nbsp;</span>
       <br>
       <!-- Year -->
-      <i class="sp-text-large mdi mdi-calendar" [ngStyle]="palette.secondary.selected.cssColor"></i>
-      <span
-      class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current?.song.releaseYear}}&nbsp;&nbsp;</span>
+      <ng-container *ngIf="model.playerList.current.song.releaseYear > 0">
+        <i class="sp-text-large mdi mdi-calendar" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <span
+        class="sp-text-large"
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.releaseYear}}&nbsp;&nbsp;</span>
+      </ng-container>
       <!-- Genre -->
-      <i class="sp-text-large mdi mdi-tag" [ngStyle]="palette.secondary.selected.cssColor"></i>
-      <span
-      class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;Genre</span>
+      <ng-container *ngIf="primaryGenre">
+        <i class="sp-text-large mdi mdi-tag" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <span
+        class="sp-text-large"
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{primaryGenre}}</span>
+      </ng-container>
     </td>
   </tr>
   <!-- Toolbar -->

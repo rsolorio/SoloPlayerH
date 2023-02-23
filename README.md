@@ -22,9 +22,9 @@ Each list view supports quick filters which allow you to filter by the most comm
 
 ### Tag Support
 - Id3v2
-- Multi genre (either with multiple tags or one tag separated by a forward slash)
+- Multi genres (either with multiple tags or one tag separated by a forward slash)
 - Single album artist
-- Multiple artist (multiple tags)
+- Multiple artists (multiple tags)
 - Multiple covers
 - Language
 - Tokens
@@ -33,7 +33,7 @@ Each list view supports quick filters which allow you to filter by the most comm
 You can configure how the tag information is retrieved and where it will be stored.
 
 ### Album Art Color Palette
-The application gets a list of dominant colors for each album art, and you can customize the player view using this color palette.
+The application gets a list of dominant colors for each album art, and you can customize the player view for each individual album art.
 
 ### And More...
 - 0-5 rating mechanism
@@ -204,6 +204,7 @@ The application gets a list of dominant colors for each album art, and you can c
 ### SongClassification table
 - songId
 - classificationId
+- primary
 
 ### PlayHistory table
 - songId

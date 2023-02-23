@@ -7,6 +7,11 @@ import { IPlayerState } from '../shared/models/player.interface';
 import { PlayerStatus, PlayMode, RepeatMode } from '../shared/models/player.enum';
 import { HtmlPlayerService } from '../shared/services/html-player/html-player.service';
 import { MenuService } from '../core/services/menu/menu.service';
+import { EventsService } from '../core/services/events/events.service';
+import { AppEvent } from '../shared/models/events.enum';
+import { IEventArgs } from '../core/models/core.interface';
+import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
+import { DatabaseService } from '../shared/services/database/database.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -20,11 +25,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
+  public primaryGenre: string;
 
   constructor(
     private playerServiceBase: HtmlPlayerService,
     private playerOverlayServiceBase: PlayerOverlayStateService,
-    private menuServiceBase: MenuService) {
+    private eventService: EventsService,
+    private menuServiceBase: MenuService,
+    private database: DatabaseService) {
       super();
     }
 
@@ -35,9 +43,26 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public onInit() {
     this.model = this.playerServiceBase.getState();
     this.initializeMenu();
+    if (this.model.playerList.hasTrack()) {
+      this.setupAssociatedData(this.model.playerList.current.song.id);
+    }
+    this.subs.sink = this.eventService.onEvent<IEventArgs<IPlaylistSongModel>>(AppEvent.PlaylistCurrentTrackChanged).subscribe(eventArgs => {
+      this.setupAssociatedData(eventArgs.newValue.song.id);
+    });
   }
 
   protected initializeMenu() {}
+
+  protected async setupAssociatedData(songId: string): Promise<void> {
+    // Primary genre
+    const classifications = await this.database.getSongClassifications(songId);
+    const genre = classifications.find(classification => {
+      return classification.classificationType === 'Genre' && classification.songClassifications[0].primary;
+    });
+    if (genre) {
+      this.primaryGenre = genre.name;
+    }
+  }
 
   // Public Methods ****************************************************************************
   public onSongInfoClick() {

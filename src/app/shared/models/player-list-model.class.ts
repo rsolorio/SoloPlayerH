@@ -1,6 +1,7 @@
 import { DefaultImageSrc } from "src/app/core/globals.enum";
 import { IEventArgs } from "src/app/core/models/core.interface";
 import { EventsService } from "src/app/core/services/events/events.service";
+import { UtilityService } from "src/app/core/services/utility/utility.service";
 import { IDbModel } from "./base-model.interface";
 import { AppEvent } from "./events.enum";
 import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";
@@ -11,7 +12,7 @@ import { ISongModel } from "./song-model.interface";
  * Class responsible for handling the access to the tracks and updating the playlist status.
  */
 export class PlayerListModel implements IDbModel {
-  constructor(private events: EventsService) {
+  constructor(private events: EventsService, private utilities: UtilityService) {
     this.play = PlayMode.Sequence;
     this.repeat = RepeatMode.All;
     this.items = [];
@@ -211,7 +212,7 @@ export class PlayerListModel implements IDbModel {
   // Private Methods ****************************************************************************
   private toTrack(song: ISongModel, sequence: number): IPlaylistSongModel {
     return {
-      id: null,
+      id: this.utilities.newGuid(),
       playlistId: null,
       songId: song.id,
       name: song.name,
@@ -338,6 +339,10 @@ export class PlayerListModel implements IDbModel {
   }
 
   private setPlaylistCursor(currentTrack: IPlaylistSongModel) {
+    // Don't do anything if it is the same track
+    if (currentTrack.id === this.current.id) {
+      return;
+    }
     // This means we are removing the old track from being current
     if (this.hasTrack()) {
       this.current.song.playerStatus = PlayerSongStatus.Empty;

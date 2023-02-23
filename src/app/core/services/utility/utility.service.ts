@@ -436,6 +436,18 @@ export class UtilityService {
     return result;
   }
 
+  public group<T>(items: T[], groupProperty: string): { [key: string]: T[] } {
+    return items.reduce((storage, item) => {
+      // Key that will be used to group
+      const groupKey = item[groupProperty];
+      // Initialize the array for this particular group if needed
+      storage[groupKey] = storage[groupKey] || [];
+      // Accumulate the value
+      storage[groupKey].push(item);
+      return storage;
+    }, {});
+  }
+
   public setDocTitle(title?: string): void {
     if (title) {
       document.title = title;

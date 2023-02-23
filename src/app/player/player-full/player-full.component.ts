@@ -8,6 +8,7 @@ import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
@@ -29,12 +30,13 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
     private menuService: MenuService,
+    private db: DatabaseService,
     private colorUtility: ColorUtilityService,
     private worker: WorkerService,
     private events: EventsService,
     private cd: ChangeDetectorRef)
   {
-    super(playerService, playerOverlayService, menuService);
+    super(playerService, playerOverlayService, events, menuService, db);
   }
 
   public onInit(): void {

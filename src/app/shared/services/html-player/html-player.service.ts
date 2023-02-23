@@ -29,7 +29,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     elapsedSeconds: 0,
     elapsedPercentage: '0%',
     loadedPercentage: 0,
-    playerList: new PlayerListModel(this.events),
+    playerList: new PlayerListModel(this.events, this.utilities),
     mediaSessionEnabled: false,
     playTimerInterval: 1
   };

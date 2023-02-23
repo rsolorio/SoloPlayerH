@@ -397,19 +397,14 @@ export class DatabaseService {
     return queryBuilder;
   }
 
-  public async getSongsWithClassification(classificationType: string, classificationName: string): Promise<SongEntity[]> {
-    const classificationId = this.hash(`${classificationType}:${classificationName}`);
+  public async getSongClassifications(songId: string): Promise<ClassificationEntity[]> {
     return this.dataSource
-      .getRepository(SongEntity)
-      .createQueryBuilder('song')
-      .innerJoinAndSelect('song.classifications', 'classification')
-      .where('classification.id = :classificationId')
-      .setParameter('classificationId', classificationId)
+      .getRepository(ClassificationEntity)
+      .createQueryBuilder('classification')
+      .innerJoinAndSelect('classification.songClassifications', 'songClassification')
+      .where('songClassification.songId = :songId')
+      .setParameter('songId', songId)
       .getMany();
-  }
-
-  public async getSongsWithGenre(genreName: string): Promise<SongEntity[]> {
-    return this.getSongsWithClassification('Genre', genreName);
   }
 
   public async getSongsFromArtist(artistId: string): Promise<SongEntity[]> {

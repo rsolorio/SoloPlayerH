@@ -180,12 +180,25 @@ export class ScanService {
         this.existingSongArtists.push(songArtist);
       }
       // Same for classifications
-      for (const classification of [...genres, ...classifications]) {
-        const songClassification = new SongClassificationEntity();
-        songClassification.songId = song.id;
-        songClassification.classificationId = classification.id;
-        this.existingSongClassifications.push(songClassification);
+      const classificationGroups = this.utilities.group(classifications, 'classificationType');
+      // Add genres to this grouping
+      classificationGroups['Genre'] = genres;
+      // For each type setup a primary value which will be the first one
+      for (const classificationType of Object.keys(classificationGroups)) {
+        const classificationList = classificationGroups[classificationType];
+        let primary = true;
+        for (const classification of classificationList) {
+          const songClassification = new SongClassificationEntity();
+          songClassification.songId = song.id;
+          songClassification.classificationId = classification.id;
+          songClassification.primary = primary;
+          // This flag will only be true in the first iteration, turn it off for the rest of the items
+          primary = false;
+          this.existingSongClassifications.push(songClassification);
+        }
       }
+      
+      
     }
 
     return audioInfo;
@@ -505,7 +518,8 @@ export class ScanService {
     const genres: ClassificationEntity[] = [];
     if (audioInfo.metadata.common.genre && audioInfo.metadata.common.genre.length) {
       for (const genreName of audioInfo.metadata.common.genre) {
-        this.processGenre(genreName, genres);
+        // First process genres by splitting the values;
+        // this is key since the very first genre will be marked as the primary genre of the song
         if (splitSymbols && splitSymbols.length) {
           for (const splitSymbol of splitSymbols) {
             const splitGenreNames = genreName.split(splitSymbol);
@@ -514,6 +528,8 @@ export class ScanService {
             }
           }
         }
+        // Finally process the genre as a whole value
+        this.processGenre(genreName, genres);
       }
     }
     return genres;
