@@ -17,6 +17,7 @@ import { FileCordovaService } from './services/file/file-cordova.service';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { FilterModule } from '../filter/filter.module';
 import { ChipSelectionComponent } from './components/chip-selection/chip-selection.component';
+import { ResizeObserverDirective } from './directives/resize-observer/resize-observer.directive';
 
 
 
@@ -30,7 +31,8 @@ import { ChipSelectionComponent } from './components/chip-selection/chip-selecti
     TransitionImageComponent,
     QuickFilterComponent,
     BreadcrumbsComponent,
-    ChipSelectionComponent
+    ChipSelectionComponent,
+    ResizeObserverDirective
   ],
   imports: [
     CommonModule,
@@ -45,7 +47,8 @@ import { ChipSelectionComponent } from './components/chip-selection/chip-selecti
     LoadingImageComponent,
     TransitionImageComponent,
     IntersectionObserverDirective,
-    IntersectionObserverTargetDirective
+    IntersectionObserverTargetDirective,
+    ResizeObserverDirective
   ],
   entryComponents: [ QuickSearchComponent ],
   providers: [ { provide: FileService, useClass: FileNodeService }]

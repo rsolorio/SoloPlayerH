@@ -29,12 +29,14 @@
   <!-- Image / Playlist / Lyrics -->
   <tr>
     <td colspan="3" class="sp-td-img">
-      <div class="sp-img-container sp-full-height sp-full-width">
+      <div class="sp-img-container sp-full-height sp-full-width" spResizeObserver (spResized)="onImageContainerResized($event)">
         <img
         #imageElement
         (load)="onImageLoad()"
         [src]="model.playerList.current.song.imageSrc"
-        class="sp-img sp-full-height sp-full-width">
+        [style.width.px]="imageSize.width"
+        [style.height.px]="imageSize.height"
+        class="sp-img sp-center">
       </div>
     </td>
   </tr>

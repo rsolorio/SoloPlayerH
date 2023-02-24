@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
 import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
+import { ISize } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
@@ -10,6 +11,7 @@ import { BucketPalette } from 'src/app/shared/services/color-utility/color-utili
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
+import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 
@@ -24,6 +26,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
   public palette: BucketPalette;
+  public imageSize: ISize = { height: 0, width: 0 };
   private imageColors: ColorG[];
   public isLoadingPalette = false;
   constructor(
@@ -32,6 +35,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private menuService: MenuService,
     private db: DatabaseService,
     private colorUtility: ColorUtilityService,
+    private imageUtility: ImageUtilityService,
     private worker: WorkerService,
     private events: EventsService,
     private cd: ChangeDetectorRef)
@@ -46,6 +50,16 @@ export class PlayerFullComponent extends PlayerComponentBase {
 
   public onImageLoad(): void {
     this.loadPalette();
+  }
+
+  public onImageContainerResized(size: ISize): void {
+    if (this.imageReference && this.imageReference.nativeElement) {
+      const imageNaturalSize: ISize = {
+        height: this.imageReference.nativeElement.naturalHeight,
+        width: this.imageReference.nativeElement.naturalWidth
+      };
+      this.imageSize = this.imageUtility.getResizeDimensions(imageNaturalSize, size);
+    }
   }
 
   /**

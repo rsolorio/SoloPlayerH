@@ -2,7 +2,7 @@
   <table *ngIf="model.playerList" class="sp-full-width sp-full-height sp-table sp-table-support-overflow-ellipsis">
     <tr>
       <!-- Image -->
-      <td *ngIf="model.playerList.current?.imageSrc" class="sp-player-td-image">
+      <td class="sp-player-td-image">
         <sp-loading-image [src]="model.playerList.current.imageSrc ? model.playerList.current.imageSrc : DefaultImageSrc.Small" class="sp-table-loading-image"></sp-loading-image>
       </td>
       <!-- Info -->
