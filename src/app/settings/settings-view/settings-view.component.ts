@@ -2,13 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
-import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ClassificationEntity, PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
+import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
@@ -26,8 +25,6 @@ import { ISetting, ISettingCategory } from './settings-model.interface';
   styleUrls: ['./settings-view.component.scss']
 })
 export class SettingsViewComponent extends CoreComponent implements OnInit {
-  public DefaultImageSrc = DefaultImageSrc;
-  public transitionSrc: string = null;
   public settingsInfo: ISettingCategory[];
   constructor(
     private dialog: DialogService,
@@ -133,6 +130,19 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             name: 'Tag Mapping',
             dataType: 'text',
             descriptions: ['Configure the mapping between the audio tags and the database.']
+          }
+        ]
+      },
+      {
+        name: 'Appearance',
+        settings: [
+          {
+            name: 'Small Form Factor',
+            dataType: 'text',
+            descriptions: ['Resizes the window to a mobile form factor.'],
+            action: () => {
+              this.dialog.resizeWindow(700, 350);
+            }
           }
         ]
       },

@@ -12,6 +12,7 @@ import { AppEvent } from '../shared/models/events.enum';
 import { IEventArgs } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
 import { DatabaseService } from '../shared/services/database/database.service';
+import { ISongModel } from '../shared/models/song-model.interface';
 
 /**
  * Base component for any implementation of the player modes.
@@ -32,9 +33,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private playerOverlayServiceBase: PlayerOverlayStateService,
     private eventService: EventsService,
     private menuServiceBase: MenuService,
-    private database: DatabaseService) {
-      super();
-    }
+    private database: DatabaseService)
+  {
+    super();
+  }
+
+  public get song(): ISongModel {
+    return this.model.playerList.current.song;
+  }
 
   public ngOnInit() {
     this.onInit();
@@ -83,7 +89,11 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.playerServiceBase.playNext();
   }
 
-  public onToggleFavorite() {
+  public onFavoriteClick(song: ISongModel) {
+    const newValue = !song.favorite;
+    this.database.setFavoriteSong(song.id, newValue).then(() => {
+      song.favorite = newValue;
+    });
   }
 
   public onTogglePlaylist() {

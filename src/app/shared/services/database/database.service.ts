@@ -751,4 +751,10 @@ export class DatabaseService {
     await playRecord.save();
     return song.playCount;
   }
+
+  public async setFavoriteSong(songId: string, favorite: boolean): Promise<void> {
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.favorite = favorite;
+    await song.save();
+  }
 }

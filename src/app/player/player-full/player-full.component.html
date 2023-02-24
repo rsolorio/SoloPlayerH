@@ -28,7 +28,7 @@
   </tr>
   <!-- Image / Playlist / Lyrics -->
   <tr>
-    <td colspan="3" style="padding: 0;">
+    <td colspan="3" class="sp-td-img">
       <div class="sp-img-container sp-full-height sp-full-width">
         <img
         #imageElement
@@ -93,29 +93,34 @@
         <tr>
           <!-- Link icon -->
           <td>
-            <i *ngIf="!model.playerList.current.song.url" class="mdi-link-variant-off mdi sp-cursor-pointer"></i>
-            <i *ngIf="model.playerList.current.song.url" class="mdi-link-variant mdi sp-cursor-pointer"></i>
+            <i
+            class="mdi sp-cursor-pointer"
+            [ngClass]="song.url ? 'mdi-link-variant' : 'mdi-link-variant-off'"></i>
           </td>
           <!-- Lyrics icon -->
           <td>
-            <i *ngIf="!model.playerList.current.song.lyrics" class="mdi-script-outline mdi sp-cursor-pointer"></i>
-            <i *ngIf="model.playerList.current.song.lyrics" class="mdi-script-text-outline mdi sp-cursor-pointer"></i>
+            <i
+            class="mdi sp-cursor-pointer"
+            [ngClass]="song.lyrics ? 'mdi-script-text-outline' : 'mdi-script-outline'"></i>
           </td>
           <!-- Rating icon -->
           <td>
-            <i *ngIf="!model.playerList.current.song.rating" class="mdi-star-outline mdi sp-cursor-pointer"></i>
-            <i *ngIf="model.playerList.current.song.rating > 0 && model.playerList.current.song.rating < 5" class="mdi-star-half-full mdi sp-cursor-pointer"></i>
-            <i *ngIf="model.playerList.current.song.rating === 5"class="mdi-star mdi sp-cursor-pointer"></i>
+            <i
+            class="mdi sp-cursor-pointer"
+            [ngClass]="{ 'mdi-star-outline': !song.rating, 'mdi-star-half-full': song.rating > 0 && song.rating < 5, 'mdi-star': song.rating > 4 }"></i>
           </td>
           <!-- Mood icon -->
           <td>
-            <i *ngIf="!model.playerList.current.song.mood || model.playerList.current.song.mood === 'No Mood'" class="mdi-emoticon-neutral-outline mdi sp-cursor-pointer"></i>
-            <i *ngIf="model.playerList.current.song.mood && model.playerList.current.song.mood !== 'No Mood'" class="mdi-emoticon-happy-outline mdi sp-cursor-pointer"></i>
+            <i
+            class="mdi sp-cursor-pointer"
+            [ngClass]="song.mood && song.mood !== 'No Mood' ? 'mdi-emoticon-happy-outline' : 'mdi-emoticon-neutral-outline'"></i>
           </td>
           <!-- Favorite icon -->
           <td>
-            <i *ngIf="!model.playerList.current.song.favorite" class="mdi-heart-outline mdi sp-cursor-pointer"></i>
-            <i *ngIf="model.playerList.current.song.favorite" class="mdi-heart mdi sp-cursor-pointer"></i>
+            <i
+            class="mdi sp-cursor-pointer"
+            (click)="onFavoriteClick(song)"
+            [ngClass]="song.favorite ? 'mdi-heart' : 'mdi-heart-outline'"></i>
           </td>
         </tr>
       </table>

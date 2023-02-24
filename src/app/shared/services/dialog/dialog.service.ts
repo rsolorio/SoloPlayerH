@@ -9,4 +9,6 @@ export abstract class DialogService {
   abstract openFolderDialog(options?: IDialogOptions): string[];
 
   abstract openFileDialog(options?: IDialogOptions): string[];
+
+  abstract resizeWindow(height: number, width: number): void;
 }

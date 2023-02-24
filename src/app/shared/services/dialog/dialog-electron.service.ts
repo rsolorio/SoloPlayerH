@@ -32,6 +32,18 @@ export class DialogElectronService extends DialogService {
     remoteRenderer.getCurrentWebContents().openDevTools();
   }
 
+  resizeWindow(height: number, width: number): void {
+    const currentWindow = remoteRenderer.getCurrentWindow();
+    // When the window is maximized the resize does not take effect
+    if (currentWindow.isMaximized()) {
+      currentWindow.restore();
+    }
+    currentWindow.setBounds({
+      width: width,
+      height: height
+    });
+  }
+
   openFolderDialog(options?: IDialogOptions): string[] {
     const electronDialogOptions: Electron.OpenDialogSyncOptions = {};
     if (options) {

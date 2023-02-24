@@ -21,4 +21,8 @@ export class DialogCordovaService extends DialogService {
   openFileDialog(options?: IDialogOptions): string[] {
     return [];
   }
+
+  resizeWindow(height: number, width: number): void {
+    // This action is not needed for mobile, so do nothing
+  }
 }
