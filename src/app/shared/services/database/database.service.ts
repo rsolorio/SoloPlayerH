@@ -220,8 +220,13 @@ export class DatabaseService {
 
     this.buildSelect(queryBuilder, entityName, criteria, repo.metadata.columns);
     queryBuilder = this.buildWhere(queryBuilder, entityName, criteria);
-    // Here we only send the sorting criteria, this is how we support this
-    queryBuilder = this.buildOrderBy(queryBuilder, entityName, criteria.sortingCriteria);
+    if (criteria.random) {
+      queryBuilder = this.buildOrderByRandom(queryBuilder, criteria.paging.pageSize);
+    }
+    else {
+      // Here we only send the sorting criteria, this is how we support this
+      queryBuilder = this.buildOrderBy(queryBuilder, entityName, criteria.sortingCriteria);
+    }
     return queryBuilder;
   }
 
@@ -346,6 +351,14 @@ export class DatabaseService {
         hasOrderBy = true;
       }
     });
+    return queryBuilder;
+  }
+
+  private buildOrderByRandom<T>(queryBuilder: SelectQueryBuilder<T>, limit: number): SelectQueryBuilder<T> {
+    queryBuilder.orderBy('RANDOM()');
+    if (limit > 0) {
+      queryBuilder.take(limit);
+    }
     return queryBuilder;
   }
 

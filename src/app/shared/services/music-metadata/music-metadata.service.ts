@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { IAudioInfo } from './music-metadata.interface';
+import { AttachedPictureType, MusicImageType } from './music-metadata.enum';
+import { IAudioInfo, IPictureTag } from './music-metadata.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -96,22 +97,13 @@ export class MusicMetadataService {
     return result;
   }
 
-  public getPictureDataUrl(audioMetadata: IAudioMetadata, types?: string[]): string {
+  public getPictureDataUrl(audioMetadata: IAudioMetadata, types?: MusicImageType[]): string {
     let picture: IPicture = null;
     if (audioMetadata.common.picture && audioMetadata.common.picture.length) {
       if (types && types.length) {
-        for (const type of types) {
+        for (const imageType of types) {
           if (!picture) {
-            picture = audioMetadata.common.picture.find(item => {
-              return item.type && item.type.toLowerCase() === type.toLowerCase();
-            });
-
-            // If not found by type, use description
-            if (!picture) {
-              picture = audioMetadata.common.picture.find(item => {
-                return item.description && item.description.toLowerCase() === type.toLowerCase();
-              });
-            }
+            picture = audioMetadata.common.picture.find(item => this.getImageType(item) === imageType);
           }
         }
       }
@@ -125,5 +117,23 @@ export class MusicMetadataService {
       return 'data:image/jpg;base64,' + picture.data.toString('base64');
     }
     return null;
+  }
+
+  public getImageType(picture: IPictureTag): MusicImageType {
+    const pictureType = picture.type ? picture.type.toLowerCase() : AttachedPictureType.Other.toLowerCase();
+    switch (pictureType) {
+      case AttachedPictureType.Other.toLowerCase():
+        if (picture.description.toLowerCase() === MusicImageType.Single.toLowerCase()) {
+          return MusicImageType.Single;
+        }
+        return MusicImageType.Other;
+      case AttachedPictureType.Front.toLowerCase():
+        return MusicImageType.Front;
+      case AttachedPictureType.Back.toLowerCase():
+        return MusicImageType.Back;
+      case AttachedPictureType.Artist.toLowerCase():
+        return MusicImageType.Artist;
+    }
+    return MusicImageType.Other;
   }
 }

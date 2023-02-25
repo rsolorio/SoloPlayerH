@@ -7,10 +7,3 @@ export enum SongBadge {
 export enum ClassificationType {
   Genre = 'Genre'
 }
-
-export enum MusicImageType {
-  Artist = 'Artist',
-  Single = 'Single',
-  Album = 'Album',
-  Front = 'Front'
-}

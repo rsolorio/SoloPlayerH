@@ -25,6 +25,7 @@ import { AppRoute } from 'src/app/app-routes';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
+import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
 
 @Component({
   selector: 'sp-song-list',
@@ -250,6 +251,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
   private async setSongImage(song: ISongModel): Promise<void> {
     const buffer = await this.fileService.getBuffer(song.filePath);
     const audioInfo = await this.metadataService.getMetadata(buffer);
-    song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, ['single', 'front']);
+    song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
   }
 }

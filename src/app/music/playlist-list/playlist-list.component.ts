@@ -6,6 +6,7 @@ import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/shared/services/file/file.service';
+import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { PlaylistListBroadcastService } from './playlist-list-broadcast.service';
 
@@ -70,7 +71,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
         const track = playlistWithSongs.playlistSongs[0];
         this.fileService.getBuffer(track.song.filePath).then(buffer => {
           this.metadataService.getMetadata(buffer).then(audioInfo => {
-            playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, ['front']);
+            playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, [MusicImageType.Front]);
           });
         });
       }

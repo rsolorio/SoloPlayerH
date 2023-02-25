@@ -24,6 +24,8 @@ export class Criteria {
   id: string;
   /** A descriptive name for this object. */
   name: string;
+  /** Determines if the results should be returned in random order. If this flag is on, sorting criteria will be ignored. */
+  random = false;
 
   constructor(name?: string) {
     this.name = name;
@@ -39,6 +41,7 @@ export class Criteria {
     result.userCriteria = this.userCriteria.clone();
     result.sortingCriteria = this.sortingCriteria.clone();
     result.transformAlgorithm = this.transformAlgorithm;
+    result.random = this.random;
     return result;
   }
 

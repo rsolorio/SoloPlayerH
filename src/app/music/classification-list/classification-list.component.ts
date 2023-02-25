@@ -2,13 +2,19 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
+import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
+import { SongClassificationViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { FileService } from 'src/app/shared/services/file/file.service';
+import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
+import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 
@@ -27,7 +33,11 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     public broadcastService: ClassificationListBroadcastService,
     private utility: UtilityService,
     private breadcrumbService: BreadcrumbsStateService,
-    private navigation: NavigationService
+    private navigation: NavigationService,
+    private queueService: PromiseQueueService,
+    private db: DatabaseService,
+    private fileService: FileService,
+    private metadataService: MusicMetadataService
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoute.Genres);
@@ -132,6 +142,30 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     // No specific criteria, breadcrumbs will be automatically taken by the new entity
     const criteria = new Criteria('Search Results');
     this.navigation.forward(routeInfo.route, { criteria: criteria });
+  }
+
+  public onItemRender(classification: IClassificationModel): void {
+    if (classification.imageSrc) {
+      return;
+    }
+    this.queueService.sink = () => this.setClassificationImage(classification);
+  }
+
+  private async setClassificationImage(classification: IClassificationModel): Promise<void> {
+    // Get one random song with this classification
+    const criteria = new Criteria('Search Results');
+    criteria.random = true;
+    criteria.paging.pageSize = 1;
+    const criteriaValue = new CriteriaItem('classificationId', classification.id);
+    criteria.searchCriteria.push(criteriaValue);
+    const songList = await this.db.getList(SongClassificationViewEntity, criteria);
+    if (songList && songList.length) {
+      // Get any of the songs associated with the album
+      const song = songList[0];
+      const buffer = await this.fileService.getBuffer(song.filePath);
+      const audioInfo = await this.metadataService.getMetadata(buffer);
+      classification.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
+    }
   }
 
   public onListInitialized(): void {
