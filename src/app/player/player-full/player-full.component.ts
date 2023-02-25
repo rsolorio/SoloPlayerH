@@ -29,6 +29,8 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public imageSize: ISize = { height: 0, width: 0 };
   private imageColors: ColorG[];
   public isLoadingPalette = false;
+  public imageOverlayEnabled = false;
+  public lyricsOverlayEnabled = false;
   constructor(
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
@@ -52,6 +54,10 @@ export class PlayerFullComponent extends PlayerComponentBase {
     this.loadPalette();
   }
 
+  public toggleOverlay(): void {
+    this.imageOverlayEnabled = !this.imageOverlayEnabled;
+  }
+
   public onImageContainerResized(size: ISize): void {
     if (this.imageReference && this.imageReference.nativeElement) {
       const imageNaturalSize: ISize = {
@@ -59,6 +65,21 @@ export class PlayerFullComponent extends PlayerComponentBase {
         width: this.imageReference.nativeElement.naturalWidth
       };
       this.imageSize = this.imageUtility.getResizeDimensions(imageNaturalSize, size);
+    }
+  }
+
+  public toggleLyrics(): void {
+    if (this.lyricsOverlayEnabled) {
+      this.lyricsOverlayEnabled = false;
+    }
+    else {
+      // Only enable it if the song has lyrics
+      if (this.song.lyrics) {
+        // Remove overlay if needed
+        this.imageOverlayEnabled = false;
+        // Toggle
+        this.lyricsOverlayEnabled = true;
+      }
     }
   }
 

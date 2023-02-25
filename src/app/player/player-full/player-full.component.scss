@@ -37,6 +37,33 @@
   position: absolute;
 }
 
+.sp-img-overlay-toolbar {
+  position: absolute;
+  height: 50px;
+  line-height: 50px;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 0);
+  color: $sp-color-on-background-medium;
+  background: linear-gradient($sp-color-overlay-01, $sp-dim-black-high);
+}
+
+.sp-td-img-toolbar-left {
+  width: 30%;
+  text-align: left;
+  padding: 0 0 0 5px;
+}
+
+.sp-td-img-toolbar-right {
+  width: 30%;
+  text-align: right;
+  padding: 0 5px 0 0;
+}
+
+.sp-img-blur {
+  filter: blur(3px);
+}
+
 .sp-td-toolbar {
   text-align: center;
   border-top: 1px solid $sp-color-overlay-01;

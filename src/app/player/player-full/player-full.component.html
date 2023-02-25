@@ -33,10 +33,37 @@
         <img
         #imageElement
         (load)="onImageLoad()"
-        [src]="model.playerList.current.song.imageSrc"
+        (click)="imageOverlayEnabled = true"
+        [src]="song.imageSrc"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height"
+        [ngClass]="{ 'sp-img-blur': lyricsOverlayEnabled }"
         class="sp-img sp-center">
+        <!-- Image overlay -->
+        <div
+        *ngIf="imageOverlayEnabled"
+        class="sp-img sp-center"
+        [style.width.px]="imageSize.width"
+        [style.height.px]="imageSize.height">
+          <div class="sp-img-overlay-toolbar" [style.width.px]="imageSize.width">
+            <table class="sp-table sp-full-width sp-full-height"><tr>
+              <td class="sp-td-img-toolbar-left"><span class="sp-text-xlarge sp-font-family-regular">FRONT</span></td>
+              <td style="text-align: center;" class="sp-no-padding">
+                <i class="mdi-chevron-left mdi sp-text-big sp-clickable"></i>
+                &nbsp;
+                <i class="mdi-chevron-right mdi sp-text-big sp-clickable"></i>
+              </td>
+              <td class="sp-td-img-toolbar-right"><i (click)="imageOverlayEnabled = false" class="mdi-close mdi sp-text-big sp-float-right sp-clickable"></i></td>
+            </tr></table>
+          </div>
+        </div>
+        <!-- Lyrics overlay -->
+        <div
+        *ngIf="lyricsOverlayEnabled"
+        (click)="toggleLyrics()"
+        class="sp-img sp-bg-dim-black-mid sp-center"
+        [style.width.%]="100"
+        [style.height.px]="imageSize.height"></div>
       </div>
     </td>
   </tr>
@@ -77,7 +104,7 @@
         <i class="sp-text-large mdi mdi-calendar" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.releaseYear}}&nbsp;&nbsp;</span>
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.releaseYear}}&nbsp;&nbsp;</span>
       </ng-container>
       <!-- Genre -->
       <ng-container *ngIf="primaryGenre">
@@ -103,6 +130,7 @@
           <td>
             <i
             class="mdi sp-cursor-pointer"
+            (click)="toggleLyrics()"
             [ngClass]="song.lyrics ? 'mdi-script-text-outline' : 'mdi-script-outline'"></i>
           </td>
           <!-- Rating icon -->
