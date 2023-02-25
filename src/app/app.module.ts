@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { PlayerModule } from './player/player.module';
+import { AppLoadModule } from './app-load/app-load.module';
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import { PlayerModule } from './player/player.module';
   ],
   imports: [
     BrowserModule,
+    AppLoadModule,
     AppRoutingModule,
     CoreModule,
     PlayerModule

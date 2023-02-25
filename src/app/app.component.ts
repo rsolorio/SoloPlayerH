@@ -59,14 +59,10 @@ export class AppComponent implements OnInit {
       this.navigation.back();
       this.navbarService.restoreOuterLeftIcon();
     });
-
-    this.events.onEvent(AppEvent.DbInitialized).subscribe(() => {
-      this.db.initializeModuleOptions().then(() => {
-        this.log.info('Module options initialized!');
-      });
+    // TODO: move to app init service
+    this.db.initializeModuleOptions().then(() => {
+      this.log.info('Module options initialized!');
     });
-    
-    this.db.initialize();
   }
 
   @HostListener('window:scroll', ['$event'])

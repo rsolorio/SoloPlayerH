@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Brackets, DataSource, DataSourceOptions, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, DataSource, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import * as objectHash from 'object-hash'
 import { IClassificationModel } from '../../models/classification-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -8,25 +8,11 @@ import {
   AlbumEntity,
   ClassificationEntity,
   SongEntity,
-  ArtistViewEntity,
-  AlbumViewEntity,
-  AlbumArtistViewEntity,
-  SongViewEntity,
-  ClassificationViewEntity,
   DbEntity,
-  ArtistClassificationViewEntity,
-  AlbumClassificationViewEntity,
-  SongArtistViewEntity,
   PlaylistEntity,
-  PlaylistSongEntity,
-  PlaylistSongViewEntity,
   ModuleOptionEntity,
-  SongArtistEntity,
-  SongClassificationEntity,
   PlayHistoryEntity
 } from '../../entities';
-import { SongClassificationViewEntity } from '../../entities/song-classification-view.entity';
-import { PlaylistViewEntity } from '../../entities/playlist-view.entity';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -38,6 +24,7 @@ import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.clas
 import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm, CriteriaValueEditor } from '../criteria/criteria.enum';
 import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
+import { AppInitService } from 'src/app/app-load/app-init/app-init.service';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -60,48 +47,12 @@ export class DatabaseService {
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
-    private transformService: ListTransformService) {
-    const options: DataSourceOptions = {
-      type: 'sqlite',
-      database: 'solo-player.db',
-      entities: [
-        SongEntity,
-        AlbumEntity,
-        ArtistEntity,
-        ClassificationEntity,
-        ArtistViewEntity,
-        AlbumArtistViewEntity,
-        AlbumViewEntity,
-        ClassificationViewEntity,
-        SongViewEntity,
-        ArtistClassificationViewEntity,
-        AlbumClassificationViewEntity,
-        SongArtistViewEntity,
-        SongClassificationViewEntity,
-        PlaylistEntity,
-        PlaylistSongEntity,
-        PlaylistViewEntity,
-        PlaylistSongViewEntity,
-        ModuleOptionEntity,
-        SongArtistEntity,
-        SongClassificationEntity,
-        PlayHistoryEntity
-      ],
-      synchronize: true,
-      logging: ['query', 'error', 'warn']
-    };
-    this.dataSource = new DataSource(options);
+    private transformService: ListTransformService,
+    private initService: AppInitService)
+  {
+    this.dataSource = this.initService.dataSource;
     this.setValueSelectors();
     this.setComparisons();
-  }
-
-  public initialize(): Promise<DataSource> {
-    this.log.info('Initializing database...');
-    return this.dataSource.initialize().then(ds => {
-      this.events.broadcast(AppEvent.DbInitialized);
-      this.log.info('Database initialized!');
-      return ds;
-    });
   }
 
   /**
@@ -113,7 +64,8 @@ export class DatabaseService {
     // Close any remaining connections since the init process reconnects
     await this.dataSource.destroy();
     // Re init
-    return this.initialize();
+    this.dataSource = await this.initService.initializeDatabase();
+    return this.dataSource;
   }
 
   public displayName(columnName: string): string {
