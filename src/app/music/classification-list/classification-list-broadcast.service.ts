@@ -7,6 +7,7 @@ import { ClassificationViewEntity } from 'src/app/shared/entities';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
+import { ClassificationType } from 'src/app/shared/models/music.enum';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
@@ -41,7 +42,7 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
   }
 
   protected buildSystemCriteria(): CriteriaItems {
-    const criteriaItem = new CriteriaItem('classificationType', 'Genre');
+    const criteriaItem = new CriteriaItem('classificationType', ClassificationType.Genre);
     criteriaItem.comparison = this.isGenreList ? CriteriaComparison.Equals : CriteriaComparison.NotEquals;
     return new CriteriaItems(criteriaItem);
   }

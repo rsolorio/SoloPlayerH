@@ -6,6 +6,7 @@ export interface ISongModel extends IListItemModel {
   filePath: string;
   playCount: number;
   releaseYear: number;
+  genre: string;
   favorite: boolean;
   rating: number;
   mood: string;

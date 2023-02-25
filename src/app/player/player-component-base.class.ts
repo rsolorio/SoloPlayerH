@@ -26,7 +26,6 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
-  public primaryGenre: string;
 
   constructor(
     private playerServiceBase: HtmlPlayerService,
@@ -59,15 +58,11 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   protected initializeMenu() {}
 
+  /**
+   * Setups any data associated with the specified song.
+   * @param songId 
+   */
   protected async setupAssociatedData(songId: string): Promise<void> {
-    // Primary genre
-    const classifications = await this.database.getSongClassifications(songId);
-    const genre = classifications.find(classification => {
-      return classification.classificationType === 'Genre' && classification.songClassifications[0].primary;
-    });
-    if (genre) {
-      this.primaryGenre = genre.name;
-    }
   }
 
   // Public Methods ****************************************************************************

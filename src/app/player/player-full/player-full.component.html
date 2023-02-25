@@ -39,12 +39,12 @@
         [style.height.px]="imageSize.height"
         [ngClass]="{ 'sp-img-blur': lyricsOverlayEnabled }"
         class="sp-img sp-center">
-        <!-- Image overlay -->
+        <!-- Image overlay (hack: adds one pixel to the height to fix an issue with the image)-->
         <div
         *ngIf="imageOverlayEnabled"
         class="sp-img sp-center"
         [style.width.px]="imageSize.width"
-        [style.height.px]="imageSize.height">
+        [style.height.px]="imageSize.height + 1">
           <div class="sp-img-overlay-toolbar" [style.width.px]="imageSize.width">
             <table class="sp-table sp-full-width sp-full-height"><tr>
               <td class="sp-td-img-toolbar-left"><span class="sp-text-xlarge sp-font-family-regular">FRONT</span></td>
@@ -107,11 +107,11 @@
         [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.releaseYear}}&nbsp;&nbsp;</span>
       </ng-container>
       <!-- Genre -->
-      <ng-container *ngIf="primaryGenre">
+      <ng-container *ngIf="song.genre">
         <i class="sp-text-large mdi mdi-tag" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{primaryGenre}}</span>
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.genre}}</span>
       </ng-container>
     </td>
   </tr>

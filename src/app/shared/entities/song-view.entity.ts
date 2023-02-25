@@ -22,6 +22,7 @@ import { SongEntity } from './song.entity';
     .addSelect('song.playCount', 'playCount')
     .addSelect('song.releaseYear', 'releaseYear')
     .addSelect('song.releaseDecade', 'releaseDecade')
+    .addSelect('song.genre', 'genre')
     .addSelect('song.trackNumber', 'trackNumber')
     .addSelect('song.mediaNumber', 'mediaNumber')
     .addSelect('song.seconds', 'seconds')
@@ -49,6 +50,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   releaseYear: number;
   @ViewColumn()
   releaseDecade: number;
+  @ViewColumn()
+  genre: string;
   @ViewColumn()
   trackNumber: number;
   @ViewColumn()

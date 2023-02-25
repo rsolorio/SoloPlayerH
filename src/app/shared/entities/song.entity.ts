@@ -23,6 +23,8 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   @Column()
   releaseDecade: number;
   @Column({ nullable: true })
+  genre: string;
+  @Column({ nullable: true })
   composer: string;
   @Column({ nullable: true })
   comment: string;

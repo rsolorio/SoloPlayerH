@@ -40,6 +40,7 @@ export class PlayerListModel implements IDbModel {
       filePath: null,
       releaseYear: 0,
       releaseDecade: 0,
+      genre: null,
       favorite: false,
       rating: 0,
       mood: null,

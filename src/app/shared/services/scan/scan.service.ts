@@ -16,6 +16,7 @@ import {
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
+import { ClassificationType } from '../../models/music.enum';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
@@ -65,8 +66,8 @@ export class ScanService {
     // Prepare global variables
     this.existingArtists = await ArtistEntity.find();
     this.existingAlbums = await AlbumEntity.find();
-    this.existingGenres = await ClassificationEntity.findBy({ classificationType: 'Genre' });
-    this.existingClassifications = await ClassificationEntity.findBy({ classificationType: Not('Genre') });
+    this.existingGenres = await ClassificationEntity.findBy({ classificationType: ClassificationType.Genre });
+    this.existingClassifications = await ClassificationEntity.findBy({ classificationType: Not(ClassificationType.Genre) });
     this.existingSongs = await SongEntity.find();
     this.existingSongArtists = [];
     this.existingSongClassifications = [];
@@ -163,6 +164,10 @@ export class ScanService {
 
     // SONG - ARTISTS/GENRES/CLASSIFICATIONS
     const song = this.processSong(primaryAlbum, audioInfo, fileInfo);
+    if (genres.length) {
+      // Set the first genre found as the main genre
+      song.genre = genres[0].name;
+    }
     // Make sure the primary artist is part of the song artists
     if (!artists.find(a => a.id === primaryArtist.id)) {
       artists.push(primaryArtist);
@@ -182,7 +187,7 @@ export class ScanService {
       // Same for classifications
       const classificationGroups = this.utilities.group(classifications, 'classificationType');
       // Add genres to this grouping
-      classificationGroups['Genre'] = genres;
+      classificationGroups[ClassificationType.Genre] = genres;
       // For each type setup a primary value which will be the first one
       for (const classificationType of Object.keys(classificationGroups)) {
         const classificationList = classificationGroups[classificationType];
@@ -197,8 +202,6 @@ export class ScanService {
           this.existingSongClassifications.push(songClassification);
         }
       }
-      
-      
     }
 
     return audioInfo;
@@ -553,7 +556,7 @@ export class ScanService {
     const genre = new ClassificationEntity();
     genre.isNew = true;
     genre.name = name;
-    genre.classificationType = 'Genre';
+    genre.classificationType = ClassificationType.Genre;
     this.db.hashClassification(genre);
     return genre;
   }

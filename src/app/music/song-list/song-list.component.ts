@@ -24,6 +24,7 @@ import { NavigationService } from 'src/app/shared/services/navigation/navigation
 import { AppRoute } from 'src/app/app-routes';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
+import { SongBadge } from 'src/app/shared/models/music.enum';
 
 @Component({
   selector: 'sp-song-list',
@@ -34,6 +35,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public appEvent = AppEvent;
   public playerSongStatus = PlayerSongStatus;
+  public songBadge = SongBadge;
   public itemMenuList: IMenuModel[] = [];
 
   constructor(
