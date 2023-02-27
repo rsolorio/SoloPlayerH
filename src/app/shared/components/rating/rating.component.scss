@@ -1,0 +1,17 @@
+.sp-star-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sp-stars {
+  display: flex;
+  position: relative;
+}
+
+.sp-front-star {
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+}

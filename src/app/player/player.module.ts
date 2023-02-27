@@ -5,6 +5,7 @@ import { PlayerSmallComponent } from './player-small/player-small.component';
 import { PlayerFullComponent } from './player-full/player-full.component';
 import { CoreModule } from '../core/core.module';
 import { SharedModule } from '../shared/shared.module';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -17,6 +18,7 @@ import { SharedModule } from '../shared/shared.module';
   imports: [
     CommonModule,
     CoreModule,
+    FormsModule,
     SharedModule
   ],
   exports: [ PlayerOverlayComponent ]

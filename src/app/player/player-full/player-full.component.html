@@ -135,9 +135,11 @@
           </td>
           <!-- Rating icon -->
           <td>
-            <i
-            class="mdi sp-cursor-pointer"
-            [ngClass]="{ 'mdi-star-outline': !song.rating, 'mdi-star-half-full': song.rating > 0 && song.rating < 5, 'mdi-star': song.rating > 4 }"></i>
+            <sp-rating
+            [(ngModel)]="song.rating"
+            [classOff]="'sp-color-overlay-01'"
+            [colorBack]="'sp-bg-dim-black-mid'">
+            </sp-rating>
           </td>
           <!-- Mood icon -->
           <td>

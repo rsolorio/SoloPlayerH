@@ -18,6 +18,7 @@ import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.compo
 import { FilterModule } from '../filter/filter.module';
 import { ChipSelectionComponent } from './components/chip-selection/chip-selection.component';
 import { ResizeObserverDirective } from './directives/resize-observer/resize-observer.directive';
+import { RatingComponent } from './components/rating/rating.component';
 
 
 
@@ -32,7 +33,8 @@ import { ResizeObserverDirective } from './directives/resize-observer/resize-obs
     QuickFilterComponent,
     BreadcrumbsComponent,
     ChipSelectionComponent,
-    ResizeObserverDirective
+    ResizeObserverDirective,
+    RatingComponent
   ],
   imports: [
     CommonModule,
@@ -48,7 +50,8 @@ import { ResizeObserverDirective } from './directives/resize-observer/resize-obs
     TransitionImageComponent,
     IntersectionObserverDirective,
     IntersectionObserverTargetDirective,
-    ResizeObserverDirective
+    ResizeObserverDirective,
+    RatingComponent
   ],
   entryComponents: [ QuickSearchComponent ],
   providers: [ { provide: FileService, useClass: FileNodeService }]
