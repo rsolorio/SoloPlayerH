@@ -2,6 +2,7 @@ import { DefaultImageSrc } from "src/app/core/globals.enum";
 import { IEventArgs } from "src/app/core/models/core.interface";
 import { EventsService } from "src/app/core/services/events/events.service";
 import { UtilityService } from "src/app/core/services/utility/utility.service";
+import { MusicImageType, PictureFormat } from "../services/music-metadata/music-metadata.enum";
 import { IDbModel } from "./base-model.interface";
 import { AppEvent } from "./events.enum";
 import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";
@@ -29,7 +30,11 @@ export class PlayerListModel implements IDbModel {
     songId: null,
     playlistId: null,
     name: null,
-    imageSrc: DefaultImageSrc.Small,
+    image: {
+      src: DefaultImageSrc.Small,
+      type: MusicImageType.Default,
+      format: PictureFormat.Jpg
+    },
     canBeRendered: false,
     selected: false,
     song: {
@@ -59,7 +64,11 @@ export class PlayerListModel implements IDbModel {
       primaryAlbumName: '[Empty Album]',
       primaryAlbum: null,
       playerStatus: PlayerSongStatus.Empty,
-      imageSrc: DefaultImageSrc.Small,
+      image: {
+        src: DefaultImageSrc.Small,
+        type: MusicImageType.Default,
+        format: PictureFormat.Jpg
+      },
       canBeRendered: false,
       selected: false,
       primaryAlbumId: null,
@@ -218,7 +227,7 @@ export class PlayerListModel implements IDbModel {
       songId: song.id,
       name: song.name,
       sequence,
-      imageSrc: song.imageSrc,
+      image: song.image,
       canBeRendered: false,
       selected: false,
       song: song,

@@ -57,6 +57,12 @@ export interface ISelectableValue extends IValuePair, ISelectable {
   icon?: string;
 }
 
+export interface IImage {
+  type?: string;
+  src?: string;
+  format?: string;
+}
+
 export interface IStateService<T> {
   getState(): T;
 }

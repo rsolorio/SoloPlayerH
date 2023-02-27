@@ -436,10 +436,14 @@ export class UtilityService {
     return result;
   }
 
-  public group<T>(items: T[], groupProperty: string): { [key: string]: T[] } {
+  public groupByKey<T>(items: T[], keyProperty: string): { [key: string]: T[] } {
+    return this.group(items, item => item[keyProperty]);
+  }
+
+  public group<T>(items: T[], getKeyFn: (item: T) => string): { [key: string]: T[] } {
     return items.reduce((storage, item) => {
       // Key that will be used to group
-      const groupKey = item[groupProperty];
+      const groupKey = getKeyFn(item);
       // Initialize the array for this particular group if needed
       storage[groupKey] = storage[groupKey] || [];
       // Accumulate the value

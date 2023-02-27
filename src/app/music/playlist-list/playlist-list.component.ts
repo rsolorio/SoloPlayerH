@@ -62,7 +62,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   private onPlaylistClick(playlist: IPlaylistModel): void {}
 
   public onItemRender(playlist: IPlaylistModel): void {
-    if (playlist.imageSrc) {
+    if (playlist.image.src) {
       return;
     }
     this.db.getPlaylistWithSongs(playlist.id).then(playlistWithSongs => {
@@ -71,7 +71,8 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
         const track = playlistWithSongs.playlistSongs[0];
         this.fileService.getBuffer(track.song.filePath).then(buffer => {
           this.metadataService.getMetadata(buffer).then(audioInfo => {
-            playlist.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, [MusicImageType.Front]);
+            const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Front]);
+            playlist.image = this.metadataService.getImage(pictures);
           });
         });
       }

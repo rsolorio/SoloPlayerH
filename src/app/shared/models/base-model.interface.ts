@@ -1,4 +1,4 @@
-import { ISelectable } from 'src/app/core/models/core.interface';
+import { IImage, ISelectable } from 'src/app/core/models/core.interface';
 
 export interface IDbModel extends ISelectable {
   id: string;
@@ -6,6 +6,6 @@ export interface IDbModel extends ISelectable {
 }
 
 export interface IListItemModel extends IDbModel {
-  imageSrc: string;
+  image: IImage;
   canBeRendered: boolean;
 }

@@ -145,7 +145,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   public onItemRender(classification: IClassificationModel): void {
-    if (classification.imageSrc) {
+    if (classification.image.src) {
       return;
     }
     this.queueService.sink = () => this.setClassificationImage(classification);
@@ -164,7 +164,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       const song = songList[0];
       const buffer = await this.fileService.getBuffer(song.filePath);
       const audioInfo = await this.metadataService.getMetadata(buffer);
-      classification.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
+      const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
+      classification.image = this.metadataService.getImage(pictures);
     }
   }
 

@@ -3,7 +3,7 @@
     <tr>
       <!-- Image -->
       <td class="sp-player-td-image">
-        <sp-loading-image [src]="model.playerList.current.imageSrc ? model.playerList.current.imageSrc : DefaultImageSrc.Small" class="sp-table-loading-image"></sp-loading-image>
+        <sp-loading-image [src]="model.playerList.current.image.src ? model.playerList.current.image.src : DefaultImageSrc.Small" class="sp-table-loading-image"></sp-loading-image>
       </td>
       <!-- Info -->
       <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">

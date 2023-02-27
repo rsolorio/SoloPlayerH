@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
+import { IImage } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { AttachedPictureType, MusicImageType } from './music-metadata.enum';
 import { IAudioInfo, IPictureTag } from './music-metadata.interface';
@@ -97,26 +98,34 @@ export class MusicMetadataService {
     return result;
   }
 
-  public getPictureDataUrl(audioMetadata: IAudioMetadata, types?: MusicImageType[]): string {
-    let picture: IPicture = null;
+  /**
+   * Brings one picture for each image type.
+   */
+  public getPictures(audioMetadata: IAudioMetadata, types: MusicImageType[]): IPicture[] {
+    const result: IPicture[] = [];
     if (audioMetadata.common.picture && audioMetadata.common.picture.length) {
-      if (types && types.length) {
-        for (const imageType of types) {
-          if (!picture) {
-            picture = audioMetadata.common.picture.find(item => this.getImageType(item) === imageType);
-          }
+      for (const imageType of types) {
+        const picture = audioMetadata.common.picture.find(pic => this.getImageType(pic) === imageType);
+        if (picture) {
+          result.push(picture);
         }
       }
-      else {
-        // If no type specified get the first one
-        picture = audioMetadata.common.picture[0];
+    }
+    return result;
+  }
+
+  public getImage(pictures: IPicture[]): IImage {
+    if (pictures && pictures.length) {
+      const picture = pictures[0];
+      if (picture && picture.data) {
+        return {
+          src: `data:${picture.format};base64,` + picture.data.toString('base64'),
+          type: this.getImageType(picture),
+          format: picture.format
+        };
       }
     }
-
-    if (picture) {
-      return 'data:image/jpg;base64,' + picture.data.toString('base64');
-    }
-    return null;
+    return {};
   }
 
   public getImageType(picture: IPictureTag): MusicImageType {

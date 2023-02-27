@@ -14,13 +14,6 @@ export interface IMusicInfoModel {
   yearText: string;
 }
 
-export interface IMusicModel {
-  musicInfo: IMusicInfoModel;
-  favorite: boolean;
-  imageSrc: string;
-  canBeRendered: boolean;
-}
-
 export interface IMusicSearchTerms {
   /** Artist names to search for. */
   artists: string[];

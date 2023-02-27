@@ -3,7 +3,8 @@ export enum MusicImageType {
   Single = 'Single',
   Front = 'Front',
   Back = 'Back',
-  Other = 'Other'
+  Other = 'Other',
+  Default = 'Default'
 }
 
 /**
@@ -33,4 +34,8 @@ export enum AttachedPictureType {
   Illustration = 'Illustration',
   ArtistLogo = 'Band/artist logotype',
   PublisherLogo = 'Publisher/Studio logotype'
+}
+
+export enum PictureFormat {
+  Jpg = 'image/jpeg'
 }

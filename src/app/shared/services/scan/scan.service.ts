@@ -185,7 +185,7 @@ export class ScanService {
         this.existingSongArtists.push(songArtist);
       }
       // Same for classifications
-      const classificationGroups = this.utilities.group(classifications, 'classificationType');
+      const classificationGroups = this.utilities.groupByKey(classifications, 'classificationType');
       // Add genres to this grouping
       classificationGroups[ClassificationType.Genre] = genres;
       // For each type setup a primary value which will be the first one

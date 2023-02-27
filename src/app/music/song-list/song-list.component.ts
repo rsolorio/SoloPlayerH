@@ -35,8 +35,8 @@ import { MusicImageType } from 'src/app/shared/services/music-metadata/music-met
 export class SongListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public appEvent = AppEvent;
-  public playerSongStatus = PlayerSongStatus;
-  public songBadge = SongBadge;
+  public PlayerSongStatus = PlayerSongStatus;
+  public SongBadge = SongBadge;
   public itemMenuList: IMenuModel[] = [];
 
   constructor(
@@ -242,7 +242,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemRender(song: ISongModel): void {
-    if (song.imageSrc) {
+    if (song.image.src) {
       return;
     }
     this.queueService.sink = () => this.setSongImage(song);
@@ -251,6 +251,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   private async setSongImage(song: ISongModel): Promise<void> {
     const buffer = await this.fileService.getBuffer(song.filePath);
     const audioInfo = await this.metadataService.getMetadata(buffer);
-    song.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
+    const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
+    song.image = this.metadataService.getImage(pictures);
   }
 }

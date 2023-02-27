@@ -153,7 +153,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemRender(album: IAlbumModel): void {
-    if (album.imageSrc) {
+    if (album.image.src) {
       return;
     }
     this.queueService.sink = () => this.setAlbumImage(album);
@@ -169,7 +169,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       const song = songList[0];
       const buffer = await this.fileService.getBuffer(song.filePath);
       const audioInfo = await this.metadataService.getMetadata(buffer);
-      album.imageSrc = this.metadataService.getPictureDataUrl(audioInfo.metadata, [MusicImageType.Front]);
+      const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Front]);
+      album.image = this.metadataService.getImage(pictures);
     }
   }
 }

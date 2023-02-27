@@ -34,7 +34,7 @@
         #imageElement
         (load)="onImageLoad()"
         (click)="imageOverlayEnabled = true"
-        [src]="song.imageSrc"
+        [src]="song.image.src"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height"
         [ngClass]="{ 'sp-img-blur': lyricsOverlayEnabled }"
@@ -47,7 +47,7 @@
         [style.height.px]="imageSize.height + 1">
           <div class="sp-img-overlay-toolbar" [style.width.px]="imageSize.width">
             <table class="sp-table sp-full-width sp-full-height"><tr>
-              <td class="sp-td-img-toolbar-left"><span class="sp-text-xlarge sp-font-family-regular">FRONT</span></td>
+              <td class="sp-td-img-toolbar-left"><span class="sp-text-xlarge sp-font-family-regular">{{song.image.type.toUpperCase()}}</span></td>
               <td style="text-align: center;" class="sp-no-padding">
                 <i class="mdi-chevron-left mdi sp-text-big sp-clickable"></i>
                 &nbsp;

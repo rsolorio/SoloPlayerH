@@ -279,8 +279,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       artist: track.song.artistName,
       album: track.song.albumName,
       artwork: [{
-        src: track.song.imageSrc,
-        type: 'image/jpeg'
+        src: track.song.image.src,
+        type: track.song.image.format
       }]
     });
   }

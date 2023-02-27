@@ -1,10 +1,12 @@
-<div class="sp-settings-container sp-font-family-regular">
+<div class="sp-settings-container">
+  <!-- Placeholder -->
+  <div style="height: 15px;"></div>
   <ng-container *ngFor="let settingCategory of settingsInfo">
     <!-- Category -->
-    <p class="sp-text-big sp-color-primary">{{settingCategory.name}}</p>
+    <p class="sp-text-big sp-color-primary sp-font-family-small-caps">{{settingCategory.name}}</p>
     <div
     *ngFor="let setting of settingCategory.settings"
-    class="sp-setting"
+    class="sp-setting sp-font-family-regular"
     [ngClass]="{ 'sp-clickable': setting.action && !setting.disabled, 'sp-color-on-bg-low': setting.disabled }"
     (click)="onSettingClick(setting)">
       <!-- Header -->
