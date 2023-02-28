@@ -74,22 +74,23 @@
       <i class="sp-text-xlarge mdi mdi-music" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
       class="sp-text-xlarge sp-text-bold"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.name}}</span>
+      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.name}}</span>
       <span
+      *ngIf="song.playCount > 0"
       class="sp-text-medium sp-play-count"
-      [ngStyle]="palette.secondary.selected.cssColor">&nbsp;{{model.playerList.current.song.playCount}}</span>
+      [ngStyle]="palette.secondary.selected.cssColor">&nbsp;{{song.playCount}}</span>
       <br>
       <!-- Artist Name -->
       <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.artistName}}&nbsp;</span>
+      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.artistName}}&nbsp;</span>
       <!-- Artist Type -->
-      <ng-container *ngIf="model.playerList.current.song.artistType">
+      <ng-container *ngIf="song.artistType">
         <i class="mdi-microphone mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.artistType}}
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.artistType}}
         </span>
       </ng-container>
       <br>
@@ -97,10 +98,10 @@
       <i class="sp-text-large mdi mdi-album" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.current.song.albumName}}&nbsp;&nbsp;</span>
+      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.albumName}}&nbsp;&nbsp;</span>
       <br>
       <!-- Year -->
-      <ng-container *ngIf="model.playerList.current.song.releaseYear > 0">
+      <ng-container *ngIf="song.releaseYear > 0">
         <i class="sp-text-large mdi mdi-calendar" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
         class="sp-text-large"
@@ -136,9 +137,10 @@
           <!-- Rating icon -->
           <td>
             <sp-rating
+            (change)="onRatingChange($event, song)"
             [(ngModel)]="song.rating"
             [classOff]="'sp-color-overlay-01'"
-            [colorBack]="'sp-bg-dim-black-mid'">
+            [classBack]="'sp-bg-dim-black-high'">
             </sp-rating>
           </td>
           <!-- Mood icon -->
@@ -166,11 +168,11 @@
     </td>
     <!-- Progress Bar -->
     <td class="sp-td-progress-bar sp-full-width">
-      <progress *ngIf="model.elapsedPercentage > -1" class="sp-progress-bar sp-full-width" [value]="model.elapsedPercentage" max="100"></progress>
+      <progress class="sp-progress-bar sp-full-width" [value]="model.elapsedSeconds" [max]="song.seconds"></progress>
     </td>
     <!-- Duration -->
     <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
-        <span>{{ model.playerList.current.song.seconds | duration }}</span>
+        <span>{{ song.seconds | duration }}</span>
     </td>
   </tr></table></td></tr>
   <!-- Play Controls -->

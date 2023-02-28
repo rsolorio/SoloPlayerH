@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { BaseComponent, MakeValueAccessorProvider } from 'src/app/core/models/base-component.class';
+import { IEventArgs } from 'src/app/core/models/core.interface';
 import { IRatingModel } from './rating.interface';
 
 /**
@@ -16,9 +17,10 @@ import { IRatingModel } from './rating.interface';
 })
 export class RatingComponent extends BaseComponent<IRatingModel, number> {
   private valueChangeByClick = false;
+  public hoveredValue = 0;
 
   /** Fired when the value is changed by a click */
-  @Output() public change: EventEmitter<void> = new EventEmitter();
+  @Output() public change: EventEmitter<IEventArgs<number>> = new EventEmitter();
 
   get colorOn(): string {
     return this.model.colorOn;
@@ -90,14 +92,19 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
     this.model.percentage = (this.model.value / this.model.max) * 100;
   }
 
+  public getPercentageValue(): number {
+    return (this.model.percentage / 100) * this.model.max;
+  }
+
   protected buildValueList() {
     this.model.valueList = [];
+    // Note that the first value of the list is the max value
     for (let valueIndex = this.model.max; valueIndex > 0; valueIndex--) {
       this.model.valueList.push(valueIndex);
     }
   }
 
-  public onClick(e) {
+  public onClick(e: Event) {
     this.model.showSelector = true;
     setTimeout(() => {
       this.model.animateList = false;
@@ -106,7 +113,7 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
     e.stopPropagation();
   }
 
-  public onValueClick(val: number) {
+  public onStarClick(val: number) {
     if (this.value !== val) {
       this.valueChangeByClick = true;
       this.value = val;
@@ -117,10 +124,14 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
   }
 
   protected onValueChanged() {
+    const currentValue = this.getPercentageValue();
     this.calculatePercentage();
     if (this.valueChangeByClick) {
       this.valueChangeByClick = false;
-      this.change.emit();
+      this.change.emit({
+        oldValue: currentValue,
+        newValue: this.model.value
+      });
     }
   }
 

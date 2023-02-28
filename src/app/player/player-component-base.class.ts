@@ -100,4 +100,11 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.model.playerList.isVisible = false;
     this.playerOverlayServiceBase.restore();
   }
+
+  public onRatingChange(e: IEventArgs<number>, song: ISongModel): void {
+    if (e.oldValue === e.newValue) {
+      return;
+    }
+    this.database.setRating(song.id, song.rating);
+  }
 }

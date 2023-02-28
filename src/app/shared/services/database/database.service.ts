@@ -722,4 +722,10 @@ export class DatabaseService {
     song.favorite = favorite;
     await song.save();
   }
+
+  public async setRating(songId: string, rating: number): Promise<void> {
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.rating = rating;
+    await song.save();
+  }
 }

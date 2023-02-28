@@ -1,22 +1,27 @@
 
-<div (click)="onClick($event)" class="sp-star-rating" title="{{model.value}}">
+<div (click)="onClick($event)" class="sp-star-rating">
   <div class="sp-stars">
     <!-- Back star -->
-    <i class="mdi-star mdi" [ngClass]="model.classOff" [ngStyle]="{ color: model.colorOff }"></i>
+    <i class="mdi-star mdi" [ngClass]="model.classOff" [ngStyle]="{ color: model.colorOff }" title="{{model.value}}"></i>
     <!-- Front star -->
-    <div class="sp-front-star" [style.width.%]="model.percentage" [ngClass]="model.classOn" [ngStyle]="{ color: model.colorOn }">
+    <div class="sp-front-star" [style.width.%]="model.percentage" [ngClass]="model.classOn" [ngStyle]="{ color: model.colorOn }" title="{{model.value}}">
       <i class="mdi-star mdi"></i>
     </div>
 
-    <ul *ngIf="model.showSelector" [ngClass]="{'animate': model.animateList}" class="sp-rating-selector" [ngStyle]="{ 'background-color': model.colorBack }">
+    <ul
+    *ngIf="model.showSelector"
+    [ngClass]="[model.classBack, model.animateList ? 'sp-rating-animate' : '']"
+    class="sp-rating-selector"
+    [ngStyle]="{ 'background-color': model.colorBack }">
       <li
-      (click)="onValueClick(val)"
       *ngFor="let val of model.valueList"
-      [ngClass]="{'selected': val <= model.value}"
-      [attr.data-rating]="val"
-      [attr.style]="getStyleVariables()"
-      [ngStyle]="{ color: this.model.colorOff }">
-        <i class="fa fa-star"></i>
+      title="{{val}}"
+      (click)="onStarClick(val)"
+      (mouseleave)="hoveredValue = 0"
+      (mouseover)="hoveredValue = val"
+      [ngStyle]="{ color: (val <= model.value || val <= hoveredValue) ? model.colorOn : model.colorOff }"
+      [ngClass]="(val <= model.value  || val <= hoveredValue) ? model.classOn : model.classOff">
+        <i class="mdi-star mdi" style="display: inline-block;"></i>
       </li>
     </ul>
   </div>
