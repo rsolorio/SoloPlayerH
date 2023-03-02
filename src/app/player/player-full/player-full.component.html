@@ -47,7 +47,9 @@
           <!-- Image toolbar -->
           <div class="sp-img-overlay-toolbar sp-ease-opacity-01" [ngClass]="{ 'sp-transparent': !imageToolbarEnabled }" [style.width.px]="imageSize.width">
             <table class="sp-table sp-full-width sp-full-height"><tr>
-              <td class="sp-td-img-toolbar-left"><span class="sp-text-large sp-font-family-regular">{{song.image.type.toUpperCase()}}</span></td>
+              <td class="sp-td-img-toolbar-left">
+                <span *ngIf="song.image && song.image.type" class="sp-text-large sp-font-family-regular">{{song.image.type.toUpperCase()}}</span>
+              </td>
               <td style="text-align: center;" class="sp-no-padding">
                 <i class="mdi-chevron-left mdi sp-text-big" (click)="onToolbarBack($event)" [ngClass]="{ 'sp-clickable': imageToolbarEnabled }"></i>
                 &nbsp;
