@@ -580,6 +580,14 @@ input[type="text"], input[type="search"], textarea {
     animation: fadeInOut 500ms cubic-bezier(.78,.01,.4,.98) infinite alternate;
 }
 
+.sp-scale-up {
+    transform: scale(1.1);
+}
+
+.sp-scale-down {
+    transform: scale(0.9);
+}
+
 // Browser overrides //////////////////////////////////////////////////////////////////////////////
 
 // Get rid of the default 'x' button (added by chrome) in search inputs

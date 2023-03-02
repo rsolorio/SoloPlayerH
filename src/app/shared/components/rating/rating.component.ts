@@ -18,6 +18,7 @@ import { IRatingModel } from './rating.interface';
 export class RatingComponent extends BaseComponent<IRatingModel, number> {
   private valueChangeByClick = false;
   public hoveredValue = 0;
+  public clickedValue = 0;
 
   /** Fired when the value is changed by a click */
   @Output() public change: EventEmitter<IEventArgs<number>> = new EventEmitter();
@@ -98,8 +99,7 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
 
   protected buildValueList() {
     this.model.valueList = [];
-    // Note that the first value of the list is the max value
-    for (let valueIndex = this.model.max; valueIndex > 0; valueIndex--) {
+    for (let valueIndex = 1; valueIndex <= this.model.max; valueIndex++) {
       this.model.valueList.push(valueIndex);
     }
   }

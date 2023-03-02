@@ -17,10 +17,13 @@
       *ngFor="let val of model.valueList"
       title="{{val}}"
       (click)="onStarClick(val)"
-      (mouseleave)="hoveredValue = 0"
       (mouseover)="hoveredValue = val"
+      (mouseleave)="hoveredValue = 0; clickedValue = 0"
+      (mousedown)="clickedValue = val"
+      (mouseup)="clickedValue = 0"
       [ngStyle]="{ color: (val <= model.value || val <= hoveredValue) ? model.colorOn : model.colorOff }"
-      [ngClass]="(val <= model.value  || val <= hoveredValue) ? model.classOn : model.classOff">
+      [ngClass]="[(val <= model.value || val <= hoveredValue) ? model.classOn : model.classOff, val <= hoveredValue ? 'sp-scale-up' : '', val <= clickedValue ? 'sp-scale-down' : '']">
+        <!-- inline block is needed to make the transform scale work -->
         <i class="mdi-star mdi" style="display: inline-block;"></i>
       </li>
     </ul>

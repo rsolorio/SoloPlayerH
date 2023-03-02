@@ -15,7 +15,11 @@
 }
 
 .sp-play-count {
-  vertical-align: super;
+  // Setting the align to super will not work properly because the text is smaller than the rest,
+  // so making it 'super' will locate the text on a super position, but relative to its size. For this case
+  // we need to make it 'top' so it is moved to the top of the available space which is bigger because
+  // the space is relative to the rest of the text.
+  vertical-align: top;
 }
 
 .sp-tr-toolbar {

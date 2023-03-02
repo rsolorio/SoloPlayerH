@@ -7,12 +7,10 @@
 }
 
 .sp-stars {
-  display: flex;
   position: relative;
 }
 
 .sp-front-star {
-  display: flex;
   overflow: hidden;
   position: absolute;
   top: 0;
@@ -33,6 +31,11 @@
   transition: all 300ms cubic-bezier(.07,.77,.46,1.47);
   list-style: none;
   border-radius: 10px;
+  // A border that doesn't take space
+  outline: 1px solid $sp-color-overlay-01;
+  // Flex
+  display: flex;
+  justify-content: center;
 }
 
 // Animation for the selector container
@@ -44,7 +47,6 @@
 // Values are aligned to the right, which means the first value will be to the right
 // and the last value to the left. The first item of the list is the max value
 .sp-rating-selector li {
-  float: right;
   width: 1.15em;
 }
 
@@ -65,12 +67,14 @@
 //   color: var(--color-on)
 // }
 
-.sp-rating-selector li:hover i,
-.sp-rating-selector li:hover ~ li i {
-  transform: scale(1.1);
-}
+// Make the star a little bit bigger when hovered
+// .sp-rating-selector li:hover i,
+// .sp-rating-selector li:hover ~ li i {
+//   transform: scale(1.1);
+// }
 
-.sp-rating-selector li:active i,
-.sp-rating-selector li:active ~ li i {
-  transform: scale(0.9)
-}
+// Make the star (and all other active stars located after this one) a little bit smaller when clicked down (active)
+// .sp-rating-selector li:active i,
+// .sp-rating-selector li:active ~ li i {
+//   transform: scale(0.9)
+// }
