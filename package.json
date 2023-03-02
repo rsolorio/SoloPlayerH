@@ -34,6 +34,7 @@
     "@electron/remote": "^2.0.8",
     "@mdi/font": "^7.0.96",
     "bootstrap": "^4.6.2",
+    "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "music-metadata-browser": "^2.5.9",
     "object-hash": "^3.0.0",

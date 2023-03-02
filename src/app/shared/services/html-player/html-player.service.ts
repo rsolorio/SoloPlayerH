@@ -27,8 +27,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     isStalled: false,
     hasError: false,
     elapsedSeconds: 0,
-    elapsedPercentage: '0%',
-    loadedPercentage: 0,
+    elapsedPercentage: 0,
     playerList: new PlayerListModel(this.events, this.utilities),
     mediaSessionEnabled: false,
     playTimerInterval: 1
@@ -336,16 +335,16 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     const seconds = Math.round(currentTime);
     if (isNaN(seconds)) {
       this.state.elapsedSeconds = 0;
-      this.state.elapsedPercentage = '0';
+      this.state.elapsedPercentage = 0;
     }
     else {
       this.state.elapsedSeconds = seconds;
       if (this.state.playerList.hasTrack() && this.state.playerList.current.song.seconds > 0) {
         const percentage = seconds / this.state.playerList.current.song.seconds * 100;
-        this.state.elapsedPercentage = percentage.toFixed(2);
+        this.state.elapsedPercentage = percentage;
       }
       else {
-        this.state.elapsedPercentage = '0';
+        this.state.elapsedPercentage = 0;
       }
     }
     this.events.broadcast(AppEvent.PlayerPositionChanged, { oldValue: oldPosition, newValue: this.state.elapsedSeconds });

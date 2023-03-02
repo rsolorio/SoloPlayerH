@@ -81,20 +81,17 @@
   height: 30px;
 }
 
-.sp-progress-bar {
-  appearance: none;
-  height: 4px;
-  vertical-align: inherit;
-}
-
-.sp-progress-bar::-webkit-progress-bar {
+.sp-progress-back {
   background-color: $sp-color-overlay-01;
-  border-radius: 2px;
+  height: 4px;
+  border-radius: 5px;
 }
 
-.sp-progress-bar::-webkit-progress-value {
+.sp-progress-front {
   background-color: $sp-color-on-background;
-  border-radius: 2px;
+  transition: width 1s 0s linear;
+  height: 100%;
+  border-radius: 5px;
 }
 
 .sp-tr-play-controls {

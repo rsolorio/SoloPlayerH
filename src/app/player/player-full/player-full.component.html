@@ -128,6 +128,7 @@
           <!-- Link icon -->
           <td>
             <i
+            (click)="takeScreenshot()"
             class="mdi sp-cursor-pointer"
             [ngClass]="song.url ? 'mdi-link-variant' : 'mdi-link-variant-off'"></i>
           </td>
@@ -172,7 +173,10 @@
     </td>
     <!-- Progress Bar -->
     <td class="sp-td-progress-bar sp-full-width">
-      <progress class="sp-progress-bar sp-full-width" [value]="model.elapsedSeconds" [max]="song.seconds"></progress>
+      <!-- <progress class="sp-progress-bar sp-full-width" [value]="model.elapsedSeconds" [max]="song.seconds"></progress> -->
+      <div class="sp-progress-back">
+        <div class="sp-progress-front" [style.width.%]="model.elapsedPercentage"></div>
+      </div>
     </td>
     <!-- Duration -->
     <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">

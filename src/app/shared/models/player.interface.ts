@@ -29,8 +29,8 @@ export interface IPlayerState {
   isStalled: boolean;
   hasError: boolean;
   elapsedSeconds: number;
-  elapsedPercentage: string;
-  loadedPercentage: 0;
+  elapsedPercentage: number;
+  loadedPercentage?: string;
   playerList: PlayerListModel;
   mediaSessionEnabled: boolean;
   playTimerInterval: number;

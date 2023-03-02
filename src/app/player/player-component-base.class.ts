@@ -16,6 +16,8 @@ import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../shared/services/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
 
+import html2canvas from 'html2canvas';
+
 /**
  * Base component for any implementation of the player modes.
  * Decorated with a directive just to allow the class use Angular features.
@@ -119,5 +121,29 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       return;
     }
     this.database.setRating(song.id, song.rating);
+  }
+
+  public takeScreenshot() {
+    // const screenshotTarget = document.body;
+    const screenshotTarget = document.getElementById('spPlayerOverlayContainer');
+    html2canvas(screenshotTarget).then(canvas => {
+      const dataUrl = canvas.toDataURL();
+      fetch(dataUrl).then(fetchResponse => {
+        // TODO: https://stackoverflow.com/questions/61250048/how-to-share-a-single-base64-url-image-via-the-web-share-api
+        // fetchResponse.arrayBuffer().then(buffer => {
+        //   const file = new File([buffer], 'hello.jpg', { type: 'image/jpeg' });
+        // });
+        fetchResponse.blob().then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = 'file.jpg';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+        });
+      });
+    });
   }
 }
