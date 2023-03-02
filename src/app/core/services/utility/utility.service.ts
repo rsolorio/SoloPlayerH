@@ -470,6 +470,13 @@ export class UtilityService {
     return 'file://' + filePath;
   }
 
+  public getSmallFormFactor(): ISize {
+    return {
+      height: 700,
+      width: 350
+    };
+  }
+
   /**
    * Creates a ripple effect using the specified click event.
    * @param clickEvent A reference to the click event.

@@ -137,11 +137,12 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         name: 'Appearance',
         settings: [
           {
+            // TODO: this should not be displayed in cordova mode
             name: 'Small Form Factor',
             dataType: 'text',
             descriptions: ['Resizes the window to a mobile form factor.'],
             action: () => {
-              this.dialog.resizeWindow(700, 350);
+              this.dialog.resizeWindow(this.utility.getSmallFormFactor());
             }
           }
         ]

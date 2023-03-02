@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ISize } from 'src/app/core/models/core.interface';
 import { IDialogOptions } from './dialog.interface';
 import { DialogService } from './dialog.service';
 
@@ -22,7 +23,7 @@ export class DialogCordovaService extends DialogService {
     return [];
   }
 
-  resizeWindow(height: number, width: number): void {
+  resizeWindow(size: ISize): void {
     // This action is not needed for mobile, so do nothing
   }
 }

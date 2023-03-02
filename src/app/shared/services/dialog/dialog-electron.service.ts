@@ -4,6 +4,7 @@ import { dialog } from '@electron/remote';
 import * as remoteRenderer from '@electron/remote/renderer';
 import { IDialogOptions } from './dialog.interface';
 import { ipcRenderer } from 'electron';
+import { ISize } from 'src/app/core/models/core.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -32,15 +33,15 @@ export class DialogElectronService extends DialogService {
     remoteRenderer.getCurrentWebContents().openDevTools();
   }
 
-  resizeWindow(height: number, width: number): void {
+  resizeWindow(size: ISize): void {
     const currentWindow = remoteRenderer.getCurrentWindow();
     // When the window is maximized the resize does not take effect
     if (currentWindow.isMaximized()) {
       currentWindow.restore();
     }
     currentWindow.setBounds({
-      width: width,
-      height: height
+      width: size.width,
+      height: size.height
     });
   }
 

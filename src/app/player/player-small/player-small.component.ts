@@ -10,6 +10,7 @@ import { PlayerOverlayStateService } from '../player-overlay/player-overlay-stat
 import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -28,9 +29,10 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private utilities: UtilityService,
     private events: EventsService,
     private menuService: MenuService,
-    private db: DatabaseService
+    private db: DatabaseService,
+    private dialog: DialogService
   ) {
-    super(playerService, playerOverlayService, events, menuService, db);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utilities);
   }
 
   public ngOnInit() {

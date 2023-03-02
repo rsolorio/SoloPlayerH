@@ -4,12 +4,14 @@ import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
 import { ISize } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
 import { PlayerComponentBase } from '../player-component-base.class';
@@ -40,9 +42,11 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private imageUtility: ImageUtilityService,
     private worker: WorkerService,
     private events: EventsService,
-    private cd: ChangeDetectorRef)
+    private cd: ChangeDetectorRef,
+    private dialog: DialogService,
+    private utility: UtilityService)
   {
-    super(playerService, playerOverlayService, events, menuService, db);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utility);
   }
 
   public onInit(): void {

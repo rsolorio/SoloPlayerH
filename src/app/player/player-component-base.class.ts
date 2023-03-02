@@ -13,6 +13,8 @@ import { IEventArgs } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
 import { DatabaseService } from '../shared/services/database/database.service';
 import { ISongModel } from '../shared/models/song-model.interface';
+import { DialogService } from '../shared/services/dialog/dialog.service';
+import { UtilityService } from '../core/services/utility/utility.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -32,7 +34,9 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private playerOverlayServiceBase: PlayerOverlayStateService,
     private eventService: EventsService,
     private menuServiceBase: MenuService,
-    private database: DatabaseService)
+    private database: DatabaseService,
+    private dialogService: DialogService,
+    private utilityService: UtilityService)
   {
     super();
   }
@@ -56,7 +60,16 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     });
   }
 
-  protected initializeMenu() {}
+  protected initializeMenu() {
+    // TODO: this should not be displayed in cordova mode
+    this.menuList.push({
+      caption: 'Mobile Size',
+      icon: 'mdi-cellphone mdi',
+      action: () => {
+        this.dialogService.resizeWindow(this.utilityService.getSmallFormFactor());
+      }
+    });
+  }
 
   /**
    * Setups any data associated with the specified song.
