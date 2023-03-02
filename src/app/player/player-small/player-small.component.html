@@ -1,16 +1,16 @@
 <div class="sp-player-small-height sp-player-shadow sp-font-family-regular">
-  <table *ngIf="model.playerList" class="sp-full-width sp-full-height sp-table sp-table-support-overflow-ellipsis">
+  <table *ngIf="model.playerList.current && model.playerList.current.song" class="sp-full-width sp-full-height sp-table sp-table-support-overflow-ellipsis">
     <tr>
       <!-- Image -->
       <td class="sp-player-td-image">
-        <sp-loading-image [src]="model.playerList.current.image.src ? model.playerList.current.image.src : DefaultImageSrc.Small" class="sp-table-loading-image"></sp-loading-image>
+        <img [src]="song.image.src ? song.image.src : model.playerList.current.image.src" class="sp-table-loading-image">
       </td>
       <!-- Info -->
       <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">
-        <span class="sp-text-medium">{{model.playerList.current?.song.name}}</span>
-        <span class="sp-text-tiny sp-play-count">  {{model.playerList.current?.song.playCountText}}</span>
+        <span class="sp-text-medium">{{song.name}}</span>
+        <span class="sp-text-tiny sp-play-count">  {{song.playCountText}}</span>
         <br>
-        <span class="sp-text-small text-muted">{{model.playerList.current?.song.artistName}} | {{model.playerList.current?.song.albumWithYear}}</span>
+        <span class="sp-text-small text-muted">{{song.artistName}} | {{song.albumWithYear}}</span>
       </td>
       <!-- Back -->
       <td (click)="onPrevious()" class="sp-td-play-control">

@@ -227,7 +227,11 @@ export class PlayerListModel implements IDbModel {
       songId: song.id,
       name: song.name,
       sequence,
-      image: song.image,
+      image: {
+        src: DefaultImageSrc.Small,
+        type: MusicImageType.Default,
+        format: PictureFormat.Jpg
+      },
       canBeRendered: false,
       selected: false,
       song: song,
