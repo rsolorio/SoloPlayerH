@@ -29,7 +29,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public imageSize: ISize = { height: 0, width: 0 };
   private imageColors: ColorG[];
   public isLoadingPalette = false;
-  public imageOverlayEnabled = false;
+  public imageToolbarEnabled = false;
   public lyricsOverlayEnabled = false;
   constructor(
     private playerService: HtmlPlayerService,
@@ -54,10 +54,6 @@ export class PlayerFullComponent extends PlayerComponentBase {
     this.loadPalette();
   }
 
-  public toggleOverlay(): void {
-    this.imageOverlayEnabled = !this.imageOverlayEnabled;
-  }
-
   public onImageContainerResized(size: ISize): void {
     if (this.imageReference && this.imageReference.nativeElement) {
       const imageNaturalSize: ISize = {
@@ -75,8 +71,8 @@ export class PlayerFullComponent extends PlayerComponentBase {
     else {
       // Only enable it if the song has lyrics
       if (this.song.lyrics) {
-        // Remove overlay if needed
-        this.imageOverlayEnabled = false;
+        // Remove toolbar if needed
+        this.imageToolbarEnabled = false;
         // Toggle
         this.lyricsOverlayEnabled = true;
       }
@@ -107,5 +103,25 @@ export class PlayerFullComponent extends PlayerComponentBase {
     this.imageColors = colors;
     this.palette = new BucketPalette(this.imageColors);
     this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+  }
+
+  public onToolbarClose(e: Event): void {
+    if (!this.imageToolbarEnabled) {
+      return;
+    }
+    this.imageToolbarEnabled = false;
+    e.stopPropagation();
+  }
+
+  public onToolbarBack(e: Event): void {
+    if (!this.imageToolbarEnabled) {
+      return;
+    }
+  }
+
+  public onToolbarNext(e: Event): void {
+    if (!this.imageToolbarEnabled) {
+      return;
+    }
   }
 }

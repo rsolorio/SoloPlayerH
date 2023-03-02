@@ -33,7 +33,6 @@
         <img
         #imageElement
         (load)="onImageLoad()"
-        (click)="imageOverlayEnabled = true"
         [src]="song.image.src"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height"
@@ -41,19 +40,22 @@
         class="sp-img sp-center">
         <!-- Image overlay (hack: adds one pixel to the height to fix an issue with the image)-->
         <div
-        *ngIf="imageOverlayEnabled"
+        (click)="imageToolbarEnabled = true"
         class="sp-img sp-center"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height + 1">
-          <div class="sp-img-overlay-toolbar" [style.width.px]="imageSize.width">
+          <!-- Image toolbar -->
+          <div class="sp-img-overlay-toolbar sp-ease-opacity-01" [ngClass]="{ 'sp-transparent': !imageToolbarEnabled }" [style.width.px]="imageSize.width">
             <table class="sp-table sp-full-width sp-full-height"><tr>
-              <td class="sp-td-img-toolbar-left"><span class="sp-text-xlarge sp-font-family-regular">{{song.image.type.toUpperCase()}}</span></td>
+              <td class="sp-td-img-toolbar-left"><span class="sp-text-large sp-font-family-regular">{{song.image.type.toUpperCase()}}</span></td>
               <td style="text-align: center;" class="sp-no-padding">
-                <i class="mdi-chevron-left mdi sp-text-big sp-clickable"></i>
+                <i class="mdi-chevron-left mdi sp-text-big" (click)="onToolbarBack($event)" [ngClass]="{ 'sp-clickable': imageToolbarEnabled }"></i>
                 &nbsp;
-                <i class="mdi-chevron-right mdi sp-text-big sp-clickable"></i>
+                <i class="mdi-chevron-right mdi sp-text-big sp-clickable" (click)="onToolbarNext($event)" [ngClass]="{ 'sp-clickable': imageToolbarEnabled }"></i>
               </td>
-              <td class="sp-td-img-toolbar-right"><i (click)="imageOverlayEnabled = false" class="mdi-close mdi sp-text-big sp-float-right sp-clickable"></i></td>
+              <td class="sp-td-img-toolbar-right">
+                <i (click)="onToolbarClose($event)" class="mdi-close mdi sp-text-xlarge sp-float-right" [ngClass]="{ 'sp-clickable': imageToolbarEnabled }"></i>
+              </td>
             </tr></table>
           </div>
         </div>
