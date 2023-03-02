@@ -128,4 +128,8 @@ export class PlayerFullComponent extends PlayerComponentBase {
       return;
     }
   }
+
+  public getEllipsisColorVar(): string {
+    return `--ellipsis-color: ${this.palette.primary.selected.toRgbaFormula()};`
+  }
 }

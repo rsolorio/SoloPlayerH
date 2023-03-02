@@ -73,7 +73,7 @@
   </tr>
   <!-- Song Info -->
   <tr class="sp-tr-song-info sp-font-family-regular">
-    <td colspan="3" class="sp-text-overflow-ellipsis">
+    <td colspan="3" class="sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
       <i class="sp-text-xlarge mdi mdi-music" [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span

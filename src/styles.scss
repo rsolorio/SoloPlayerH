@@ -416,11 +416,14 @@ A longer duration allows to properly see the transition in the whole page. */
 
 /* If this text is inside a table, the table requires the table-layout:fixed in order to make this work.
  * This is usually applied to the Table TD element.
+ * It uses a variable called --ellipsis-color to set the color of the ellipsis which can be only set
+ * in the same class where the overflow ellipsis setting is located.
 */
 .sp-text-overflow-ellipsis {
     white-space: nowrap; /* This prevents the text create a new line in a white space */
     text-overflow: ellipsis;
     overflow: hidden;
+    color: var(--ellipsis-color);
 }
 
 .sp-table-support-overflow-ellipsis {
