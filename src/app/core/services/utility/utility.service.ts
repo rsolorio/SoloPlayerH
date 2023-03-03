@@ -470,10 +470,22 @@ export class UtilityService {
     return 'file://' + filePath;
   }
 
+  /**
+   * Encodes characters not supported by the encodeURI method
+   * but supported by the file system like: #
+   * encodeURI does not encode queryString or hash values, that's why
+   * this method has to be called before.
+   */
+  public preEncodeFilePath(value: string): string {
+    return value.replace('#', '%23');
+  }
+
   public getSmallFormFactor(): ISize {
+    // Height set to 800 becomes 761 because 39px are probably for the title bar of the window
+    // Width set to 450 becomes 434, so 16px are going somewhere
     return {
-      height: 700,
-      width: 350
+      height: 800,
+      width: 450
     };
   }
 

@@ -15,8 +15,7 @@ import { DatabaseService } from '../shared/services/database/database.service';
 import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../shared/services/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
-
-import html2canvas from 'html2canvas';
+import { ScreenshotService } from '../shared/services/screenshot/screenshot.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -38,7 +37,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private menuServiceBase: MenuService,
     private database: DatabaseService,
     private dialogService: DialogService,
-    private utilityService: UtilityService)
+    private utilityService: UtilityService,
+    private screenshotService: ScreenshotService)
   {
     super();
   }
@@ -123,27 +123,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.database.setRating(song.id, song.rating);
   }
 
-  public takeScreenshot() {
-    // const screenshotTarget = document.body;
-    const screenshotTarget = document.getElementById('spPlayerOverlayContainer');
-    html2canvas(screenshotTarget).then(canvas => {
-      const dataUrl = canvas.toDataURL();
-      fetch(dataUrl).then(fetchResponse => {
-        // TODO: https://stackoverflow.com/questions/61250048/how-to-share-a-single-base64-url-image-via-the-web-share-api
-        // fetchResponse.arrayBuffer().then(buffer => {
-        //   const file = new File([buffer], 'hello.jpg', { type: 'image/jpeg' });
-        // });
-        fetchResponse.blob().then(blob => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          a.download = 'file.jpg';
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-        });
-      });
-    });
+  public takeScreenshot(): void {
+    this.screenshotService.download('spPlayerOverlayContainer');
   }
 }

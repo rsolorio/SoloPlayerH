@@ -1,0 +1,21 @@
+<div class="sp-text-scroller-container sp-full-height sp-full-width">
+  <div
+  class="sp-text-container sp-full-width sp-full-height sp-scrollbar-hidden"
+  [ngStyle]="{ 'background-color': model.backgroundColor.rgbFormula, 'border-color': model.textColor.toRgbaFormula(0.5) }">
+    <div
+    [innerText]="model.text"
+    [ngStyle]="{ color: model.textColor.rgbFormula }"
+    class="sp-text sp-full-width sp-font-family-regular sp-text-large">
+    </div>
+  </div>
+  <div
+  class="sp-text-gradient sp-full-width"
+  [attr.style]="getColorVars()">
+  </div>
+  <i
+  *ngIf="!model.closeHidden"
+  [ngStyle]="{ color: model.textColor.rgbFormula }"
+  (click)="onClose()"
+  class="mdi-close-thick mdi sp-text-close sp-text-xlarge sp-cursor-pointer">
+  </i>
+</div>

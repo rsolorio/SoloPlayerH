@@ -14,6 +14,7 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
+import { ScreenshotService } from 'src/app/shared/services/screenshot/screenshot.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 
@@ -44,9 +45,10 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private events: EventsService,
     private cd: ChangeDetectorRef,
     private dialog: DialogService,
-    private utility: UtilityService)
+    private utility: UtilityService,
+    private screenshot: ScreenshotService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utility);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, screenshot);
   }
 
   public onInit(): void {

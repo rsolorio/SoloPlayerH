@@ -19,6 +19,7 @@ import { FilterModule } from '../filter/filter.module';
 import { ChipSelectionComponent } from './components/chip-selection/chip-selection.component';
 import { ResizeObserverDirective } from './directives/resize-observer/resize-observer.directive';
 import { RatingComponent } from './components/rating/rating.component';
+import { TextScrollerComponent } from './components/text-scroller/text-scroller.component';
 
 
 
@@ -34,7 +35,8 @@ import { RatingComponent } from './components/rating/rating.component';
     BreadcrumbsComponent,
     ChipSelectionComponent,
     ResizeObserverDirective,
-    RatingComponent
+    RatingComponent,
+    TextScrollerComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +53,8 @@ import { RatingComponent } from './components/rating/rating.component';
     IntersectionObserverDirective,
     IntersectionObserverTargetDirective,
     ResizeObserverDirective,
-    RatingComponent
+    RatingComponent,
+    TextScrollerComponent
   ],
   entryComponents: [ QuickSearchComponent ],
   providers: [ { provide: FileService, useClass: FileNodeService }]

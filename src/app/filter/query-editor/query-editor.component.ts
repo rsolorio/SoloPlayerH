@@ -98,7 +98,12 @@ export class QueryEditorComponent implements OnInit {
       show: true,
       menuList: [
         {
-          caption: 'Some Option'
+          caption: 'Save',
+          icon: 'mdi-content-save-outline mdi',
+          action: () => {
+            this.navigation.previous().options.criteria = this.model;
+            this.navbarService.showToast('Saved!');
+          }
         }
       ],
       title: 'Criteria Selector',
@@ -106,10 +111,10 @@ export class QueryEditorComponent implements OnInit {
         icon: 'mdi-filter-outline mdi'
       },
       rightIcon: {
-        icon: 'mdi-content-save mdi',
+        icon: 'mdi-content-save-check-outline mdi',
         action: () => {
           this.navigation.previous().options.criteria = this.model;
-          this.navbarService.showToast('Saved!');
+          this.navigation.back();
         }
       }
     });

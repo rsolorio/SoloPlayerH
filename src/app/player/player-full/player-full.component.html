@@ -36,7 +36,6 @@
         [src]="song.image.src"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height"
-        [ngClass]="{ 'sp-img-blur': lyricsOverlayEnabled }"
         class="sp-img sp-center">
         <!-- Image overlay (hack: adds one pixel to the height to fix an issue with the image)-->
         <div
@@ -67,7 +66,14 @@
         (click)="toggleLyrics()"
         class="sp-img sp-bg-dim-black-mid sp-center"
         [style.width.%]="100"
-        [style.height.px]="imageSize.height"></div>
+        [style.height.px]="imageSize.height">
+          <sp-text-scroller
+          (close)="lyricsOverlayEnabled = false"
+          [text]="song.lyrics"
+          [backgroundColor]="palette.background.selected"
+          [textColor]="palette.primary.selected">
+          </sp-text-scroller>
+        </div>
       </div>
     </td>
   </tr>
@@ -169,18 +175,17 @@
   <tr class="sp-tr-time-slider sp-font-family-regular sp-player-overlay"><td colspan="3" class="sp-no-padding"><table class="sp-table"><tr>
     <!-- Elapsed -->
     <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
-      <span [ngClass]="{ 'sp-fade-in-out': model.status === PlayerStatus.Paused }">{{ model.elapsedSeconds | duration }}</span>
+      <span [ngClass]="{ 'sp-fade-in-out': model.status === PlayerStatus.Paused }" class="sp-time-text">{{ model.elapsedSeconds | duration }}</span>
     </td>
     <!-- Progress Bar -->
     <td class="sp-td-progress-bar sp-full-width">
-      <!-- <progress class="sp-progress-bar sp-full-width" [value]="model.elapsedSeconds" [max]="song.seconds"></progress> -->
       <div class="sp-progress-back">
         <div class="sp-progress-front" [style.width.%]="model.elapsedPercentage"></div>
       </div>
     </td>
     <!-- Duration -->
     <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
-        <span>{{ song.seconds | duration }}</span>
+        <span class="sp-time-text">{{ song.seconds | duration }}</span>
     </td>
   </tr></table></td></tr>
   <!-- Play Controls -->
