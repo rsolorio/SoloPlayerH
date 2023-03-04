@@ -9,12 +9,18 @@ import { INavigationInfo, INavigationOptions } from './navigation.interface';
 export class NavigationService {
   /**
    * The navigation history.
-   * By default, the navigation starts with the Home route.
    */
-  private history: INavigationInfo[] = [{ route: AppRoute.Home }]; // This first value must match the default route of your app.
+  private history: INavigationInfo[] = [];
   private maxRecords = 20;
 
   constructor(private utilities: UtilityService) { }
+
+  public init(route: string, options?: INavigationOptions): void {
+    this.history = [{
+      route: route,
+      options: options
+    }];
+  }
 
   public forward(route: string, options?: INavigationOptions): void {
     // Do not allow go to beyond the max
@@ -45,7 +51,10 @@ export class NavigationService {
   }
 
   public current(): INavigationInfo {
-    return this.history[0];
+    if (this.history.length) {
+      return this.history[0];
+    }
+    return null;
   }
 
   public previous(): INavigationInfo {

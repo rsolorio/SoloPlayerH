@@ -40,7 +40,13 @@ export class QueryEditorComponent implements OnInit {
     this.navbarService.showBackIcon();
     this.initializeNavbar();
     this.setupSelectors().then(criteria => {
-      this.model = criteria;
+      if (criteria) {
+        this.model = criteria;
+      }
+      else {
+        // Go to home
+        this.navigation.forward(AppRoute.Home);
+      }
       this.loadingService.hide();
     });
   }
@@ -52,6 +58,9 @@ export class QueryEditorComponent implements OnInit {
     // but we should get everything from the route param: query object, entity, etc
     // Clone the object so we don't affect the original value until we save
     const previousNavInfo = this.navigation.previous();
+    if (!previousNavInfo) {
+      return null;
+    }
     if (previousNavInfo.route === AppRoute.Songs) {
       this.supportedSelectors = [
         this.db.selector(DbColumn.Rating),

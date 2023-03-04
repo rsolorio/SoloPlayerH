@@ -118,6 +118,10 @@ export class AppComponent implements OnInit {
         const navEnd = action as NavigationEnd;
         const url = navEnd.urlAfterRedirects ? navEnd.urlAfterRedirects : navEnd.url;
         const route = this.utilities.getUrlWithoutParams(url);
+        // Setup the very first route if missing
+        if (!this.navigation.current()) {
+          this.navigation.init(route);
+        }
         this.events.broadcast<string>(CoreEvent.RouteChanged, route);
       }
     });
