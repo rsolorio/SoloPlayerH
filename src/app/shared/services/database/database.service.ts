@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Brackets, DataSource, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, DataSource, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder, DataSourceOptions } from 'typeorm';
 import * as objectHash from 'object-hash'
 import { IClassificationModel } from '../../models/classification-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -8,15 +8,28 @@ import {
   AlbumEntity,
   ClassificationEntity,
   SongEntity,
+  ArtistViewEntity,
+  AlbumViewEntity,
+  AlbumArtistViewEntity,
+  SongViewEntity,
+  ClassificationViewEntity,
   DbEntity,
+  ArtistClassificationViewEntity,
+  AlbumClassificationViewEntity,
+  SongArtistViewEntity,
   PlaylistEntity,
+  PlaylistSongEntity,
+  PlaylistSongViewEntity,
   ModuleOptionEntity,
-  PlayHistoryEntity
+  SongArtistEntity,
+  SongClassificationEntity,
+  PlayHistoryEntity,
+  SongClassificationViewEntity,
+  PlaylistViewEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { databaseColumns, DbColumn } from './database.columns';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
@@ -24,7 +37,7 @@ import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.clas
 import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm, CriteriaValueEditor } from '../criteria/criteria.enum';
 import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
-import { AppInitService } from 'src/app/app-load/app-init/app-init.service';
+import { AppEvent } from '../../models/events.enum';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -47,12 +60,55 @@ export class DatabaseService {
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
-    private transformService: ListTransformService,
-    private initService: AppInitService)
+    private transformService: ListTransformService)
   {
-    this.dataSource = this.initService.dataSource;
     this.setValueSelectors();
     this.setComparisons();
+  }
+
+  public async initializeDatabase(): Promise<DataSource> {
+    this.log.info('Initializing database...');
+    const options: DataSourceOptions = {
+      type: 'sqlite',
+      database: 'solo-player.db',
+      entities: [
+        SongEntity,
+        AlbumEntity,
+        ArtistEntity,
+        ClassificationEntity,
+        ArtistViewEntity,
+        AlbumArtistViewEntity,
+        AlbumViewEntity,
+        ClassificationViewEntity,
+        SongViewEntity,
+        ArtistClassificationViewEntity,
+        AlbumClassificationViewEntity,
+        SongArtistViewEntity,
+        SongClassificationViewEntity,
+        PlaylistEntity,
+        PlaylistSongEntity,
+        PlaylistViewEntity,
+        PlaylistSongViewEntity,
+        ModuleOptionEntity,
+        SongArtistEntity,
+        SongClassificationEntity,
+        PlayHistoryEntity
+      ],
+      synchronize: true,
+      logging: ['query', 'error', 'warn']
+    };
+    this.dataSource = new DataSource(options);
+    await this.dataSource.initialize();
+    this.log.info('Data source initialized.');
+    await this.initializeData();
+    this.log.info('Database ready.');
+    this.events.broadcast(AppEvent.DbInitialized);
+    return this.dataSource;
+  }
+
+  private async initializeData(): Promise<void> {
+    await this.initializeModuleOptions();
+    this.log.info('Module options initialized.');
   }
 
   /**
@@ -64,8 +120,7 @@ export class DatabaseService {
     // Close any remaining connections since the init process reconnects
     await this.dataSource.destroy();
     // Re init
-    this.dataSource = await this.initService.initializeDatabase();
-    return this.dataSource;
+    return await this.initializeDatabase();
   }
 
   public displayName(columnName: string): string {

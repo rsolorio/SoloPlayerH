@@ -531,8 +531,9 @@ export class ScanService {
             }
           }
         }
+        // TODO: enable this as a module option
         // Finally process the genre as a whole value
-        this.processGenre(genreName, genres);
+        // this.processGenre(genreName, genres);
       }
     }
     return genres;
