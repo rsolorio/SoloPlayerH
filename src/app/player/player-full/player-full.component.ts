@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
 import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
 import { ISize } from 'src/app/core/models/core.interface';
@@ -28,6 +29,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
+  public DefaultImageSrc = DefaultImageSrc;
   public palette: BucketPalette;
   public imageSize: ISize = { height: 0, width: 0 };
   private imageColors: ColorG[];

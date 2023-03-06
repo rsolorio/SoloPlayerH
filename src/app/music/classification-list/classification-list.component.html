@@ -12,6 +12,8 @@
     <span *ngIf="isGenreList" class="sp-text-medium sp-no-select">{{item.name}}</span>
     <span *ngIf="!isGenreList" class="sp-text-medium sp-no-select">{{item.classificationType}}: {{item.name}}</span>
     <br>
-    <span class="sp-color-on-bg-low sp-text-small sp-no-select">Songs: {{item.songCount}}</span>
+    <span class="sp-color-on-bg-low sp-text-small sp-no-select">
+      <i class="mdi-music mdi">&nbsp;</i>{{item.songCount}}
+    </span>
   </ng-template>
 </sp-list-base>

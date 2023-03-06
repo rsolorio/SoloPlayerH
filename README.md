@@ -1,6 +1,6 @@
 # Solo Player
 
-Mp3 player, music manager, tag editor, album art finder, playlist builder, file synchronizer.
+Mp3 player, music manager, tag editor, album art finder, playlist creator, file synchronizer.
 
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.
@@ -27,7 +27,6 @@ Each list view supports quick filters which allow you to filter by the most comm
 - Multiple artists (multiple tags)
 - Multiple covers
 - Language
-- Tokens
 
 ### Tag Mapping
 You can configure how the tag information is retrieved and where it will be stored.

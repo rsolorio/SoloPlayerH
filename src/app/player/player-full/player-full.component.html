@@ -33,7 +33,7 @@
         <img
         #imageElement
         (load)="onImageLoad()"
-        [src]="song.image.src"
+        [src]="song.image.src ? song.image.src : DefaultImageSrc.Large"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height"
         class="sp-img sp-center">

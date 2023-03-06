@@ -32,8 +32,12 @@ export enum ColorCode {
  * Default image sizes.
  */
 export enum DefaultImageSrc {
+  /** Default image at 1000x1000 */
   Full = '../assets/img/default-image-full.jpg',
+  /** Default image at 600x600 */
   Large = '../assets/img/default-image-large.jpg',
+  /** Default image at 300x300 */
   Medium = '../assets/img/default-image-medium.jpg',
+  /** Default image at 100x100 */
   Small = '../assets/img/default-image-small.jpg'
 }
