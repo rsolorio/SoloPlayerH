@@ -10,13 +10,13 @@
 
     <ul
     *ngIf="model.showSelector"
-    [ngClass]="[model.classBack, model.animateList ? 'sp-rating-animate' : '']"
+    [ngClass]="[model.classBack, scaleUpAnimationEnabled ? 'sp-rating-animation' : '']"
     class="sp-rating-selector"
     [ngStyle]="{ 'background-color': model.colorBack }">
       <li
       *ngFor="let val of model.valueList"
       title="{{val}}"
-      (click)="onStarClick(val)"
+      (click)="onStarClick($event, val)"
       (mouseover)="hoveredValue = val"
       (mouseleave)="hoveredValue = 0; clickedValue = 0"
       (mousedown)="clickedValue = val"

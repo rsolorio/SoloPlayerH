@@ -17,6 +17,7 @@ import { IRatingModel } from './rating.interface';
 })
 export class RatingComponent extends BaseComponent<IRatingModel, number> {
   private valueChangeByClick = false;
+  private scaleUpAnimationEnabled = false;
   public hoveredValue = 0;
   public clickedValue = 0;
 
@@ -105,22 +106,26 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
   }
 
   public onClick(e: Event) {
+    // Render the invisible selector
     this.model.showSelector = true;
+    // Wait a little bit to render and now activate the animation
     setTimeout(() => {
-      this.model.animateList = false;
+      this.scaleUpAnimationEnabled = true;
     }, 50);
+    // This will prevent other elements to receive the click as well
     e.preventDefault();
     e.stopPropagation();
   }
 
-  public onStarClick(val: number) {
+  public onStarClick(e: Event, val: number) {
     if (this.value !== val) {
       this.valueChangeByClick = true;
       this.value = val;
     }
-    setTimeout(() => {
-      this.hideSelector();
-    }, 300);
+    this.hideSelector();
+    // This will prevent the single start to be clicked as well
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   protected onValueChanged() {
@@ -142,7 +147,6 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
       percentage: 0,
       showSelector: false,
       valueList: [],
-      animateList: true,
       colorOn: '',
       colorOff: '',
       colorBack: '',
@@ -154,10 +158,11 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
   }
 
   protected hideSelector() {
-    this.model.animateList = true;
+    // Animate
+    this.scaleUpAnimationEnabled = false;
+    // Allow the animation to finish and then remove the selector element
     setTimeout(() => {
       this.model.showSelector = false;
-    }, 300);
+    }, 300); // This value should match the transition duration of the selector
   }
-
 }

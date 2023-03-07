@@ -25,9 +25,10 @@
   width: 6.55em;
   padding: 0.4em;
   box-shadow: 0 2px 5px $sp-dim-black-high;
-  opacity: 1;
   transform-origin: 50%;
-  transform: translateX(-50%) scale(1);
+  // By default the selector is not displayed and has no size
+  opacity: 0;
+  transform: translateX(-50%) scale(0);
   transition: all 300ms cubic-bezier(.07,.77,.46,1.47);
   list-style: none;
   border-radius: 10px;
@@ -38,10 +39,10 @@
   justify-content: center;
 }
 
-// Animation for the selector container
-.sp-rating-selector.sp-rating-animate {
-  opacity: 0;
-  transform: translateX(-50%) scale(0);
+// A couple of animations for the selector: fade in, scale up
+.sp-rating-selector.sp-rating-animation {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }
 
 // Values are aligned to the right, which means the first value will be to the right

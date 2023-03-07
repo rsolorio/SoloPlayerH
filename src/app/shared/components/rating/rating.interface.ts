@@ -9,8 +9,6 @@ export interface IRatingModel extends IValueModel<number> {
   showSelector: boolean;
   /** The list of values that will be displayed in the selector. */
   valueList: number[];
-  /** Whether or not the selector should be animated. */
-  animateList: boolean;
   /** The color used for the selected value. */
   colorOn: string;
   /** The color used for the unselected value. */
