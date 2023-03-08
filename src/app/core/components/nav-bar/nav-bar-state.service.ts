@@ -21,8 +21,8 @@ export class NavBarStateService {
   private navbarComponent: NavBarComponent;
   private componentInstance;
   private componentContainer: ViewContainerRef;
-  /** Number of seconds the toast message will be displayed. */
-  private toastDuration = 3;
+  /** Specified as any since the type will depend on the platform running the timeout. */
+  private toastTimeout: any;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private events: EventsService) { }
 
@@ -109,24 +109,59 @@ export class NavBarStateService {
   }
 
   public showToast(message: string): void {
-    // First hide toast in case it is already running
-    this.hideToast();
-    // Now show the new message
-    this.navbarState.toastMessage = message;
-    this.navbarState.toastVisible = true;
-    setTimeout(() => {
-      this.hideToast();
-    }, 1000 * this.toastDuration);
+    // If the toast is still in the dom remove it
+    if (this.navbarState.toastMessage) {
+      this.cancelToast();
+      // Give a little time to render the change and display the toast again
+      setTimeout(() => {
+        this.fadeInToast(message);
+      });
+    }
+    else {
+      this.fadeInToast(message);
+    }    
   }
 
-  private hideToast(): void {
-    if (this.navbarState.toastVisible) {
-      this.navbarState.toastVisible = false;
+  private fadeInToast(message: string): void {
+    // Display the toast immediately
+    this.navbarState.toastVisible = true;
+    this.navbarState.toastMessage = message;
+    // Give the browser a little bit of time to properly render the css
+    setTimeout(() => {
+      // And start to fade out slowly
+      this.fadeOutToast();
+    }, 10);
+  }
+
+  /**
+   * It will remove the toast visible class that will cause a
+   * fade out animation, and it will wait for the animation to
+   * finish to clear the message.
+   */
+  private fadeOutToast(): void {
+    // This will start the animation
+    this.navbarState.toastVisible = false;
+    // Save the timeout in case we want to cancel it
+    this.toastTimeout = setTimeout(() => {
       // Remove the message so the element is removed from the DOM
-      setTimeout(() => {
-        this.navbarState.toastMessage = null;
-      }, 3000); // This time has to be equals or less than the time to fade out
+      this.navbarState.toastMessage = null;
+      // Clear the timeout
+      this.toastTimeout = null;
+    }, 6000); // This time has to be equals or less than the time to fade out
+  }
+
+  /**
+   * It will immediately remove the toast from the DOM and clear any associated timeouts.
+   */
+  private cancelToast(): void {
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+      this.toastTimeout = null;
     }
+    // This will remove the element
+    this.navbarState.toastMessage = null
+    // This will remove the css class
+    this.navbarState.toastVisible = false;
   }
 
   public register(navbar: NavBarComponent): void {
