@@ -235,7 +235,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
         }
       });
     }
-  }
+  }  
 
   // MEDIA SESSION ********************************************************************************
 

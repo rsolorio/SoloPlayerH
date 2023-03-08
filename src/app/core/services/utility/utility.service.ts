@@ -489,6 +489,24 @@ export class UtilityService {
     };
   }
 
+  public playPortion(src: string, start: number, stop: number): Promise<void> {
+    const audioPortion = new Audio();
+    audioPortion.src = src;
+    audioPortion.load();
+    audioPortion.currentTime = start;
+    this.ngZone.runOutsideAngular(() => {
+      let timer = setInterval(() => {
+        if (audioPortion.currentTime > stop) {
+          audioPortion.pause();
+          clearInterval(timer);
+          timer = null;
+          audioPortion.remove();
+        }
+      });
+    });
+    return audioPortion.play();
+  }
+
   /**
    * Creates a ripple effect using the specified click event.
    * @param clickEvent A reference to the click event.
