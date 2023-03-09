@@ -5,6 +5,12 @@
     padding: 0; // Remove any padding to make the inner image fit exactly to the height of this TD
 }
 
+.sp-player-small-progress {
+    height: 1px;
+    position: absolute;
+    background-color: $sp-color-primary;
+}
+
 .sp-table-loading-image {
     width: $sp-player-height-sm;
     height: $sp-player-height-sm;

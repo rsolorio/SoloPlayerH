@@ -1,8 +1,9 @@
 <div class="sp-player-small-height sp-player-shadow sp-font-family-regular">
   <table *ngIf="model.playerList.current && model.playerList.current.song" class="sp-full-width sp-full-height sp-table sp-table-support-overflow-ellipsis">
     <tr>
-      <!-- Image -->
+      <!-- Image and PB -->
       <td class="sp-player-td-image">
+        <div class="sp-player-small-progress" [style.width.%]="model.elapsedPercentage"></div>
         <img [src]="song.image.src ? song.image.src : model.playerList.current.image.src" class="sp-table-loading-image">
       </td>
       <!-- Info -->
