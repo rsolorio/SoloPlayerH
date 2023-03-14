@@ -6,17 +6,19 @@ import { Not } from 'typeorm';
 import {
   ArtistEntity,
   AlbumEntity,
-  ClassificationEntity,
   SongEntity,
   PlaylistEntity,
   PlaylistSongEntity,
   ModuleOptionEntity,
   SongArtistEntity,
-  SongClassificationEntity
+  SongClassificationEntity,
+  ValueListEntryEntity,
+  ValueListTypeEntity
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { ClassificationType } from '../../models/music.enum';
+import { ValueListTypeId } from '../database/database.lists';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
@@ -31,8 +33,9 @@ export class ScanService {
   private unknownValue = 'Unknown';
   private existingArtists: ArtistEntity[];
   private existingAlbums: AlbumEntity[];
-  private existingGenres: ClassificationEntity[];
-  private existingClassifications: ClassificationEntity[];
+  private existingClassTypes: ValueListEntryEntity[];
+  private existingGenres: ValueListEntryEntity[];
+  private existingClassifications: ValueListEntryEntity[];
   private existingSongs: SongEntity[];
   private existingSongArtists: SongArtistEntity[];
   private existingSongClassifications: SongClassificationEntity[];
@@ -66,8 +69,9 @@ export class ScanService {
     // Prepare global variables
     this.existingArtists = await ArtistEntity.find();
     this.existingAlbums = await AlbumEntity.find();
-    this.existingGenres = await ClassificationEntity.findBy({ classificationType: ClassificationType.Genre });
-    this.existingClassifications = await ClassificationEntity.findBy({ classificationType: Not(ClassificationType.Genre) });
+    this.existingClassTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueListTypeId.ClassificationType });
+    this.existingGenres = await ValueListEntryEntity.findBy({ valueListTypeId: ValueListTypeId.Genre });
+    this.existingClassifications = await ValueListEntryEntity.findBy({ isClassification: true, valueListTypeId: Not(ValueListTypeId.Genre) });
     this.existingSongs = await SongEntity.find();
     this.existingSongArtists = [];
     this.existingSongClassifications = [];
@@ -93,13 +97,13 @@ export class ScanService {
     // Genres
     const newGenres = this.existingGenres.filter(genre => genre.isNew);
     if (newGenres.length) {
-      await this.db.bulkInsert(ClassificationEntity, newGenres);
+      await this.db.bulkInsert(ValueListEntryEntity, newGenres);
     }
     this.existingGenres = [];
     // Classifications
     const newClassifications = this.existingClassifications.filter(classification => classification.isNew);
     if (newClassifications.length) {
-      await this.db.bulkInsert(ClassificationEntity, newClassifications);
+      await this.db.bulkInsert(ValueListEntryEntity, newClassifications);
     }
     this.existingClassifications = [];
     // Songs
@@ -517,8 +521,8 @@ export class ScanService {
     return artist;
   }
 
-  private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): ClassificationEntity[] {
-    const genres: ClassificationEntity[] = [];
+  private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): ValueListEntryEntity[] {
+    const genres: ValueListEntryEntity[] = [];
     if (audioInfo.metadata.common.genre && audioInfo.metadata.common.genre.length) {
       for (const genreName of audioInfo.metadata.common.genre) {
         // First process genres by splitting the values;
@@ -539,11 +543,11 @@ export class ScanService {
     return genres;
   }
 
-  private processGenre(name: string, genres: ClassificationEntity[]): void {
+  private processGenre(name: string, genres: ValueListEntryEntity[]): void {
     const newGenre = this.createGenre(name);
-    const existingGenre = this.existingGenres.find(g => g.id === newGenre.id);
+    const existingGenre = this.existingGenres.find(g => g.name === newGenre.name);
     if (existingGenre) {
-      if (!genres.find(g => g.id === existingGenre.id)) {
+      if (!genres.find(g => g.name === existingGenre.name)) {
         genres.push(existingGenre);
       }
     }
@@ -553,38 +557,51 @@ export class ScanService {
     }
   }
 
-  private createGenre(name: string): ClassificationEntity {
-    const genre = new ClassificationEntity();
+  private createGenre(name: string): ValueListEntryEntity {
+    const genre = new ValueListEntryEntity();
+    genre.id = this.utilities.newGuid();
     genre.isNew = true;
     genre.name = name;
-    genre.classificationType = ClassificationType.Genre;
-    this.db.hashClassification(genre);
+    genre.isClassification = true;
+    genre.valueListTypeId =ValueListTypeId.Genre;
+    // TODO: determine how to specify the proper sequence
+    genre.sequence = 0;
     return genre;
   }
 
-  private processClassifications(audioInfo: IAudioInfo): ClassificationEntity[] {
-    const classifications: ClassificationEntity[] = [];
+  private processClassifications(audioInfo: IAudioInfo): ValueListEntryEntity[] {
+    const classifications: ValueListEntryEntity[] = [];
 
     const tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
     if (tags && tags.length) {
       for (const tag of tags) {
+        // Tag id format: TXXX:ClassificationType:[ClassificationType]
+        // Tag value format: Value1,Value2,Value3
         if (tag.id.toLowerCase().startsWith('txxx:classificationtype:')) {
           const tagIdParts = tag.id.split(':');
           if (tagIdParts.length > 2) {
-            const classificationType = tagIdParts[2];
+            const classTypeName = tagIdParts[2];
+            const classType = this.existingClassTypes.find(item => item.name === classTypeName);
             const classificationNames = tag.value ? tag.value.toString() : null;
-            if (classificationNames) {
+            if (classType && classificationNames) {
               const names = classificationNames.split(',');
               for (const name of names) {
-                const newClassification = new ClassificationEntity();
+                const newClassification = new ValueListEntryEntity();
+                newClassification.id = this.utilities.newGuid();
                 newClassification.isNew = true;
                 newClassification.name = name;
-                newClassification.classificationType = classificationType;
-                this.db.hashClassification(newClassification);
-                const existingClassification = this.existingClassifications.find(c => c.id === newClassification.id);
-                if (existingClassification) {
-                  if (!classifications.find(c => c.id === existingClassification.id)) {
-                    classifications.push(existingClassification);
+                newClassification.valueListTypeId = classType.id;
+                newClassification.isClassification = true;
+                // TODO: determine how to specify the proper sequence
+                newClassification.sequence = 0;
+
+                const existingGlobalClass = this.existingClassifications.find(c =>
+                  c.name === newClassification.name && c.valueListTypeId === newClassification.valueListTypeId);
+                if (existingGlobalClass) {
+                  const existingLocalClassification = classifications.find(c =>
+                    c.name === existingGlobalClass.name && c.valueListTypeId === existingGlobalClass.valueListTypeId);
+                  if (!existingLocalClassification) {
+                    classifications.push(existingGlobalClass);
                   }
                 }
                 else {

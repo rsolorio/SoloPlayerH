@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Brackets, DataSource, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder, DataSourceOptions } from 'typeorm';
 import * as objectHash from 'object-hash'
-import { IClassificationModel } from '../../models/classification-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import {
   ArtistEntity,
   AlbumEntity,
-  ClassificationEntity,
   SongEntity,
   ArtistViewEntity,
   AlbumViewEntity,
@@ -25,7 +23,9 @@ import {
   SongClassificationEntity,
   PlayHistoryEntity,
   SongClassificationViewEntity,
-  PlaylistViewEntity
+  PlaylistViewEntity,
+  ValueListTypeEntity,
+  ValueListEntryEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
@@ -38,6 +38,7 @@ import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, Criter
 import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
 import { AppEvent } from '../../models/events.enum';
+import { classificationEntries, valueListEntries, ValueListTypeId } from './database.lists';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -66,6 +67,7 @@ export class DatabaseService {
     this.setComparisons();
   }
 
+  // START - DB INIT //////////////////////////////////////////////////////////////////////////////
   public async initializeDatabase(): Promise<DataSource> {
     this.log.info('Initializing database...');
     const options: DataSourceOptions = {
@@ -75,7 +77,6 @@ export class DatabaseService {
         SongEntity,
         AlbumEntity,
         ArtistEntity,
-        ClassificationEntity,
         ArtistViewEntity,
         AlbumArtistViewEntity,
         AlbumViewEntity,
@@ -92,7 +93,9 @@ export class DatabaseService {
         ModuleOptionEntity,
         SongArtistEntity,
         SongClassificationEntity,
-        PlayHistoryEntity
+        PlayHistoryEntity,
+        ValueListTypeEntity,
+        ValueListEntryEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -108,8 +111,114 @@ export class DatabaseService {
 
   private async initializeData(): Promise<void> {
     await this.initializeModuleOptions();
+    await this.initValueLists();
+  }
+
+  private async initializeModuleOptions(): Promise<void> {
+    await this.initArtistSplitChars();
+    await this.initGenreSplitChars();
     this.log.info('Module options initialized.');
   }
+
+  private async initArtistSplitChars(): Promise<void> {
+    const option = new ModuleOptionEntity();
+    option.name = ModuleOptionName.ArtistSplitCharacters;
+    this.hashDbEntity(option);
+
+    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
+    if (existingOption) {
+      return;
+    }
+
+    option.moduleName = 'Music';
+    option.title = 'Artist Split Characters';
+    option.description = 'Symbols to be used to split the Artist tag into multiple artists.';
+    option.valueEditorType = ModuleOptionEditor.Text;
+    option.multipleValues = true;
+    option.system = false;
+    option.values = JSON.stringify(['\\']);
+
+    await option.save();
+  }
+
+  private async initGenreSplitChars(): Promise<void> {
+    const option = new ModuleOptionEntity();
+    option.name = ModuleOptionName.GenreSplitCharacters;
+    this.hashDbEntity(option);
+
+    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
+    if (existingOption) {
+      return;
+    }
+
+    option.moduleName = 'Music';
+    option.title = 'Genre Split Characters';
+    option.description = 'Symbols to be used to split the Genre tag into multiple genres.';
+    option.valueEditorType = ModuleOptionEditor.Text;
+    option.multipleValues = true;
+    option.system = false;
+    option.values = JSON.stringify(['\\']);
+
+    await option.save();
+  }
+
+  private async initValueLists(): Promise<void> {
+    await this.initValueListTypes();
+    await this.initValueListEntries();
+  }
+
+  private async initValueListTypes(): Promise<void> {
+    const typeCount = await ValueListTypeEntity.count();
+    if (typeCount > 0) {
+      return;
+    }
+    const valueListTypes: ValueListTypeEntity[] = [];
+    for (const valueListTypeId of Object.values(ValueListTypeId)) {
+      const valueListType = new ValueListTypeEntity();
+      valueListType.id = valueListTypeId;
+      valueListType.name = this.utilities.getEnumNameByValue(valueListTypeId, ValueListTypeId);
+      valueListType.system = true;
+      valueListTypes.push(valueListType);
+    }
+    await this.bulkInsert(ValueListTypeEntity, valueListTypes);
+  }
+
+  private async initValueListEntries(): Promise<void> {
+    const entryCount = await ValueListEntryEntity.count();
+    if (entryCount > 0) {
+      return;
+    }
+    await this.createValueListEntries(valueListEntries, false);
+    await this.createValueListEntries(classificationEntries, true);
+  }
+
+  private async createValueListEntries(entries: { [valueListTypeId: string]: string[] }, isClassification: boolean): Promise<void> {
+    const newValueListEntries: ValueListEntryEntity[] = [];
+    for (const valueListTypeId of Object.keys(entries)) {
+      const defaultEntries = entries[valueListTypeId];
+      let entrySequence = 1;
+      for (const entry of defaultEntries) {
+        const newEntry = new ValueListEntryEntity();
+        newEntry.valueListTypeId = valueListTypeId;
+        newEntry.isClassification = isClassification;
+        newEntry.sequence = entrySequence;
+        const entryInfo = entry.split('|');
+        if (entryInfo.length > 1) {
+          newEntry.id = entryInfo[0];
+          newEntry.name = entryInfo[1];
+        }
+        else {
+          newEntry.id = this.utilities.newGuid();
+          newEntry.name = entryInfo[0];
+        }
+        newValueListEntries.push(newEntry);
+        entrySequence++;
+      }
+    }
+    await this.bulkInsert(ValueListEntryEntity, newValueListEntries);
+  }
+
+  // END - DB INIT ////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Deletes the data, drops the db objects and recreates the database.
@@ -147,11 +256,6 @@ export class DatabaseService {
 
   public hashSong(song: SongEntity): void {
     song.id = this.hash(song.filePath.toLowerCase());
-  }
-
-  public hashClassification(classification: ClassificationEntity): void {
-    // Combine these fields to make classification unique: ClassificationType|ClassificationName
-    classification.id = this.hash(`${classification.classificationType.toLowerCase()}|${classification.name.toLowerCase()}`);
   }
 
   public hashPlaylist(playlist: PlaylistEntity): void {
@@ -417,16 +521,6 @@ export class DatabaseService {
     return queryBuilder;
   }
 
-  public async getSongClassifications(songId: string): Promise<ClassificationEntity[]> {
-    return this.dataSource
-      .getRepository(ClassificationEntity)
-      .createQueryBuilder('classification')
-      .innerJoinAndSelect('classification.songClassifications', 'songClassification')
-      .where('songClassification.songId = :songId')
-      .setParameter('songId', songId)
-      .getMany();
-  }
-
   public async getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return this.dataSource
       .getRepository(SongEntity)
@@ -483,10 +577,6 @@ export class DatabaseService {
     return this.utilities.sort(items, 'caption');
   }
 
-  public async getAllClassifications(): Promise<IClassificationModel[]> {
-    return this.dataSource.getRepository(ClassificationEntity).find();
-  }
-
   public async getPlaylistWithSongs(playlistId: string): Promise<PlaylistEntity> {
     return this.dataSource
       .getRepository(PlaylistEntity)
@@ -498,10 +588,7 @@ export class DatabaseService {
       .getOne();
   }
 
-  public async initializeModuleOptions(): Promise<void> {
-    await this.initArtistSplitChars();
-    await this.initGenreSplitChars();
-  }
+  
 
   public getModuleOptions(names?: string[]): Promise<ModuleOptionEntity[]> {
     if (!names || !names.length) {
@@ -537,48 +624,6 @@ export class DatabaseService {
       // TODO:
     }
     return JSON.parse(moduleOption.values) as string[];
-  }
-
-  private async initArtistSplitChars(): Promise<void> {
-    const option = new ModuleOptionEntity();
-    option.name = ModuleOptionName.ArtistSplitCharacters;
-    this.hashDbEntity(option);
-
-    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
-    if (existingOption) {
-      return;
-    }
-
-    option.moduleName = 'Music';
-    option.title = 'Artist Split Characters';
-    option.description = 'Symbols to be used to split the Artist tag into multiple artists.';
-    option.valueEditorType = ModuleOptionEditor.Text;
-    option.multipleValues = true;
-    option.system = false;
-    option.values = JSON.stringify(['\\']);
-
-    await option.save();
-  }
-
-  private async initGenreSplitChars(): Promise<void> {
-    const option = new ModuleOptionEntity();
-    option.name = ModuleOptionName.GenreSplitCharacters;
-    this.hashDbEntity(option);
-
-    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
-    if (existingOption) {
-      return;
-    }
-
-    option.moduleName = 'Music';
-    option.title = 'Genre Split Characters';
-    option.description = 'Symbols to be used to split the Genre tag into multiple genres.';
-    option.valueEditorType = ModuleOptionEditor.Text;
-    option.multipleValues = true;
-    option.system = false;
-    option.values = JSON.stringify(['\\']);
-
-    await option.save();
   }
 
   public selector(columnName: string): ICriteriaValueSelector {
