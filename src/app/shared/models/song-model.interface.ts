@@ -8,6 +8,7 @@ export interface ISongModel extends IListItemModel {
   releaseYear: number;
   genre: string;
   favorite: boolean;
+  live: boolean;
   rating: number;
   mood: string;
   language: string;

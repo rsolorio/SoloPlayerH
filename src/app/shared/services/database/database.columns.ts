@@ -17,6 +17,7 @@ export enum DbColumn {
   Seconds = 'seconds',
   Language = 'language',
   Favorite = 'favorite',
+  Live = 'live',
   ReleaseYear = 'releaseYear',
   ReleaseDecade = 'releaseDecade',
   Lyrics = 'lyrics',
@@ -39,6 +40,7 @@ databaseColumns[DbColumn.Mood] = { name: DbColumn.Mood, caption: 'Mood', icon: '
 databaseColumns[DbColumn.PlayCount] = { name: DbColumn.PlayCount, caption: 'Play Count', icon: 'mdi-animation-play-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.Seconds] = { name: DbColumn.Seconds, caption: 'Duration', icon: 'mdi-timer-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.Language] = { name: DbColumn.Language, caption: 'Language', icon: 'mdi-translate mdi', dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Live] = { name: DbColumn.Live, caption: 'Live', icon: 'mdi-broadcast mdi', dataType: CriteriaDataType.Boolean };
 databaseColumns[DbColumn.Favorite] = { name: DbColumn.Favorite, caption: 'Favorite', icon: 'mdi-heart-outline mdi', dataType: CriteriaDataType.Boolean };
 databaseColumns[DbColumn.ReleaseYear] = { name: DbColumn.ReleaseYear, caption: 'Release Year', icon: 'mdi-calendar-blank-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Release Decade', icon: 'mdi-calendar-blank-outline mdi', dataType: CriteriaDataType.Number };

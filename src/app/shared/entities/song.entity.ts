@@ -62,6 +62,8 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   fullyParsed: boolean;
   @Column()
   favorite: boolean;
+  @Column()
+  live: boolean;
 
   @ManyToOne(() => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})

@@ -432,6 +432,12 @@ export class ScanService {
       song.titleSort = song.name;
     }
 
+    song.live = false;
+    const live = this.metadataService.getTag<string>('Live', id3v2Tags, true);
+    if (live && live.toLowerCase() === 'true') {
+      song.live = true;
+    }
+
     // Subtitle
     //const subTitle = this.metadataService.getTag<string>('TIT3', id3v2Tags, true);
 

@@ -47,6 +47,7 @@ export class PlayerListModel implements IDbModel {
       releaseDecade: 0,
       genre: null,
       favorite: false,
+      live: false,
       rating: 0,
       mood: null,
       language: null,

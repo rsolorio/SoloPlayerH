@@ -87,6 +87,14 @@ export class PlayerFullComponent extends PlayerComponentBase {
     }
   }
 
+  public toggleLive(): void {
+    const song = this.model.playerList.current.song;
+    const newValue = !song.live;
+    this.db.setLive(song.id, newValue).then(() => {
+      song.live = newValue;
+    });
+  }
+
   /**
    * Loads the color palette of the current image and fires the "paletteLoaded" event.
    */

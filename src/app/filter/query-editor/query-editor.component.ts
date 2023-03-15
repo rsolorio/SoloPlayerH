@@ -67,6 +67,7 @@ export class QueryEditorComponent implements OnInit {
         this.db.selector(DbColumn.Mood),
         this.db.selector(DbColumn.Language),
         this.db.selector(DbColumn.Favorite),
+        this.db.selector(DbColumn.Live),
         this.db.selector(DbColumn.ReleaseDecade),
         this.db.selector(DbColumn.Lyrics)
       ];

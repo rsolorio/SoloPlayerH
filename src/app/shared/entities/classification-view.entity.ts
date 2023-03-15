@@ -8,7 +8,7 @@ import { ListItemEntity } from './base.entity';
   name: 'classificationView',
   expression: `
   SELECT classification.id, classification.name, valueListType.id AS classificationTypeId, valueListType.name AS classificationType, COUNT(classification.id) AS songCount
-  FROM (SELECT id, name, valueListTypeId FROM valueListEntry WHERE isClassification = true ) AS classification
+  FROM (SELECT id, name, valueListTypeId FROM valueListEntry WHERE isClassification = true) AS classification
   INNER JOIN valueListType
   ON classification.valueListTypeId = valueListType.id
   INNER JOIN songClassification

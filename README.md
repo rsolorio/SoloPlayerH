@@ -161,6 +161,9 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - favorite
   - Flag that indicates if this is a favorite audio
   - False by default, set by user
+- live
+  - Flag that indicates if this track is a live performance
+  - False by default, set by the user
 - primaryAlbumId
   - The album associated with the track
 - TODO: url, live, explicit, coverSongId, popularity

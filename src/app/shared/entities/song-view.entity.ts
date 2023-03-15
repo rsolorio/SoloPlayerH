@@ -30,6 +30,7 @@ import { SongEntity } from './song.entity';
     .addSelect('song.language', 'language')
     .addSelect('song.mood', 'mood')
     .addSelect('song.favorite', 'favorite')
+    .addSelect('song.live', 'live')
     .addSelect('song.bitrate', 'bitrate')
     .addSelect('song.vbr', 'vbr')
     .addSelect('song.lyrics', 'lyrics')
@@ -70,6 +71,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   primaryArtistId: string;
   @ViewColumn()
   favorite: boolean;
+  @ViewColumn()
+  live: boolean;
   @ViewColumn()
   seconds: number;
   @ViewColumn()

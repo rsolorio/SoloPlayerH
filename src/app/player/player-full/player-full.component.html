@@ -134,9 +134,9 @@
           <!-- Link icon -->
           <td>
             <i
-            (click)="takeScreenshot()"
+            (click)="toggleLive()"
             class="mdi sp-cursor-pointer"
-            [ngClass]="song.url ? 'mdi-link-variant' : 'mdi-link-variant-off'"></i>
+            [ngClass]="song.live ? 'mdi-broadcast' : 'mdi-broadcast-off'"></i>
           </td>
           <!-- Lyrics icon -->
           <td>

@@ -71,6 +71,13 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
         this.dialogService.resizeWindow(this.utilityService.getSmallFormFactor());
       }
     });
+    this.menuList.push({
+      caption: 'Screenshot',
+      icon: 'mdi-image-outline mdi',
+      action: () => {
+        this.takeScreenshot();
+      }
+    });
   }
 
   /**

@@ -558,6 +558,7 @@ export class DatabaseService {
           { caption: '4', value: 4 },
           { caption: '5', value: 5 }];
       case DbColumn.Favorite:
+      case DbColumn.Live:
       case DbColumn.Lyrics:
         return [{ caption: 'Yes', value: true }, { caption: 'No', value: false }];
     }
@@ -667,6 +668,18 @@ export class DatabaseService {
 
     this.valueSelectors[DbColumn.Favorite] = {
       column: databaseColumns[DbColumn.Favorite],
+      editor: CriteriaValueEditor.YesNo,
+      values: [],
+      getValues: () => {
+        return Promise.resolve([
+          { caption: 'Yes', value: true },
+          { caption: 'No', value: false }
+        ]);
+      }
+    };
+
+    this.valueSelectors[DbColumn.Live] = {
+      column: databaseColumns[DbColumn.Live],
       editor: CriteriaValueEditor.YesNo,
       values: [],
       getValues: () => {
@@ -826,6 +839,12 @@ export class DatabaseService {
   public async setRating(songId: string, rating: number): Promise<void> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.rating = rating;
+    await song.save();
+  }
+
+  public async setLive(songId: string, live: boolean): Promise<void> {
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.live = live;
     await song.save();
   }
 }
