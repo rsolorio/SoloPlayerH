@@ -24,5 +24,18 @@ valueListEntries[ValueListTypeId.ClassificationType] = [
   ValueListTypeId.Language + '|Language',
   ValueListTypeId.Category + '|Category'
 ];
+valueListEntries[ValueListTypeId.Mood] = [
+  'No Mood',
+  'Depressed',
+  'Sad',
+  'Melancholy',
+  'Indifferent',
+  'Relaxed',
+  'Peaceful',
+  'Grateful',
+  'Happy',
+  'Excited',
+  'Energetic'
+];
 
 export const classificationEntries: { [valueListTypeId: string]: string[] } = { };

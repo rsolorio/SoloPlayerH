@@ -14,6 +14,7 @@
     <span *ngIf="item.vbr" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Vbr}}</span>
     <span *ngIf="item.bitrate === 320000" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Kbps320}}</span>
     <span *ngIf="item.lyrics" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Lyrics}}</span>
+    <span *ngIf="item.live" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Live}}</span>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
       <i class="mdi-account mdi">&nbsp;</i>{{item.artistStylized}}&nbsp;&nbsp;

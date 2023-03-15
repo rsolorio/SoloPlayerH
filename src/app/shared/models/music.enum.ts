@@ -1,7 +1,8 @@
 export enum SongBadge {
   Kbps320 = '320 KBPS',
   Lyrics = 'LYRICS',
-  Vbr = 'VBR'
+  Vbr = 'VBR',
+  Live = 'LIVE'
 }
 
 export enum ClassificationType {
