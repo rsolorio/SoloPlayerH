@@ -29,18 +29,18 @@
   <!-- Image / Playlist / Lyrics -->
   <tr>
     <td colspan="3" class="sp-td-img">
-      <div class="sp-img-container sp-full-height sp-full-width" spResizeObserver (spResized)="onImageContainerResized($event)">
+      <div class="sp-img-container sp-flex-center sp-full-height sp-full-width" spResizeObserver (spResized)="onImageContainerResized($event)">
         <img
         #imageElement
         (load)="onImageLoad()"
         [src]="song.image.src ? song.image.src : DefaultImageSrc.Large"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height"
-        class="sp-img sp-center">
+        class="sp-img">
         <!-- Image overlay (hack: adds one pixel to the height to fix an issue with the image)-->
         <div
         (click)="imageToolbarEnabled = true"
-        class="sp-img sp-center"
+        class="sp-img"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height + 1">
           <!-- Image toolbar -->
@@ -60,13 +60,13 @@
             </tr></table>
           </div>
         </div>
-        <!-- Lyrics overlay -->
+        <!-- Lyrics overlay (hack: one more pixel that solves the blurry text and aligns with the image) -->
         <div
         *ngIf="lyricsOverlayEnabled"
         (click)="toggleLyrics()"
-        class="sp-img sp-bg-dim-black-mid sp-center"
+        class="sp-img sp-bg-dim-black-mid"
         [style.width.%]="100"
-        [style.height.px]="imageSize.height">
+        [style.height.px]="imageSize.height + 1">
           <sp-text-scroller
           (close)="lyricsOverlayEnabled = false"
           [text]="song.lyrics"

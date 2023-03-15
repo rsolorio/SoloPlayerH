@@ -10,11 +10,14 @@
 (itemContentClick)="onItemContentClick($event)"
 (itemRender)="onItemRender($event)">
   <ng-template #infoTemplate let-item="item">
-    <span class="sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.name}}</span>
-    <span *ngIf="item.vbr" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Vbr}}</span>
-    <span *ngIf="item.bitrate === 320000" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Kbps320}}</span>
-    <span *ngIf="item.lyrics" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Lyrics}}</span>
-    <span *ngIf="item.live" class="sp-text-tiny sp-no-select sp-title-badge">{{SongBadge.Live}}</span>
+    <span class="sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">
+      {{item.name}}
+      <i *ngIf="item.bitrate === 320000 || item.vbr" class=" mdi-waveform mdi sp-title-icon" [title]="item.vbr ? SongBadge.Vbr : SongBadge.Kbps320"></i>
+      <i *ngIf="item.lyrics" class="mdi-script-text-outline mdi sp-title-icon" [title]="SongBadge.Lyrics"></i>
+      <i *ngIf="item.live" class="mdi-broadcast mdi sp-title-icon" [title]="SongBadge.Live"></i>
+      <i *ngIf="item.rating === 5" class="mdi-star-outline mdi sp-title-icon" [title]="SongBadge.TopRated"></i>
+      <i *ngIf="item.favorite" class="mdi-heart-outline mdi sp-title-icon" [title]="SongBadge.Favorite"></i>
+    </span>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
       <i class="mdi-account mdi">&nbsp;</i>{{item.artistStylized}}&nbsp;&nbsp;

@@ -2,9 +2,14 @@
 
 .sp-title-badge {
   margin-left: 10px;
+  padding: 1px 3px;
   border: 1px solid $sp-color-primary;
+  border-radius: 3px;
   color: $sp-color-primary;
   vertical-align: middle;
-  padding: 1px 3px;
-  border-radius: 3px;
+}
+
+.sp-title-icon {
+  color: $sp-color-primary;
+  margin-left: 5px;
 }

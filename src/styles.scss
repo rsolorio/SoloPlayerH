@@ -527,10 +527,22 @@ input[type="text"], input[type="search"], textarea {
     border-collapse: collapse;
 }
 
+/*
+This is applied directly to the element that needs to be centered.
+The transform has a bug on which it blurs text, so it is preferred to use the sp-flex-center.
+https://github.com/yapplabs/ember-modal-dialog/issues/238
+*/
 .sp-center {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+/* This is applied to the parent of the elements that need to be centered. */
+.sp-flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sp-transparent {
