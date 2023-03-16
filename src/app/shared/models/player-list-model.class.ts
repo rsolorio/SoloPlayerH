@@ -41,6 +41,8 @@ export class PlayerListModel implements IDbModel {
       id: '0',
       name: '[Empty Song]',
       seconds: 0,
+      bitrate: 0,
+      vbr: false,
       playCount: 0,
       filePath: null,
       releaseYear: 0,

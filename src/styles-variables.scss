@@ -58,14 +58,14 @@ $sp-opacity-focus: 0.12;
 $sp-opacity-activated: 0.12;
 
 /* COLORS */
-$sp-color-blue: #2b4eff;
+$sp-color-blue: #2b4eff; // lyric
 $sp-color-blue-light: #2a9fd6;
-$sp-color-green: #77b300;
-$sp-color-purple: #9933cc;
-$sp-color-pink: #e83e8c;
-$sp-color-orange: #ff8800;
+$sp-color-green: #77b300; // live
+$sp-color-purple: #9d50c4; // vbr
+$sp-color-pink: #e83e8c; // 320
+$sp-color-orange: #ff8800; // rating
 $sp-color-yellow: #e9ff25;
-$sp-color-red: #cc0000;
+$sp-color-red: #cc0000; // heart
 $sp-color-cyan: #00bcd4;
 $sp-color-cyan2: #007C7C;
 $sp-color-gray-light: #999;
@@ -75,6 +75,21 @@ $sp-color-gray-dark: #121212;
 $sp-color-white: #fff;
 $sp-color-black: #060606;
 $sp-color-gray-super-light: #e9ecef;
+// Other colors to choose from
+$sp-color-01: #A81104; // red
+$sp-color-02: #AD1457; // pink
+$sp-color-03: #6A1B9A; // purple
+$sp-color-04: #4527A0; // purple 2
+$sp-color-05: #283593; // dark blue
+$sp-color-06: #0F52C1; // light blue
+$sp-color-07: #0277BD; // light blue 2
+$sp-color-08: #006064; // dark cyan
+$sp-color-09: #00695C; // dark cyan 2
+$sp-color-10: #006A25; // dark green
+$sp-color-11: #558B2F; // light green
+$sp-color-12: #E65100; // orange
+$sp-color-13: #D84315; // orange 2
+$sp-color-13: #424242; // grey
 
 /* THEME */
 // Overlay: a color with certain opacity.

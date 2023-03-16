@@ -173,7 +173,15 @@ body {
 }
 
 .sp-color-lyric {
-    color: $sp-color-blue !important;
+    color: $sp-color-blue-light !important;
+}
+
+.sp-color-320 {
+    color: $sp-color-pink !important;
+}
+
+.sp-color-vbr {
+    color: $sp-color-purple !important;
 }
 
 .sp-color-mood {
