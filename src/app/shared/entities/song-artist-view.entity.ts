@@ -17,7 +17,7 @@ import { SongBaseEntity } from './song-base.entity';
  @ViewEntity({
   name: 'songArtistView',
   expression: `
-  SELECT song.id, song.name, song.filePath, song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.seconds, song.bitrate, song.vbr, song.favorite, song.live, song.rating, song.mood, song.language, song.lyrics,
+  SELECT song.id, song.name, song.filePath, song.fileSize, song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.seconds, song.bitrate, song.vbr, song.frequency, song.favorite, song.live, song.rating, song.mood, song.language, song.lyrics,
   album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
   FROM song
   INNER JOIN album
@@ -35,6 +35,8 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   name: string;
   @ViewColumn()
   filePath: string;
+  @ViewColumn()
+  fileSize: number;
   @ViewColumn()
   playCount: number;
   @ViewColumn()
@@ -61,6 +63,8 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   bitrate: number;
   @ViewColumn()
   vbr: boolean;
+  @ViewColumn()
+  frequency: number;
   @ViewColumn()
   favorite: boolean;
   @ViewColumn()

@@ -133,4 +133,31 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public takeScreenshot(): void {
     this.screenshotService.download('spPlayerOverlayContainer');
   }
+
+  public getExtension(): string {
+    // TODO: save extension in table
+    if (this.model.playerList.current.song.filePath) {
+      const fileParts = this.model.playerList.current.song.filePath.split('.');
+      return fileParts[fileParts.length - 1].toUpperCase();
+    }
+    return null;
+  }
+
+  public getBitrate(): string {
+    if (this.model.playerList.current.song.vbr) {
+      return 'VBR';
+    }
+    const kbps = this.model.playerList.current.song.bitrate / 1000;
+    return kbps + 'Kbps';
+  }
+
+  public getFrequency(): string {
+    const khz = this.model.playerList.current.song.frequency / 1000;
+    return khz + 'KHz';
+  }
+
+  public getSize(): string {
+    const mb = this.model.playerList.current.song.fileSize / 1000 / 1000;
+    return this.utilityService.round(mb, 2) + 'Mb';
+  }
 }

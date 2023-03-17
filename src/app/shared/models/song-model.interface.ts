@@ -4,6 +4,7 @@ import { PlayerSongStatus } from './player.enum';
 
 export interface ISongModel extends IListItemModel {
   filePath: string;
+  fileSize: number;
   playCount: number;
   releaseYear: number;
   genre: string;
@@ -11,6 +12,7 @@ export interface ISongModel extends IListItemModel {
   live: boolean;
   bitrate: number;
   vbr: boolean;
+  frequency: number;
   rating: number;
   mood: string;
   language: string;

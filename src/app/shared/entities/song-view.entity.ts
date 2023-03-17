@@ -18,6 +18,7 @@ import { SongEntity } from './song.entity';
     .addSelect('artist.id', 'primaryArtistId')
     .addSelect('song.name', 'name')
     .addSelect('song.filePath', 'filePath')
+    .addSelect('song.fileSize', 'fileSize')
     .addSelect('song.titleSort', 'titleSort')
     .addSelect('song.playCount', 'playCount')
     .addSelect('song.releaseYear', 'releaseYear')
@@ -33,6 +34,7 @@ import { SongEntity } from './song.entity';
     .addSelect('song.live', 'live')
     .addSelect('song.bitrate', 'bitrate')
     .addSelect('song.vbr', 'vbr')
+    .addSelect('song.frequency', 'frequency')
     .addSelect('song.lyrics', 'lyrics')
     .addSelect('album.name', 'primaryAlbumName')
     .addSelect('artist.name', 'primaryArtistName')
@@ -45,6 +47,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   name: string;
   @ViewColumn()
   filePath: string;
+  @ViewColumn()
+  fileSize: number;
   @ViewColumn()
   playCount: number;
   @ViewColumn()
@@ -85,6 +89,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   bitrate: number;
   @ViewColumn()
   vbr: boolean;
+  @ViewColumn()
+  frequency: number;
   @ViewColumn()
   lyrics: string;
 

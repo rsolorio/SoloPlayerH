@@ -12,8 +12,7 @@ import {
   ModuleOptionEntity,
   SongArtistEntity,
   SongClassificationEntity,
-  ValueListEntryEntity,
-  ValueListTypeEntity
+  ValueListEntryEntity
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
@@ -447,6 +446,7 @@ export class ScanService {
     song.frequency = audioInfo.metadata.format.sampleRate ? audioInfo.metadata.format.sampleRate : 0;
     song.vbr = audioInfo.metadata.format.codecProfile !== 'CBR';
     song.replayGain = audioInfo.metadata.format.trackGain ? audioInfo.metadata.format.trackGain : 0;
+    song.fileSize = audioInfo.fileInfo.size;
     song.fullyParsed = audioInfo.fullyParsed;
     song.favorite = false;
 

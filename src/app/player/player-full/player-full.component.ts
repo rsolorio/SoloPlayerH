@@ -36,6 +36,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public isLoadingPalette = false;
   public imageToolbarEnabled = false;
   public lyricsOverlayEnabled = false;
+  public fileInfoVisible = true;
   constructor(
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,

@@ -390,10 +390,18 @@ A longer duration allows to properly see the transition in the whole page. */
 }
 
 .sp-text-huge {
-    font-size: 3em;
+    font-size: 2.5em;
+}
+
+.sp-text-huge-fixed {
+    font-size: 2.5em;
 }
 
 .sp-text-jumbo {
+    font-size: 3em;
+}
+
+.sp-text-giant {
     font-size: 4em;
 }
 
@@ -419,6 +427,9 @@ A longer duration allows to properly see the transition in the whole page. */
     }
     .sp-text-big {
         font-size: 1.5em;
+    }
+    .sp-text-huge {
+        font-size: 2em;
     }
     .sp-auto-line-height {
         line-height: 1.2;
@@ -605,7 +616,7 @@ https://github.com/yapplabs/ember-modal-dialog/issues/238
 }
 
 .sp-fade-in-out {
-    animation: fadeInOut 500ms cubic-bezier(.78,.01,.4,.98) infinite alternate;
+    animation: fadeInOut 700ms cubic-bezier(.78,.01,.4,.98) infinite alternate;
 }
 
 .sp-scale-up {

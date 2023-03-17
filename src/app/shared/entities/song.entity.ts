@@ -12,6 +12,8 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   titleSort: string;
   @Column({ unique: true })
   filePath: string;
+  @Column()
+  fileSize: number;
   @Column({ nullable: true })
   externalId: string;
   @Column()

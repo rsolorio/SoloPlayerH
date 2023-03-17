@@ -9,7 +9,7 @@
     </td>
     <!-- Middle content -->
     <td>
-      <table class="sp-full-width sp-full-height"><tr>
+      <table class="sp-table sp-full-width sp-full-height"><tr>
         <!-- Playlist name -->
         <td class="sp-font-family-regular sp-text-overflow-ellipsis">
           <i
@@ -105,24 +105,31 @@
       </ng-container>
       <br>
       <!-- Album -->
-      <i class="sp-text-large mdi mdi-album" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="mdi-album mdi sp-text-large " [ngStyle]="palette.secondary.selected.cssColor"></i>
       <span
       class="sp-text-large"
       [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.albumName}}&nbsp;&nbsp;</span>
       <br>
       <!-- Year -->
       <ng-container *ngIf="song.releaseYear > 0">
-        <i class="sp-text-large mdi mdi-calendar" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <i class="mdi-calendar mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
-        class="sp-text-large"
+        class="sp-text-medium"
         [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.releaseYear}}&nbsp;&nbsp;</span>
       </ng-container>
       <!-- Genre -->
       <ng-container *ngIf="song.genre">
-        <i class="sp-text-large mdi mdi-tag" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <i class="mdi-tag mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
         <span
-        class="sp-text-large"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.genre}}</span>
+        class="sp-text-medium"
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.genre}}&nbsp;&nbsp;</span>
+      </ng-container>
+      <!-- File Info -->
+      <ng-container *ngIf="fileInfoVisible">
+        <i class="mdi-file-music mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <span
+        class="sp-text-medium"
+        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{getExtension()}} | {{getBitrate()}} | {{getFrequency()}} | {{getSize()}}</span>
       </ng-container>
     </td>
   </tr>
@@ -189,27 +196,27 @@
     </td>
   </tr></table></td></tr>
   <!-- Play Controls -->
-  <tr class="sp-tr-play-controls sp-text-big sp-player-overlay">
+  <tr class="sp-tr-play-controls sp-player-overlay">
     <td colspan="3">
       <table class="sp-full-width">
         <tr>
-          <td class="sp-td-play-control">
+          <td class="sp-td-play-control sp-text-big-fixed">
             <i *ngIf="model.playerList.play === PlayMode.Sequence" class="mdi-shuffle-disabled mdi"></i>
             <i *ngIf="model.playerList.play === PlayMode.Random" class="mdi-shuffle mdi"></i>
           </td>
-          <td (click)="onPrevious()" class="sp-td-play-control">
+          <td (click)="onPrevious()" class="sp-td-play-control sp-text-big-fixed">
               <i class="mdi-skip-previous mdi"></i>
           </td>
-          <td class="sp-td-play-control">
+          <td class="sp-td-play-control sp-text-huge-fixed">
               <div (click)="onPlayPause()" class="sp-play-pause sp-play-pause-button">
                   <i *ngIf="model.status !== PlayerStatus.Playing" class="mdi-play mdi sp-play-pause sp-play-pause-icon"></i>
                   <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-play-pause sp-play-pause-icon"></i>
               </div>
           </td>
-          <td (click)="onForward()" class="sp-td-play-control">
+          <td (click)="onForward()" class="sp-td-play-control sp-text-big-fixed">
               <i class="mdi-skip-next mdi"></i>
           </td>
-          <td class="sp-td-play-control">
+          <td class="sp-td-play-control sp-text-big-fixed">
               <i *ngIf="model.playerList.repeat === RepeatMode.All" class="mdi-repeat mdi"></i>
               <i *ngIf="model.playerList.repeat === RepeatMode.One" class="mdi-repeat-once mdi"></i>
               <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" class="mdi-repeat-off mdi"></i>

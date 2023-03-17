@@ -10,7 +10,7 @@
 }
 
 .sp-tr-song-info {
-  height: 80px;
+  height: 100px; // the actual size is bigger than this, but what matters is to set a height to allow the image to take the available space
   text-align: center;
 }
 
@@ -83,15 +83,14 @@
 
 .sp-progress-back {
   background-color: $sp-color-overlay-01;
-  height: 4px;
-  border-radius: 5px;
+  height: 3px;
+  border-radius: 10px;
 }
 
 .sp-progress-front {
   background-color: $sp-color-on-background;
-  transition: width 1s 0s linear;
   height: 100%;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 .sp-time-text {
