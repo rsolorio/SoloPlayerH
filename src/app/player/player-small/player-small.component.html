@@ -4,7 +4,7 @@
       <!-- Image and PB -->
       <td class="sp-player-td-image">
         <div class="sp-player-small-progress" [style.width.%]="model.elapsedPercentage"></div>
-        <img [src]="song.image.src ? song.image.src : model.playerList.current.image.src" class="sp-table-loading-image">
+        <img [src]="song.image.src ? song.image.src : model.playerList.current.image.src" class="sp-table-loading-image sp-full-height sp-full-width">
       </td>
       <!-- Info -->
       <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">
@@ -15,19 +15,19 @@
       </td>
       <!-- Back -->
       <td (click)="onPrevious()" class="sp-td-play-control">
-        <i class="mdi-rewind mdi sp-text-xlarge-fixed"></i>
+        <i class="mdi-rewind mdi sp-text-big-fixed"></i>
       </td>
       <!-- Play/Pause -->
       <td (click)="onPlayPause()" class="sp-td-play-control">
-          <div class="sp-play-pause sp-play-pause-button">
-            <i *ngIf="model.status !== PlayerStatus.Playing && !model.isLoading" class="mdi-play mdi sp-play-pause sp-play-pause-icon sp-text-xlarge-fixed"></i>
-            <i *ngIf="model.status !== PlayerStatus.Playing && model.isLoading" class="mdi-loading mdi mdi-spin sp-color-playing sp-play-pause sp-play-pause-icon sp-text-xlarge-fixed"></i>
-            <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-color-playing sp-play-pause sp-play-pause-icon sp-text-xlarge-fixed"></i>
+          <div class="sp-play-pause sp-play-pause-button sp-bg-09">
+            <i *ngIf="model.status !== PlayerStatus.Playing && !model.isLoading" class="mdi-play mdi sp-play-pause sp-play-pause-icon sp-text-big-fixed"></i>
+            <i *ngIf="model.status !== PlayerStatus.Playing && model.isLoading" class="mdi-loading mdi mdi-spin sp-color-playing sp-play-pause sp-play-pause-icon sp-text-big-fixed"></i>
+            <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-color-playing sp-play-pause sp-play-pause-icon sp-text-big-fixed"></i>
           </div>
       </td>
       <!-- Forward -->
       <td (click)="onForward()" class="sp-td-play-control">
-        <i class="mdi-fast-forward mdi sp-text-xlarge-fixed"></i>
+        <i class="mdi-fast-forward mdi sp-text-big-fixed"></i>
       </td>
       <!-- Menu -->
       <td class="sp-td-play-control sp-text-xlarge-fixed">

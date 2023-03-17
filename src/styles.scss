@@ -352,6 +352,7 @@ A longer duration allows to properly see the transition in the whole page. */
 }
 
 // TEXT SIZE  *************************************************************************************
+// Fixed sizes are not changed by the media query
 .sp-text-tiny {
     font-size: 0.6em;
 }
@@ -381,6 +382,10 @@ A longer duration allows to properly see the transition in the whole page. */
 }
 
 .sp-text-big {
+    font-size: 2em;
+}
+
+.sp-text-big-fixed {
     font-size: 2em;
 }
 
