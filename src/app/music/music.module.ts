@@ -13,6 +13,7 @@ import { FileNodeService } from '../shared/services/file/file-node.service';
 import { FileCordovaService } from '../shared/services/file/file-cordova.service';
 import { ListTransformService } from '../shared/services/list-transform/list-transform.service';
 import { SongValidatorFactory } from './transform-validators/song-validator-factory';
+import { ValueListModule } from '../value-list/value-list.module';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { SongValidatorFactory } from './transform-validators/song-validator-fact
     CommonModule,
     CoreModule,
     FormsModule,
-    SharedModule
+    SharedModule,
+    ValueListModule
   ],
   entryComponents: [],
   providers: [ { provide: FileService, useClass: FileNodeService }]

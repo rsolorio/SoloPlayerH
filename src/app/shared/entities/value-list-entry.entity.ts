@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, Relation } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ListItemEntity } from './base.entity';
 
 @Entity({name: 'valueListEntry'})

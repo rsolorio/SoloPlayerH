@@ -1,8 +1,9 @@
 import { Column, Entity } from "typeorm";
+import { IModuleOptionModel } from "../models/module-option-model.interface";
 import { ListItemEntity } from "./base.entity";
 
 @Entity({name: 'moduleOption'})
-export class ModuleOptionEntity extends ListItemEntity {
+export class ModuleOptionEntity extends ListItemEntity implements IModuleOptionModel {
   @Column()
   moduleName: string;
   @Column()

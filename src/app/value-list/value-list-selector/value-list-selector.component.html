@@ -1,0 +1,29 @@
+<div class="sp-list-header">
+  <div class="sp-text-xlarge">
+    <span *ngIf="model.title" class="">{{model.title}}</span>
+  </div>
+  <div class="sp-text-medium sp-text-overflow-ellipsis">
+    <i *ngIf="model.subTitleIcon" [ngClass]="model.subTitleIcon" class="sp-color-primary">&nbsp;&nbsp;</i>
+    <span *ngIf="model.subTitle">{{model.subTitle}}</span>
+  </div>
+  <div class="sp-text-medium">
+    <i class="mdi-check mdi sp-color-primary">&nbsp;&nbsp;</i>
+    <span>{{model.selectedValues[0]}}</span>
+  </div>
+</div>
+<div class="sp-list-content">
+  <ul class="sp-list-group">
+    <li
+    *ngFor="let entry of model.entries"
+    [ngClass]="{ 'sp-bg-primary-variant': entry.selected }"
+    (click)="onEntryClick(entry)"
+    class="sp-list-group-item sp-text-large sp-clickable">
+      <i *ngIf="entry.icons" [ngClass]="entry.icons"></i>
+      <span>&nbsp;&nbsp;</span><span>{{entry.name}}</span>
+    </li>
+  </ul>
+</div>
+<div class="sp-list-footer">
+  <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">Cancel</div>
+  <div *ngIf="model.selectMode !== ValueListSelectMode.Quick" (click)="onOkClick()" class="sp-chip-item sp-bg-primary sp-clickable">OK</div>
+</div>

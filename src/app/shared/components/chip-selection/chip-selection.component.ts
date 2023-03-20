@@ -12,14 +12,12 @@ import { ChipSelectionService } from './chip-selection.service';
 })
 export class ChipSelectionComponent implements OnInit {
 
+  /** Model of the component. It will be set by the service. */
   public model: IChipSelectionModel;
 
-  constructor(
-    private stateService: ChipSelectionService,
-    private sidebarService: SideBarStateService) { }
+  constructor(private sidebarService: SideBarStateService) { }
 
   ngOnInit(): void {
-    this.model = this.stateService.getState();
   }
 
   onChipValueClick(chipValue: ISelectableValue): void {

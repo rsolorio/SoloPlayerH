@@ -26,6 +26,9 @@ import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteri
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
 import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { ScreenshotService } from 'src/app/shared/services/screenshot/screenshot.service';
+import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 
 @Component({
   selector: 'sp-song-list',
@@ -38,6 +41,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   public PlayerSongStatus = PlayerSongStatus;
   public SongBadge = SongBadge;
   public itemMenuList: IMenuModel[] = [];
+  private expandPlayerOnPlay = false;
 
   constructor(
     public broadcastService: SongListBroadcastService,
@@ -51,13 +55,18 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private queueService: PromiseQueueService,
     private db: DatabaseService,
     private stateService: SongListStateService,
-    private navigation: NavigationService
+    private navigation: NavigationService,
+    private navbarService: NavBarStateService,
+    private screenshotService: ScreenshotService
   ) {
     super();
   }
 
   ngOnInit(): void {
     this.initializeItemMenu();
+    this.db.getModuleOptions([ModuleOptionName.ExpandPlayerOnSongPlay]).then(options => {
+      this.expandPlayerOnPlay = this.db.getOptionBooleanValue(options[0]);
+    });
   }
 
   private initializeItemMenu(): void {
@@ -195,7 +204,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private playSong(song: ISongModel): void {
     this.menuService.hideSlideMenu();
-    this.loadSongInPlayer(song, true, false);
+    this.loadSongInPlayer(song, true, this.expandPlayerOnPlay);
   }
 
   private loadSongInPlayer(song: ISongModel, play?: boolean, expand?: boolean): void {
@@ -239,6 +248,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
       return null;
     };
     // TODO: Add new menu: Save As Playlist, Save As Filter
+    const navbarModel = this.navbarService.getState();
+    navbarModel.menuList.push({
+      caption: 'Screenshot',
+      icon: 'mdi-image-outline mdi',
+      action: () => {
+        this.screenshotService.download('spSongListContainer');
+      }
+    });
   }
 
   public onItemRender(song: ISongModel): void {

@@ -14,10 +14,15 @@
         <td class="sp-font-family-regular sp-text-overflow-ellipsis">
           <i
           class="mdi-playlist-music-outline mdi sp-text-xlarge-fixed sp-cursor-pointer"
+          style="line-height: 40px;"
           [ngStyle]="palette.secondary.selected.cssColor"></i>
           <span
-          class="sp-text-large" style="line-height: 36px;vertical-align: top;"
-          [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.name}}</span>  
+          class="sp-text-large" style="line-height: 40px;vertical-align: top;"
+          [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.name}}</span>
+          <span
+          class="sp-text-small"
+          style="line-height: 40px;float: right;"
+          [ngStyle]="palette.primary.selected.cssColor">{{model.playerList.current.sequence}}/{{model.playerList.items.length}}</span>
         </td>
       </tr></table>
     </td>
@@ -165,6 +170,7 @@
           <td>
             <i
             class="mdi sp-cursor-pointer"
+            (click)="onMoodClick(song)"
             [ngClass]="song.mood && song.mood !== 'No Mood' ? 'mdi-emoticon-happy-outline' : 'mdi-emoticon-neutral-outline'"></i>
           </td>
           <!-- Favorite icon -->

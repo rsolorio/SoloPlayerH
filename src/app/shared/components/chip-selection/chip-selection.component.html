@@ -11,8 +11,8 @@
         <div
         (click)="onChipValueClick(chipValue)"
         *ngFor="let chipValue of model.selector.values"
-        class="sp-chip-item sp-clickable sp-bg-09"
-        [ngClass]="{ 'sp-chip-item-selected': chipValue.selected }">
+        class="sp-chip-item sp-clickable"
+        [ngClass]="{ 'sp-bg-primary-variant': chipValue.selected, 'sp-bg-09': !chipValue.selected }">
           <span class="sp-chip-text sp-text-large">{{chipValue.caption}}</span>
         </div>
       </div>
@@ -20,7 +20,7 @@
     <tr class="sp-chip-selection-toolbar-row">
       <div class="sp-chip-selection-toolbar">
         <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">Cancel</div>
-        <div (click)="onOkClick()" class="sp-chip-item sp-chip-item-selected sp-clickable">OK</div>
+        <div (click)="onOkClick()" class="sp-chip-item sp-bg-primary sp-clickable">OK</div>
       </div>
     </tr>
   </table>

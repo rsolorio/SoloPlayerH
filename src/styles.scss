@@ -147,6 +147,16 @@ body {
     color: $sp-color-on-primary;
 }
 
+.sp-bg-primary-variant {
+    background-color: $sp-color-primary-variant;
+    color: $sp-color-on-primary-variant;
+}
+
+.sp-bg-secondary {
+    background-color: $sp-color-secondary;
+    color: $sp-color-on-secondary;
+}
+
 // COLORS *****************************************************************************************
 .sp-color-on-bg-high {
     color: $sp-color-on-background-high;

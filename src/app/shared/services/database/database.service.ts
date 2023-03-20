@@ -39,6 +39,7 @@ import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interf
 import { ListTransformService } from '../list-transform/list-transform.service';
 import { AppEvent } from '../../models/events.enum';
 import { classificationEntries, valueListEntries, ValueListTypeId } from './database.lists';
+import { defaultModuleOptions } from './database.options';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -115,51 +116,25 @@ export class DatabaseService {
   }
 
   private async initializeModuleOptions(): Promise<void> {
-    await this.initArtistSplitChars();
-    await this.initGenreSplitChars();
+    for (const moduleOption of defaultModuleOptions) {
+      const option = new ModuleOptionEntity();
+      option.name = moduleOption.name;
+      this.hashDbEntity(option);
+      const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
+      if (existingOption) {
+        continue;
+      }
+
+      option.moduleName = moduleOption.moduleName;
+      option.title = moduleOption.title;
+      option.description = moduleOption.description;
+      option.valueEditorType = moduleOption.valueEditorType;
+      option.multipleValues = moduleOption.multipleValues;
+      option.system = moduleOption.system;
+      option.values = moduleOption.values;
+      await option.save();
+    }
     this.log.info('Module options initialized.');
-  }
-
-  private async initArtistSplitChars(): Promise<void> {
-    const option = new ModuleOptionEntity();
-    option.name = ModuleOptionName.ArtistSplitCharacters;
-    this.hashDbEntity(option);
-
-    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
-    if (existingOption) {
-      return;
-    }
-
-    option.moduleName = 'Music';
-    option.title = 'Artist Split Characters';
-    option.description = 'Symbols to be used to split the Artist tag into multiple artists.';
-    option.valueEditorType = ModuleOptionEditor.Text;
-    option.multipleValues = true;
-    option.system = false;
-    option.values = JSON.stringify(['\\']);
-
-    await option.save();
-  }
-
-  private async initGenreSplitChars(): Promise<void> {
-    const option = new ModuleOptionEntity();
-    option.name = ModuleOptionName.GenreSplitCharacters;
-    this.hashDbEntity(option);
-
-    const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
-    if (existingOption) {
-      return;
-    }
-
-    option.moduleName = 'Music';
-    option.title = 'Genre Split Characters';
-    option.description = 'Symbols to be used to split the Genre tag into multiple genres.';
-    option.valueEditorType = ModuleOptionEditor.Text;
-    option.multipleValues = true;
-    option.system = false;
-    option.values = JSON.stringify(['\\']);
-
-    await option.save();
   }
 
   private async initValueLists(): Promise<void> {
@@ -497,7 +472,7 @@ export class DatabaseService {
     queryBuilder: SelectQueryBuilder<T>, entityName: string, criteriaItems: CriteriaItems
   ): SelectQueryBuilder<T> {
     let hasOrderBy = false;
-    // This is a sage guard since this should only receive sorting items
+    // This is a safe guard since this should only receive sorting items
     const orderByCriteria = criteriaItems.filter(criteriaItem => criteriaItem.sortSequence > 0);
     this.utilities.sort(orderByCriteria, 'sortSequence').forEach(orderByItem => {
       const column = `${entityName}.${orderByItem.columnName}`;
@@ -605,7 +580,7 @@ export class DatabaseService {
     for (const optionName of names) {
       parameterIndex++;
       const parameterName = 'name' + parameterIndex.toString();
-      const where = `moduleOption.name = ${parameterName}`;
+      const where = `moduleOption.name = :${parameterName}`;
       const parameter = {};
       parameter[parameterName] = optionName;
       if (hasWhere) {
@@ -625,6 +600,13 @@ export class DatabaseService {
       // TODO:
     }
     return JSON.parse(moduleOption.values) as string[];
+  }
+
+  public getOptionBooleanValue(moduleOption: ModuleOptionEntity): boolean {
+    if (moduleOption.valueEditorType !== ModuleOptionEditor.YesNo) {
+      // TODO:
+    }
+    return JSON.parse(moduleOption.values) as boolean;
   }
 
   public selector(columnName: string): ICriteriaValueSelector {
@@ -845,6 +827,12 @@ export class DatabaseService {
   public async setLive(songId: string, live: boolean): Promise<void> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.live = live;
+    await song.save();
+  }
+
+  public async setMood(songId: string, mood: string): Promise<void> {
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.mood = mood;
     await song.save();
   }
 }

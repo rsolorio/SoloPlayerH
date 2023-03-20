@@ -16,6 +16,9 @@ import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../shared/services/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
 import { ScreenshotService } from '../shared/services/screenshot/screenshot.service';
+import { ValueListSelectorService } from '../value-list/value-list-selector/value-list-selector.service';
+import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/value-list-selector/value-list-selector-model.interface';
+import { ValueListTypeId } from '../shared/services/database/database.lists';
 
 /**
  * Base component for any implementation of the player modes.
@@ -38,7 +41,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private database: DatabaseService,
     private dialogService: DialogService,
     private utilityService: UtilityService,
-    private screenshotService: ScreenshotService)
+    private screenshotService: ScreenshotService,
+    private valueListSelectorService: ValueListSelectorService)
   {
     super();
   }
@@ -111,6 +115,31 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.database.setFavoriteSong(song.id, newValue).then(() => {
       song.favorite = newValue;
     });
+  }
+
+  public onMoodClick(song: ISongModel): void {
+    const selectedValues: string[] = [];
+    if (song.mood) {
+      selectedValues.push(song.mood);
+    }
+    const valueListModel: IValueListSelectorModel = {
+      title: 'Mood',
+      titleIcon: 'mdi-emoticon-happy-outline mdi',
+      subTitle: song.name,
+      subTitleIcon: 'mdi-music-note mdi',
+      valueListTypeId: ValueListTypeId.Mood,
+      selectMode: ValueListSelectMode.Quick,
+      selectedValues: selectedValues,
+      onOk: selectedEntries => {
+        if (selectedEntries && selectedEntries.length) {
+          const newMood = selectedEntries[0].name;
+          this.database.setMood(song.id, newMood).then(() => {
+            song.mood = newMood;
+          });
+        }
+      }
+    };
+    this.valueListSelectorService.show(valueListModel);
   }
 
   public onTogglePlaylist() {

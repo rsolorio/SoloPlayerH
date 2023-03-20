@@ -1,8 +1,10 @@
 export enum ModuleOptionName {
   ArtistSplitCharacters = 'ArtistSplitCharacters',
-  GenreSplitCharacters = 'GenreSplitCharacters'
+  GenreSplitCharacters = 'GenreSplitCharacters',
+  ExpandPlayerOnSongPlay = 'ExpandPlayerOnSongPlay'
 }
 
 export enum ModuleOptionEditor {
-  Text = 'Text'
+  Text = 'Text',
+  YesNo = 'YesNo'
 }

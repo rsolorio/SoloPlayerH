@@ -1,0 +1,31 @@
+@import "../../../styles-variables";
+
+.sp-list-header {
+  margin-bottom: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.sp-list-group {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-top: 0;
+}
+
+.sp-list-group-item {
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid $sp-color-on-background-low;
+}
+
+.sp-list-group-item:first-child {
+  border-top: 1px solid $sp-color-on-background-low;
+}
+
+.sp-list-footer {
+  display: flex;
+  justify-content: right;
+  padding: 5px;
+}
