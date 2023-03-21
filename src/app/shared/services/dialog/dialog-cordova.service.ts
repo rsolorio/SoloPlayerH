@@ -26,4 +26,8 @@ export class DialogCordovaService extends DialogService {
   resizeWindow(size: ISize): void {
     // This action is not needed for mobile, so do nothing
   }
+
+  getScreenshot(): Promise<string> {
+    return null;
+  }
 }

@@ -29,6 +29,7 @@ import { MusicImageType } from 'src/app/shared/services/music-metadata/music-met
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ScreenshotService } from 'src/app/shared/services/screenshot/screenshot.service';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
+import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -57,7 +58,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private stateService: SongListStateService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
-    private screenshotService: ScreenshotService
+    private screenshotService: ScreenshotService,
+    private dialogService: DialogService
   ) {
     super();
   }
@@ -253,7 +255,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
       caption: 'Screenshot',
       icon: 'mdi-image-outline mdi',
       action: () => {
-        this.screenshotService.download('spSongListContainer');
+        //this.screenshotService.downloadDelay(100);
+        this.dialogService.getScreenshot().then(result => {
+          this.utility.downloadUrl(result);
+        });
       }
     });
   }

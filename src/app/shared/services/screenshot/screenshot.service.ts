@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import html2canvas from 'html2canvas';
+import html2canvas, { Options } from 'html2canvas';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 /**
  * Provides methods to generate screenshots from html elements.
@@ -12,14 +13,21 @@ import html2canvas from 'html2canvas';
 })
 export class ScreenshotService {
 
-  constructor() { }
+  constructor(private utility: UtilityService) { }
 
-  public download(elementId: string, fileName?: string): void {
-    if (!fileName) {
-      fileName = 'screenshot';
+  public download(elementId?: string, fileName?: string): void {
+    let screenshotTarget = document.body;
+    let options: Partial<Options> = {
+      x: 0,
+      y: 0,
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+    if (elementId) {
+      screenshotTarget = document.getElementById(elementId);
+      options = undefined;
     }
-    const screenshotTarget = document.getElementById(elementId);
-    html2canvas(screenshotTarget).then(canvas => {
+    html2canvas(screenshotTarget, options).then(canvas => {
       const dataUrl = canvas.toDataURL();
       // TODO: https://stackoverflow.com/questions/61250048/how-to-share-a-single-base64-url-image-via-the-web-share-api
       // fetchResponse.arrayBuffer().then(buffer => {
@@ -28,15 +36,15 @@ export class ScreenshotService {
       fetch(dataUrl).then(fetchResponse => {
         fetchResponse.blob().then(blob => {
           const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          a.download = fileName + '.jpg';
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
+          this.utility.downloadUrl(url);
         });
       });
     });
+  }
+
+  public downloadDelay(delayMs: number, elementId?: string, fileName?: string): void {
+    setTimeout(() => {
+      this.download(elementId, fileName);
+    }, delayMs);
   }
 }

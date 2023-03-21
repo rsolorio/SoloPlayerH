@@ -160,7 +160,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public takeScreenshot(): void {
-    this.screenshotService.download('spPlayerOverlayContainer');
+    this.screenshotService.downloadDelay(100, 'spPlayerOverlayContainer');
   }
 
   public getExtension(): string {
