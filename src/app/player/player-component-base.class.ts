@@ -15,10 +15,10 @@ import { DatabaseService } from '../shared/services/database/database.service';
 import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../shared/services/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
-import { ScreenshotService } from '../shared/services/screenshot/screenshot.service';
 import { ValueListSelectorService } from '../value-list/value-list-selector/value-list-selector.service';
 import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/value-list-selector/value-list-selector-model.interface';
 import { ValueListTypeId } from '../shared/services/database/database.lists';
+import { ImagePreviewService } from '../shared/components/image-preview/image-preview.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -41,7 +41,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private database: DatabaseService,
     private dialogService: DialogService,
     private utilityService: UtilityService,
-    private screenshotService: ScreenshotService,
+    private imagePreviewService: ImagePreviewService,
     private valueListSelectorService: ValueListSelectorService)
   {
     super();
@@ -160,7 +160,13 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public takeScreenshot(): void {
-    this.screenshotService.downloadDelay(100, 'spPlayerOverlayContainer');
+    this.dialogService.getScreenshot(100).then(result => {
+      this.imagePreviewService.show({
+        title: 'Screenshot',
+        subTitle: 'Now Playing',
+        src: result
+      });
+    });
   }
 
   public getExtension(): string {

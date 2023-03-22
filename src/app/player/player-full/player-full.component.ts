@@ -7,6 +7,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
+import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
@@ -15,7 +16,6 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
-import { ScreenshotService } from 'src/app/shared/services/screenshot/screenshot.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
@@ -50,10 +50,10 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private cd: ChangeDetectorRef,
     private dialog: DialogService,
     private utility: UtilityService,
-    private screenshot: ScreenshotService,
+    private imagePreview: ImagePreviewService,
     private valueListService: ValueListSelectorService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, screenshot, valueListService);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, imagePreview, valueListService);
   }
 
   public onInit(): void {

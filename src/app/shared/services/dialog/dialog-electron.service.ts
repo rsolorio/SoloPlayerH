@@ -65,14 +65,23 @@ export class DialogElectronService extends DialogService {
     return dialog.showOpenDialogSync(remoteRenderer.getCurrentWindow(), electronDialogOptions);
   }
 
-  async getScreenshot(): Promise<string> {
+  async getScreenshot(delayMs?: number): Promise<string> {
     // Allow to hide menu. This should not be here.
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return this.getScreenshotUsingVideo();
+    if (delayMs) {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+    //return this.getScreenshotUsingVideo();
     //return this.getScreenshotUsingCapture();
+    return this.getScreenshotWithWebContents();
   }
 
-  private async getScreenshotUsingCapture(): Promise<string> {
+  private async getScreenshotWithWebContents(): Promise<string> {
+    const webContents = remoteRenderer.getCurrentWebContents();
+    const page = await webContents.capturePage({ x: 0, y:0, width: window.innerWidth, height: window.innerHeight - 1 });
+    return page.toDataURL();
+  }
+
+  private async getScreenshotWithImageCapture(): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const mediaSourceId = remoteRenderer.getCurrentWindow().getMediaSourceId();
       try {
@@ -111,7 +120,7 @@ export class DialogElectronService extends DialogService {
     });
   }
 
-  private async getScreenshotUsingVideo(): Promise<string> {
+  private async getScreenshotWithVideo(): Promise<string> {
     // Based on: https://ourcodeworld.com/articles/read/280/creating-screenshots-of-your-app-or-the-screen-in-electron-framework
     // I found this issue: https://github.com/electron/electron/issues/29931
     return new Promise<string>(async (resolve, reject) => {

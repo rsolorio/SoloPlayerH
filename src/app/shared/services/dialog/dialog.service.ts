@@ -13,5 +13,5 @@ export abstract class DialogService {
 
   abstract resizeWindow(size: ISize): void;
 
-  abstract getScreenshot(): Promise<string>;
+  abstract getScreenshot(delayMs?: number): Promise<string>;
 }

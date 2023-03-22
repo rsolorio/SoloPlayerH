@@ -27,7 +27,7 @@ export class DialogCordovaService extends DialogService {
     // This action is not needed for mobile, so do nothing
   }
 
-  getScreenshot(): Promise<string> {
+  getScreenshot(delayMs?: number): Promise<string> {
     return null;
   }
 }

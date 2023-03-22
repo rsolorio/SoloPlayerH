@@ -27,9 +27,9 @@ import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.en
 import { SongBadge } from 'src/app/shared/models/music.enum';
 import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
-import { ScreenshotService } from 'src/app/shared/services/screenshot/screenshot.service';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
+import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -58,8 +58,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private stateService: SongListStateService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
-    private screenshotService: ScreenshotService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private imagePreviewService: ImagePreviewService
   ) {
     super();
   }
@@ -255,9 +255,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
       caption: 'Screenshot',
       icon: 'mdi-image-outline mdi',
       action: () => {
-        //this.screenshotService.downloadDelay(100);
         this.dialogService.getScreenshot().then(result => {
-          this.utility.downloadUrl(result);
+          this.imagePreviewService.show({
+            title: 'Screenshot',
+            subTitle: 'Song List',
+            src: result
+          });
         });
       }
     });

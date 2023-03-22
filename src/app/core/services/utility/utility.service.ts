@@ -234,6 +234,19 @@ export class UtilityService {
   }
 
   /**
+   * Converts the specified date to a single number format, example: 20230130163559
+   */
+  public toDateTimeStamp(date: Date): string {
+    const year = date.getFullYear().toString();
+    const month = this.enforceDigits(date.getMonth(), 2);
+    const day = this.enforceDigits(date.getDay(), 2);
+    const hour = this.enforceDigits(date.getHours(), 2);
+    const minute = this.enforceDigits(date.getMinutes(), 2);
+    const second = this.enforceDigits(date.getSeconds(), 2);
+    return year + month + day + hour + minute + second;
+  }
+
+  /**
    * Converts the specified number of seconds to the format mm:ss
    */
   public secondsToMinutes(value: number): string {
@@ -472,7 +485,7 @@ export class UtilityService {
 
   public downloadUrl(url: string, fileName?: string): void {
     if (!fileName) {
-      fileName = 'screenshot';
+      fileName = this.toDateTimeStamp(new Date());
     }
     const a = document.createElement('a');
     a.style.display = 'none';
@@ -481,6 +494,23 @@ export class UtilityService {
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
+  }
+
+  public async shareImage(dataUrl: string): Promise<void> {
+    const fetchResponse = await fetch(dataUrl);
+    const blob = await fetchResponse.blob();
+    const now = new Date();
+    const file = new File([blob], this.toDateTimeStamp(now) + '.jpg', { type: blob.type, lastModified: now.getTime() });
+    this.shareFiles([file]);
+  }
+
+  /** Shares a list of files using the navigator. This is not supported by Electron. */
+  public shareFiles(files: File[]): void {
+    // For some reason if I use the ShareData interface I get a compile error
+    const shareData: any = {
+      files: files
+    };
+    navigator.share(shareData);
   }
 
   /**

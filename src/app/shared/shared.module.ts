@@ -20,6 +20,7 @@ import { ChipSelectionComponent } from './components/chip-selection/chip-selecti
 import { ResizeObserverDirective } from './directives/resize-observer/resize-observer.directive';
 import { RatingComponent } from './components/rating/rating.component';
 import { TextScrollerComponent } from './components/text-scroller/text-scroller.component';
+import { ImagePreviewComponent } from './components/image-preview/image-preview.component';
 
 
 
@@ -36,7 +37,8 @@ import { TextScrollerComponent } from './components/text-scroller/text-scroller.
     ChipSelectionComponent,
     ResizeObserverDirective,
     RatingComponent,
-    TextScrollerComponent
+    TextScrollerComponent,
+    ImagePreviewComponent
   ],
   imports: [
     CommonModule,
