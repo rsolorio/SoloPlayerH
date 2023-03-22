@@ -87,9 +87,14 @@ export interface IArea extends ISize {
   end: ICoordinate;
 }
 
-export interface IIconActionGeneric<TParam> {
+export interface IIcon {
   /** Icon css class. */
   icon?: string;
+  /** Html element title. */
+  tooltip?: string;
+}
+
+export interface IIconActionGeneric<TParam> extends IIcon {
   /** Action to be fired by the icon. */
   action?(param?: TParam): void;
 }

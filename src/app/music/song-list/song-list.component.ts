@@ -30,6 +30,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
+import { IIcon } from 'src/app/core/models/core.interface';
 
 @Component({
   selector: 'sp-song-list',
@@ -42,6 +43,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   public PlayerSongStatus = PlayerSongStatus;
   public SongBadge = SongBadge;
   public itemMenuList: IMenuModel[] = [];
+  public songAttributesVisible = true;
+  public songRecentAttributeVisible = true;
   private expandPlayerOnPlay = false;
 
   constructor(
@@ -267,10 +270,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemRender(song: ISongModel): void {
-    if (song.image.src) {
-      return;
+    if (this.songRecentAttributeVisible && !song.recentIcon) {
+      const days = this.utility.differenceInDays(new Date(), new Date(song.addDate));
+      song.recentIcon = this.getSongRecentIcon(days);
     }
-    this.queueService.sink = () => this.setSongImage(song);
+
+    if (!song.image.src) {
+      this.queueService.sink = () => this.setSongImage(song);
+    }
   }
 
   private async setSongImage(song: ISongModel): Promise<void> {
@@ -278,5 +285,26 @@ export class SongListComponent extends CoreComponent implements OnInit {
     const audioInfo = await this.metadataService.getMetadata(buffer);
     const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
     song.image = this.metadataService.getImage(pictures);
+  }
+
+  private getSongRecentIcon(days: number): IIcon {
+    if (days < 31) {
+      const icon = 'mdi-vanish-quarter mdi';
+      const tooltip = `Added ${days} days ago.`;
+      if (days < 15) {
+        if (days < 8) {
+          if (days < 2) {
+            if (days < 1) {
+              return { icon: icon + ' sp-color-orange', tooltip: 'Added today.' };
+            }
+            return { icon: icon + ' sp-color-orange', tooltip: 'Added yesterday.' };
+          }
+          return { icon: icon + ' sp-color-yellow', tooltip: tooltip };
+        }
+        return { icon: icon + ' sp-color-green', tooltip: tooltip };
+      }
+      return { icon: icon + ' sp-color-muted', tooltip: tooltip };
+    }
+    return { icon: '' };
   }
 }

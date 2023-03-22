@@ -17,6 +17,7 @@ export interface ISongModel extends IListItemModel {
   mood: string;
   language: string;
   lyrics: string;
+  addDate: Date;
   releaseDecade: number;
   /** This is a dynamic field that gets its value from either primaryAlbum object or primaryAlbumName property. */
   albumName: string;
