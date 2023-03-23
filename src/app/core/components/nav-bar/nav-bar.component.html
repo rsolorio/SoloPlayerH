@@ -11,13 +11,13 @@
       <td class="sp-td-center">
           <table class="sp-full-width sp-nav-bar-height"><tr>
               <!-- Inner left icon -->
-              <td *ngIf="model.leftIcon && !model.leftIconMenu" [ngClass]="{ 'sp-clickable' : model.leftIcon.action }" class="sp-td-icon">
+              <td *ngIf="model.leftIcon && !model.leftIconMenu" [ngClass]="{ 'sp-clickable' : model.leftIcon.action }" class="sp-td-inner-icon">
                   <i
                   [ngClass]="model.leftIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.leftIcon)"></i>
               </td>
               <!-- Inner left icon menu -->
-              <td *ngIf="model.leftIconMenu" class="sp-td-icon">
+              <td *ngIf="model.leftIconMenu" class="sp-td-inner-icon">
                   <sp-icon-menu [items]="model.leftIconMenu.items" [iconClass]="model.leftIconMenu.iconClass" class="sp-text-xlarge-fixed"></sp-icon-menu>
               </td>
               <!-- Dynamic content -->
@@ -39,14 +39,14 @@
                   </div>
               </td>
               <!-- Inner right icon -->
-              <td *ngIf="model.rightIcon && !model.rightIconMenu" [ngClass]="{ 'sp-clickable' : model.rightIcon.action }" class="sp-td-icon">
+              <td *ngIf="model.rightIcon && !model.rightIconMenu" [ngClass]="{ 'sp-clickable' : model.rightIcon.action }" class="sp-td-inner-icon">
                   <i
                   *ngIf="model.rightIcon"
                   [ngClass]="model.rightIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.rightIcon)"></i>
               </td>
               <!-- Inner right icon menu -->
-              <td *ngIf="model.rightIconMenu" class="sp-td-icon">
+              <td *ngIf="model.rightIconMenu" class="sp-td-inner-icon">
                   <sp-icon-menu [items]="model.rightIconMenu.items" [iconClass]="model.rightIconMenu.iconClass" class="sp-text-xlarge-fixed"></sp-icon-menu>
               </td>
           </tr></table>
