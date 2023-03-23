@@ -13,10 +13,10 @@ import { ListItemEntity } from './base.entity';
  @ViewEntity({
   name: 'albumClassificationView',
   expression: `
-  SELECT album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, album.releaseDecade, artist.name AS artistName, artist.artistStylized AS artistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount, MAX(songClass.addDate) AS songAddDateMax
+  SELECT album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, album.releaseDecade, artist.name AS artistName, artist.artistStylized AS artistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount, SUM(songClass.seconds) AS seconds, MAX(songClass.addDate) AS songAddDateMax
   FROM album INNER JOIN artist
   ON album.primaryArtistId = artist.id INNER JOIN (
-    SELECT song.id, song.primaryAlbumId, song.addDate, songClassification.classificationId
+    SELECT song.id, song.primaryAlbumId, song.seconds, song.addDate, songClassification.classificationId
     FROM song INNER JOIN songClassification
     ON song.id = songClassification.songId
   ) AS songClass
@@ -45,6 +45,8 @@ export class AlbumClassificationViewEntity extends ListItemEntity implements IAl
   primaryArtistId: string;
   @ViewColumn()
   classificationId: string;
+  @ViewColumn()
+  seconds: number;
   @ViewColumn()
   songAddDateMax: Date;
 

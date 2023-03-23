@@ -27,5 +27,6 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   artistName: string;
   artistStylized: string;
   songCount: number;
+  seconds: number;
   songAddDateMax: Date;
 }

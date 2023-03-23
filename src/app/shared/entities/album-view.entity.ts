@@ -22,6 +22,7 @@ import { ListItemEntity } from './base.entity';
     .addSelect('artist.name', 'artistName')
     .addSelect('artist.artistStylized', 'artistStylized')
     .addSelect('COUNT(album.id)', 'songCount')
+    .addSelect('SUM(song.seconds)', 'seconds')
     .addSelect('MAX(song.addDate)', 'songAddDateMax')
     .groupBy('album.id')
 })
@@ -44,6 +45,8 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   albumSort: string;
   @ViewColumn()
   primaryArtistId: string;
+  @ViewColumn()
+  seconds: number;
   @ViewColumn()
   songAddDateMax: Date;
 
