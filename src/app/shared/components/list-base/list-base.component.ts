@@ -6,7 +6,7 @@ import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { IIconAction } from 'src/app/core/models/core.interface';
+import { IIcon, IIconAction } from 'src/app/core/models/core.interface';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -340,5 +340,25 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         this.navbarService.getState().mode = NavbarDisplayMode.Title;
       }
     });
+  }
+
+  public getRecentIcon(days: number): IIcon {
+    if (days < 31) {
+      const tooltip = `Added ${days} days ago.`;
+      if (days < 15) {
+        if (days < 8) {
+          if (days < 2) {
+            if (days < 1) {
+              return { styleClass: 'sp-color-orange', tooltip: 'Added today.' };
+            }
+            return { styleClass: 'sp-color-orange', tooltip: 'Added yesterday.' };
+          }
+          return { styleClass: 'sp-color-yellow', tooltip: tooltip };
+        }
+        return { styleClass: 'sp-color-green', tooltip: tooltip };
+      }
+      return { styleClass: 'sp-color-muted', tooltip: tooltip };
+    }
+    return { styleClass: 'sp-invisible' };
   }
 }

@@ -11,4 +11,5 @@ export interface IAlbumModel extends IListItemModel {
   artistStylized: string;
   songCount: number;
   primaryArtist: IArtistModel;
+  songAddDateMax: Date;
 }

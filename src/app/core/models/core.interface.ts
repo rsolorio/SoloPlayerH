@@ -90,6 +90,8 @@ export interface IArea extends ISize {
 export interface IIcon {
   /** Icon css class. */
   icon?: string;
+  /** Extra css class. */
+  styleClass?: string;
   /** Html element title. */
   tooltip?: string;
 }

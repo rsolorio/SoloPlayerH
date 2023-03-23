@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
+import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { AlbumViewEntity, SongViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
@@ -23,7 +24,7 @@ import { AlbumListBroadcastService } from './album-list-broadcast.service';
   styleUrls: ['./album-list.component.scss']
 })
 export class AlbumListComponent extends CoreComponent implements OnInit {
-
+  @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public appEvent = AppEvent;
   public itemMenuList: IMenuModel[] = [];
 
@@ -153,10 +154,13 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemRender(album: IAlbumModel): void {
-    if (album.image.src) {
-      return;
+    if (!album.recentIcon) {
+      const days = this.utility.differenceInDays(new Date(), new Date(album.songAddDateMax));
+      album.recentIcon = this.spListBaseComponent.getRecentIcon(days);
     }
-    this.queueService.sink = () => this.setAlbumImage(album);
+    if (!album.image.src) {
+      this.queueService.sink = () => this.setAlbumImage(album);
+    }
   }
 
   private async setAlbumImage(album: IAlbumModel): Promise<void> {

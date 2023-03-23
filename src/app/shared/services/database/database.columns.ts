@@ -8,6 +8,7 @@ export enum DbColumn {
   Album = 'primaryAlbumId',
   AlbumName = 'primaryAlbumName',
   Title = 'name',
+  TitleSort = 'titleSort',
   TrackNumber = 'trackNumber',
   MediaNumber = 'mediaNumber',
   Classification = 'classificationId',
@@ -32,6 +33,7 @@ databaseColumns[DbColumn.AlbumArtistName] = { name: DbColumn.AlbumArtistName, ca
 databaseColumns[DbColumn.Album] = { name: DbColumn.Album, caption: 'Album', icon: 'mdi-album mdi', dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.AlbumName] = { name: DbColumn.AlbumName, caption: 'Album', icon: 'mdi-album mdi', dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.Title] = { name: DbColumn.Title, caption: 'Title', icon: 'mdi-music mdi', dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.TitleSort] = { name: DbColumn.TitleSort, caption: 'Title Sort', icon: 'mdi-sort-alphabetical-variant mdi', dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.TrackNumber] = { name: DbColumn.TrackNumber, caption: 'Track Number', icon: 'mdi-pound mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.MediaNumber] = { name: DbColumn.MediaNumber, caption: 'Media Number', icon: 'mdi-disc mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.Classification] = { name: DbColumn.Classification, caption: 'Classification', icon: 'mdi-tag-multiple-outline mdi', dataType: CriteriaDataType.String };

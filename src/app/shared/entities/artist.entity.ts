@@ -25,4 +25,5 @@ export class ArtistEntity extends ListItemEntity implements IArtistModel {
 
   albumCount: number;
   songCount: number;
+  songAddDateMax: Date;
 }

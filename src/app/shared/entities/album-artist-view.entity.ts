@@ -8,9 +8,9 @@ import { ListItemEntity } from './base.entity';
 @ViewEntity({
   name: 'albumArtistView',
   expression: `
-  SELECT artist.id, artist.name, artist.artistSort, artist.artistStylized, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount
+  SELECT artist.id, artist.name, artist.artistSort, artist.artistStylized, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount, MAX(album.songAddDateMax) AS songAddDateMax
   FROM artist INNER JOIN (
-    SELECT album.id, album.primaryArtistId, album.name, COUNT(song.id) AS songCount
+    SELECT album.id, album.primaryArtistId, album.name, COUNT(song.id) AS songCount, MAX(song.addDate) AS songAddDateMax
     FROM album INNER JOIN song ON album.id = song.primaryAlbumId
     GROUP BY album.id, album.primaryArtistId, album.name
   ) AS album ON artist.id = album.primaryArtistId
@@ -30,6 +30,8 @@ export class AlbumArtistViewEntity extends ListItemEntity implements IArtistMode
   artistSort: string;
   @ViewColumn()
   artistStylized: string;
+  @ViewColumn()
+  songAddDateMax: Date;
 
   artistType: string;
   country: string;

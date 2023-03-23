@@ -703,6 +703,7 @@ export class DatabaseService {
           { caption: databaseColumns[DbColumn.TrackNumber].caption, value: DbColumn.TrackNumber },
           { caption: databaseColumns[DbColumn.MediaNumber].caption, value: DbColumn.MediaNumber },
           { caption: databaseColumns[DbColumn.Title].caption, value: DbColumn.Title },
+          { caption: databaseColumns[DbColumn.TitleSort].caption, value: DbColumn.TitleSort },
           { caption: databaseColumns[DbColumn.Rating].caption, value: DbColumn.Rating },
           { caption: databaseColumns[DbColumn.PlayCount].caption, value: DbColumn.PlayCount },
           { caption: databaseColumns[DbColumn.Seconds].caption, value: DbColumn.Seconds },

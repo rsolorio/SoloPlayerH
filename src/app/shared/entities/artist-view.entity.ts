@@ -17,6 +17,7 @@ import { ListItemEntity } from './base.entity';
     .addSelect('artist.artistSort', 'artistSort')
     .addSelect('artist.artistStylized', 'artistStylized')
     .addSelect('COUNT(artist.id)', 'songCount')
+    .addSelect('NULL', 'songAddDateMax')
     .groupBy('artist.id')
 })
 export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
@@ -30,6 +31,8 @@ export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
   artistSort: string;
   @ViewColumn()
   artistStylized: string;
+  @ViewColumn()
+  songAddDateMax: Date;
 
   artistType: string;
   country: string;

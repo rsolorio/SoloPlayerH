@@ -8,7 +8,6 @@ export interface IMenuModel extends IIconAction {
     active?: boolean;
     disabled?: boolean;
     hidden?: boolean;
-    styleClass?: string;
     isNew?: boolean;
     isSeparator?: boolean;
     route?: string;
