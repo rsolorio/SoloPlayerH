@@ -587,6 +587,8 @@ export class ScanService {
           const tagIdParts = tag.id.split(':');
           if (tagIdParts.length > 2) {
             const classTypeName = tagIdParts[2];
+            // We don't support adding class types in the scan process.
+            // The type has to exist in order to add the classification.
             const classType = this.existingClassTypes.find(item => item.name === classTypeName);
             const classificationNames = tag.value ? tag.value.toString() : null;
             if (classType && classificationNames) {

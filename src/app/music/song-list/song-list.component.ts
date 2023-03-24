@@ -42,7 +42,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   public PlayerSongStatus = PlayerSongStatus;
   public SongBadge = SongBadge;
   public itemMenuList: IMenuModel[] = [];
-  public songAttributesVisible = false;
+  public songAttributesVisible = true;
   private expandPlayerOnPlay = false;
 
   constructor(

@@ -10,8 +10,7 @@
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
-    <span class="sp-text-medium sp-no-select">{{item.name}}</span>
-    <span *ngIf="item.releaseYear > 0" class="sp-text-medium sp-no-select"> ({{item.releaseYear}})</span>
+    <span class="sp-text-medium sp-no-select">{{item.name}}<ng-container *ngIf="item.releaseYear > 0">&nbsp;({{item.releaseYear}})</ng-container></span>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
       <i class="mdi-account mdi">&nbsp;</i>{{item.artistStylized}}&nbsp;&nbsp;

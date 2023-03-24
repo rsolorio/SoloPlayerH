@@ -28,7 +28,7 @@ import {
   ValueListEntryEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
-import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
+import { ModuleOptionEditor } from '../../models/module-option.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { databaseColumns, DbColumn } from './database.columns';
