@@ -9,6 +9,8 @@ export class PlaylistEntity extends ListItemEntity implements IPlaylistModel {
   description: string;
   @Column()
   favorite: boolean;
+  @Column()
+  imported: boolean;
 
   songCount: number;
   seconds: number;

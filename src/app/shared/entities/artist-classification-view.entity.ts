@@ -45,7 +45,7 @@ export class ArtistClassificationViewEntity extends ListItemEntity implements IA
   @ViewColumn()
   songAddDateMax: Date;
 
-  artistType: string;
-  country: string;
+  artistTypeId: string;
+  countryId: string;
   favorite: boolean;
 }

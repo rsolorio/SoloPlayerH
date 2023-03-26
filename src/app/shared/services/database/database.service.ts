@@ -38,7 +38,7 @@ import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, Criter
 import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
 import { AppEvent } from '../../models/events.enum';
-import { classificationEntries, valueListEntries, ValueListTypeId } from './database.lists';
+import { classificationEntries, valueListEntries, ValueLists } from './database.lists';
 import { defaultModuleOptions } from './database.options';
 
 /**
@@ -148,10 +148,10 @@ export class DatabaseService {
       return;
     }
     const valueListTypes: ValueListTypeEntity[] = [];
-    for (const valueListTypeId of Object.values(ValueListTypeId)) {
+    for (const valueListName of Object.keys(ValueLists)) {
       const valueListType = new ValueListTypeEntity();
-      valueListType.id = valueListTypeId;
-      valueListType.name = this.utilities.getEnumNameByValue(valueListTypeId, ValueListTypeId);
+      valueListType.id = (ValueLists as any)[valueListName].id;
+      valueListType.name = valueListName;
       valueListType.system = true;
       valueListTypes.push(valueListType);
     }

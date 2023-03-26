@@ -33,7 +33,7 @@ export class AlbumArtistViewEntity extends ListItemEntity implements IArtistMode
   @ViewColumn()
   songAddDateMax: Date;
 
-  artistType: string;
-  country: string;
+  artistTypeId: string;
+  countryId: string;
   favorite: boolean;
 }

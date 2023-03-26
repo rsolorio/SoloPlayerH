@@ -50,7 +50,7 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   @ViewColumn()
   songAddDateMax: Date;
 
-  albumType: string;
+  albumTypeId: string;
   favorite: boolean;
   primaryArtist: IArtistModel;
 }

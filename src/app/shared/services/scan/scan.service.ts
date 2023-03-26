@@ -17,7 +17,7 @@ import {
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { ClassificationType } from '../../models/music.enum';
-import { ValueListTypeId } from '../database/database.lists';
+import { ValueLists } from '../database/database.lists';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
@@ -35,6 +35,9 @@ export class ScanService {
   private existingClassTypes: ValueListEntryEntity[];
   private existingGenres: ValueListEntryEntity[];
   private existingClassifications: ValueListEntryEntity[];
+  private existingCountries: ValueListEntryEntity[];
+  private existingArtistTypes: ValueListEntryEntity[];
+  private existingAlbumTypes: ValueListEntryEntity[];
   private existingSongs: SongEntity[];
   private existingSongArtists: SongArtistEntity[];
   private existingSongClassifications: SongClassificationEntity[];
@@ -68,9 +71,12 @@ export class ScanService {
     // Prepare global variables
     this.existingArtists = await ArtistEntity.find();
     this.existingAlbums = await AlbumEntity.find();
-    this.existingClassTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueListTypeId.ClassificationType });
-    this.existingGenres = await ValueListEntryEntity.findBy({ valueListTypeId: ValueListTypeId.Genre });
-    this.existingClassifications = await ValueListEntryEntity.findBy({ isClassification: true, valueListTypeId: Not(ValueListTypeId.Genre) });
+    this.existingClassTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.ClassificationType.id });
+    this.existingGenres = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Genre.id });
+    this.existingClassifications = await ValueListEntryEntity.findBy({ isClassification: true, valueListTypeId: Not(ValueLists.Genre.id) });
+    this.existingCountries = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Country.id });
+    this.existingArtistTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.ArtistType.id });
+    this.existingAlbumTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.AlbumType.id });
     this.existingSongs = await SongEntity.find();
     this.existingSongArtists = [];
     this.existingSongClassifications = [];
@@ -229,21 +235,21 @@ export class ScanService {
     newArtist.name = artistName;
     newArtist.artistSort = artistSort ? artistSort : newArtist.name;
     newArtist.favorite = false;
-    newArtist.artistType = artistType ? artistType : this.unknownValue;
-    newArtist.country = country ? country : this.unknownValue;
+    newArtist.artistTypeId = artistType ? this.getValueListEntryId(artistType, ValueLists.ArtistType.id, this.existingArtistTypes) : ValueLists.ArtistType.entries.Unknown;
+    newArtist.countryId = country ? this.getValueListEntryId(country, ValueLists.Country.id, this.existingCountries) : ValueLists.Country.entries.Unknown;
     newArtist.artistStylized = artistStylized ? artistStylized : artistName;
     this.db.hashArtist(newArtist);
 
     const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
     if (existingArtist) {
-      if (existingArtist.artistType === this.unknownValue && existingArtist.artistType !== newArtist.artistType) {
-        existingArtist.artistType = newArtist.artistType;
+      if (existingArtist.artistTypeId === ValueLists.ArtistType.entries.Unknown && existingArtist.artistTypeId !== newArtist.artistTypeId) {
+        existingArtist.artistTypeId = newArtist.artistTypeId;
         if (!existingArtist.isNew) {
           existingArtist.hasChanges = true;
         }
       }
-      if (existingArtist.country === this.unknownValue && existingArtist.country !== newArtist.country) {
-        existingArtist.country = newArtist.country;
+      if (existingArtist.countryId === ValueLists.Country.entries.Unknown && existingArtist.countryId !== newArtist.countryId) {
+        existingArtist.countryId = newArtist.countryId;
         if (!existingArtist.isNew) {
           existingArtist.hasChanges = true;
         }
@@ -307,7 +313,7 @@ export class ScanService {
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
     const albumType = this.metadataService.getTag<string>('AlbumType', id3v2Tags, true);
-    newAlbum.albumType = albumType ? albumType : this.unknownValue;
+    newAlbum.albumTypeId = albumType ? this.getValueListEntryId(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP;
 
     newAlbum.favorite = false;
     this.existingAlbums.push(newAlbum);
@@ -521,10 +527,27 @@ export class ScanService {
     artist.artistStylized = artistName;
     artist.artistSort = artistSort;
     artist.favorite = false;
-    artist.artistType = this.unknownValue;
-    artist.country = this.unknownValue;
+    artist.artistTypeId = ValueLists.ArtistType.entries.Unknown;
+    artist.countryId = ValueLists.Country.entries.Unknown;
     this.db.hashArtist(artist);
     return artist;
+  }
+
+  private getValueListEntryId(entryName: string, valueListTypeId: string, entries: ValueListEntryEntity[]): string {
+    const existingEntry = entries.find(e => e.name === entryName);
+    if (existingEntry) {
+      return existingEntry.id;
+    }
+    const newEntry = new ValueListEntryEntity();
+    newEntry.id = this.utilities.newGuid();
+    newEntry.valueListTypeId = valueListTypeId;
+    newEntry.name = entryName;
+    // TODO: specify proper sequence
+    newEntry.sequence = 0;
+    newEntry.isClassification = false;
+    newEntry.isNew = true;
+    entries.push(newEntry);
+    return newEntry.id;
   }
 
   private processGenres(audioInfo: IAudioInfo, splitSymbols: string[]): ValueListEntryEntity[] {
@@ -550,14 +573,14 @@ export class ScanService {
   }
 
   private processGenre(name: string, genres: ValueListEntryEntity[]): void {
-    const newGenre = this.createGenre(name);
-    const existingGenre = this.existingGenres.find(g => g.name === newGenre.name);
+    const existingGenre = this.existingGenres.find(g => g.name === name);
     if (existingGenre) {
       if (!genres.find(g => g.name === existingGenre.name)) {
         genres.push(existingGenre);
       }
     }
     else {
+      const newGenre = this.createGenre(name);
       this.existingGenres.push(newGenre);
       genres.push(newGenre);
     }
@@ -569,7 +592,7 @@ export class ScanService {
     genre.isNew = true;
     genre.name = name;
     genre.isClassification = true;
-    genre.valueListTypeId =ValueListTypeId.Genre;
+    genre.valueListTypeId = ValueLists.Genre.id;
     // TODO: determine how to specify the proper sequence
     genre.sequence = 0;
     return genre;
@@ -638,9 +661,7 @@ export class ScanService {
         if (playlist) {
           tracks = await this.processPls(playlist, fileInfo, fileLines);
         }
-      }
-
-      if (firstLine === '#EXTM3U') {
+      } else if (firstLine === '#EXTM3U') {
         const playlist = await this.createPlaylist(fileInfo.name);
         if (playlist) {
           tracks = await this.processM3u(playlist, fileInfo, fileLines);
@@ -659,6 +680,7 @@ export class ScanService {
     const playlist = new PlaylistEntity();
     playlist.name = name;
     playlist.favorite = false;
+    playlist.imported = true;
     this.db.hashPlaylist(playlist);
     const playlistExists = await this.db.exists(playlist.id, PlaylistEntity);
     if (playlistExists) {

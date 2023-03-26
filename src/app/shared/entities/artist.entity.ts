@@ -7,9 +7,9 @@ import { SongArtistEntity } from './song-artist.entity';
 @Entity({name: 'artist'})
 export class ArtistEntity extends ListItemEntity implements IArtistModel {
   @Column()
-  artistType: string;
+  artistTypeId: string;
   @Column()
-  country: string;
+  countryId: string;
   @Column()
   favorite: boolean;
   @Column()

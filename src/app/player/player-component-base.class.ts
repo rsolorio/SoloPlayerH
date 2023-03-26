@@ -17,7 +17,7 @@ import { DialogService } from '../shared/services/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
 import { ValueListSelectorService } from '../value-list/value-list-selector/value-list-selector.service';
 import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/value-list-selector/value-list-selector-model.interface';
-import { ValueListTypeId } from '../shared/services/database/database.lists';
+import { ValueLists } from '../shared/services/database/database.lists';
 import { ImagePreviewService } from '../shared/components/image-preview/image-preview.service';
 
 /**
@@ -127,7 +127,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       titleIcon: 'mdi-emoticon-happy-outline mdi',
       subTitle: song.name,
       subTitleIcon: 'mdi-music-note mdi',
-      valueListTypeId: ValueListTypeId.Mood,
+      valueListTypeId: ValueLists.Mood.id,
       selectMode: ValueListSelectMode.Quick,
       selectedValues: selectedValues,
       onOk: selectedEntries => {

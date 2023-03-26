@@ -7,7 +7,7 @@ import { SongEntity } from './song.entity';
 @Entity({name: 'album'})
 export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   @Column()
-  albumType: string;
+  albumTypeId: string;
   @Column()
   releaseYear: number;
   @Column()

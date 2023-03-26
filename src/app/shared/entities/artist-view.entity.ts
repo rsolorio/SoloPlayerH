@@ -34,8 +34,8 @@ export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
   @ViewColumn()
   songAddDateMax: Date;
 
-  artistType: string;
-  country: string;
+  artistTypeId: string;
+  countryId: string;
   favorite: boolean;
   albumCount: number;
 }

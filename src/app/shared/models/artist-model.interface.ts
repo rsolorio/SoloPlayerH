@@ -1,8 +1,8 @@
 import { IListItemModel } from './base-model.interface';
 
 export interface IArtistModel extends IListItemModel {
-  artistType: string;
-  country: string;
+  artistTypeId: string;
+  countryId: string;
   favorite: boolean;
   artistSort: string;
   artistStylized: string;
