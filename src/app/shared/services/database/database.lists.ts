@@ -20,9 +20,6 @@ export class ValueLists {
       Unknown: '9f0b9c29-5d9b-4086-897a-1b69fc243afc'
     }
   };
-  static ImageType = {
-    id: '89612b85-c358-4426-b1a4-e5afa526a849'
-  };
   static Mood = {
     id: '4f9cbc6b-a841-47a5-8c4d-11197337e95e'
   };
@@ -102,36 +99,6 @@ valueListEntries[ValueLists.ArtistType.id] = [
   'Band - Male Singer',
   'Band - Mixed Singers',
   'Unknown'
-];
-valueListEntries[ValueLists.ImageType.id] = [
-  'Artist',
-  'Artist Alternate',
-  'Back',
-  'Band',
-  'Band Logo',
-  'Booklet',
-  'Composer',
-  'Conductor',
-  'During Performance',
-  'During Recording',
-  'Front',
-  'Front Alternate',
-  'Icon',
-  'Inlay',
-  'Inside',
-  'Lead Artist',
-  'Lyricist',
-  'MediaCd',
-  'MediaDvd',
-  'Media Other',
-  'MediaVinyl',
-  'Other',
-  'Publisher Logo',
-  'Recording Location',
-  'Single',
-  'Single Alternate',
-  'Video Capture',
-  'Wallpaper'
 ];
 valueListEntries[ValueLists.Country.id] = [
   'Unknown',

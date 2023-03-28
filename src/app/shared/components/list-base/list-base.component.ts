@@ -4,7 +4,6 @@ import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
-import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IIcon, IIconAction } from 'src/app/core/models/core.interface';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
@@ -16,6 +15,7 @@ import { AppEvent } from '../../models/events.enum';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { Criteria } from '../../services/criteria/criteria.class';
 import { ICriteriaResult } from '../../services/criteria/criteria.interface';
+import { RelatedImageSrc } from '../../services/database/database.images';
 import { NavigationService } from '../../services/navigation/navigation.service';
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
@@ -28,7 +28,7 @@ import { IListBaseModel } from './list-base-model.interface';
 })
 export class ListBaseComponent extends CoreComponent implements OnInit {
   @ViewChild('spModalHost', { read: ViewContainerRef, static: false }) public modalHostViewContainer: ViewContainerRef;
-  public DefaultImageSrc = DefaultImageSrc;
+  public RelatedImageSrc = RelatedImageSrc;
   public model: IListBaseModel = {
     listUpdatedEvent: null,
     itemMenuList: [],

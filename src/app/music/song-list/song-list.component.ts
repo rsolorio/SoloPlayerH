@@ -11,11 +11,9 @@ import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
-import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { SongArtistViewEntity } from 'src/app/shared/entities';
-import { FileService } from 'src/app/shared/services/file/file.service';
+import { RelatedImageEntity, SongArtistViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
@@ -25,11 +23,11 @@ import { AppRoute } from 'src/app/app-routes';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
-import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
+import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -48,8 +46,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
   constructor(
     public broadcastService: SongListBroadcastService,
     private utility: UtilityService,
-    private fileService: FileService,
-    private metadataService: MusicMetadataService,
     private breadcrumbService: BreadcrumbsStateService,
     private menuService: MenuService,
     private playerService: HtmlPlayerService,
@@ -60,7 +56,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
     private dialogService: DialogService,
-    private imagePreviewService: ImagePreviewService
+    private imagePreviewService: ImagePreviewService,
+    private imageUtility: ImageUtilityService
   ) {
     super();
   }
@@ -279,9 +276,18 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private async setSongImage(song: ISongModel): Promise<void> {
-    const buffer = await this.fileService.getBuffer(song.filePath);
-    const audioInfo = await this.metadataService.getMetadata(buffer);
-    const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
-    song.image = this.metadataService.getImage(pictures);
+    let images = await RelatedImageEntity.findBy({ relatedId: song.id });
+    if (!images || !images.length) {
+      images = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
+    }
+    if (images && images.length) {
+      const relatedImage = images[0];
+      await this.imageUtility.setSrc([relatedImage]);
+      song.image = {
+        src: relatedImage.src,
+        type: relatedImage.imageType,
+        format: relatedImage.format
+      };
+    }
   }
 }

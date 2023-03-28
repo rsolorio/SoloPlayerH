@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { promises } from 'fs';
+import { promises, existsSync } from 'fs';
 import { join, resolve, extname } from 'path';
 import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
@@ -31,6 +31,10 @@ export class FileNodeService extends FileService {
       });
     });
     return result;
+  }
+
+  exists(path: string): boolean {
+    return existsSync(path);
   }
 
   private async pushFiles(directoryPath: string, observer: Subscriber<IFileInfo>): Promise<void> {

@@ -1,12 +1,21 @@
 import { Injectable } from '@angular/core';
 import { IArea, ICoordinate, ISize } from 'src/app/core/models/core.interface';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { RelatedImageEntity } from '../../entities';
+import { FileService } from '../file/file.service';
+import { MusicImageSourceType } from '../music-metadata/music-metadata.enum';
+import { MusicMetadataService } from '../music-metadata/music-metadata.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImageUtilityService {
 
-  constructor() { }
+  constructor(
+    private fileService: FileService,
+    private metadataService: MusicMetadataService,
+    private utility: UtilityService)
+  { }
 
   /**
    * Gets the actual image coordinates inside an img tag.
@@ -157,7 +166,37 @@ export class ImageUtilityService {
     return result;
   }
 
-    // PRIVATE METHODS //////////////////////////////////////////////////////////////////////////////
+  public async setSrc(relatedImages: RelatedImageEntity[]): Promise<void> {
+    for (const relatedImage of relatedImages) {
+      if (relatedImage.sourceType === MusicImageSourceType.AudioTag) {
+        await this.setSrcFromAudioTag(relatedImage);
+      }
+      else if (relatedImage.sourceType === MusicImageSourceType.ImageFile) {
+        await this.setSrcFromImageFile(relatedImage);
+      }
+      else if (relatedImage.sourceType === MusicImageSourceType.Url) {
+        relatedImage.src = relatedImage.sourcePath;
+      }
+    }
+  }
+
+  private async setSrcFromAudioTag(relatedImage: RelatedImageEntity): Promise<void> {
+    const buffer = await this.fileService.getBuffer(relatedImage.sourcePath);
+    const audioInfo = await this.metadataService.getMetadata(buffer);
+    if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
+      const picture = audioInfo.metadata.common.picture[relatedImage.sourceIndex];
+      if (picture) {
+        relatedImage.src = this.metadataService.getImage([picture]).src;
+      }
+    }
+  }
+
+  private async setSrcFromImageFile(relatedImage: RelatedImageEntity): Promise<void> {
+    // TODO: resize image
+    relatedImage.src = this.utility.fileToUrl(relatedImage.sourcePath);
+  }
+
+  // PRIVATE METHODS //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Calculates the area assuming the image will take the full width of the element.

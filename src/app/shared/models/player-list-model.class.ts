@@ -1,7 +1,7 @@
-import { DefaultImageSrc } from "src/app/core/globals.enum";
 import { IEventArgs } from "src/app/core/models/core.interface";
 import { EventsService } from "src/app/core/services/events/events.service";
 import { UtilityService } from "src/app/core/services/utility/utility.service";
+import { RelatedImageSrc } from "../services/database/database.images";
 import { MusicImageType, PictureFormat } from "../services/music-metadata/music-metadata.enum";
 import { IDbModel } from "./base-model.interface";
 import { AppEvent } from "./events.enum";
@@ -31,7 +31,7 @@ export class PlayerListModel implements IDbModel {
     playlistId: null,
     name: null,
     image: {
-      src: DefaultImageSrc.Small,
+      src: RelatedImageSrc.DefaultSmall,
       type: MusicImageType.Default,
       format: PictureFormat.Jpg
     },
@@ -71,7 +71,7 @@ export class PlayerListModel implements IDbModel {
       primaryAlbum: null,
       playerStatus: PlayerSongStatus.Empty,
       image: {
-        src: DefaultImageSrc.Small,
+        src: RelatedImageSrc.DefaultSmall,
         type: MusicImageType.Default,
         format: PictureFormat.Jpg
       },
@@ -234,7 +234,7 @@ export class PlayerListModel implements IDbModel {
       name: song.name,
       sequence,
       image: {
-        src: DefaultImageSrc.Small,
+        src: RelatedImageSrc.DefaultSmall,
         type: MusicImageType.Default,
         format: PictureFormat.Jpg
       },

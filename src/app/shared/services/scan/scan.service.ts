@@ -12,15 +12,16 @@ import {
   ModuleOptionEntity,
   SongArtistEntity,
   SongClassificationEntity,
-  ValueListEntryEntity
+  ValueListEntryEntity,
+  RelatedImageEntity
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
-import { ClassificationType } from '../../models/music.enum';
 import { ValueLists } from '../database/database.lists';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../file/file.interface';
 import { FileService } from '../file/file.service';
+import { MusicImageSourceType, MusicImageType, PictureFormat } from '../music-metadata/music-metadata.enum';
 import { IAudioInfo, IIdentifierTag, IMemoTag, IPopularimeterTag } from '../music-metadata/music-metadata.interface';
 import { MusicMetadataService } from '../music-metadata/music-metadata.service';
 
@@ -41,6 +42,7 @@ export class ScanService {
   private existingSongs: SongEntity[];
   private existingSongArtists: SongArtistEntity[];
   private existingSongClassifications: SongClassificationEntity[];
+  private existingImages: RelatedImageEntity[];
 
   constructor(
     private fileService: FileService,
@@ -78,51 +80,67 @@ export class ScanService {
     this.existingArtistTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.ArtistType.id });
     this.existingAlbumTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.AlbumType.id });
     this.existingSongs = await SongEntity.find();
+    this.existingImages = await RelatedImageEntity.find();
     this.existingSongArtists = [];
     this.existingSongClassifications = [];
   }
 
   private async afterProcess(): Promise<void> {
+    // Value lists
+    const newCountries = this.existingCountries.filter(country => country.isNew);
+    if (newCountries.length) {
+      await this.db.bulkInsert(ValueListEntryEntity, newCountries);
+      newCountries.forEach(c => c.isNew = false);
+    }
     // Artists
     const newArtists = this.existingArtists.filter(artist => artist.isNew);
     if (newArtists.length) {
       await this.db.bulkInsert(ArtistEntity, newArtists);
+      newArtists.forEach(a => a.isNew = false);
     }
     const artistsToBeUpdated = this.existingArtists.filter(artist => artist.hasChanges);
     if (artistsToBeUpdated.length) {
       await this.db.bulkUpdate(ArtistEntity, artistsToBeUpdated, ['artistType', 'artistSort', 'artistStylized', 'country']);
+      artistsToBeUpdated.forEach(a => a.hasChanges = false);
     }
-    this.existingArtists = [];
     // Albums
     const newAlbums = this.existingAlbums.filter(album => album.isNew);
     if (newAlbums.length) {
       await this.db.bulkInsert(AlbumEntity, newAlbums);
-    }    
-    this.existingAlbums = [];
+      newAlbums.forEach(a => a.isNew = false);
+    }
     // Genres
     const newGenres = this.existingGenres.filter(genre => genre.isNew);
     if (newGenres.length) {
       await this.db.bulkInsert(ValueListEntryEntity, newGenres);
+      newGenres.forEach(g => g.isNew = false);
     }
-    this.existingGenres = [];
     // Classifications
     const newClassifications = this.existingClassifications.filter(classification => classification.isNew);
     if (newClassifications.length) {
       await this.db.bulkInsert(ValueListEntryEntity, newClassifications);
+      newClassifications.forEach(c => c.isNew = false);
     }
-    this.existingClassifications = [];
     // Songs
     const newSongs = this.existingSongs.filter(song => song.isNew);
     if (newSongs.length) {
       await this.db.bulkInsert(SongEntity, newSongs);
+      newSongs.forEach(s => s.isNew = false);
     }
-    this.existingSongs = [];
     // SongArtists
     await this.db.bulkInsert(SongArtistEntity, this.existingSongArtists);
+    // This array is only populated for new songs
     this.existingSongArtists = [];
     // SongClassifications
     await this.db.bulkInsert(SongClassificationEntity, this.existingSongClassifications);
+    // This array is only populated for new songs
     this.existingSongClassifications = [];
+    // Images
+    const newImages = this.existingImages.filter(image => image.isNew);
+    if (newImages.length) {
+      await this.db.bulkInsert(RelatedImageEntity, newImages);
+      newImages.forEach(i => i.isNew = false);
+    }
   }
 
   public async processAudioFiles(files: IFileInfo[], options: ModuleOptionEntity[], beforeCallback?: (count: number, fileInfo: IFileInfo) => void): Promise<IAudioInfo[]> {
@@ -181,8 +199,11 @@ export class ScanService {
     if (!artists.find(a => a.id === primaryArtist.id)) {
       artists.push(primaryArtist);
     }
-    // TODO: if the song already exists, update data
-    if (!this.existingSongs.find(s => s.id === song.id)) {
+    
+    if (this.existingSongs.find(s => s.id === song.id)) {
+      // TODO: if the song already exists, update data
+    }
+    else {
       this.existingSongs.push(song);
 
       // If we are adding a new song, all its artists are new as well, so push them to cache
@@ -194,9 +215,9 @@ export class ScanService {
         this.existingSongArtists.push(songArtist);
       }
       // Same for classifications
-      const classificationGroups = this.utilities.groupByKey(classifications, 'classificationType');
+      const classificationGroups = this.utilities.groupByKey(classifications, 'classificationTypeId');
       // Add genres to this grouping
-      classificationGroups[ClassificationType.Genre] = genres;
+      classificationGroups[ValueLists.Genre.id] = genres;
       // For each type setup a primary value which will be the first one
       for (const classificationType of Object.keys(classificationGroups)) {
         const classificationList = classificationGroups[classificationType];
@@ -269,6 +290,8 @@ export class ScanService {
       return existingArtist;
     }
 
+    this.processImage(newArtist.id, audioInfo, MusicImageType.Artist);
+
     this.existingArtists.push(newArtist);
     return newArtist;
   }
@@ -316,6 +339,10 @@ export class ScanService {
     newAlbum.albumTypeId = albumType ? this.getValueListEntryId(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP;
 
     newAlbum.favorite = false;
+
+    this.processImage(newAlbum.id, audioInfo, MusicImageType.Front);
+    this.processImage(newAlbum.id, audioInfo, MusicImageType.FrontAlternate);
+
     this.existingAlbums.push(newAlbum);
     return newAlbum;
   }
@@ -457,7 +484,97 @@ export class ScanService {
     song.favorite = false;
 
     this.db.hashSong(song);
+    this.processImage(song.id, audioInfo, MusicImageType.Single);
     return song;
+  }
+
+  private processImage(relatedId: string, audioInfo: IAudioInfo, imageType: MusicImageType): void {
+    // Look for an actual file image
+    const basePath = audioInfo.fileInfo.directoryPath;
+    let imageFileName = '';
+    switch (imageType) {
+      case MusicImageType.Single:
+        imageFileName = audioInfo.fileInfo.name;
+        break;
+      case MusicImageType.Front:
+        imageFileName = 'front';
+        break;
+      case MusicImageType.FrontAlternate:
+        imageFileName = 'front2';
+        break;
+      case MusicImageType.Artist:
+        imageFileName = 'artist';
+        break;
+    }
+    if (imageFileName) {
+      const imageFilePath = basePath + imageFileName + '.jpg';
+
+      if (this.fileService.exists(imageFilePath)) {
+        const existingImage = this.existingImages.find(i => i.relatedId === relatedId && i.sourcePath === imageFilePath);
+        if (!existingImage) {
+          const newImage = new RelatedImageEntity();
+          newImage.id = this.utilities.newGuid();
+          newImage.name = this.getImageName(audioInfo, imageType);
+          newImage.relatedId = relatedId;
+          newImage.sourcePath = imageFilePath;
+          newImage.sourceType = MusicImageSourceType.ImageFile;
+          newImage.sourceIndex = 0;
+          newImage.imageType = imageType;
+          newImage.format = PictureFormat.Jpg;
+          newImage.isNew = true;
+          this.existingImages.push(newImage);
+          // Do not continue looking for images
+          return;
+        }
+      }
+    }
+    // Look into the tag for images
+    if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
+      for (let pictureIndex = 0; pictureIndex < audioInfo.metadata.common.picture.length; pictureIndex++) {
+        const picture = audioInfo.metadata.common.picture[pictureIndex];
+        const pictureImageType = this.metadataService.getImageType(picture);
+        if (pictureImageType === imageType) {
+          const existingImage = this.existingImages.find(i =>
+            i.relatedId === relatedId && i.sourceType === MusicImageSourceType.AudioTag && i.sourceIndex === pictureIndex);
+          if (!existingImage) {
+            const newImage = new RelatedImageEntity();
+            newImage.id = this.utilities.newGuid();
+            newImage.name = this.getImageName(audioInfo, imageType);
+            newImage.relatedId = relatedId;
+            newImage.sourcePath = audioInfo.fileInfo.path;
+            newImage.sourceType = MusicImageSourceType.AudioTag;
+            newImage.sourceIndex = pictureIndex;
+            newImage.imageType = imageType;
+            newImage.format = picture.format;
+            newImage.isNew = true;
+            this.existingImages.push(newImage);
+          }
+        }
+      }
+    }
+  }
+
+  private getImageName(audioInfo: IAudioInfo, imageType: MusicImageType): string {
+    if (imageType === MusicImageType.Single) {
+      if (audioInfo.metadata.common.title) {
+        return audioInfo.metadata.common.title;
+      }
+      return audioInfo.fileInfo.name;
+    }
+
+    if (imageType === MusicImageType.Front || imageType === MusicImageType.FrontAlternate) {
+      if (audioInfo.metadata.common.album) {
+        return audioInfo.metadata.common.album;
+      }
+    }
+
+    if (imageType === MusicImageType.Artist) {
+      if (audioInfo.metadata.common.albumartist) {
+        return audioInfo.metadata.common.albumartist;
+      }
+    }
+
+    return this.unknownValue;
   }
 
   private processArtists(audioInfo: IAudioInfo, splitSymbols: string[]): ArtistEntity[] {

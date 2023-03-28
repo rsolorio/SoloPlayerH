@@ -40,6 +40,9 @@ import { ListTransformService } from '../list-transform/list-transform.service';
 import { AppEvent } from '../../models/events.enum';
 import { classificationEntries, valueListEntries, ValueLists } from './database.lists';
 import { defaultModuleOptions } from './database.options';
+import { RelatedImageEntity } from '../../entities/related-image.entity';
+import { RelatedImageId, RelatedImageSrc } from './database.images';
+import { MusicImageSourceType, MusicImageType, PictureFormat } from '../music-metadata/music-metadata.enum';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -96,7 +99,8 @@ export class DatabaseService {
         SongClassificationEntity,
         PlayHistoryEntity,
         ValueListTypeEntity,
-        ValueListEntryEntity
+        ValueListEntryEntity,
+        RelatedImageEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -112,6 +116,7 @@ export class DatabaseService {
 
   private async initializeData(): Promise<void> {
     await this.initializeModuleOptions();
+    await this.initializeImages();
     await this.initValueLists();
   }
 
@@ -135,6 +140,60 @@ export class DatabaseService {
       await option.save();
     }
     this.log.info('Module options initialized.');
+  }
+
+  private async initializeImages(): Promise<void> {
+    const imageCount = await RelatedImageEntity.count();
+    if (imageCount > 0) {
+      return;
+    }
+    const images: RelatedImageEntity[] = [];
+
+    let image = new RelatedImageEntity();
+    image.id = RelatedImageId.DefaultFull;
+    image.name = 'Default Full';
+    image.relatedId = this.utilities.guidEmpty;
+    image.sourcePath = RelatedImageSrc.DefaultFull;
+    image.sourceType = MusicImageSourceType.Url;
+    image.sourceIndex = 0;
+    image.imageType = MusicImageType.Default;
+    image.format = PictureFormat.Jpg;
+    images.push(image);
+
+    image = new RelatedImageEntity();
+    image.id = RelatedImageId.DefaultLarge;
+    image.name = 'Default Large';
+    image.relatedId = this.utilities.guidEmpty;
+    image.sourcePath = RelatedImageSrc.DefaultLarge;
+    image.sourceType = MusicImageSourceType.Url;
+    image.sourceIndex = 0;
+    image.imageType = MusicImageType.Default;
+    image.format = PictureFormat.Jpg;
+    images.push(image);
+
+    image = new RelatedImageEntity();
+    image.id = RelatedImageId.DefaultMedium;
+    image.name = 'Default Medium';
+    image.relatedId = this.utilities.guidEmpty;
+    image.sourcePath = RelatedImageSrc.DefaultMedium;
+    image.sourceType = MusicImageSourceType.Url;
+    image.sourceIndex = 0;
+    image.imageType = MusicImageType.Default;
+    image.format = PictureFormat.Jpg;
+    images.push(image);
+
+    image = new RelatedImageEntity();
+    image.id = RelatedImageId.DefaultSmall;
+    image.name = 'Default Small';
+    image.relatedId = this.utilities.guidEmpty;
+    image.sourcePath = RelatedImageSrc.DefaultSmall;
+    image.sourceType = MusicImageSourceType.Url;
+    image.sourceIndex = 0;
+    image.imageType = MusicImageType.Default;
+    image.format = PictureFormat.Jpg;
+    images.push(image);
+
+    await this.bulkInsert(RelatedImageEntity, images);
   }
 
   private async initValueLists(): Promise<void> {

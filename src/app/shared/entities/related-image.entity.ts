@@ -1,19 +1,24 @@
-import { Column } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { DbEntity } from './base.entity';
 
+@Entity({name: 'relatedImage'})
 export class RelatedImageEntity extends DbEntity {
   @Column()
   relatedId: string;
-
   @Column()
-  filePath: string;
-
+  sourcePath: string;
+  @Column()
+  sourceType: string;
+  @Column()
+  sourceIndex: number;
   @Column()
   imageType: string;
-
-  @Column()
+  @Column({ nullable: true })
+  format: string;
+  @Column({ nullable: true })
   colorSelection: string;
-
-  @Column()
+  @Column({ nullable: true })
   colorPalette: string;
+
+  src: string;
 }

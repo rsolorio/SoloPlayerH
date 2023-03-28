@@ -31,4 +31,8 @@ export class FileCordovaService extends FileService {
   getFileInfo(path: string): Promise<IFileInfo> {
     return null;
   }
+
+  exists(path: string): boolean {
+    return false;
+  }
 }

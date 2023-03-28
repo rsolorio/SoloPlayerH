@@ -7,12 +7,12 @@ import { IPlayerState } from 'src/app/shared/models/player.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
-import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
+import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -23,7 +23,6 @@ export class PlayerSmallComponent extends PlayerComponentBase {
   public model: IPlayerState;
   public menuList: IMenuModel[] = [];
   public PlayerStatus = PlayerStatus;
-  public DefaultImageSrc = DefaultImageSrc;
 
   constructor(
     private playerService: HtmlPlayerService,
@@ -34,9 +33,10 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private db: DatabaseService,
     private dialog: DialogService,
     private imagePreview: ImagePreviewService,
-    private valueListService: ValueListSelectorService)
+    private valueListService: ValueListSelectorService,
+    private imageUtility: ImageUtilityService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utilities, imagePreview, valueListService);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utilities, imagePreview, valueListService, imageUtility);
   }
 
   public ngOnInit() {

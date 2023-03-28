@@ -6,7 +6,3 @@ export enum SongBadge {
   Favorite = 'FAVORITE',
   TopRated = 'TOP RATED'
 }
-
-export enum ClassificationType {
-  Genre = 'Genre'
-}

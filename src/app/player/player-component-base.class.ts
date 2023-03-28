@@ -9,7 +9,7 @@ import { HtmlPlayerService } from '../shared/services/html-player/html-player.se
 import { MenuService } from '../core/services/menu/menu.service';
 import { EventsService } from '../core/services/events/events.service';
 import { AppEvent } from '../shared/models/events.enum';
-import { IEventArgs } from '../core/models/core.interface';
+import { IEventArgs, IImage } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
 import { DatabaseService } from '../shared/services/database/database.service';
 import { ISongModel } from '../shared/models/song-model.interface';
@@ -19,6 +19,9 @@ import { ValueListSelectorService } from '../value-list/value-list-selector/valu
 import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/value-list-selector/value-list-selector-model.interface';
 import { ValueLists } from '../shared/services/database/database.lists';
 import { ImagePreviewService } from '../shared/components/image-preview/image-preview.service';
+import { RelatedImageEntity } from '../shared/entities';
+import { ImageUtilityService } from '../shared/services/image-utility/image-utility.service';
+import { RelatedImageId } from '../shared/services/database/database.images';
 
 /**
  * Base component for any implementation of the player modes.
@@ -32,6 +35,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
+  public images: RelatedImageEntity[] = [];
+  public selectedImageIndex = -1;
 
   constructor(
     private playerServiceBase: HtmlPlayerService,
@@ -42,13 +47,24 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private dialogService: DialogService,
     private utilityService: UtilityService,
     private imagePreviewService: ImagePreviewService,
-    private valueListSelectorService: ValueListSelectorService)
+    private valueListSelectorService: ValueListSelectorService,
+    private imageUtilityService: ImageUtilityService)
   {
     super();
   }
 
   public get song(): ISongModel {
     return this.model.playerList.current.song;
+  }
+
+  public get image(): RelatedImageEntity {
+    if (this.selectedImageIndex >= 0 && this.images.length) {
+      const relatedImage = this.images[this.selectedImageIndex];
+      if (relatedImage.src) {
+        return relatedImage;
+      }
+    }
+    return null;
   }
 
   public ngOnInit() {
@@ -59,10 +75,10 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.model = this.playerServiceBase.getState();
     this.initializeMenu();
     if (this.model.playerList.hasTrack()) {
-      this.setupAssociatedData(this.model.playerList.current.song.id);
+      this.setupAssociatedData(this.model.playerList.current.song);
     }
     this.subs.sink = this.eventService.onEvent<IEventArgs<IPlaylistSongModel>>(AppEvent.PlaylistCurrentTrackChanged).subscribe(eventArgs => {
-      this.setupAssociatedData(eventArgs.newValue.song.id);
+      this.setupAssociatedData(eventArgs.newValue.song);
     });
   }
 
@@ -88,7 +104,29 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
    * Setups any data associated with the specified song.
    * @param songId 
    */
-  protected async setupAssociatedData(songId: string): Promise<void> {
+  protected async setupAssociatedData(song: ISongModel): Promise<void> {
+    await this.setupImages(song);
+  }
+
+  protected async setupImages(song: ISongModel): Promise<void> {
+    this.images = [];
+    this.selectedImageIndex = -1;
+
+    const songImages = await RelatedImageEntity.findBy({ relatedId: song.id });
+    await this.imageUtilityService.setSrc(songImages);
+    const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
+    await this.imageUtilityService.setSrc(albumImages);
+    const artistImages = await RelatedImageEntity.findBy({ relatedId: song.primaryArtistId });
+    await this.imageUtilityService.setSrc(artistImages);
+    this.images = [...songImages, ...albumImages, ...artistImages];
+    if (!this.images.length) {
+      const defaultImages = await RelatedImageEntity.findBy({ id: RelatedImageId.DefaultLarge });
+      await this.imageUtilityService.setSrc(defaultImages);
+      this.images = defaultImages;
+    }
+    if (this.images.length) {
+      this.selectedImageIndex = 0;
+    }
   }
 
   // Public Methods ****************************************************************************

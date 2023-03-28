@@ -9,7 +9,7 @@ export interface IFileInfo {
   fullName?: string;
   /** Name of the file without extension. */
   name?: string;
-  /** File extension. */
+  /** File extension including the dot. */
   extension?: string;
   /** File path parts. */
   parts: string[];

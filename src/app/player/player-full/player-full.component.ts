@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
-import { DefaultImageSrc } from 'src/app/core/globals.enum';
 import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
 import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
 import { ISize } from 'src/app/core/models/core.interface';
@@ -30,7 +29,6 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
-  public DefaultImageSrc = DefaultImageSrc;
   public palette: BucketPalette;
   public imageSize: ISize = { height: 0, width: 0 };
   private imageColors: ColorG[];
@@ -53,7 +51,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private imagePreview: ImagePreviewService,
     private valueListService: ValueListSelectorService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, imagePreview, valueListService);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, imagePreview, valueListService, imageUtility);
   }
 
   public onInit(): void {
@@ -136,15 +134,47 @@ export class PlayerFullComponent extends PlayerComponentBase {
     if (!this.imageToolbarEnabled) {
       return;
     }
+    if (this.images.length === 0 || this.images.length === 1) {
+      // Don't do anything here
+      return;
+    }
+    if (this.selectedImageIndex === 0) {
+      // We are moving backwards, since this is the first item
+      // move to the last one
+      this.selectedImageIndex = this.images.length - 1;
+    }
+    else {
+      this.selectedImageIndex--;
+    }
+    e.stopPropagation();
   }
 
   public onToolbarNext(e: Event): void {
     if (!this.imageToolbarEnabled) {
       return;
     }
+    if (this.images.length === 0 || this.images.length === 1) {
+      // Don't do anything here
+      return;
+    }
+    if (this.selectedImageIndex === this.images.length - 1) {
+      // We are moving forward, since this is the last item,
+      // move to the first one
+      this.selectedImageIndex = 0;
+    }
+    else {
+      this.selectedImageIndex++;
+    }
+    e.stopPropagation();
   }
 
   public getEllipsisColorVar(): string {
     return `--ellipsis-color: ${this.palette.primary.selected.toRgbaFormula()};`
+  }
+
+  public onImageOverlayClick(): void {
+    if (this.images.length) {
+      this.imageToolbarEnabled = true;
+    }
   }
 }

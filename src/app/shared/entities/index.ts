@@ -22,3 +22,4 @@ export * from './song-classification.entity';
 export * from './play-history.entity';
 export * from './value-list-type.entity';
 export * from './value-list-entry.entity';
+export * from './related-image.entity';

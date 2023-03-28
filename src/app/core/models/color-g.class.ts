@@ -91,6 +91,7 @@ export interface IColorG {
  * https://github.com/LeaVerou/color.js
  * https://chir.ag/projects/ntc/
  * https://www.color-blindness.com/color-name-hue/
+ * More info: https://www.w3schools.com/colors/default.asp
  */
 export class ColorG implements IColorG {
 

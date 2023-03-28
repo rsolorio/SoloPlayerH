@@ -1,10 +1,18 @@
+/** The image types supported by this application. */
 export enum MusicImageType {
   Artist = 'Artist',
   Single = 'Single',
   Front = 'Front',
+  FrontAlternate = 'FrontAlternate',
   Back = 'Back',
   Other = 'Other',
   Default = 'Default'
+}
+
+export enum MusicImageSourceType {
+  ImageFile = 'ImageFile',
+  AudioTag = 'AudioTag',
+  Url = 'Url'
 }
 
 /**

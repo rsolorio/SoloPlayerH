@@ -15,6 +15,8 @@ export abstract class FileService {
 
   abstract getFileInfo(path: string): Promise<IFileInfo>;
 
+  abstract exists(path: string): boolean;
+
   removeBom(value: string): string {
     // 0xFEFF = 65279
     if (value && value.charCodeAt(0) === 0xFEFF) {
