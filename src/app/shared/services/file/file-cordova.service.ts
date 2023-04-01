@@ -35,4 +35,10 @@ export class FileCordovaService extends FileService {
   exists(path: string): boolean {
     return false;
   }
+
+  getRootDirectories(): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+      resolve([]);
+    });
+  }
 }

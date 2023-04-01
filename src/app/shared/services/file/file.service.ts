@@ -18,6 +18,8 @@ export abstract class FileService {
 
   abstract exists(path: string): boolean;
 
+  abstract getRootDirectories(): Promise<string[]>;
+
   shrinkImage(image: IImage, newSize: number): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       try {
@@ -69,4 +71,6 @@ export abstract class FileService {
     }
     return value;
   }
+
+  test(): void {}
 }

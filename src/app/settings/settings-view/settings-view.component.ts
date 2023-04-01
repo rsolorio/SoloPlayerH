@@ -36,7 +36,6 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private metadataService: MusicMetadataService,
     private utility: UtilityService,
     private navbarService: NavBarStateService,
-    private navigation: NavigationService,
     private loadingService: LoadingViewStateService) {
       super();
     }
@@ -264,6 +263,10 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     }
   }
 
+  onTest(): void {
+    this.fileService.getRootDirectories().then(items => console.log(items));
+  }
+
   private async logFileMetadata(): Promise<void> {
     const selectedFiles = this.dialog.openFileDialog();
     if (selectedFiles && selectedFiles.length) {
@@ -273,30 +276,5 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       this.log.info('File info.', fileInfo);
       this.log.info('Audio info.', audioInfo);
     }
-  }
-
-  onTest(): void {
-    // const directoryPath = 'J:\\Music\\English\\Pop\\Madonna\\1983 - Madonna';
-    // const directoryPath = 'E:\\Temp\\English';
-    // this.fileService.getFilesAsync(directoryPath).subscribe(fileInfo => {
-    //   this.metadataService.getMetadata(fileInfo).then(audioInfo => {
-    //     console.log(audioInfo.metadata);
-    //   });
-    // });
-
-    // this.scanner.scan('J:\\Music\\Playlists', '.m3u').then(plsFiles => {
-    //   this.processPlaylistFiles(plsFiles);
-    // });
-
-    // this.sidebarHostService.loadComponent(QuickSearchComponent);
-    // this.sidebarService.toggleRight();
-    //const builder = this.db.getSongArtistBuilder();
-    //this.db.getListFromBuilder(builder, []);
-
-    this.test();
-  }
-
-  private test(): void {
-    this.logFileMetadata();
   }
 }

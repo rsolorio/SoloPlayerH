@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { NativeImage, nativeImage } from 'electron';
 import { promises, existsSync } from 'fs';
-import { join, resolve, extname } from 'path';
+import { join, resolve, extname, parse } from 'path';
+import { exec } from 'child_process';
 import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
 import { FileService } from './file.service';
@@ -114,5 +115,33 @@ export class FileNodeService extends FileService {
     }
 
     return imageObj.resize({ width: newSize.width, height: newSize.height }).toDataURL();
+  }
+
+  getRootDirectories(): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+      exec('wmic logicaldisk get name', (error, stdout) => {
+        if (error) {
+          reject(error);
+        }
+        else {
+          const lines = stdout.split('\r\r\n').map(value => value.trim());
+          // Get only the drives
+          resolve(lines.filter(value => /[A-Za-z]:/.test(value)));
+        }
+      });
+    });
+  }
+
+  test(): void {
+    const directoryPath = 'F:';
+    promises.readdir(directoryPath).then(items => {
+      console.log(items);
+    });
+    promises.stat(directoryPath).then(stat => {
+      console.log(stat);
+      console.log(stat.isDirectory());
+    });
+    const x = parse(directoryPath);
+    console.log(x);
   }
 }
