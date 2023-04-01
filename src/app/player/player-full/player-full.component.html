@@ -62,7 +62,8 @@
                 <i class="mdi-chevron-right mdi sp-text-big sp-clickable" (click)="onToolbarNext($event)" [ngClass]="{'sp-invisible': images.length < 2, 'sp-clickable': imageToolbarEnabled }"></i>
               </td>
               <td class="sp-td-img-toolbar-right">
-                <i (click)="onToolbarClose($event)" class="mdi-close mdi sp-text-xlarge sp-float-right" [ngClass]="{ 'sp-clickable': imageToolbarEnabled }"></i>
+                <i *ngIf="!isLoadingPalette" (click)="onToolbarClose($event)" class="mdi-close mdi sp-text-xlarge sp-float-right" [ngClass]="{ 'sp-clickable': imageToolbarEnabled }"></i>
+                <i *ngIf="isLoadingPalette" class="mdi-loading mdi-spin mdi sp-text-xlarge sp-float-right"></i>
               </td>
             </tr></table>
           </div>

@@ -520,7 +520,7 @@ export class ScanService {
           newImage.sourceType = MusicImageSourceType.ImageFile;
           newImage.sourceIndex = 0;
           newImage.imageType = imageType;
-          newImage.format = PictureFormat.Jpg;
+          newImage.mimeType = PictureFormat.Jpg;
           newImage.isNew = true;
           this.existingImages.push(newImage);
           // Do not continue looking for images
@@ -545,7 +545,7 @@ export class ScanService {
             newImage.sourceType = MusicImageSourceType.AudioTag;
             newImage.sourceIndex = pictureIndex;
             newImage.imageType = imageType;
-            newImage.format = picture.format;
+            newImage.mimeType = picture.format;
             newImage.isNew = true;
             this.existingImages.push(newImage);
           }

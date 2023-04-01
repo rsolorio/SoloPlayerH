@@ -157,7 +157,7 @@ export class DatabaseService {
     image.sourceType = MusicImageSourceType.Url;
     image.sourceIndex = 0;
     image.imageType = MusicImageType.Default;
-    image.format = PictureFormat.Jpg;
+    image.mimeType = PictureFormat.Jpg;
     images.push(image);
 
     image = new RelatedImageEntity();
@@ -168,7 +168,7 @@ export class DatabaseService {
     image.sourceType = MusicImageSourceType.Url;
     image.sourceIndex = 0;
     image.imageType = MusicImageType.Default;
-    image.format = PictureFormat.Jpg;
+    image.mimeType = PictureFormat.Jpg;
     images.push(image);
 
     image = new RelatedImageEntity();
@@ -179,7 +179,7 @@ export class DatabaseService {
     image.sourceType = MusicImageSourceType.Url;
     image.sourceIndex = 0;
     image.imageType = MusicImageType.Default;
-    image.format = PictureFormat.Jpg;
+    image.mimeType = PictureFormat.Jpg;
     images.push(image);
 
     image = new RelatedImageEntity();
@@ -190,7 +190,7 @@ export class DatabaseService {
     image.sourceType = MusicImageSourceType.Url;
     image.sourceIndex = 0;
     image.imageType = MusicImageType.Default;
-    image.format = PictureFormat.Jpg;
+    image.mimeType = PictureFormat.Jpg;
     images.push(image);
 
     await this.bulkInsert(RelatedImageEntity, images);

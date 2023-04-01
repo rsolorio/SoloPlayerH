@@ -285,8 +285,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       await this.imageUtility.setSrc([relatedImage]);
       song.image = {
         src: relatedImage.src,
-        type: relatedImage.imageType,
-        format: relatedImage.format
+        srcType: relatedImage.srcType
       };
     }
   }

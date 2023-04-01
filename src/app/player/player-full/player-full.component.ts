@@ -13,11 +13,14 @@ import { BucketPalette } from 'src/app/shared/services/color-utility/color-utili
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
+import { FileService } from 'src/app/shared/services/file/file.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
+import { MusicImageSourceType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
+import { ImageSrcType } from 'src/app/core/globals.enum';
 
 @Component({
   selector: 'sp-player-full',
@@ -49,7 +52,8 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private dialog: DialogService,
     private utility: UtilityService,
     private imagePreview: ImagePreviewService,
-    private valueListService: ValueListSelectorService)
+    private valueListService: ValueListSelectorService,
+    private fileService: FileService)
   {
     super(playerService, playerOverlayService, events, menuService, db, dialog, utility, imagePreview, valueListService, imageUtility);
   }
@@ -60,7 +64,29 @@ export class PlayerFullComponent extends PlayerComponentBase {
   }
 
   public onImageLoad(): void {
-    this.loadPalette();
+    if (this.image.sourceType === MusicImageSourceType.ImageFile) {
+      // Assume that only file images might need resize (for now)
+      if (this.image.srcType === ImageSrcType.FileUrl) {
+        // This means that the image hasn't been resized yet
+        this.fileService.shrinkImage(this.image, 700).then(newSrc => {
+          if (newSrc) {
+            // Set src type first, since once we set the src this method will be fired again
+            this.image.srcType = ImageSrcType.DataUrl;
+            this.image.src = newSrc;
+          }
+          else {
+            // If no src it means that it doesn't need resizing
+            this.loadPalette();
+          }
+        });
+      }
+      else {
+        this.loadPalette();
+      }
+    }
+    else {
+      this.loadPalette();
+    }
   }
 
   public onImageContainerResized(size: ISize): void {
@@ -131,7 +157,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   }
 
   public onToolbarBack(e: Event): void {
-    if (!this.imageToolbarEnabled) {
+    if (!this.imageToolbarEnabled || this.isLoadingPalette) {
       return;
     }
     if (this.images.length === 0 || this.images.length === 1) {
@@ -150,7 +176,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   }
 
   public onToolbarNext(e: Event): void {
-    if (!this.imageToolbarEnabled) {
+    if (!this.imageToolbarEnabled || this.isLoadingPalette) {
       return;
     }
     if (this.images.length === 0 || this.images.length === 1) {

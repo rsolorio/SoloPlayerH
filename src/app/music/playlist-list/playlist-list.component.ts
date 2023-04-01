@@ -76,7 +76,6 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
           });
         });
       }
-
     });
   }
 

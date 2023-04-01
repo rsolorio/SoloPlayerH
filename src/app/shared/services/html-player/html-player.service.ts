@@ -279,7 +279,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       album: track.song.albumName,
       artwork: [{
         src: track.song.image.src,
-        type: track.song.image.format
+        // Does this work if it doesn't have the type (mime type)?
+        // type: ''
       }]
     });
   }

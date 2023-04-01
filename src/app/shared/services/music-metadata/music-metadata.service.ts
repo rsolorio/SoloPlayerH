@@ -4,6 +4,7 @@ import { IImage } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { AttachedPictureType, MusicImageType } from './music-metadata.enum';
 import { IAudioInfo, IPictureTag } from './music-metadata.interface';
+import { ImageSrcType } from 'src/app/core/globals.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -120,8 +121,7 @@ export class MusicMetadataService {
       if (picture && picture.data) {
         return {
           src: `data:${picture.format};base64,` + picture.data.toString('base64'),
-          type: this.getImageType(picture),
-          format: picture.format
+          srcType: ImageSrcType.DataUrl
         };
       }
     }

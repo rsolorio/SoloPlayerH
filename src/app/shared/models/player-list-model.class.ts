@@ -8,6 +8,7 @@ import { AppEvent } from "./events.enum";
 import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";
 import { IPlaylistSongModel } from "./playlist-song-model.interface";
 import { ISongModel } from "./song-model.interface";
+import { ImageSrcType } from "src/app/core/globals.enum";
 
 /**
  * Class responsible for handling the access to the tracks and updating the playlist status.
@@ -32,8 +33,7 @@ export class PlayerListModel implements IDbModel {
     name: null,
     image: {
       src: RelatedImageSrc.DefaultSmall,
-      type: MusicImageType.Default,
-      format: PictureFormat.Jpg
+      srcType: ImageSrcType.WebUrl
     },
     canBeRendered: false,
     selected: false,
@@ -72,8 +72,7 @@ export class PlayerListModel implements IDbModel {
       playerStatus: PlayerSongStatus.Empty,
       image: {
         src: RelatedImageSrc.DefaultSmall,
-        type: MusicImageType.Default,
-        format: PictureFormat.Jpg
+        srcType: ImageSrcType.WebUrl
       },
       canBeRendered: false,
       selected: false,
@@ -235,8 +234,7 @@ export class PlayerListModel implements IDbModel {
       sequence,
       image: {
         src: RelatedImageSrc.DefaultSmall,
-        type: MusicImageType.Default,
-        format: PictureFormat.Jpg
+        srcType: ImageSrcType.WebUrl
       },
       canBeRendered: false,
       selected: false,

@@ -1,8 +1,10 @@
 import { Column, Entity } from 'typeorm';
 import { DbEntity } from './base.entity';
+import { IImage } from 'src/app/core/models/core.interface';
+import { ImageSrcType } from 'src/app/core/globals.enum';
 
 @Entity({name: 'relatedImage'})
-export class RelatedImageEntity extends DbEntity {
+export class RelatedImageEntity extends DbEntity implements IImage {
   @Column()
   relatedId: string;
   @Column()
@@ -14,11 +16,12 @@ export class RelatedImageEntity extends DbEntity {
   @Column()
   imageType: string;
   @Column({ nullable: true })
-  format: string;
+  mimeType: string;
   @Column({ nullable: true })
   colorSelection: string;
   @Column({ nullable: true })
   colorPalette: string;
 
   src: string;
+  srcType: ImageSrcType;
 }

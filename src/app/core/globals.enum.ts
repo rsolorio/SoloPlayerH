@@ -27,3 +27,9 @@ export enum ColorCode {
   GrayLight = '#999',
   GrayDark = '#2a2a2a'
 }
+
+export enum ImageSrcType {
+  DataUrl,
+  FileUrl,
+  WebUrl
+}

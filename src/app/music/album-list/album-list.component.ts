@@ -167,8 +167,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       await this.imageUtility.setSrc([relatedImage]);
       album.image = {
         src: relatedImage.src,
-        type: relatedImage.imageType,
-        format: relatedImage.format
+        srcType: relatedImage.srcType
       };
     }
   }

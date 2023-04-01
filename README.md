@@ -217,6 +217,26 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - songId
 - playDate
 
+### RelatedImage table
+- id
+- name
+- relatedId
+  - Id of the associated entity
+- sourcePath
+  - File path or url of the image source
+- sourceType
+  - ImageFile, AudioTag, Url
+- sourceIndex
+  - The index of the image if the source is an audio tag
+- imageType
+  - Default, Front, Front Alternate, Single, Other
+- mimeType
+  - The file type specification
+- colorSelection
+  - An array of colors selected for this image
+- colorPalette
+  - An array of colors associated with the image
+
 ## Scripts
 This is a list of NPM package scripts
 

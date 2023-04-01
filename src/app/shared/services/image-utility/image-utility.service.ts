@@ -5,6 +5,7 @@ import { RelatedImageEntity } from '../../entities';
 import { FileService } from '../file/file.service';
 import { MusicImageSourceType } from '../music-metadata/music-metadata.enum';
 import { MusicMetadataService } from '../music-metadata/music-metadata.service';
+import { ImageSrcType } from 'src/app/core/globals.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -176,9 +177,12 @@ export class ImageUtilityService {
       }
       else if (relatedImage.sourceType === MusicImageSourceType.Url) {
         relatedImage.src = relatedImage.sourcePath;
+        relatedImage.srcType = ImageSrcType.WebUrl;
       }
     }
   }
+
+  // PRIVATE METHODS //////////////////////////////////////////////////////////////////////////////
 
   private async setSrcFromAudioTag(relatedImage: RelatedImageEntity): Promise<void> {
     const buffer = await this.fileService.getBuffer(relatedImage.sourcePath);
@@ -186,17 +190,17 @@ export class ImageUtilityService {
     if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
       const picture = audioInfo.metadata.common.picture[relatedImage.sourceIndex];
       if (picture) {
-        relatedImage.src = this.metadataService.getImage([picture]).src;
+        const image = this.metadataService.getImage([picture]);
+        relatedImage.src = image.src;
+        relatedImage.srcType = image.srcType;
       }
     }
   }
 
   private async setSrcFromImageFile(relatedImage: RelatedImageEntity): Promise<void> {
-    // TODO: resize image
     relatedImage.src = this.utility.fileToUrl(relatedImage.sourcePath);
+    relatedImage.srcType = ImageSrcType.FileUrl;
   }
-
-  // PRIVATE METHODS //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Calculates the area assuming the image will take the full width of the element.

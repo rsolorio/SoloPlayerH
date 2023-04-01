@@ -1,3 +1,5 @@
+import { ImageSrcType } from "../globals.enum";
+
 export interface IValueModel<T> {
   value?: T;
 }
@@ -58,9 +60,8 @@ export interface ISelectableValue extends IValuePair, ISelectable {
 }
 
 export interface IImage {
-  type?: string;
   src?: string;
-  format?: string;
+  srcType?: ImageSrcType;
 }
 
 export interface IStateService<T> {
