@@ -250,6 +250,10 @@ body {
     color: $sp-color-muted;
 }
 
+.sp-border-color-red {
+    border-color: $sp-color-red;
+}
+
 .sp-bg-transparent {
     background-color: transparent;
 }
@@ -283,6 +287,37 @@ body {
 
 .sp-table {
     border-spacing: 0;
+}
+
+.sp-table-no-padding {
+    td, th {
+        padding: 0;
+    }
+}
+
+.sp-table-eye-dropper {
+    padding: 0;
+    border-spacing: 0;
+    border-collapse: collapse;
+    td, th {
+        padding: 0;
+        border: 1px solid $sp-color-gray;
+    }
+    td[data-x="5"][data-y="4"] {
+        border-bottom-color: $sp-color-red;
+    }
+    td[data-x="4"][data-y="5"] {
+        border-right-color: $sp-color-red;
+    }
+    td[data-x="6"][data-y="5"] {
+        border-left-color: $sp-color-red;
+    }
+    td[data-x="5"][data-y="4"] {
+        border-top-color: $sp-color-red;
+    }
+    td[data-x="5"][data-y="5"] {
+        border-color: $sp-color-red;
+    }
 }
 
 // ANIMATION **************************************************************************************
@@ -552,9 +587,19 @@ input[type="text"], input[type="search"], textarea {
     float: left;
 }
 
+// Hides the element without changing its layout rendering
 .sp-invisible {
     visibility: hidden;
+}
+
+// Turns off the layout of the element, so it is not rendered
+.sp-no-display {
     display: none;
+}
+
+// Causes the element to be transparent but user can still interact with it
+.sp-transparent {
+    opacity: 0;
 }
 
 .sp-vertical-align-inherit {

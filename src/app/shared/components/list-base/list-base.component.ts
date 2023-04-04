@@ -359,6 +359,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       }
       return { styleClass: 'sp-color-muted', tooltip: tooltip };
     }
-    return { styleClass: 'sp-invisible' };
+    return { styleClass: 'sp-no-display' };
   }
 }

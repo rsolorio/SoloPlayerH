@@ -9,7 +9,7 @@ import { HtmlPlayerService } from '../shared/services/html-player/html-player.se
 import { MenuService } from '../core/services/menu/menu.service';
 import { EventsService } from '../core/services/events/events.service';
 import { AppEvent } from '../shared/models/events.enum';
-import { IEventArgs, IImage } from '../core/models/core.interface';
+import { IEventArgs } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
 import { DatabaseService } from '../shared/services/database/database.service';
 import { ISongModel } from '../shared/models/song-model.interface';
@@ -78,7 +78,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       this.setupAssociatedData(this.model.playerList.current.song);
     }
     this.subs.sink = this.eventService.onEvent<IEventArgs<IPlaylistSongModel>>(AppEvent.PlaylistCurrentTrackChanged).subscribe(eventArgs => {
-      this.setupAssociatedData(eventArgs.newValue.song);
+      this.onTrackChanged(eventArgs);
     });
   }
 
@@ -98,6 +98,10 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
         this.takeScreenshot();
       }
     });
+  }
+
+  protected onTrackChanged(eventArgs: IEventArgs<IPlaylistSongModel>): void {
+    this.setupAssociatedData(eventArgs.newValue.song);
   }
 
   /**
@@ -185,10 +189,13 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public onCollapseClick() {
+    this.beforeCollapse();
     this.menuServiceBase.hideSlideMenu();
     this.model.playerList.isVisible = false;
     this.playerOverlayServiceBase.restore();
   }
+
+  protected beforeCollapse() {}
 
   public onRatingChange(e: IEventArgs<number>, song: ISongModel): void {
     if (e.oldValue === e.newValue) {

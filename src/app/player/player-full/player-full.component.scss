@@ -22,10 +22,6 @@
   vertical-align: top;
 }
 
-.sp-tr-toolbar {
-  height: 50px;
-}
-
 .sp-td-img {
   padding-top: 0;
   padding-bottom: 0;
@@ -41,35 +37,20 @@
   position: absolute;
 }
 
-.sp-img-overlay-toolbar {
-  position: absolute;
-  height: 40px;
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, 0);
-  color: $sp-color-on-background-medium;
-  background: linear-gradient($sp-color-overlay-01, $sp-dim-black-high);
-}
-
-.sp-td-img-toolbar-left {
-  width: 30%;
-  text-align: left;
-  padding: 0 0 0 5px;
-}
-
-.sp-td-img-toolbar-right {
-  width: 30%;
-  text-align: right;
-  padding: 0 5px 0 0;
-}
-
 .sp-img-blur {
   filter: blur(3px);
 }
 
+.sp-tr-footer {
+  height: 180px; // song-toolbar: 50px + time-slider: 30px + play-controls: 100px;
+}
+
+.sp-tr-song-toolbar {
+  height: 50px;
+}
+
 .sp-td-toolbar {
   text-align: center;
-  border-top: 1px solid $sp-color-overlay-01;
 }
 
 .sp-td-progress-bar {
@@ -127,4 +108,74 @@
 .sp-player-overlay {
   color: $sp-color-on-background;
   background-color: $sp-dim-black-mid;
+}
+
+.sp-tr-image-toolbar {
+  text-align: center;
+  height: 50px;
+}
+
+.sp-player-eye-dropper {
+  height: 120px;
+  width: 120px;
+  min-height: 120px;
+  min-width: 120px;
+  margin-left: 10px;
+}
+
+.sp-colors-container {
+  display: flex;
+}
+
+.sp-color-bar {
+  height: 30px;
+  margin: 0 10px 10px 10px;
+  display: flex;
+}
+
+.sp-color-palette {
+  display: flex;
+  gap: 10px;
+}
+
+.sp-color-bar-small {
+  width: 33.33%;
+  display: flex;
+}
+
+.sp-color-icon {
+  line-height: 30px;
+  margin-right: 3px;
+}
+
+.sp-color-bar-outline {
+  border-radius: 5px;
+  outline: 1px solid $sp-color-overlay-01;
+}
+
+.sp-footer-outline {
+  outline: 1px solid $sp-color-overlay-01;
+}
+
+/*
+Attributes I changed:
+width and height to 25px;
+color (stroke): #00000099 (0, 0, 0, 0.6)
+Editor: https://editsvgcode.com/
+<svg
+xmlns='http://www.w3.org/2000/svg'
+viewBox='0 0 100 100'
+width='100%'
+height='100%'>
+  <g stroke='#000' stroke-width='8'>
+    <path d='m 0 50 l 25 0'></path>
+    <path d='m 100 50 l -25 0'></path>
+    <path d='m 50 100 l 0 -25'></path>
+    <path d='m 50 0 l 0 25'></path>
+  </g>
+  <circle cx='50' cy='50' r='25' fill='none' stroke='#000' stroke-width='5'></circle>
+</svg>
+*/
+.sp-cursor-eye {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='25px' height='25px'%3E%3Cg stroke='%2300000099' stroke-width='8'%3E%3Cpath d='m 0 50 l 25 0'%3E%3C/path%3E%3Cpath d='m 100 50 l -25 0'%3E%3C/path%3E%3Cpath fill='red' d='m 50 100 l 0 -25'%3E%3C/path%3E%3Cpath d='m 50 0 l 0 25'%3E%3C/path%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='25' fill='none' stroke='%2300000099' stroke-width='5'%3E%3C/circle%3E%3C/svg%3E") 11 11, crosshair;
 }

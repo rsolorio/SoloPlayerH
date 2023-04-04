@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
 import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
-import { ISize } from 'src/app/core/models/core.interface';
+import { IEventArgs, IPosition, ISize } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -9,7 +9,6 @@ import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.s
 import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
-import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
@@ -21,6 +20,8 @@ import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { MusicImageSourceType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
 import { ImageSrcType } from 'src/app/core/globals.enum';
+import { ColorServiceName, ColorSort, IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
+import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 
 @Component({
   selector: 'sp-player-full',
@@ -28,17 +29,22 @@ import { ImageSrcType } from 'src/app/core/globals.enum';
   styleUrls: ['./player-full.component.scss']
 })
 export class PlayerFullComponent extends PlayerComponentBase {
-  @ViewChild('imageElement') private imageReference: ElementRef;
+  @ViewChild('picture') private pictureRef: ElementRef;
+  @ViewChild('pictureCanvas') private pictureCanvasRef: ElementRef;
+  @ViewChild('tableEyeDropper') private tableEyeDropperRef: ElementRef;
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
-  public palette: BucketPalette;
+  public palette: IFullColorPalette;
   public imageSize: ISize = { height: 0, width: 0 };
-  private imageColors: ColorG[];
   public isLoadingPalette = false;
-  public imageToolbarEnabled = false;
+  public imageControlsEnabled = false;
   public lyricsOverlayEnabled = false;
   public fileInfoVisible = true;
+  public colorHover = ColorG.black;
+  public colorSelected = ColorG.black;
+  public imageCursorPosition: IPosition;
+  private imageData: ImageData;
   constructor(
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
@@ -89,13 +95,14 @@ export class PlayerFullComponent extends PlayerComponentBase {
     }
   }
 
-  public onImageContainerResized(size: ISize): void {
-    if (this.imageReference && this.imageReference.nativeElement) {
+  public onImageContainerResized(containerSize: ISize): void {
+    this.imageControlsEnabled = false;
+    if (this.pictureRef && this.pictureRef.nativeElement) {
       const imageNaturalSize: ISize = {
-        height: this.imageReference.nativeElement.naturalHeight,
-        width: this.imageReference.nativeElement.naturalWidth
+        height: this.pictureRef.nativeElement.naturalHeight,
+        width: this.pictureRef.nativeElement.naturalWidth
       };
-      this.imageSize = this.imageUtility.getResizeDimensions(imageNaturalSize, size);
+      this.imageSize = this.imageUtility.getResizeDimensions(imageNaturalSize, containerSize);
     }
   }
 
@@ -107,7 +114,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
       // Only enable it if the song has lyrics
       if (this.song.lyrics) {
         // Remove toolbar if needed
-        this.imageToolbarEnabled = false;
+        this.imageControlsEnabled = false;
         // Toggle
         this.lyricsOverlayEnabled = true;
       }
@@ -128,36 +135,44 @@ export class PlayerFullComponent extends PlayerComponentBase {
   private loadPalette(): void {
     this.isLoadingPalette = true;
     if (this.colorUtility.isWorkerSupported()) {
-      const colorData = this.colorUtility.getColorData(this.imageReference.nativeElement);
+      const colorData = this.colorUtility.getColorData(this.pictureRef.nativeElement);
       this.worker.run<IColorExtractionData, IColorG[]>(WorkerName.ColorPalette, colorData).then(response => {
         const colors = ColorG.fromColorObjects(response);
         this.setupPalette(colors);
+        if (this.imageControlsEnabled) {
+          this.drawCanvasAndLoadData();
+          this.colorHover = this.imageUtility.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
+        }
         this.isLoadingPalette = false;
       });
     }
     else {
-      const colors = this.colorUtility.getColors(this.imageReference.nativeElement);
+      const colors = this.colorUtility.getColors(this.pictureRef.nativeElement);
       this.setupPalette(colors);
+      if (this.imageControlsEnabled) {
+        this.drawCanvasAndLoadData();
+        this.colorHover = this.imageUtility.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
+      }
       this.isLoadingPalette = false;
     }
   }
 
   private setupPalette(colors: ColorG[]): void {
-    this.imageColors = colors;
-    this.palette = new BucketPalette(this.imageColors);
+    // TODO: we no longer need a full palette, only the three main colors
+    this.palette = this.colorUtility.buildPalette(colors[0], colors, ColorServiceName.Default, ColorSort.Contrast);
     this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
   }
 
-  public onToolbarClose(e: Event): void {
-    if (!this.imageToolbarEnabled) {
+  public onImageControlsClose(e: Event): void {
+    if (!this.imageControlsEnabled) {
       return;
     }
-    this.imageToolbarEnabled = false;
+    this.imageControlsEnabled = false;
     e.stopPropagation();
   }
 
   public onToolbarBack(e: Event): void {
-    if (!this.imageToolbarEnabled || this.isLoadingPalette) {
+    if (!this.imageControlsEnabled || this.isLoadingPalette) {
       return;
     }
     if (this.images.length === 0 || this.images.length === 1) {
@@ -176,7 +191,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   }
 
   public onToolbarNext(e: Event): void {
-    if (!this.imageToolbarEnabled || this.isLoadingPalette) {
+    if (!this.imageControlsEnabled || this.isLoadingPalette) {
       return;
     }
     if (this.images.length === 0 || this.images.length === 1) {
@@ -194,13 +209,65 @@ export class PlayerFullComponent extends PlayerComponentBase {
     e.stopPropagation();
   }
 
-  public getEllipsisColorVar(): string {
-    return `--ellipsis-color: ${this.palette.primary.selected.toRgbaFormula()};`
+  public onToolbarReset(): void {
+    this.loadPalette();
   }
 
-  public onImageOverlayClick(): void {
+  public getEllipsisColorVar(): string {
+    return `--ellipsis-color: ${this.palette.primary.toRgbaFormula()};`
+  }
+
+  public onImageClick(pointerEvent: MouseEvent): void {
     if (this.images.length) {
-      this.imageToolbarEnabled = true;
+      this.drawCanvasAndLoadData();
+      // This will make the eye dropper load empty
+      this.imageControlsEnabled = true;
+      // This will load the eye dropper when clicking the image
+      setTimeout(() => {
+        this.onCanvasMouseMove(pointerEvent);
+      });
     }
+  }
+
+  private drawCanvasAndLoadData(): void {
+    const canvas = this.pictureCanvasRef.nativeElement as HTMLCanvasElement;
+    const context = canvas.getContext('2d');
+    context.drawImage(this.pictureRef.nativeElement, 0, 0, this.pictureRef.nativeElement.width, this.pictureRef.nativeElement.height);
+    this.imageData = context.getImageData(0, 0, this.imageSize.width, this.imageSize.height);
+  }
+
+  public onCanvasClick() {
+    this.colorSelected = ColorG.fromColorObject(this.colorHover);
+  }
+
+  public onCanvasMouseMove(mouseMove: MouseEvent): void {
+    const pictureCanvasRect = this.pictureCanvasRef.nativeElement.getBoundingClientRect();
+    const coordinate = this.utility.getMouseCoordinate(pictureCanvasRect, mouseMove);
+    this.colorHover = this.imageUtility.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData, coordinate);
+  }
+
+  public onBackgroundColorClick(): void {
+    this.palette.background = ColorG.fromColorObject(this.colorSelected);
+    this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+  }
+  public onPrimaryColorClick(): void {
+    this.palette.primary = ColorG.fromColorObject(this.colorSelected);
+    this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+  }
+  public onSecondaryColorClick(): void {
+    this.palette.secondary = ColorG.fromColorObject(this.colorSelected);
+    this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+  }
+  public onSelectedColorClick(): void {
+    this.colorSelected = this.colorSelected.blackOrWhite;
+  }
+
+  protected beforeCollapse(): void {
+    this.imageControlsEnabled = false;
+  }
+
+  protected onTrackChanged(eventArgs: IEventArgs<IPlaylistSongModel>): void {
+    this.imageControlsEnabled = false;
+    super.onTrackChanged(eventArgs);
   }
 }

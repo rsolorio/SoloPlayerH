@@ -27,7 +27,7 @@
                   <!-- We need to make sure this element is rendered (as invisible) even if it is not needed. -->
                   <div
                   class="sp-full-width"
-                  [ngClass]="{ 'sp-invisible': model.mode !== NavbarDisplayMode.Component, 'sp-flex': model.mode === NavbarDisplayMode.Component }">
+                  [ngClass]="{ 'sp-no-display': model.mode !== NavbarDisplayMode.Component, 'sp-flex': model.mode === NavbarDisplayMode.Component }">
                       <ng-template #spNavbarContentHost></ng-template>
                   </div>
                   <!-- Search -->

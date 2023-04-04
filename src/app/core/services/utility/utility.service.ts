@@ -9,6 +9,7 @@ import { LogService } from 'src/app/core/services/log/log.service';
 import { ISize } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
+import { ICoordinate } from 'src/app/core/models/core.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -529,6 +530,13 @@ export class UtilityService {
     return {
       height: 800,
       width: 450
+    };
+  }
+
+  public getMouseCoordinate(elementRect: DOMRect, mouseEvent: MouseEvent): ICoordinate {
+    return {
+      x: Math.round(mouseEvent.clientX - elementRect.left),
+      y: Math.round(mouseEvent.clientY - elementRect.top)
     };
   }
 

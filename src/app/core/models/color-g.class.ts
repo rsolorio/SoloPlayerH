@@ -519,6 +519,20 @@ export class ColorG implements IColorG {
       this._contrast = (brightest + 0.05) / (darkest + 0.05);
       return this._contrast;
     }
+
+    /**
+     * Determines black or white as contrast value.
+     */
+    public get blackOrWhite(): ColorG {
+      const originalContrastColor = this.contrastColor;
+      this.contrastColor = ColorG.white.rgba;
+      const contrastValue = this.contrast;
+      this.contrastColor = originalContrastColor;
+      if (contrastValue > 4.5) {
+        return ColorG.white;
+      }
+      return ColorG.black;
+    }
   
 
   // PUBLIC METHODS ///////////////////////////////////////////////////////////////////////////////

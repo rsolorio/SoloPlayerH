@@ -1,5 +1,5 @@
 <i
-  [ngClass]="{ 'sp-invisible': !leftScrollIndicatorVisible }"
+  [ngClass]="{ 'sp-no-display': !leftScrollIndicatorVisible }"
   class="mdi-arrow-left-circle mdi sp-scroll-icon sp-scroll-icon-left sp-clickable"
   (click)="onScrollLeftClick()"></i>
 <div #breadcrumbsContainer class="sp-breadcrumbs sp-scrollbar-hidden" [ngClass]="containerClass" (scroll)="onContainerScroll()" (wheel)="onContainerWheel($event)">
@@ -21,6 +21,6 @@
   </div>
 </div>
 <i
-[ngClass]="{ 'sp-invisible': !rightScrollIndicatorVisible }"
+[ngClass]="{ 'sp-no-display': !rightScrollIndicatorVisible }"
 class="mdi-arrow-right-circle mdi sp-scroll-icon sp-scroll-icon-right sp-clickable"
 (click)="onScrollRightClick()"></i>

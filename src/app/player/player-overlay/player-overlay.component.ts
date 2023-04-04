@@ -5,11 +5,11 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus } from 'src/app/shared/models/player.enum';
 import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
-import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { PlayerOverlayStateService } from './player-overlay-state.service';
 import { PlayerOverlayMode } from './player-overlay.enum';
 import { IPlayerOverlayModel } from './player-overlay.interface';
+import { IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
 
 /**
  * This is the main container of the player and responsible for rendering the selected player mode.
@@ -69,10 +69,10 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
 
   private subscribeToFullPlayerImageLoaded() {
     // TODO: implement color palette, should we do this in the player full?
-    this.subs.sink = this.events.onEvent<BucketPalette>(AppEvent.FullPlayerPaletteLoaded)
+    this.subs.sink = this.events.onEvent<IFullColorPalette>(AppEvent.FullPlayerPaletteLoaded)
     .subscribe(newPalette => {
       if (this.playerOverlayService.getState().mode === PlayerOverlayMode.Full) {
-        this.backgroundColor = newPalette.background.selected.rgbFormula;
+        this.backgroundColor = newPalette.background.rgbFormula;
         // A simple observable doesn't actually fire change detection so let's do it here
         this.cd.detectChanges();
       }

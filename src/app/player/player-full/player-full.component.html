@@ -1,33 +1,33 @@
-<table *ngIf="model && model.playerList && model.playerList.current" class="sp-full-height sp-full-width sp-table sp-table-support-overflow-ellipsis">
+<table *ngIf="model && model.playerList && model.playerList.current" class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-support-overflow-ellipsis">
   <!-- Navbar -->
   <tr class="sp-tr-navbar">
     <!-- Collapse button -->
-    <td class="sp-td-navbar-icon" (click)="onCollapseClick()">
+    <td class="sp-td-navbar-icon sp-text-xlarge-fixed" (click)="onCollapseClick()">
       <i
-      class="mdi-chevron-down mdi sp-cursor-pointer sp-text-xlarge-fixed"
-      [ngStyle]="palette.secondary.selected.cssColor"></i>
+      class="mdi-chevron-down mdi sp-cursor-pointer"
+      [ngStyle]="palette.secondary.cssColor"></i>
     </td>
     <!-- Middle content -->
     <td>
-      <table class="sp-table sp-full-width sp-full-height"><tr>
+      <table class="sp-table sp-table-no-padding sp-full-width sp-full-height"><tr>
         <!-- Playlist name -->
         <td class="sp-font-family-regular sp-text-overflow-ellipsis">
           <i
           class="mdi-playlist-music-outline mdi sp-text-xlarge-fixed sp-cursor-pointer"
           style="line-height: 40px;"
-          [ngStyle]="palette.secondary.selected.cssColor"></i>
+          [ngStyle]="palette.secondary.cssColor"></i>
           <span
           class="sp-text-large" style="line-height: 40px;vertical-align: top;"
-          [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{model.playerList.name}}</span>
+          [ngStyle]="palette.primary.cssColor">&nbsp;{{model.playerList.name}}</span>
           <span
           class="sp-text-small"
           style="line-height: 40px;float: right;"
-          [ngStyle]="palette.primary.selected.cssColor">{{model.playerList.current.sequence}}/{{model.playerList.items.length}}</span>
+          [ngStyle]="palette.primary.cssColor">{{model.playerList.current.sequence}}/{{model.playerList.items.length}}</span>
         </td>
       </tr></table>
     </td>
     <!-- Menu -->
-    <td class="sp-td-navbar-icon sp-text-xlarge-fixed" [ngStyle]="palette.secondary.selected.cssColor">
+    <td class="sp-td-navbar-icon sp-text-xlarge-fixed" [ngStyle]="palette.secondary.cssColor">
       <sp-icon-menu [items]="menuList" [context]="model.playerList.current.song"></sp-icon-menu>
     </td>
   </tr>
@@ -37,37 +37,28 @@
       <div class="sp-img-container sp-flex-center sp-full-height sp-full-width" spResizeObserver (spResized)="onImageContainerResized($event)">
         <!-- Image -->
         <img
-        #imageElement
+        #picture
         *ngIf="image"
+        [ngClass]="{ 'sp-invisible': imageControlsEnabled }"
+        (click)="onImageClick($event)"
         (load)="onImageLoad()"
         [src]="image.src"
         [style.width.px]="imageSize.width"
         [style.height.px]="imageSize.height"
         class="sp-img">
-        <!-- Image overlay (hack: adds one pixel to the height to fix an issue with the image)-->
-        <div
-        (click)="onImageOverlayClick()"
-        class="sp-img"
+        <!-- Canvas (for image controls) -->
+        <!-- Note that we set the canvas size as well as the element size -->
+        <canvas
+        #pictureCanvas
+        *ngIf="image"
+        class="sp-img sp-cursor-eye"
+        (click)="onCanvasClick()"
+        (mousemove)="onCanvasMouseMove($event)"
+        [ngClass]="{ 'sp-invisible': !imageControlsEnabled }"
+        [width]="imageSize.width"
+        [height]="imageSize.height"
         [style.width.px]="imageSize.width"
-        [style.height.px]="imageSize.height + 1">
-          <!-- Image toolbar -->
-          <div class="sp-img-overlay-toolbar sp-ease-opacity-01" [ngClass]="{ 'sp-transparent': !imageToolbarEnabled }" [style.width.px]="imageSize.width">
-            <table class="sp-table sp-full-width sp-full-height"><tr>
-              <td class="sp-td-img-toolbar-left">
-                <span *ngIf="image" class="sp-text-large sp-font-family-regular">{{image.imageType.toUpperCase()}}</span>
-              </td>
-              <td style="text-align: center;" class="sp-no-padding">
-                <i class="mdi-chevron-left mdi sp-text-big" (click)="onToolbarBack($event)" [ngClass]="{ 'sp-invisible': images.length < 2, 'sp-clickable': imageToolbarEnabled }"></i>
-                &nbsp;
-                <i class="mdi-chevron-right mdi sp-text-big sp-clickable" (click)="onToolbarNext($event)" [ngClass]="{'sp-invisible': images.length < 2, 'sp-clickable': imageToolbarEnabled }"></i>
-              </td>
-              <td class="sp-td-img-toolbar-right">
-                <i *ngIf="!isLoadingPalette" (click)="onToolbarClose($event)" class="mdi-close mdi sp-text-xlarge sp-float-right" [ngClass]="{ 'sp-clickable': imageToolbarEnabled }"></i>
-                <i *ngIf="isLoadingPalette" class="mdi-loading mdi-spin mdi sp-text-xlarge sp-float-right"></i>
-              </td>
-            </tr></table>
-          </div>
-        </div>
+        [style.height.px]="imageSize.height"></canvas>
         <!-- Lyrics overlay (hack: one more pixel that solves the blurry text and aligns with the image) -->
         <div
         *ngIf="lyricsOverlayEnabled"
@@ -78,8 +69,8 @@
           <sp-text-scroller
           (close)="lyricsOverlayEnabled = false"
           [text]="song.lyrics"
-          [backgroundColor]="palette.background.selected"
-          [textColor]="palette.primary.selected">
+          [backgroundColor]="palette.background"
+          [textColor]="palette.primary">
           </sp-text-scroller>
         </div>
       </div>
@@ -89,146 +80,213 @@
   <tr class="sp-tr-song-info sp-font-family-regular">
     <td colspan="3" class="sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
-      <i class="sp-text-xlarge mdi mdi-music" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="sp-text-xlarge mdi mdi-music" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-xlarge sp-text-bold"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.name}}</span>
+      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.name}}</span>
       <span
       *ngIf="song.playCount > 0"
       class="sp-text-medium sp-play-count"
-      [ngStyle]="palette.secondary.selected.cssColor">&nbsp;{{song.playCount}}</span>
+      [ngStyle]="palette.secondary.cssColor">&nbsp;{{song.playCount}}</span>
       <br>
       <!-- Artist Name -->
-      <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.artistName}}&nbsp;</span>
+      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}&nbsp;</span>
       <!-- Artist Type -->
       <ng-container *ngIf="song.artistType">
-        <i class="mdi-microphone mdi sp-text-large" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <i class="mdi-microphone mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.artistType}}
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistType}}
         </span>
       </ng-container>
       <br>
       <!-- Album -->
-      <i class="mdi-album mdi sp-text-large " [ngStyle]="palette.secondary.selected.cssColor"></i>
+      <i class="mdi-album mdi sp-text-large " [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.albumName}}&nbsp;&nbsp;</span>
+      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.albumName}}&nbsp;&nbsp;</span>
       <br>
       <!-- Year -->
       <ng-container *ngIf="song.releaseYear > 0">
-        <i class="mdi-calendar mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <i class="mdi-calendar mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-medium"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.releaseYear}}&nbsp;&nbsp;</span>
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.releaseYear}}&nbsp;&nbsp;</span>
       </ng-container>
       <!-- Genre -->
       <ng-container *ngIf="song.genre">
-        <i class="mdi-tag mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <i class="mdi-tag mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-medium"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{song.genre}}&nbsp;&nbsp;</span>
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.genre}}&nbsp;&nbsp;</span>
       </ng-container>
       <!-- File Info -->
       <ng-container *ngIf="fileInfoVisible">
-        <i class="mdi-file-music mdi sp-text-medium" [ngStyle]="palette.secondary.selected.cssColor"></i>
+        <i class="mdi-file-music mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-medium"
-        [ngStyle]="palette.primary.selected.cssColor">&nbsp;{{getExtension()}} | {{getBitrate()}} | {{getFrequency()}} | {{getSize()}}</span>
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{getExtension()}} | {{getBitrate()}} | {{getFrequency()}} | {{getSize()}}</span>
       </ng-container>
     </td>
   </tr>
-  <!-- Toolbar -->
-  <tr class="sp-tr-toolbar sp-player-overlay">
-    <td colspan="3" class="sp-td-toolbar sp-full-width sp-text-big sp-no-padding">
-      <table class="sp-full-width">
-        <tr>
-          <!-- Link icon -->
-          <td>
-            <i
-            (click)="toggleLive()"
-            class="mdi sp-cursor-pointer"
-            [ngClass]="song.live ? 'mdi-broadcast' : 'mdi-broadcast-off'"></i>
+  <!-- Footer -->
+  <tr class="sp-tr-footer sp-player-overlay">
+    <td colspan="3" class="sp-footer-outline">
+      <!-- Song Controls -->
+      <table *ngIf="!imageControlsEnabled" class="sp-table sp-table-no-padding sp-full-height sp-full-width">
+        <!-- Song Toolbar -->
+        <tr class="sp-tr-song-toolbar">
+          <td colspan="3" class="sp-td-toolbar sp-full-width sp-text-big">
+            <table class="sp-full-width">
+              <tr>
+                <!-- Link icon -->
+                <td>
+                  <i
+                  (click)="toggleLive()"
+                  class="mdi sp-cursor-pointer"
+                  [ngClass]="song.live ? 'mdi-broadcast' : 'mdi-broadcast-off'"></i>
+                </td>
+                <!-- Lyrics icon -->
+                <td>
+                  <i
+                  class="mdi sp-cursor-pointer"
+                  (click)="toggleLyrics()"
+                  [ngClass]="song.lyrics ? 'mdi-script-text-outline' : 'mdi-script-outline'"></i>
+                </td>
+                <!-- Rating icon -->
+                <td>
+                  <sp-rating
+                  (change)="onRatingChange($event, song)"
+                  [(ngModel)]="song.rating"
+                  [classOff]="'sp-color-overlay-01'"
+                  [classBack]="'sp-bg-dim-black-high'">
+                  </sp-rating>
+                </td>
+                <!-- Mood icon -->
+                <td>
+                  <i
+                  class="mdi sp-cursor-pointer"
+                  (click)="onMoodClick(song)"
+                  [ngClass]="song.mood && song.mood !== 'No Mood' ? 'mdi-emoticon-happy-outline' : 'mdi-emoticon-neutral-outline'"></i>
+                </td>
+                <!-- Favorite icon -->
+                <td>
+                  <i
+                  class="mdi sp-cursor-pointer"
+                  (click)="onFavoriteClick(song)"
+                  [ngClass]="song.favorite ? 'mdi-heart' : 'mdi-heart-outline'"></i>
+                </td>
+              </tr>
+            </table>
           </td>
-          <!-- Lyrics icon -->
-          <td>
-            <i
-            class="mdi sp-cursor-pointer"
-            (click)="toggleLyrics()"
-            [ngClass]="song.lyrics ? 'mdi-script-text-outline' : 'mdi-script-outline'"></i>
+        </tr>
+        <!-- Time Slider -->
+        <tr class="sp-tr-time-slider sp-font-family-regular"><td colspan="3"><table class="sp-table"><tr>
+          <!-- Elapsed -->
+          <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
+            <span [ngClass]="{ 'sp-fade-in-out': model.status === PlayerStatus.Paused }" class="sp-time-text">{{ model.elapsedSeconds | duration }}</span>
           </td>
-          <!-- Rating icon -->
-          <td>
-            <sp-rating
-            (change)="onRatingChange($event, song)"
-            [(ngModel)]="song.rating"
-            [classOff]="'sp-color-overlay-01'"
-            [classBack]="'sp-bg-dim-black-high'">
-            </sp-rating>
+          <!-- Progress Bar -->
+          <td class="sp-td-progress-bar sp-full-width">
+            <div class="sp-progress-back">
+              <div class="sp-progress-front" [style.width.%]="model.elapsedPercentage"></div>
+            </div>
           </td>
-          <!-- Mood icon -->
-          <td>
-            <i
-            class="mdi sp-cursor-pointer"
-            (click)="onMoodClick(song)"
-            [ngClass]="song.mood && song.mood !== 'No Mood' ? 'mdi-emoticon-happy-outline' : 'mdi-emoticon-neutral-outline'"></i>
+          <!-- Duration -->
+          <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
+              <span class="sp-time-text">{{ song.seconds | duration }}</span>
           </td>
-          <!-- Favorite icon -->
-          <td>
-            <i
-            class="mdi sp-cursor-pointer"
-            (click)="onFavoriteClick(song)"
-            [ngClass]="song.favorite ? 'mdi-heart' : 'mdi-heart-outline'"></i>
+        </tr></table></td></tr>
+        <!-- Play Controls -->
+        <tr class="sp-tr-play-controls">
+          <td colspan="3">
+            <table class="sp-full-width">
+              <tr>
+                <td class="sp-td-play-control sp-text-big-fixed">
+                  <i *ngIf="model.playerList.play === PlayMode.Sequence" class="mdi-shuffle-disabled mdi"></i>
+                  <i *ngIf="model.playerList.play === PlayMode.Random" class="mdi-shuffle mdi"></i>
+                </td>
+                <td (click)="onPrevious()" class="sp-td-play-control sp-text-big-fixed">
+                    <i class="mdi-skip-previous mdi"></i>
+                </td>
+                <td class="sp-td-play-control sp-text-huge-fixed">
+                    <div (click)="onPlayPause()" class="sp-play-pause sp-play-pause-button">
+                        <i *ngIf="model.status !== PlayerStatus.Playing" class="mdi-play mdi sp-play-pause sp-play-pause-icon"></i>
+                        <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-play-pause sp-play-pause-icon"></i>
+                    </div>
+                </td>
+                <td (click)="onForward()" class="sp-td-play-control sp-text-big-fixed">
+                    <i class="mdi-skip-next mdi"></i>
+                </td>
+                <td class="sp-td-play-control sp-text-big-fixed">
+                    <i *ngIf="model.playerList.repeat === RepeatMode.All" class="mdi-repeat mdi"></i>
+                    <i *ngIf="model.playerList.repeat === RepeatMode.One" class="mdi-repeat-once mdi"></i>
+                    <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" class="mdi-repeat-off mdi"></i>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
       </table>
-    </td>
-  </tr>
-  <!-- Time Slider -->
-  <tr class="sp-tr-time-slider sp-font-family-regular sp-player-overlay"><td colspan="3" class="sp-no-padding"><table class="sp-table"><tr>
-    <!-- Elapsed -->
-    <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
-      <span [ngClass]="{ 'sp-fade-in-out': model.status === PlayerStatus.Paused }" class="sp-time-text">{{ model.elapsedSeconds | duration }}</span>
-    </td>
-    <!-- Progress Bar -->
-    <td class="sp-td-progress-bar sp-full-width">
-      <div class="sp-progress-back">
-        <div class="sp-progress-front" [style.width.%]="model.elapsedPercentage"></div>
-      </div>
-    </td>
-    <!-- Duration -->
-    <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
-        <span class="sp-time-text">{{ song.seconds | duration }}</span>
-    </td>
-  </tr></table></td></tr>
-  <!-- Play Controls -->
-  <tr class="sp-tr-play-controls sp-player-overlay">
-    <td colspan="3">
-      <table class="sp-full-width">
+      <!-- Image Controls -->
+      <table *ngIf="imageControlsEnabled" class="sp-table sp-full-height sp-full-width" style="table-layout: fixed;">
+        <!-- Image Toolbar -->
+        <tr class="sp-tr-image-toolbar">
+          <td><i class="mdi-undo-variant mdi sp-text-big sp-cursor-pointer" (click)="onToolbarReset()"></i></td>
+          <td><i class="mdi-chevron-left mdi sp-text-big sp-cursor-pointer" (click)="onToolbarBack($event)"></i></td>
+          <td><span *ngIf="image" class="sp-text-large sp-font-family-regular sp-cursor-pointer">{{image.imageType.toUpperCase()}}</span></td>
+          <td><i class="mdi-chevron-right mdi sp-text-big sp-cursor-pointer" (click)="onToolbarNext($event)"></i></td>
+          <td>
+            <i *ngIf="!isLoadingPalette" (click)="onImageControlsClose($event)" class="mdi-close mdi sp-text-big sp-cursor-pointer"></i>
+            <i *ngIf="isLoadingPalette" class="mdi-loading mdi-spin mdi sp-text-big"></i>
+          </td>
+        </tr>
+        <!-- Colors -->
         <tr>
-          <td class="sp-td-play-control sp-text-big-fixed">
-            <i *ngIf="model.playerList.play === PlayMode.Sequence" class="mdi-shuffle-disabled mdi"></i>
-            <i *ngIf="model.playerList.play === PlayMode.Random" class="mdi-shuffle mdi"></i>
-          </td>
-          <td (click)="onPrevious()" class="sp-td-play-control sp-text-big-fixed">
-              <i class="mdi-skip-previous mdi"></i>
-          </td>
-          <td class="sp-td-play-control sp-text-huge-fixed">
-              <div (click)="onPlayPause()" class="sp-play-pause sp-play-pause-button">
-                  <i *ngIf="model.status !== PlayerStatus.Playing" class="mdi-play mdi sp-play-pause sp-play-pause-icon"></i>
-                  <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-play-pause sp-play-pause-icon"></i>
+          <td colspan="5">
+            <div class="sp-colors-container sp-full-height sp-full-width sp-text-xlarge">
+              <!-- Eye Dropper -->
+              <table #tableEyeDropper class="sp-table-eye-dropper sp-player-eye-dropper"></table>
+              <div class="sp-full-height sp-full-width">
+                <!-- Hover Color -->
+                <div class="sp-color-bar" >
+                  <i class="mdi-bullseye mdi sp-color-icon"></i>
+                  <div class="sp-full-height sp-full-width sp-color-bar-outline" [ngStyle]="colorHover.cssBgColor"></div>
+                </div>
+                <!-- Selected Color -->
+                <div class="sp-color-bar">
+                  <i class="mdi-cursor-default-click-outline mdi sp-color-icon"></i>
+                  <div class="sp-full-height sp-full-width sp-color-bar-outline sp-clickable" (click)="onSelectedColorClick()" [ngStyle]="colorSelected.cssBgColor"></div>
+                </div>
+                <!-- Palette -->
+                <div class="sp-color-palette sp-color-bar">
+                  <div class="sp-full-height sp-color-bar-small">
+                    <i class="mdi-alpha-b-box-outline mdi sp-color-icon"></i>
+                    <div
+                    (click)="onBackgroundColorClick()"
+                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline"
+                    [ngStyle]="palette.background.cssBgColor"></div>
+                  </div>
+                  <div class="sp-full-height sp-color-bar-small">
+                    <i class="mdi-numeric-1-box-outline mdi sp-color-icon"></i>
+                    <div
+                    (click)="onPrimaryColorClick()"
+                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline"
+                    [ngStyle]="palette.primary.cssBgColor"></div>
+                  </div>
+                  <div class="sp-full-height sp-color-bar-small">
+                    <i class="mdi-numeric-2-box-outline mdi sp-color-icon"></i>
+                    <div
+                    (click)="onSecondaryColorClick()"
+                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline"
+                    [ngStyle]="palette.secondary.cssBgColor"></div>
+                  </div>
+                </div>
               </div>
-          </td>
-          <td (click)="onForward()" class="sp-td-play-control sp-text-big-fixed">
-              <i class="mdi-skip-next mdi"></i>
-          </td>
-          <td class="sp-td-play-control sp-text-big-fixed">
-              <i *ngIf="model.playerList.repeat === RepeatMode.All" class="mdi-repeat mdi"></i>
-              <i *ngIf="model.playerList.repeat === RepeatMode.One" class="mdi-repeat-once mdi"></i>
-              <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" class="mdi-repeat-off mdi"></i>
+            </div>
           </td>
         </tr>
       </table>
