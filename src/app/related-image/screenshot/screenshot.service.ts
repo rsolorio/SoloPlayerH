@@ -32,8 +32,5 @@ export class ScreenshotService {
     }
     const canvas = await html2canvas(screenshotTarget, options);
     return canvas.toDataURL();
-    //const dataUrl = canvas.toDataURL();
-    //const fetchResponse = await fetch(dataUrl);
-    //const blob = await fetchResponse.blob();
   }
 }

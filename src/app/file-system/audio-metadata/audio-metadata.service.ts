@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
 import { IImage } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { AttachedPictureType, MusicImageType } from './music-metadata.enum';
-import { IAudioInfo, IPictureTag } from './music-metadata.interface';
+import { AttachedPictureType, MusicImageType } from './audio-metadata.enum';
+import { IAudioInfo, IPictureTag } from './audio-metadata.interface';
 import { ImageSrcType } from 'src/app/core/globals.enum';
 
 @Injectable({
@@ -14,7 +14,7 @@ import { ImageSrcType } from 'src/app/core/globals.enum';
  * Based on: https://github.com/Borewit/music-metadata-browser
  * You can test the library here: https://audio-tag-analyzer.netlify.app/
  */
-export class MusicMetadataService {
+export class AudioMetadataService {
 
   constructor(private log: LogService) { }
 

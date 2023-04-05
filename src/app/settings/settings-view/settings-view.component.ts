@@ -13,8 +13,8 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { DialogService } from 'src/app/file-system/dialog/dialog.service';
 import { IFileInfo } from 'src/app/file-system/file/file.interface';
 import { FileService } from 'src/app/file-system/file/file.service';
-import { IAudioInfo } from 'src/app/music/music-metadata/music-metadata.interface';
-import { MusicMetadataService } from 'src/app/music/music-metadata/music-metadata.service';
+import { IAudioInfo } from 'src/app/file-system/audio-metadata/audio-metadata.interface';
+import { AudioMetadataService } from 'src/app/file-system/audio-metadata/audio-metadata.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
@@ -33,7 +33,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private log: LogService,
     private db: DatabaseService,
     private fileService: FileService,
-    private metadataService: MusicMetadataService,
+    private metadataService: AudioMetadataService,
     private utility: UtilityService,
     private navbarService: NavBarStateService,
     private loadingService: LoadingViewStateService) {

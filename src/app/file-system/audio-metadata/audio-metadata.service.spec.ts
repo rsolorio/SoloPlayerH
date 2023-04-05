@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MusicMetadataService } from './music-metadata.service';
+import { AudioMetadataService } from './audio-metadata.service';
 
-describe('MusicMetadataService', () => {
-  let service: MusicMetadataService;
+describe('AudioMetadataService', () => {
+  let service: AudioMetadataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(MusicMetadataService);
+    service = TestBed.inject(AudioMetadataService);
   });
 
   it('should be created', () => {

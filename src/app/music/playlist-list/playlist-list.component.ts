@@ -6,8 +6,8 @@ import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/file-system/file/file.service';
-import { MusicImageType } from 'src/app/music/music-metadata/music-metadata.enum';
-import { MusicMetadataService } from 'src/app/music/music-metadata/music-metadata.service';
+import { MusicImageType } from 'src/app/file-system/audio-metadata/audio-metadata.enum';
+import { AudioMetadataService } from 'src/app/file-system/audio-metadata/audio-metadata.service';
 import { PlaylistListBroadcastService } from './playlist-list-broadcast.service';
 
 @Component({
@@ -23,7 +23,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   constructor(
     public broadcastService: PlaylistListBroadcastService,
     private fileService: FileService,
-    private metadataService: MusicMetadataService,
+    private metadataService: AudioMetadataService,
     private db: DatabaseService,
     private utilities: UtilityService
   ){

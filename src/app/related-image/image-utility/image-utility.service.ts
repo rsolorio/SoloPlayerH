@@ -3,8 +3,8 @@ import { IArea, ICoordinate, ISize } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { RelatedImageEntity } from '../../shared/entities';
 import { FileService } from '../../file-system/file/file.service';
-import { MusicImageSourceType } from '../../music/music-metadata/music-metadata.enum';
-import { MusicMetadataService } from '../../music/music-metadata/music-metadata.service';
+import { MusicImageSourceType } from '../../file-system/audio-metadata/audio-metadata.enum';
+import { AudioMetadataService } from '../../file-system/audio-metadata/audio-metadata.service';
 import { ImageSrcType } from 'src/app/core/globals.enum';
 import { ColorG } from 'src/app/core/models/color-g.class';
 
@@ -15,7 +15,7 @@ export class ImageUtilityService {
 
   constructor(
     private fileService: FileService,
-    private metadataService: MusicMetadataService,
+    private metadataService: AudioMetadataService,
     private utility: UtilityService)
   { }
 

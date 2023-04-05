@@ -18,7 +18,7 @@ import { ImageUtilityService } from 'src/app/related-image/image-utility/image-u
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
-import { MusicImageSourceType } from 'src/app/music/music-metadata/music-metadata.enum';
+import { MusicImageSourceType } from 'src/app/file-system/audio-metadata/audio-metadata.enum';
 import { ImageSrcType } from 'src/app/core/globals.enum';
 import { ColorServiceName, ColorSort, IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
