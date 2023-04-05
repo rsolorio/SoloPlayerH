@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ColorG } from 'src/app/core/models/color-g.class';
 import { ITextScrollerModel } from './text-scroller-model.interface';
+import { IBasicColorPalette } from '../../services/color-utility/color-utility.interface';
 
 @Component({
   selector: 'sp-text-scroller',
@@ -16,27 +17,23 @@ export class TextScrollerComponent implements OnInit {
 
   public model: ITextScrollerModel = {
     text: '',
-    backgroundColor: ColorG.fromRgba(0, 0, 0),
-    textColor: ColorG.fromRgba(255, 255, 255),
-    closeHidden: false
+    closeHidden: false,
+    palette: {
+      background: ColorG.black,
+      primary: ColorG.white,
+      secondary: ColorG.gray,
+      dominant: ColorG.black
+    }
   };
 
   constructor() { }
 
-  @Input() set backgroundColor(val: ColorG) {
-    this.model.backgroundColor = val;
+  @Input() set palette(val: IBasicColorPalette) {
+    this.model.palette = val;
   }
 
-  get backgroundColor(): ColorG {
-    return this.model.backgroundColor;
-  }
-
-  @Input() set textColor(val: ColorG) {
-    this.model.textColor = val;
-  }
-
-  get textColor(): ColorG {
-    return this.model.textColor;
+  get palette(): IBasicColorPalette {
+    return this.model.palette;
   }
 
   @Input() set text(val: string) {
@@ -55,7 +52,7 @@ export class TextScrollerComponent implements OnInit {
   }
 
   public getColorVars(): string {
-    return `--fromColor: ${this.model.backgroundColor.toRgbaFormula(0)}; --toColor: ${this.model.backgroundColor.toRgbaFormula(1)};`;
+    return `--fromColor: ${this.model.palette.background.toRgbaFormula(0)}; --toColor: ${this.model.palette.background.toRgbaFormula(1)};`;
   }
 
 }

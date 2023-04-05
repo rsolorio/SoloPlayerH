@@ -1,10 +1,10 @@
 <div class="sp-text-scroller-container sp-full-height sp-full-width">
   <div
   class="sp-text-container sp-full-width sp-full-height sp-scrollbar-hidden"
-  [ngStyle]="{ 'background-color': model.backgroundColor.rgbFormula, 'border-color': model.textColor.toRgbaFormula(0.5) }">
+  [ngStyle]="{ 'background-color': model.palette.background.rgbFormula }">
     <div
     [innerText]="model.text"
-    [ngStyle]="{ color: model.textColor.rgbFormula }"
+    [ngStyle]="{ color: model.palette.primary.rgbFormula }"
     class="sp-text sp-full-width sp-font-family-regular sp-text-large">
     </div>
   </div>
@@ -14,7 +14,7 @@
   </div>
   <i
   *ngIf="!model.closeHidden"
-  [ngStyle]="{ color: model.textColor.rgbFormula }"
+  [ngStyle]="{ color: model.palette.secondary.rgbFormula }"
   (click)="onClose()"
   class="mdi-close-thick mdi sp-text-close sp-text-xlarge sp-cursor-pointer">
   </i>

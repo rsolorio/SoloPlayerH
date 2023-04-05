@@ -205,7 +205,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public takeScreenshot(): void {
-    this.dialogService.getScreenshot(100).then(result => {
+    this.dialogService.getScreenshot(300).then(result => {
       this.imagePreviewService.show({
         title: 'Screenshot',
         subTitle: 'Now Playing',

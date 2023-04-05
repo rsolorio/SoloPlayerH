@@ -268,6 +268,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
 
   protected onTrackChanged(eventArgs: IEventArgs<IPlaylistSongModel>): void {
     this.imageControlsEnabled = false;
+    this.lyricsOverlayEnabled = false;
     super.onTrackChanged(eventArgs);
   }
 }

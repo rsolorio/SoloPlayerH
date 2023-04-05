@@ -8,8 +8,6 @@
   position: relative;
   overflow-y: scroll;
   opacity: 0.8;
-  border-top: 1px solid;
-  border-bottom: 1px solid;
 }
 
 .sp-text {
@@ -36,7 +34,7 @@
 .sp-text-gradient {
   position: absolute;
   pointer-events: none; // Allow the scroll to pass through this div directly to the text
-  top: 1px; // Push the div one pixel down to allow the underlying div to show its border
-  height: calc(100% - 2px); // Also, make the div 2 pixels shorter in order to display top/bottom borders of the parent div
+  top: 0;
+  height: 100%;
   background: linear-gradient(to top, var(--fromColor) 90%, var(--toColor) 100%), linear-gradient(to bottom, var(--fromColor) 90%, var(--toColor) 100%);
 }
