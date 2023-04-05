@@ -75,7 +75,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             dataType: 'text',
             descriptions: [
               'Number of tracks: 0',
-              'Total playing time: 00:00'
+              'Total playing time: 00:00:00'
             ]
           },
           {
