@@ -9,7 +9,7 @@ import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
+import { DialogService } from 'src/app/file-system/dialog/dialog.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
 import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';

@@ -158,6 +158,7 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - fullyParsed
   - Flag that indicates if the audio had to be fully parsed to properly calculate the duration
   - Set during the scan process
+  - Not used in the app, only for research purposes
 - favorite
   - Flag that indicates if this is a favorite audio
   - False by default, set by user
@@ -166,7 +167,7 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
   - False by default, set by the user
 - primaryAlbumId
   - The album associated with the track
-- TODO: url, live, explicit, coverSongId, popularity
+- TODO: url, explicit, coverSongId, popularity
 
 
 ### Album table

@@ -25,7 +25,7 @@ import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.en
 import { SongBadge } from 'src/app/shared/models/music.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
-import { DialogService } from 'src/app/shared/services/dialog/dialog.service';
+import { DialogService } from 'src/app/file-system/dialog/dialog.service';
 import { ImagePreviewService } from 'src/app/shared/components/image-preview/image-preview.service';
 import { ImageUtilityService } from 'src/app/shared/services/image-utility/image-utility.service';
 

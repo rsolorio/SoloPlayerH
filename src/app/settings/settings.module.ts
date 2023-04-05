@@ -4,9 +4,9 @@ import { SettingsViewComponent } from './settings-view/settings-view.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CoreModule } from '../core/core.module';
-import { DialogService } from '../shared/services/dialog/dialog.service';
-import { DialogElectronService } from '../shared/services/dialog/dialog-electron.service';
-import { DialogCordovaService } from '../shared/services/dialog/dialog-cordova.service';
+import { DialogService } from '../file-system/dialog/dialog.service';
+import { DialogElectronService } from '../file-system/dialog/dialog-electron.service';
+import { DialogCordovaService } from '../file-system/dialog/dialog-cordova.service';
 
 
 

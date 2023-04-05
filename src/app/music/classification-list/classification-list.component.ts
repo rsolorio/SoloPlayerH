@@ -12,7 +12,7 @@ import { IClassificationModel } from 'src/app/shared/models/classification-model
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { FileService } from 'src/app/shared/services/file/file.service';
+import { FileService } from 'src/app/file-system/file/file.service';
 import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';

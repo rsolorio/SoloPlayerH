@@ -5,7 +5,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { FileService } from 'src/app/shared/services/file/file.service';
+import { FileService } from 'src/app/file-system/file/file.service';
 import { MusicImageType } from 'src/app/shared/services/music-metadata/music-metadata.enum';
 import { MusicMetadataService } from 'src/app/shared/services/music-metadata/music-metadata.service';
 import { PlaylistListBroadcastService } from './playlist-list-broadcast.service';
