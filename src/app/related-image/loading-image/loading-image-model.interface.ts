@@ -1,5 +1,5 @@
 import { IEventArgs } from 'src/app/core/models/core.interface';
-import { RelatedImageEntity } from '../../entities/related-image.entity';
+import { RelatedImageEntity } from '../../shared/entities/related-image.entity';
 
 export interface ILoadingImageModel {
     src: string;

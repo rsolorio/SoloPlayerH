@@ -18,9 +18,9 @@ import { UtilityService } from '../core/services/utility/utility.service';
 import { ValueListSelectorService } from '../value-list/value-list-selector/value-list-selector.service';
 import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/value-list-selector/value-list-selector-model.interface';
 import { ValueLists } from '../shared/services/database/database.lists';
-import { ImagePreviewService } from '../shared/components/image-preview/image-preview.service';
+import { ImagePreviewService } from '../related-image/image-preview/image-preview.service';
 import { RelatedImageEntity } from '../shared/entities';
-import { ImageUtilityService } from '../shared/services/image-utility/image-utility.service';
+import { ImageUtilityService } from '../related-image/image-utility/image-utility.service';
 import { RelatedImageId } from '../shared/services/database/database.images';
 
 /**

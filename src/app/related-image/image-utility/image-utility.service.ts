@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { IArea, ICoordinate, ISize } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { RelatedImageEntity } from '../../entities';
-import { FileService } from '../../../file-system/file/file.service';
-import { MusicImageSourceType } from '../music-metadata/music-metadata.enum';
-import { MusicMetadataService } from '../music-metadata/music-metadata.service';
+import { RelatedImageEntity } from '../../shared/entities';
+import { FileService } from '../../file-system/file/file.service';
+import { MusicImageSourceType } from '../../music/music-metadata/music-metadata.enum';
+import { MusicMetadataService } from '../../music/music-metadata/music-metadata.service';
 import { ImageSrcType } from 'src/app/core/globals.enum';
 import { ColorG } from 'src/app/core/models/color-g.class';
 

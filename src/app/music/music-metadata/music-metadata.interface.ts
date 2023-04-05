@@ -1,5 +1,5 @@
 import { IAudioMetadata } from 'music-metadata-browser';
-import { IFileInfo } from '../../../file-system/file/file.interface';
+import { IFileInfo } from '../../file-system/file/file.interface';
 
 /**
  * Defines the structure of the object that holds Lyrics or Comments in a tag.

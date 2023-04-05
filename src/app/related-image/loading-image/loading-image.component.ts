@@ -3,9 +3,9 @@ import { IColorExtractionData } from 'src/app/core/models/color-extractor-factor
 import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
 import { ICoordinate, ISize } from 'src/app/core/models/core.interface';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
-import { RelatedImageEntity } from '../../entities/related-image.entity';
-import { ColorUtilityService } from '../../services/color-utility/color-utility.service';
-import { ImageUtilityService } from '../../services/image-utility/image-utility.service';
+import { RelatedImageEntity } from '../../shared/entities/related-image.entity';
+import { ColorUtilityService } from '../../shared/services/color-utility/color-utility.service';
+import { ImageUtilityService } from '../image-utility/image-utility.service';
 import { IImageLoadedEventArgs, ILoadingImageModel } from './loading-image-model.interface';
 
 @Component({

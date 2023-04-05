@@ -1,4 +1,4 @@
-@import "../../../../styles-variables";
+@import "../../../styles-variables";
 
 .loading-image-container {
     position: relative;
@@ -23,7 +23,7 @@
 
 .loading-image-error {
     background-color: $sp-color-red;
-    background-image: url('../../../../assets/img/broken.png');
+    background-image: url('../../../assets/img/broken.png');
     background-repeat: no-repeat;
     background-position: center center;
     position: absolute;
@@ -31,7 +31,7 @@
 
 .loading-image-loading {
     background-color: $sp-color-black;
-    background-image: url('../../../../assets/img/loading.gif');
+    background-image: url('../../../assets/img/loading.gif');
     background-repeat: no-repeat;
     background-position: center center;
     position: absolute;

@@ -21,9 +21,9 @@ import { ValueLists } from '../database/database.lists';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../../../file-system/file/file.interface';
 import { FileService } from '../../../file-system/file/file.service';
-import { MusicImageSourceType, MusicImageType, PictureFormat } from '../music-metadata/music-metadata.enum';
-import { IAudioInfo, IIdentifierTag, IMemoTag, IPopularimeterTag } from '../music-metadata/music-metadata.interface';
-import { MusicMetadataService } from '../music-metadata/music-metadata.service';
+import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../music/music-metadata/music-metadata.enum';
+import { IAudioInfo, IIdentifierTag, IMemoTag, IPopularimeterTag } from '../../../music/music-metadata/music-metadata.interface';
+import { MusicMetadataService } from '../../../music/music-metadata/music-metadata.service';
 
 @Injectable({
   providedIn: 'root'
