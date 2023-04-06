@@ -19,11 +19,11 @@ import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { ValueLists } from '../database/database.lists';
 import { DatabaseService } from '../database/database.service';
-import { IFileInfo } from '../../../file-system/file/file.interface';
-import { FileService } from '../../../file-system/file/file.service';
-import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../file-system/audio-metadata/audio-metadata.enum';
-import { IAudioInfo, IIdentifierTag, IMemoTag, IPopularimeterTag } from '../../../file-system/audio-metadata/audio-metadata.interface';
-import { AudioMetadataService } from '../../../file-system/audio-metadata/audio-metadata.service';
+import { IFileInfo } from '../../../platform/file/file.interface';
+import { FileService } from '../../../platform/file/file.service';
+import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../platform/audio-metadata/audio-metadata.enum';
+import { IAudioInfo, IIdentifierTag, IMemoTag, IPopularimeterTag } from '../../../platform/audio-metadata/audio-metadata.interface';
+import { AudioMetadataService } from '../../../platform/audio-metadata/audio-metadata.service';
 
 @Injectable({
   providedIn: 'root'

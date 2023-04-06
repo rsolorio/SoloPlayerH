@@ -8,9 +8,9 @@ import { AlbumListComponent } from './album-list/album-list.component';
 import { ClassificationListComponent } from './classification-list/classification-list.component';
 import { SongListComponent } from './song-list/song-list.component';
 import { PlaylistListComponent } from './playlist-list/playlist-list.component';
-import { FileService } from '../file-system/file/file.service';
-import { FileNodeService } from '../file-system/file/file-node.service';
-import { FileCordovaService } from '../file-system/file/file-cordova.service';
+import { FileService } from '../platform/file/file.service';
+import { FileElectronService } from '../platform/file/file-electron.service';
+import { FileCordovaService } from '../platform/file/file-cordova.service';
 import { ListTransformService } from '../shared/services/list-transform/list-transform.service';
 import { SongValidatorFactory } from './transform-validators/song-validator-factory';
 import { ValueListModule } from '../value-list/value-list.module';
@@ -31,7 +31,7 @@ import { ValueListModule } from '../value-list/value-list.module';
     ValueListModule
   ],
   entryComponents: [],
-  providers: [ { provide: FileService, useClass: FileNodeService }]
+  providers: [ { provide: FileService, useClass: FileElectronService }]
 })
 export class MusicModule {
   constructor(transformService: ListTransformService) {

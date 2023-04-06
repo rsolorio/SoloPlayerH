@@ -12,7 +12,7 @@ import { ImageSrcType } from 'src/app/core/globals.enum';
 @Injectable({
   providedIn: 'root'
 })
-export class FileNodeService extends FileService {
+export class FileElectronService extends FileService {
 
   constructor() {
     super();

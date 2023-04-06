@@ -13,7 +13,7 @@ import { IEventArgs } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
 import { DatabaseService } from '../shared/services/database/database.service';
 import { ISongModel } from '../shared/models/song-model.interface';
-import { DialogService } from '../file-system/dialog/dialog.service';
+import { DialogService } from '../platform/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
 import { ValueListSelectorService } from '../value-list/value-list-selector/value-list-selector.service';
 import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/value-list-selector/value-list-selector-model.interface';

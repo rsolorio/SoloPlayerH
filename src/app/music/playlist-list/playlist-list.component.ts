@@ -5,9 +5,9 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { FileService } from 'src/app/file-system/file/file.service';
-import { MusicImageType } from 'src/app/file-system/audio-metadata/audio-metadata.enum';
-import { AudioMetadataService } from 'src/app/file-system/audio-metadata/audio-metadata.service';
+import { FileService } from 'src/app/platform/file/file.service';
+import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
+import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
 import { PlaylistListBroadcastService } from './playlist-list-broadcast.service';
 
 @Component({

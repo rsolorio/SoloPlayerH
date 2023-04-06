@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FileNodeService } from './file-node.service';
+import { FileElectronService } from './file-electron.service';
 
 describe('FileNodeService', () => {
-  let service: FileNodeService;
+  let service: FileElectronService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FileNodeService);
+    service = TestBed.inject(FileElectronService);
   });
 
   it('should be created', () => {

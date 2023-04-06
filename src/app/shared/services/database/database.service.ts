@@ -42,7 +42,7 @@ import { classificationEntries, valueListEntries, ValueLists } from './database.
 import { defaultModuleOptions } from './database.options';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
 import { RelatedImageId, RelatedImageSrc } from './database.images';
-import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../file-system/audio-metadata/audio-metadata.enum';
+import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../platform/audio-metadata/audio-metadata.enum';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.

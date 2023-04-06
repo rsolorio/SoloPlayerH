@@ -9,9 +9,9 @@ import { ListBaseComponent } from './components/list-base/list-base.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { QuickFilterComponent } from './components/quick-filter/quick-filter.component';
-import { FileService } from '../file-system/file/file.service';
-import { FileNodeService } from '../file-system/file/file-node.service';
-import { FileCordovaService } from '../file-system/file/file-cordova.service';
+import { FileService } from '../platform/file/file.service';
+import { FileElectronService } from '../platform/file/file-electron.service';
+import { FileCordovaService } from '../platform/file/file-cordova.service';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { FilterModule } from '../filter/filter.module';
 import { ChipSelectionComponent } from './components/chip-selection/chip-selection.component';
@@ -53,6 +53,6 @@ import { RelatedImageModule } from '../related-image/related-image.module';
     TextScrollerComponent
   ],
   entryComponents: [ QuickSearchComponent ],
-  providers: [ { provide: FileService, useClass: FileNodeService }]
+  providers: [ { provide: FileService, useClass: FileElectronService }]
 })
 export class SharedModule { }
