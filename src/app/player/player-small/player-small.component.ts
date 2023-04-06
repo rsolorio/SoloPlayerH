@@ -12,7 +12,7 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
-import { ImageUtilityService } from 'src/app/related-image/image-utility/image-utility.service';
+import { ImageService } from 'src/app/platform/image/image.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -34,9 +34,9 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private dialog: DialogService,
     private imagePreview: ImagePreviewService,
     private valueListService: ValueListSelectorService,
-    private imageUtility: ImageUtilityService)
+    private imageService: ImageService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utilities, imagePreview, valueListService, imageUtility);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utilities, imagePreview, valueListService, imageService);
   }
 
   public ngOnInit() {

@@ -5,8 +5,8 @@ import { ICoordinate, ISize } from 'src/app/core/models/core.interface';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
 import { RelatedImageEntity } from '../../shared/entities/related-image.entity';
 import { ColorUtilityService } from '../../shared/services/color-utility/color-utility.service';
-import { ImageUtilityService } from '../image-utility/image-utility.service';
 import { IImageLoadedEventArgs, ILoadingImageModel } from './loading-image-model.interface';
+import { ImageService } from 'src/app/platform/image/image.service';
 
 @Component({
   selector: 'sp-loading-image',
@@ -113,7 +113,7 @@ export class LoadingImageComponent implements OnDestroy, AfterViewInit {
   }
 
   constructor(
-    private imageUtility: ImageUtilityService,
+    private imageService: ImageService,
     private renderer: Renderer2,
     private colorUtility: ColorUtilityService,
     private worker: WorkerService) { }
@@ -168,7 +168,7 @@ export class LoadingImageComponent implements OnDestroy, AfterViewInit {
         x: e.offsetX,
         y: e.offsetY
       };
-      if (this.imageUtility.isInImageArea(coordinate, this.imageReference.nativeElement)) {
+      if (this.imageService.isInImageArea(coordinate, this.imageReference.nativeElement)) {
         this.imageClick.emit(e);
       }
     }
@@ -260,7 +260,7 @@ export class LoadingImageComponent implements OnDestroy, AfterViewInit {
               childSize.height = 1;
               childSize.width = 1;
             }
-            const size = this.imageUtility.getResizeDimensions(childSize, parentSize);
+            const size = this.imageService.getResizeDimensions(childSize, parentSize);
             this.setSize(this.imageReference.nativeElement, size);
             this.setSize(this.shieldReference.nativeElement, size);
           }

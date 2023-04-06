@@ -25,9 +25,8 @@ import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.en
 import { SongBadge } from 'src/app/shared/models/music.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
-import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
-import { ImageUtilityService } from 'src/app/related-image/image-utility/image-utility.service';
+import { ImageService } from 'src/app/platform/image/image.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -55,9 +54,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private stateService: SongListStateService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
-    private dialogService: DialogService,
     private imagePreviewService: ImagePreviewService,
-    private imageUtility: ImageUtilityService
+    private imageService: ImageService
   ) {
     super();
   }
@@ -253,7 +251,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       caption: 'Screenshot',
       icon: 'mdi-image-outline mdi',
       action: () => {
-        this.dialogService.getScreenshot().then(result => {
+        this.imageService.getScreenshot().then(result => {
           this.imagePreviewService.show({
             title: 'Screenshot',
             subTitle: 'Song List',
@@ -282,11 +280,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     }
     if (images && images.length) {
       const relatedImage = images[0];
-      await this.imageUtility.setSrc([relatedImage]);
-      song.image = {
-        src: relatedImage.src,
-        srcType: relatedImage.srcType
-      };
+      song.image = await this.imageService.getImageFromSource(relatedImage);
     }
   }
 }

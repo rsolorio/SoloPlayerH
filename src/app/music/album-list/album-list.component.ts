@@ -12,9 +12,9 @@ import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { ImageUtilityService } from 'src/app/related-image/image-utility/image-utility.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AlbumListBroadcastService } from './album-list-broadcast.service';
+import { ImageService } from 'src/app/platform/image/image.service';
 
 @Component({
   selector: 'sp-album-list',
@@ -33,7 +33,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private db: DatabaseService,
     private queueService: PromiseQueueService,
     private navigation: NavigationService,
-    private imageUtility: ImageUtilityService
+    private imageService: ImageService
   ) {
     super();
   }
@@ -164,11 +164,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     const images = await RelatedImageEntity.findBy({ relatedId: album.id });
     if (images && images.length) {
       const relatedImage = images[0];
-      await this.imageUtility.setSrc([relatedImage]);
-      album.image = {
-        src: relatedImage.src,
-        srcType: relatedImage.srcType
-      };
+      album.image = await this.imageService.getImageFromSource(relatedImage);
     }
   }
 }

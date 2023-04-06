@@ -20,8 +20,8 @@ import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/valu
 import { ValueLists } from '../shared/services/database/database.lists';
 import { ImagePreviewService } from '../related-image/image-preview/image-preview.service';
 import { RelatedImageEntity } from '../shared/entities';
-import { ImageUtilityService } from '../related-image/image-utility/image-utility.service';
 import { RelatedImageId } from '../shared/services/database/database.images';
+import { ImageService } from '../platform/image/image.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -48,7 +48,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private utilityService: UtilityService,
     private imagePreviewService: ImagePreviewService,
     private valueListSelectorService: ValueListSelectorService,
-    private imageUtilityService: ImageUtilityService)
+    private imageSvc: ImageService)
   {
     super();
   }
@@ -117,19 +117,27 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.selectedImageIndex = -1;
 
     const songImages = await RelatedImageEntity.findBy({ relatedId: song.id });
-    await this.imageUtilityService.setSrc(songImages);
+    await this.setSrc(songImages);
     const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
-    await this.imageUtilityService.setSrc(albumImages);
+    await this.setSrc(albumImages);
     const artistImages = await RelatedImageEntity.findBy({ relatedId: song.primaryArtistId });
-    await this.imageUtilityService.setSrc(artistImages);
+    await this.setSrc(artistImages);
     this.images = [...songImages, ...albumImages, ...artistImages];
     if (!this.images.length) {
       const defaultImages = await RelatedImageEntity.findBy({ id: RelatedImageId.DefaultLarge });
-      await this.imageUtilityService.setSrc(defaultImages);
+      await this.setSrc(defaultImages);
       this.images = defaultImages;
     }
     if (this.images.length) {
       this.selectedImageIndex = 0;
+    }
+  }
+
+  protected async setSrc(relatedImages: RelatedImageEntity[]): Promise<void> {
+    for (const relatedImage of relatedImages) {
+      const image = await this.imageSvc.getImageFromSource(relatedImage);
+      relatedImage.src = image.src;
+      relatedImage.srcType = image.srcType;
     }
   }
 
@@ -205,7 +213,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public takeScreenshot(): void {
-    this.dialogService.getScreenshot(300).then(result => {
+    this.imageSvc.getScreenshot(300).then(result => {
       this.imagePreviewService.show({
         title: 'Screenshot',
         subTitle: 'Now Playing',

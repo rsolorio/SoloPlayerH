@@ -64,6 +64,12 @@ export interface IImage {
   srcType?: ImageSrcType;
 }
 
+export interface IImageSource {
+  sourceType: string;
+  sourcePath: string;
+  sourceIndex: number;
+}
+
 export interface IStateService<T> {
   getState(): T;
 }

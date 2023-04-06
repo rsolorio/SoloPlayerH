@@ -19,6 +19,8 @@ import { ResizeObserverDirective } from './directives/resize-observer/resize-obs
 import { RatingComponent } from './components/rating/rating.component';
 import { TextScrollerComponent } from './components/text-scroller/text-scroller.component';
 import { RelatedImageModule } from '../related-image/related-image.module';
+import { ImageService } from '../platform/image/image.service';
+import { ImageElectronService } from '../platform/image/image-electron.service';
 
 
 
@@ -53,6 +55,6 @@ import { RelatedImageModule } from '../related-image/related-image.module';
     TextScrollerComponent
   ],
   entryComponents: [ QuickSearchComponent ],
-  providers: [ { provide: FileService, useClass: FileElectronService }]
+  providers: [ { provide: FileService, useClass: FileElectronService }, { provide: ImageService, useClass: ImageElectronService } ]
 })
 export class SharedModule { }

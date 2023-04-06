@@ -12,9 +12,7 @@ import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
-import { FileService } from 'src/app/platform/file/file.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
-import { ImageUtilityService } from 'src/app/related-image/image-utility/image-utility.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
@@ -22,6 +20,7 @@ import { MusicImageSourceType } from 'src/app/platform/audio-metadata/audio-meta
 import { ImageSrcType } from 'src/app/core/globals.enum';
 import { ColorServiceName, ColorSort, IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
+import { ImageService } from 'src/app/platform/image/image.service';
 
 @Component({
   selector: 'sp-player-full',
@@ -51,17 +50,15 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private menuService: MenuService,
     private db: DatabaseService,
     private colorUtility: ColorUtilityService,
-    private imageUtility: ImageUtilityService,
+    private imageService: ImageService,
     private worker: WorkerService,
     private events: EventsService,
-    private cd: ChangeDetectorRef,
     private dialog: DialogService,
     private utility: UtilityService,
     private imagePreview: ImagePreviewService,
-    private valueListService: ValueListSelectorService,
-    private fileService: FileService)
+    private valueListService: ValueListSelectorService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, imagePreview, valueListService, imageUtility);
+    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, imagePreview, valueListService, imageService);
   }
 
   public onInit(): void {
@@ -74,7 +71,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
       // Assume that only file images might need resize (for now)
       if (this.image.srcType === ImageSrcType.FileUrl) {
         // This means that the image hasn't been resized yet
-        this.fileService.shrinkImage(this.image, 700).then(newSrc => {
+        this.imageService.shrinkImage(this.image, 700).then(newSrc => {
           if (newSrc) {
             // Set src type first, since once we set the src this method will be fired again
             this.image.srcType = ImageSrcType.DataUrl;
@@ -102,7 +99,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
         height: this.pictureRef.nativeElement.naturalHeight,
         width: this.pictureRef.nativeElement.naturalWidth
       };
-      this.imageSize = this.imageUtility.getResizeDimensions(imageNaturalSize, containerSize);
+      this.imageSize = this.imageService.getResizeDimensions(imageNaturalSize, containerSize);
     }
   }
 
@@ -141,7 +138,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
         this.setupPalette(colors);
         if (this.imageControlsEnabled) {
           this.drawCanvasAndLoadData();
-          this.colorHover = this.imageUtility.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
+          this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
         }
         this.isLoadingPalette = false;
       });
@@ -151,7 +148,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
       this.setupPalette(colors);
       if (this.imageControlsEnabled) {
         this.drawCanvasAndLoadData();
-        this.colorHover = this.imageUtility.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
+        this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
       }
       this.isLoadingPalette = false;
     }
@@ -243,7 +240,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public onCanvasMouseMove(mouseMove: MouseEvent): void {
     const pictureCanvasRect = this.pictureCanvasRef.nativeElement.getBoundingClientRect();
     const coordinate = this.utility.getMouseCoordinate(pictureCanvasRect, mouseMove);
-    this.colorHover = this.imageUtility.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData, coordinate);
+    this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData, coordinate);
   }
 
   public onBackgroundColorClick(): void {

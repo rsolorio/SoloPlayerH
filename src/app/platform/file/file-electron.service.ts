@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
-import { NativeImage, nativeImage } from 'electron';
 import { promises, existsSync } from 'fs';
 import { join, resolve, extname, parse } from 'path';
 import { exec } from 'child_process';
 import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
 import { FileService } from './file.service';
-import { IImage } from 'src/app/core/models/core.interface';
-import { ImageSrcType } from 'src/app/core/globals.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -91,30 +88,6 @@ export class FileElectronService extends FileService {
 
   getAbsolutePath(locationPath: string, endPath: string): string {
     return resolve(locationPath, endPath);
-  }
-
-  async shrinkImage(image: IImage, size: number): Promise<string> {
-    let imageObj: NativeImage;
-    if (image.srcType === ImageSrcType.DataUrl) {
-      imageObj = nativeImage.createFromDataURL(image.src);
-    }
-    else if (image.srcType === ImageSrcType.FileUrl) {
-      // Remove the text: file://
-      const filePath = image.src.slice(7);
-      imageObj = nativeImage.createFromPath(filePath);
-    }
-
-    if (!imageObj) {
-      return null;
-    }
-
-    const currentSize = imageObj.getSize();
-    const newSize = this.shrink({ width: currentSize.width, height: currentSize.height }, size);
-    if (!newSize) {
-      return null;
-    }
-
-    return imageObj.resize({ width: newSize.width, height: newSize.height }).toDataURL();
   }
 
   getRootDirectories(): Promise<string[]> {

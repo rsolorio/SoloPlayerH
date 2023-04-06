@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ImageUtilityService } from './image-utility.service';
+import { ImageElectronService } from './image-electron.service';
 
-describe('ImageUtilityService', () => {
-  let service: ImageUtilityService;
+describe('ImageElectronService', () => {
+  let service: ImageElectronService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ImageUtilityService);
+    service = TestBed.inject(ImageElectronService);
   });
 
   it('should be created', () => {

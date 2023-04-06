@@ -1,31 +1,38 @@
-import { Injectable } from '@angular/core';
-import { IArea, ICoordinate, ISize } from 'src/app/core/models/core.interface';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { RelatedImageEntity } from '../../shared/entities';
-import { FileService } from '../../platform/file/file.service';
-import { MusicImageSourceType } from '../../platform/audio-metadata/audio-metadata.enum';
-import { AudioMetadataService } from '../../platform/audio-metadata/audio-metadata.service';
-import { ImageSrcType } from 'src/app/core/globals.enum';
 import { ColorG } from 'src/app/core/models/color-g.class';
+import { IArea, ICoordinate, IImage, IImageSource, ISize } from 'src/app/core/models/core.interface';
+import { FileService } from '../file/file.service';
+import { AudioMetadataService } from '../audio-metadata/audio-metadata.service';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { ImageSrcType } from 'src/app/core/globals.enum';
+import { MusicImageSourceType } from '../audio-metadata/audio-metadata.enum';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ImageUtilityService {
+export abstract class ImageService {
 
-  constructor(
-    private fileService: FileService,
-    private metadataService: AudioMetadataService,
-    private utility: UtilityService)
-  { }
+  constructor(private fileSvc: FileService, private metadataSvc: AudioMetadataService, private utilitySvc: UtilityService) { }
+
+  abstract getScreenshot(delayMs?: number): Promise<string>;
+
+  public getImageFromSource(source: IImageSource): Promise<IImage> {
+    if (source.sourceType === MusicImageSourceType.AudioTag) {
+      return this.getImageFromTag(source);
+    }
+    if (source.sourceType === MusicImageSourceType.ImageFile) {
+      return this.getImageFromFile(source);
+    }
+    if (source.sourceType === MusicImageSourceType.Url) {
+      return this.getImageFromUrl(source);
+    }
+    return null;
+  }
 
   /**
    * Gets the actual image coordinates inside an img tag.
    * This routine assumes the img is set to object-fit: contain and that the image is
    * vertically and horizontally centered.
-   * @param imageElement The img element.
+   * @param imageElement 
+   * @returns 
    */
-   public getImageArea(imageElement: any): IArea {
+  public getImageArea(imageElement: any): IArea {
     const whElementRatio = imageElement.width / imageElement.height;
     const whImageRatio = imageElement.naturalWidth / imageElement.naturalHeight;
     const widthDifference = imageElement.naturalWidth - imageElement.width;
@@ -182,21 +189,6 @@ export class ImageUtilityService {
     return result;
   }
 
-  public async setSrc(relatedImages: RelatedImageEntity[]): Promise<void> {
-    for (const relatedImage of relatedImages) {
-      if (relatedImage.sourceType === MusicImageSourceType.AudioTag) {
-        await this.setSrcFromAudioTag(relatedImage);
-      }
-      else if (relatedImage.sourceType === MusicImageSourceType.ImageFile) {
-        await this.setSrcFromImageFile(relatedImage);
-      }
-      else if (relatedImage.sourceType === MusicImageSourceType.Url) {
-        relatedImage.src = relatedImage.sourcePath;
-        relatedImage.srcType = ImageSrcType.WebUrl;
-      }
-    }
-  }
-
   public buildEyeDropper(
     tableElement: HTMLTableElement,
     source: ImageData,
@@ -265,25 +257,51 @@ export class ImageUtilityService {
     return result;
   }
 
-  // PRIVATE METHODS //////////////////////////////////////////////////////////////////////////////
+  public shrinkImage(image: IImage, newSize: number): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      try {
+        const imageElement = new Image();
+        imageElement.onload = () => {
+          const size = this.shrink({ width: imageElement.naturalWidth, height: imageElement.naturalHeight }, newSize);
+          if (!size) {
+            resolve(null);
+          }
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.width = size.width;
+          canvas.height = size.height;
+          context.drawImage(imageElement, 0, 0, size.width, size.height);
+          resolve(canvas.toDataURL());
+        };
+        imageElement.src = image.src;
+      }
+      catch (err) {
+        reject(err);
+      }
+    });
+  }
 
-  private async setSrcFromAudioTag(relatedImage: RelatedImageEntity): Promise<void> {
-    const buffer = await this.fileService.getBuffer(relatedImage.sourcePath);
-    const audioInfo = await this.metadataService.getMetadata(buffer);
-    if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
-      const picture = audioInfo.metadata.common.picture[relatedImage.sourceIndex];
-      if (picture) {
-        const image = this.metadataService.getImage([picture]);
-        relatedImage.src = image.src;
-        relatedImage.srcType = image.srcType;
+  public shrink(size: ISize, newSize: number): ISize {
+    if (size.width > size.height) {
+      if (size.width > newSize) {
+        return {
+          width: newSize,
+          height: size.height * (newSize / size.width)
+        };
       }
     }
+    else {
+      if (size.height > newSize) {
+        return {
+          height: newSize,
+          width: size.width * (newSize / size.height)
+        }
+      }
+    }
+    return null;
   }
 
-  private async setSrcFromImageFile(relatedImage: RelatedImageEntity): Promise<void> {
-    relatedImage.src = this.utility.fileToUrl(relatedImage.sourcePath);
-    relatedImage.srcType = ImageSrcType.FileUrl;
-  }
+  // PRIVATE METHODS //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Calculates the area assuming the image will take the full width of the element.
@@ -325,5 +343,31 @@ export class ImageUtilityService {
     // calculate y
     area.start.y = 0;
     area.end.y = area.height - 1;
+  }
+
+  private async getImageFromTag(source: IImageSource): Promise<IImage> {
+    const buffer = await this.fileSvc.getBuffer(source.sourcePath);
+    const audioInfo = await this.metadataSvc.getMetadata(buffer);
+    if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
+      const picture = audioInfo.metadata.common.picture[source.sourceIndex];
+      if (picture) {
+        return this.metadataSvc.getImage([picture]);
+      }
+    }
+    return null;
+  }
+
+  private async getImageFromFile(source: IImageSource): Promise<IImage> {
+    return {
+      src: this.utilitySvc.fileToUrl(source.sourcePath),
+      srcType: ImageSrcType.FileUrl
+    }
+  }
+
+  private async getImageFromUrl(source: IImageSource): Promise<IImage> {
+    return {
+      src: source.sourcePath,
+      srcType: ImageSrcType.WebUrl
+    }
   }
 }

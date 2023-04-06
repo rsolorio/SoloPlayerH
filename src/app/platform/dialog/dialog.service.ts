@@ -11,7 +11,5 @@ export abstract class DialogService {
 
   abstract openFileDialog(options?: IDialogOptions): string[];
 
-  abstract resizeWindow(size: ISize): void;
-
-  abstract getScreenshot(delayMs?: number): Promise<string>;
+  abstract resizeWindow(size: ISize): void;  
 }
