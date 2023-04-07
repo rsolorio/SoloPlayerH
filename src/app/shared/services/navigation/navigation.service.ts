@@ -74,6 +74,9 @@ export class NavigationService {
       if (options.criteria) {
         this.utilities.navigateWithQueryParams(route, { queryId: options.criteria.id });
       }
+      else if (options.queryParams) {
+        this.utilities.navigateWithQueryParams(route, options.queryParams );
+      }
       else if (options.routeParams) {
         this.utilities.navigateWithRouteParams(route, options.routeParams);
       }

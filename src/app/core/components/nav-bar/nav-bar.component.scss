@@ -18,17 +18,13 @@
     display: flex;
 }
 
-.sp-nav-toast {
-    // Horizontal center *********
-    position: fixed;
-    left: 50%;
-    transform: translate(-50%, 0);
-    // ***************************
-    padding: 5px;
-    border-radius: 5px;
+.sp-nav-toast-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
     margin-top: 5px;
-    background-color: $sp-color-primary;
-    color: $sp-color-on-primary;
+    padding-left: 5px;
+    padding-right: 5px;
     // Very slow start, continue slow, end quickly
     // Move opacity from 0 to 0, during the 0-70% of the time
     // Move opacity from 0 to 1, during the 70%-100% of the time
@@ -37,6 +33,15 @@
     &.sp-toast-visible {
         opacity: .8;
     }
+    // Since this is a transparent placeholder allow the click to pass through
+    pointer-events: none;
+}
+
+.sp-nav-toast {
+    background-color: $sp-color-primary;
+    color: $sp-color-on-primary;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .sp-nav-bar-shadow {

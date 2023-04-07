@@ -2,11 +2,11 @@
 #spListBaseComponent
 [broadcastService]="broadcastService"
 [breadcrumbsEnabled]="true"
-[listUpdatedEvent]="appEvent.SongListUpdated"
+[listUpdatedEvent]="AppEvent.SongListUpdated"
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"
-(initialized)="onListInitialized($event)"
-(itemImageClick)="onItemImageClick($event)"
+(afterInit)="onListInitialized($event)"
+(itemAvatarClick)="onItemImageClick($event)"
 (itemContentClick)="onItemContentClick($event)"
 (itemRender)="onItemRender($event)">
   <ng-template #infoTemplate let-item="item">

@@ -4,7 +4,7 @@
 [listUpdatedEvent]="appEvent.PlaylistListUpdated"
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"
-(initialized)="onListInitialized()"
+(afterInit)="onListInitialized()"
 (itemRender)="onItemRender($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">

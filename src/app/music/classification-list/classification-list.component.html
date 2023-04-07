@@ -5,7 +5,7 @@
 [listUpdatedEvent]="appEvent.ClassificationListUpdated"
 [itemMenuList]="itemMenuList"
 [infoTemplate]="infoTemplate"
-(initialized)="onListInitialized()"
+(afterInit)="onListInitialized()"
 (itemContentClick)="onItemContentClick($event)"
 (itemRender)="onItemRender($event)">
   <ng-template #infoTemplate let-item="item">

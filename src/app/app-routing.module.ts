@@ -11,6 +11,8 @@ import { PlaylistListComponent } from './music/playlist-list/playlist-list.compo
 import { SongListComponent } from './music/song-list/song-list.component';
 import { SettingsViewComponent } from './settings/settings-view/settings-view.component';
 import { SettingsModule } from './settings/settings.module';
+import { FileBrowserComponent } from './platform/file-browser/file-browser.component';
+import { PlatformModule } from './platform/platform.module';
 
 const routes: Routes = [
   { path: 'home', component: HomeViewComponent },
@@ -22,6 +24,7 @@ const routes: Routes = [
   { path: 'genres', component: ClassificationListComponent },
   { path: 'songs', component: SongListComponent },
   { path: 'playlists', component: PlaylistListComponent },
+  { path: 'filebrowser', component: FileBrowserComponent },
   { path: 'log', component: LogViewComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
@@ -30,6 +33,7 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
     MusicModule,
+    PlatformModule,
     SettingsModule,
     LogModule
   ],

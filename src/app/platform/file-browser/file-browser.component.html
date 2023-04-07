@@ -1,1 +1,14 @@
-<p>file-browser works!</p>
+<sp-list-base
+[breadcrumbsEnabled]="false"
+[itemMenuList]="itemMenuList"
+[infoTemplate]="infoTemplate"
+[broadcastService]="broadcastService"
+[listUpdatedEvent]="AppEvent.FileListUpdated"
+(beforeInit)="onBeforeInit($event)"
+(afterInit)="onAfterInit($event)"
+(itemAvatarClick)="itemAvatarClick($event)"
+(itemContentClick)="onItemContentClick($event)">
+  <ng-template #infoTemplate let-item="item">
+    <span class="sp-text-large">{{item.name}}</span>
+  </ng-template>
+</sp-list-base>

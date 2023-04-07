@@ -44,9 +44,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private filterNoCriteriaIcon = 'mdi-filter-outline mdi';
 
   @Output() public itemRender: EventEmitter<IListItemModel> = new EventEmitter();
-  @Output() public itemImageClick: EventEmitter<IListItemModel> = new EventEmitter();
+  @Output() public itemAvatarClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListItemModel> = new EventEmitter();
-  @Output() public initialized: EventEmitter<IListBaseModel> = new EventEmitter();
+  @Output() public beforeInit: EventEmitter<IListBaseModel> = new EventEmitter();
+  @Output() public afterInit: EventEmitter<IListBaseModel> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
 
@@ -71,11 +72,17 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     return this.model.title;
   }
 
-  @Input() set leftIcon(val: string) {
+  @Input() set leftIcon(val: IIconAction) {
     this.model.leftIcon = val;
   }
-  get leftIcon(): string {
+  get leftIcon(): IIconAction {
     return this.model.leftIcon;
+  }
+  @Input() set rightIcon(val: IIconAction) {
+    this.model.rightIcon = val;
+  }
+  get rightIcon(): IIconAction {
+    return this.model.rightIcon;
   }
 
   @Input() set breadcrumbsEnabled(val: boolean) {
@@ -134,8 +141,9 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       }
     });
 
+    this.beforeInit.emit(this.model);
     this.initializeNavbar();
-    this.initialized.emit(this.model);
+    this.afterInit.emit(this.model);
     this.loadData();
   }
 
@@ -148,8 +156,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
   }
 
-  public onImageClick(item: IListItemModel): void {
-    this.itemImageClick.emit(item);
+  public onAvatarClick(item: IListItemModel): void {
+    this.itemAvatarClick.emit(item);
   }
 
   public onContentClick(item: IListItemModel): void {
@@ -163,7 +171,12 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private afterListUpdated(): void {
     this.updateFilterIcon();
     this.loadingService.hide();
-    this.displayItemCount();
+    if (this.model.onInfoDisplay) {
+      this.model.onInfoDisplay(this.model);
+    }
+    else {
+      this.displayListInfo();
+    }
   }
 
   private updateFilterIcon(): void {
@@ -202,23 +215,27 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
 
     if (this.model.leftIcon) {
-      navbar.leftIcon = {
-        icon: this.model.leftIcon
-      };
+      navbar.leftIcon = this.model.leftIcon;
     }
+    // If the left icon is not specified, get it from the route
     else if (routeInfo) {
       navbar.leftIcon = {
         icon: routeInfo.icon
       };
     }
     
-    // Filter icon
-    navbar.rightIcon = {
-      icon: this.filterNoCriteriaIcon,
-      action: () => {
-        this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
-      }
-    };
+    if (this.model.rightIcon) {
+      navbar.rightIcon = this.model.rightIcon;
+    }
+    else {
+      // Filter icon by default
+      navbar.rightIcon = {
+        icon: this.filterNoCriteriaIcon,
+        action: () => {
+          this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
+        }
+      };
+    }
 
     // Search
     navbar.onSearch = searchTerm => {
@@ -258,10 +275,14 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         caption: 'Show Count',
         icon: 'mdi-counter mdi',
         action: () => {
-          this.displayItemCount();
+          this.displayListInfo();
         }
       }
     ];
+  }
+
+  private displayListInfo(): void {
+    this.displayItemCount();
   }
 
   private displayItemCount(): void {
@@ -310,7 +331,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
   }
 
-  public getItemIcon(item: IListItemModel): string {
+  public getBackdropIcon(item: IListItemModel): string {
     let result: string = null;
     if (item.selected) {
       result = 'mdi-check mdi';

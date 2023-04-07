@@ -3,6 +3,26 @@ import { ModuleOptionEditor, ModuleOptionName } from "../../models/module-option
 
 export const defaultModuleOptions: IModuleOptionModel[] = [
   {
+    name: ModuleOptionName.ScanMusicFolderPath,
+    moduleName: 'Music',
+    title: 'Directory path to look for audio files',
+    description: '',
+    valueEditorType: ModuleOptionEditor.Text,
+    multipleValues: false,
+    system: false,
+    values: ''
+  },
+  {
+    name: ModuleOptionName.ScanPlaylistFolderPath,
+    moduleName: 'Music',
+    title: 'Directory path to look for playlist files',
+    description: '',
+    valueEditorType: ModuleOptionEditor.Text,
+    multipleValues: false,
+    system: false,
+    values: ''
+  },
+  {
     name: ModuleOptionName.ArtistSplitCharacters,
     moduleName: 'Music',
     title: 'Artist Split Characters',

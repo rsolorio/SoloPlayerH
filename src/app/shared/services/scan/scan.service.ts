@@ -182,7 +182,7 @@ export class ScanService {
     let genreSplitSymbols: string[] = [];
     const genreSplitOption = options.find(option => option.name === ModuleOptionName.GenreSplitCharacters);
     if (genreSplitOption) {
-      genreSplitSymbols = this.db.getOptionTextValues(genreSplitOption);
+      genreSplitSymbols = this.db.getOptionArrayValue(genreSplitOption);
     }
     const genres = this.processGenres(audioInfo, genreSplitSymbols);
 

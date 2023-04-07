@@ -3,6 +3,8 @@ export interface ISetting {
   dataType: string;
   descriptions: string[];
   dynamicText?: string;
+  warningText?: string;
+  errorText?: string;
   disabled?: boolean;
   action?: (setting: ISetting) => void;
 }

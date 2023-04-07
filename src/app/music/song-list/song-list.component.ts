@@ -35,7 +35,7 @@ import { ImageService } from 'src/app/platform/image/image.service';
 })
 export class SongListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
-  public appEvent = AppEvent;
+  public AppEvent = AppEvent;
   public PlayerSongStatus = PlayerSongStatus;
   public SongBadge = SongBadge;
   public itemMenuList: IMenuModel[] = [];

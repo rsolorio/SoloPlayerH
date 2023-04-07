@@ -26,12 +26,11 @@ export class FileElectronService extends FileService {
   }
 
   getFiles(directoryPath: string): Observable<IFileInfo> {
-    const result = new Observable<IFileInfo>(observer => {
+    return new Observable<IFileInfo>(observer => {
       this.pushFiles(directoryPath, observer).then(() => {
         observer.complete();
       });
     });
-    return result;
   }
 
   exists(path: string): boolean {
@@ -40,11 +39,9 @@ export class FileElectronService extends FileService {
 
   private async pushFiles(directoryPath: string, observer: Subscriber<IFileInfo>): Promise<void> {
     const items = await this.getDirItems(directoryPath);
-    for (const item of items) {
-      const itemPath = join(directoryPath, item);
-      const fileInfo = await this.getFileInfo(itemPath);
+    for (const fileInfo of items) {
       if (fileInfo.isDirectory) {
-        await this.pushFiles(itemPath, observer);
+        await this.pushFiles(fileInfo.path, observer);
       }
       else {
         observer.next(fileInfo);
@@ -52,16 +49,39 @@ export class FileElectronService extends FileService {
     }
   }
 
-  private getDirItems(directoryPath: string): Promise<string[]> {
-    return promises.readdir(directoryPath);
+  public async getDirectories(directoryPath?: string): Promise<IFileInfo[]> {
+    if (directoryPath) {
+      const items = await this.getDirItems(directoryPath);
+      return items.filter(item => item.isDirectory);
+    }
+    return this.getRootDirectories();
   }
 
-  public getFileInfo(path: string): Promise<IFileInfo> {
-    return promises.stat(path).then (fileStat => {
-      const info: IFileInfo = {
+  public getParentDir(path?: string): Promise<IFileInfo> {
+    const newPath = join(path, '../');
+    return this.getFileInfo(newPath);
+  }
+
+  private async getDirItems(directoryPath: string): Promise<IFileInfo[]> {
+    const result: IFileInfo[] = [];
+    const items = await promises.readdir(directoryPath);
+    for (const item of items) {
+      const itemPath = join(directoryPath, item);
+      const fileInfo = await this.getFileInfo(itemPath);
+      result.push(fileInfo);
+    }
+    return result;
+  }
+
+  public async getFileInfo(path: string): Promise<IFileInfo> {
+    let info: IFileInfo;
+    try {
+      const fileStat = await promises.stat(path);
+      info = {
         isDirectory: fileStat.isDirectory(),
         path,
-        parts: path.split('\\').reverse(),
+        // Remove empty items as well
+        parts: path.split('\\').filter(item => !!item).reverse(),
         size: fileStat.size,
         addDate: fileStat.atime,
         changeDate: fileStat.mtime
@@ -82,24 +102,40 @@ export class FileElectronService extends FileService {
         info.directoryPath = info.path.replace(info.parts[0], '');
         info.extension = extname(info.path);
       }
-      return info;
-    });
+    }
+    catch (error) {
+      info = {
+        hasError: true,
+        isDirectory: true,
+        path: path,
+        parts: [],
+        size: 0
+      }
+    }
+
+    return info;
   }
 
   getAbsolutePath(locationPath: string, endPath: string): string {
     return resolve(locationPath, endPath);
   }
 
-  getRootDirectories(): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
-      exec('wmic logicaldisk get name', (error, stdout) => {
+  private getRootDirectories(): Promise<IFileInfo[]> {
+    return new Promise<IFileInfo[]>((resolve, reject) => {
+      exec('wmic logicaldisk get name', async (error, stdout) => {
         if (error) {
           reject(error);
         }
         else {
           const lines = stdout.split('\r\r\n').map(value => value.trim());
           // Get only the drives
-          resolve(lines.filter(value => /[A-Za-z]:/.test(value)));
+          const directories = lines.filter(value => /[A-Za-z]:/.test(value));
+          const result: IFileInfo[] = [];
+          for (const dir of directories) {
+            const dirInfo = await this.getFileInfo(dir);
+            result.push(dirInfo);
+          }
+          resolve(result);
         }
       });
     });

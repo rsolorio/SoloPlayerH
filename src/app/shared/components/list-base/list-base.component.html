@@ -27,17 +27,22 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
     <!-- Real content -->
     <ng-container *ngIf="item.canBeRendered">
       <!-- Image -->
-      <td class="sp-table-image-field" (click)="onImageClick(item)">
-        <!-- Optional backdrop icon -->
-        <div *ngIf="getItemIcon(item)" class="sp-table-image-backdrop sp-z-1">
-          <i [ngClass]="getItemIcon(item)" class="sp-color-primary"></i>
+      <td class="sp-table-image-field" (click)="onAvatarClick(item)">
+        <ng-container *ngIf="!model.getItemIcon">
+          <!-- Optional backdrop icon -->
+          <div *ngIf="getBackdropIcon(item)" class="sp-table-image-backdrop sp-z-1">
+            <i [ngClass]="getBackdropIcon(item)" class="sp-color-primary"></i>
+          </div>
+          <!-- Img -->
+          <sp-transition-image
+          [defaultSrc]="RelatedImageSrc.DefaultSmall"
+          [transitionSrc]="item.image.src"
+          (imageLoaded)="onImageLoaded()"
+          class="sp-table-loading-image"></sp-transition-image>
+        </ng-container>
+        <div *ngIf="model.getItemIcon" class="sp-table-item-icon-bg" [ngClass]="{ 'sp-clickable': model.getItemIcon(item).action }">
+          <i [ngClass]="model.getItemIcon(item).icon"></i>
         </div>
-        <!-- Img -->
-        <sp-transition-image
-        [defaultSrc]="RelatedImageSrc.DefaultSmall"
-        [transitionSrc]="item.image.src"
-        (imageLoaded)="onImageLoaded()"
-        class="sp-table-loading-image"></sp-transition-image>
       </td>
       <!-- Info -->
       <td class="sp-text-overflow-ellipsis" (click)="onContentClick(item)">

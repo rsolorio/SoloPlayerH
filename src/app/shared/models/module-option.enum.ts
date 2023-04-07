@@ -1,7 +1,9 @@
 export enum ModuleOptionName {
   ArtistSplitCharacters = 'ArtistSplitCharacters',
   GenreSplitCharacters = 'GenreSplitCharacters',
-  ExpandPlayerOnSongPlay = 'ExpandPlayerOnSongPlay'
+  ExpandPlayerOnSongPlay = 'ExpandPlayerOnSongPlay',
+  ScanMusicFolderPath = 'ScanMusicFolderPath',
+  ScanPlaylistFolderPath = 'ScanPlaylistFolderPath'
 }
 
 export enum ModuleOptionEditor {

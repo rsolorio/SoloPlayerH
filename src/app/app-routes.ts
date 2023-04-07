@@ -21,7 +21,8 @@ export enum AppRoute {
   FilterView = '/filters/view',
   Settings = '/settings',
   Log = '/log',
-  Queries = '/queries'
+  Queries = '/queries',
+  Files = '/filebrowser'
 }
 
 export const appRoutes: { [route: string]: IAppRouteInfo; } = {};
@@ -61,4 +62,8 @@ appRoutes[AppRoute.Log] = { route: AppRoute.Log,
 appRoutes[AppRoute.Queries] = { route: AppRoute.Queries,
   icon: 'mdi-filter-outline mdi',
   name: 'Queries',
+  menuHidden: true };
+appRoutes[AppRoute.Files] = { route: AppRoute.Files,
+  icon: 'mdi-folder-outline mdi',
+  name: 'Files',
   menuHidden: true };

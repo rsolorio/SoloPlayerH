@@ -19,4 +19,5 @@ export interface IFileInfo {
   addDate?: Date;
   /** File modification date. */
   changeDate?: Date;
+  hasError?: boolean;
 }

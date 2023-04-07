@@ -59,8 +59,10 @@
       </td>
   </tr></table>
   <!-- Toast (the ease class timing has to match the hideToast method in the service) -->
-  <div *ngIf="model.toastMessage" [ngClass]="{ 'sp-toast-visible': model.toastVisible }" class="sp-nav-toast">
+  <div *ngIf="model.toastMessage" [ngClass]="{ 'sp-toast-visible': model.toastVisible }" class="sp-nav-toast-container sp-full-width">
+    <div class="sp-nav-toast">
       <span [textContent]="model.toastMessage" class="sp-text-medium sp-font-family-regular"></span>
+    </div>
   </div>
 </div>
 <!-- This placeholder has the same height as the actual nav bar

@@ -9,6 +9,10 @@ export abstract class FileService {
 
   abstract getFiles(directoryPath: string): Observable<IFileInfo>;
 
+  abstract getDirectories(directoryPath?: string): Promise<IFileInfo[]>;
+
+  abstract getParentDir(path?: string): Promise<IFileInfo>;
+
   abstract getText(filePath: string): Promise<string>;
 
   abstract getAbsolutePath(locationPath: string, endPath: string): string;
@@ -16,8 +20,6 @@ export abstract class FileService {
   abstract getFileInfo(path: string): Promise<IFileInfo>;
 
   abstract exists(path: string): boolean;
-
-  abstract getRootDirectories(): Promise<string[]>;
 
   removeBom(value: string): string {
     // 0xFEFF = 65279

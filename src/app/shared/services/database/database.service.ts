@@ -28,7 +28,7 @@ import {
   ValueListEntryEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
-import { ModuleOptionEditor } from '../../models/module-option.enum';
+import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { databaseColumns, DbColumn } from './database.columns';
@@ -621,9 +621,7 @@ export class DatabaseService {
       .where('playlist.id = :playlistId')
       .setParameter('playlistId', playlistId)
       .getOne();
-  }
-
-  
+  }  
 
   public getModuleOptions(names?: string[]): Promise<ModuleOptionEntity[]> {
     if (!names || !names.length) {
@@ -654,7 +652,7 @@ export class DatabaseService {
     return queryBuilder.getMany();
   }
 
-  public getOptionTextValues(moduleOption: ModuleOptionEntity): string[] {
+  public getOptionArrayValue(moduleOption: ModuleOptionEntity): string[] {
     if (moduleOption.valueEditorType !== ModuleOptionEditor.Text) {
       // TODO:
     }
@@ -666,6 +664,24 @@ export class DatabaseService {
       // TODO:
     }
     return JSON.parse(moduleOption.values) as boolean;
+  }
+
+  public getOptionTextValue(moduleOption: ModuleOptionEntity): string {
+    if (moduleOption.valueEditorType !== ModuleOptionEditor.YesNo) {
+      // TODO:
+    }
+    if (moduleOption.values) {
+      return JSON.parse(moduleOption.values) as string;
+    }
+    return null;
+  }
+
+  public async saveModuleOptionText(name: ModuleOptionName, value: string): Promise<void> {
+    const moduleOption = await ModuleOptionEntity.findOneBy({ name: name });
+    if (moduleOption) {
+      moduleOption.values = JSON.stringify(value);
+      await moduleOption.save();
+    }
   }
 
   public selector(columnName: string): ICriteriaValueSelector {

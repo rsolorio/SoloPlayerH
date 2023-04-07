@@ -37,7 +37,7 @@ The application gets a list of dominant colors for each album art, and you can c
 ### Playlists and Filters
 A playlist is a static list of tracks selected by the user. A playlist and its selected tracks are saved in the database. The content of a playlist never changes unless the user adds/removes tracks.
 
-A filter is a dynamic list of tracks based on criteria created by the user. The filter and the criteria are saved in the database, but not the list of tracks. Every time a filter is executed the result might be different.
+A filter is a dynamic list of tracks based on criteria created by the user. The filter and the criteria are saved in the database, but not the list of tracks. Every time a filter is executed the result might be different. All information provided by the user (rating, play count, mood, language, etc) on a song can be used to build filters.
 
 ### And More...
 - 0-5 rating mechanism

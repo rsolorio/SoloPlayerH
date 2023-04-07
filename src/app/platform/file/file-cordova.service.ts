@@ -36,9 +36,11 @@ export class FileCordovaService extends FileService {
     return false;
   }
 
-  getRootDirectories(): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
-      resolve([]);
-    });
+  getDirectories(directoryPath?: string): Promise<IFileInfo[]> {
+    return null;
+  }
+
+  public getParentDir(path?: string): Promise<IFileInfo> {
+    return null;
   }
 }
