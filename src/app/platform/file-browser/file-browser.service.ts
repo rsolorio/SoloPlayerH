@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IFileBrowserItem, IFileBrowserModel } from './file-browser.interface';
+import { IFileBrowserModel } from './file-browser.interface';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
 import { FileService } from '../file/file.service';
@@ -9,7 +9,8 @@ import { FileService } from '../file/file.service';
 })
 export class FileBrowserService {
   private state: IFileBrowserModel = {
-    onOk: () => {}
+    onOk: null,
+    backRoute: null
   };
   constructor(private navigation: NavigationService, private fileService: FileService) { }
 
@@ -17,8 +18,8 @@ export class FileBrowserService {
     return this.state;
   }
 
-  public async browse(directoryPath?: string, onOk?: (values: IFileBrowserItem[]) => void): Promise<void> {
-    this.state.onOk = onOk;
+  public async browse(model: IFileBrowserModel, directoryPath?: string): Promise<void> {
+    this.state = model;
     let name = '';
     if (directoryPath) {
       const fileInfo = await this.fileService.getFileInfo(directoryPath);

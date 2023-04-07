@@ -21,6 +21,7 @@ import { ISetting, ISettingCategory } from './settings-model.interface';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { AppRoute } from 'src/app/app-routes';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
+import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 
 @Component({
   selector: 'sp-settings-view',
@@ -325,11 +326,14 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
 
   private showFileBrowserAndSave(optionToSave: ModuleOptionName): void {
     // The onOk callback will be executed on the browser component
-    this.browserService.browse(null, async values => {
-      // save value in DB
-      await this.db.saveModuleOptionText(optionToSave, values[0].fileInfo.path);
-      // Now go back to settings component
-      this.navigation.forward(AppRoute.Settings);
-    });;
+    const browserModel: IFileBrowserModel = {
+      backRoute: AppRoute.Settings,
+      onOk: async values => {
+        // save value in DB
+        await this.db.saveModuleOptionText(optionToSave, values[0].fileInfo.path);        
+        return true;
+      }
+    };
+    this.browserService.browse(browserModel);
   }
 }

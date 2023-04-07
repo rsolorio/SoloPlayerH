@@ -19,6 +19,8 @@ import { IFileInfo } from '../file/file.interface';
 export class FileBrowserComponent implements OnInit {
   public AppEvent = AppEvent;
   public itemMenuList: IMenuModel[] = [];
+  /** Flag that indicates when the content is allowed to be rendered. */
+  public contentEnabled = false;
   constructor(
     public broadcastService: FileBrowserBroadcastService,
     private navigation: NavigationService,
@@ -28,6 +30,14 @@ export class FileBrowserComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const model = this.browserService.getState();
+    if (!model.onOk || !model.backRoute) {
+      // Send to home if this doesn't have the proper configuration
+      this.navigation.forward(AppRoute.Home);
+    }
+    else {
+      this.contentEnabled = true;
+    }
   }
 
   public onItemContentClick(fileItem: IFileBrowserItem): void {
@@ -35,11 +45,12 @@ export class FileBrowserComponent implements OnInit {
   }
 
   public itemAvatarClick(fileItem: IFileBrowserItem): void {
-    // Select and return
     const model = this.browserService.getState();
-    if (model.onOk) {
-      model.onOk([fileItem]);
-    }
+    model.onOk([fileItem]).then(response => {
+      if (response) {
+        this.navigation.forward(model.backRoute);
+      }
+    });
   }
 
   public onBeforeInit(listBaseModel: IListBaseModel): void {
@@ -52,9 +63,9 @@ export class FileBrowserComponent implements OnInit {
     }
     listBaseModel.getItemIcon = item => {
       // TODO: determine the proper icon
-      // const fileItem = item as IFileBrowserItem;
       return {
         icon: 'mdi-folder mdi',
+        // Just to display the hand icon since the action will be executed by the avatar click
         action: () => {}
       };
     };
@@ -93,7 +104,14 @@ export class FileBrowserComponent implements OnInit {
       {
         caption: 'Select',
         icon: 'mdi-select mdi mdi',
-        action: () => {}
+        action: () => {
+          const queryParams = this.getQueryParams();
+          if (queryParams?.path) {
+            this.fileService.getFileInfo(queryParams.path).then(fileInfo => {
+              this.itemAvatarClick({ fileInfo: fileInfo, name: fileInfo.name, image: null, canBeRendered: false, id: null });
+            });
+          }
+        }
       },
       {
         caption: 'Show Info',
@@ -104,7 +122,20 @@ export class FileBrowserComponent implements OnInit {
       },
       {
         caption: 'Cancel',
-        icon: 'mdi-close-box-outline mdi'
+        icon: 'mdi-close-box-outline mdi',
+        action: () => {
+          const model = this.browserService.getState();
+          if (model.onCancel) {
+            model.onCancel().then(response => {
+              if (response) {
+                this.navigation.forward(model.backRoute);
+              }
+            });
+          }
+          else {
+            this.navigation.forward(model.backRoute);
+          }
+        }
       }
     ];
   }

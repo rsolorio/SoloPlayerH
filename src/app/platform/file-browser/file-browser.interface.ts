@@ -6,8 +6,9 @@ export interface IFileBrowserItem extends IListItemModel {
 }
 
 export interface IFileBrowserModel {
-  onOk: (values: IFileBrowserItem[]) => void;
-  onCancel?: () => void;
+  onOk: (values: IFileBrowserItem[]) => Promise<boolean>;
+  backRoute: string;
+  onCancel?: () => Promise<boolean>;
 }
 
 export interface IFileBrowserQueryParams {
