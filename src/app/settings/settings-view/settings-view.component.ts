@@ -7,7 +7,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ModuleOptionEntity, PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
+import { ModuleOptionEntity, PlaylistEntity, PlaylistSongEntity, SongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
@@ -15,7 +15,6 @@ import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { FileService } from 'src/app/platform/file/file.service';
 import { IAudioInfo } from 'src/app/platform/audio-metadata/audio-metadata.interface';
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
-import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
@@ -41,24 +40,21 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private metadataService: AudioMetadataService,
     private utility: UtilityService,
     private navbarService: NavBarStateService,
-    private navigation: NavigationService,
     private browserService: FileBrowserService,
     private loadingService: LoadingViewStateService) {
       super();
     }
 
   ngOnInit(): void {
-    this.loadingService.show();
-    this.initializeNavbar();
-    this.initializeModuleOptions().then(() => {
-      this.initializeSettings().then(() => {
-        this.loadingService.hide();
-      });
-    });
+    this.initialize();
   }
 
-  private async initializeModuleOptions(): Promise<void> {
+  private async initialize(): Promise<void> {
+    this.loadingService.show();
+    this.initializeNavbar();
     this.options = await this.db.getModuleOptions();
+    await this.initializeSettings();
+    this.loadingService.hide();
   }
 
   private initializeNavbar(): void {
@@ -83,26 +79,39 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     const musicPath = await this.db.getOptionTextValue(musicPathOption);
     const playlistPathOptions = this.options.find(option => option.name === ModuleOptionName.ScanPlaylistFolderPath);
     const playlistPath = await this.db.getOptionTextValue(playlistPathOptions);
+    const playlistCount = await PlaylistEntity.count();
+    const songCount = await SongEntity.count();
+    let hours = this.utility.secondsToHours(0);
+    if (songCount) {
+      const seconds = await this.db.getSecondsSum();
+      hours = this.utility.secondsToHours(seconds);
+    }
     this.settingsInfo = [
       {
         name: 'Media Library',
         settings: [
           {
             name: 'Statistics',
+            icon: 'mdi-chart-bar mdi',
             dataType: 'text',
             descriptions: [
-              'Number of tracks: 0',
-              'Total playing time: 00:00:00'
+              `Tracks: <span class="sp-color-primary">${songCount}</span>`,
+              `Playlists: <span class="sp-color-primary">${playlistCount}</span>`,
+              `Playing time: <span class="sp-color-primary sp-font-family-digital">${hours}</span>`
             ]
           },
           {
             name: 'Purge Database',
+            icon: 'mdi-database mdi',
             dataType: 'text',
             descriptions: ['Deletes all data and recreates the database.'],
-            action: () => {
-              this.loadingService.show();
+            action: settings => {
+              settings.disabled = true;
+              settings.running = true;
               this.db.purge().then(() => {
-                this.loadingService.hide();
+                settings.running = false;
+                settings.disabled = false;
+                // TODO: reload component or reload stats
               });
             }
           }
@@ -113,15 +122,17 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         settings: [
           {
             name: 'Tag Mapping',
+            icon: 'mdi-tag-text-outline mdi',
             dataType: 'text',
             descriptions: ['Configure the mapping between the audio tags and the database.']
           },
           {
             name: 'Audio Directory',
+            icon: 'mdi-folder-music-outline mdi',
             dataType: 'text',
             descriptions: [
               ' Click here to set the scan directory for audio.',
-              'Scan directory: <span class="sp-color-primary">' + (musicPath ? musicPath : '[Not Selected]</span>')
+              `Scan directory: <span class="sp-color-primary">${(musicPath ? musicPath : '[Not Selected]')}</span>`
             ],
             action: () => {
               this.showFileBrowserAndSave(ModuleOptionName.ScanMusicFolderPath);
@@ -129,6 +140,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Scan Audio Files',
+            icon: 'mdi-magnify-scan mdi',
             dataType: 'text',
             descriptions: [
               'Click here to start scanning audio files.',
@@ -150,10 +162,11 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         settings: [
           {
             name: 'Playlist Directory',
+            icon: 'mdi-folder-play-outline mdi',
             dataType: 'text',
             descriptions: [
               'Click here to set the scan directory for playlists',
-              'Scan directory: <span class="sp-color-primary">' + (playlistPath ? playlistPath : '[Not Selected]</span>')
+              `Scan directory: <span class="sp-color-primary">${(playlistPath ? playlistPath : '[Not Selected]')}</span>`
             ],
             action: () => {
               this.showFileBrowserAndSave(ModuleOptionName.ScanPlaylistFolderPath);
@@ -161,6 +174,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Scan Playlist Files',
+            icon: 'mdi-magnify-scan mdi',
             dataType: 'text',
             descriptions: [
               'Click here to start scanning playlists.',
@@ -168,7 +182,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             ],
             action: setting => {
               if (playlistPath) {
-                this.onAudioScan(setting, playlistPath);
+                this.onPlaylistScan(setting, playlistPath);
               }
               else {
                 setting.warningText = 'Unable to start scan. Please select the playlist directory first.';
@@ -183,6 +197,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           {
             // TODO: this should not be displayed in cordova mode
             name: 'Small Form Factor',
+            icon: 'mdi-cellphone mdi',
             dataType: 'text',
             descriptions: ['Resizes the window to a mobile form factor.'],
             action: () => {
@@ -196,6 +211,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         settings: [
           {
             name: 'Dev Tools',
+            icon: 'mdi-bug mdi',
             dataType: 'text',
             descriptions: ['Open developer tools.'],
             action: () => {
@@ -204,6 +220,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Test',
+            icon: 'mdi-test-tube mdi',
             dataType: 'text',
             descriptions: ['Action for testing purposes.'],
             action: () => {
@@ -218,6 +235,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   onAudioScan(setting: ISetting, folderPath: string): void {
     // Disable the setting
     setting.disabled = true;
+    setting.running = true;
     // Subscribe to files
     let fileCount = 0;
     const fileScanSub = this.events.onEvent<IFileInfo>(AppEvent.ScanFile).subscribe(fileInfo => {
@@ -248,6 +266,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         const timeSpan =  this.utility.toTimeSpan(endTime - startTime,
           [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
         this.log.info('Elapsed time: ' + this.utility.formatTimeSpan(timeSpan), timeSpan);
+        setting.running = false;
         setting.disabled = false;
       });
     });
@@ -260,15 +279,24 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<IAudioInfo[]> {
-    const audios = await this.scanner.processAudioFiles(files, this.options, (count, file) => {
-      setting.descriptions[1] = `File ${count} of ${files.length}`;
-      setting.dynamicText = `${file.directoryPath} \n ${file.fullName}`;
-    });
+    const audios = await this.scanner.processAudioFiles(files, this.options,
+      // Before file process
+      async (count, file) => {
+        setting.descriptions[1] = `File ${count} of ${files.length}`;
+        setting.dynamicText = `${file.directoryPath} \n ${file.fullName}`;
+      },
+      // Before sync
+      async () => {
+        setting.descriptions[0] = 'Synchronizing changes...';
+        setting.dynamicText = '';
+      }
+    );
     return audios.filter(audioInfo => audioInfo.error);
   }
 
   public onPlaylistScan(setting: ISetting, folderPath: string): void {
     setting.disabled = true;
+    setting.running = true;
     setting.descriptions[0] = 'Scanning playlists...';
     // Start scan process
     this.scanner.scan(folderPath, '.m3u').then(playlistFiles => {
@@ -299,6 +327,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         // Notify and enable back
         setting.descriptions[0] = 'Click here to start scanning playlists.'
         setting.dynamicText = 'Scan process done. No errors found.';
+        setting.running = false;
         setting.disabled = false;
       });
     });

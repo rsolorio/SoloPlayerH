@@ -85,7 +85,7 @@ export class ScanService {
     this.existingSongClassifications = [];
   }
 
-  private async afterProcess(): Promise<void> {
+  private async syncChangesToDatabase(): Promise<void> {
     // Value lists
     const newCountries = this.existingCountries.filter(country => country.isNew);
     if (newCountries.length) {
@@ -143,19 +143,28 @@ export class ScanService {
     }
   }
 
-  public async processAudioFiles(files: IFileInfo[], options: ModuleOptionEntity[], beforeCallback?: (count: number, fileInfo: IFileInfo) => void): Promise<IAudioInfo[]> {
+  public async processAudioFiles(
+    files: IFileInfo[],
+    options: ModuleOptionEntity[],
+    beforeFileProcess?: (count: number, fileInfo: IFileInfo) => Promise<void>,
+    beforeSyncChanges?: () => Promise<void>,
+  ): Promise<IAudioInfo[]> {
     await this.beforeProcess();
     let fileCount = 0;
     const result: IAudioInfo[] = [];
     for (const file of files) {
       fileCount++;
-      if (beforeCallback) {
-        beforeCallback(fileCount, file);
+      if (beforeFileProcess) {
+        await beforeFileProcess(fileCount, file);
       }
       const audioInfo = await this.processAudioFile(file, options);
       result.push(audioInfo);
     }
-    await this.afterProcess();
+
+    if (beforeSyncChanges) {
+      await beforeSyncChanges();
+    }
+    await this.syncChangesToDatabase();
     return result;
   }
 

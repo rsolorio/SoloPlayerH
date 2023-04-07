@@ -11,7 +11,11 @@
     [ngClass]="{ 'sp-clickable': setting.action && !setting.disabled, 'sp-color-on-bg-low': setting.disabled }"
     (click)="onSettingClick(setting)">
       <!-- Header -->
-      <p class="sp-text-xlarge">{{setting.name}}</p>
+      <p class="sp-text-xlarge">
+        <i *ngIf="setting.icon && !setting.running" [ngClass]="setting.icon">&nbsp;</i>
+        <i *ngIf="setting.running" class="mdi-loading mdi-spin mdi">&nbsp;</i>
+        <span>{{setting.name}}</span>
+      </p>
       <!-- Descriptions -->
       <p *ngFor="let description of setting.descriptions" class="sp-text-medium" [innerHtml]="description"></p>
       <!-- Dynamic Text -->

@@ -6,6 +6,8 @@ export interface ISetting {
   warningText?: string;
   errorText?: string;
   disabled?: boolean;
+  icon?: string;
+  running?: boolean;
   action?: (setting: ISetting) => void;
 }
 

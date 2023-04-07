@@ -565,6 +565,15 @@ export class DatabaseService {
       .getMany();
   }
 
+  public async getSecondsSum(): Promise<number> {
+    const result = await this.dataSource
+      .getRepository(SongEntity)
+      .createQueryBuilder('song')
+      .select('SUM(seconds)', 'seconds')
+      .getRawOne();
+    return result['seconds'];
+  }
+
   /**
    * OBSOLETE: Use SongViewEntity instead.
    * @param artistId 
