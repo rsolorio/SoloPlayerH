@@ -24,7 +24,8 @@
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
       <i class="mdi-account mdi">&nbsp;</i>{{item.artistStylized}}&nbsp;&nbsp;
       <i class="mdi-album mdi">&nbsp;</i>{{item.albumName}}&nbsp;&nbsp;
-      <ng-container *ngIf="item.releaseYear > 0"><i class="mdi-calendar mdi">&nbsp;</i>{{item.releaseYear}}</ng-container>
+      <ng-container *ngIf="item.releaseYear > 0"><i class="mdi-calendar mdi">&nbsp;</i>{{item.releaseYear}}&nbsp;&nbsp;</ng-container>
+      <i class="mdi-clock-outline mdi">&nbsp;</i>{{item.duration}}&nbsp;&nbsp;
     </span>
   </ng-template>
 </sp-list-base>

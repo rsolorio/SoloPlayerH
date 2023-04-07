@@ -27,6 +27,7 @@ import { SongEntity } from './song.entity';
     .addSelect('song.trackNumber', 'trackNumber')
     .addSelect('song.mediaNumber', 'mediaNumber')
     .addSelect('song.seconds', 'seconds')
+    .addSelect('song.duration', 'duration')
     .addSelect('song.rating', 'rating')
     .addSelect('song.language', 'language')
     .addSelect('song.mood', 'mood')
@@ -80,6 +81,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   live: boolean;
   @ViewColumn()
   seconds: number;
+  @ViewColumn()
+  duration: string;
   @ViewColumn()
   rating: number;
   @ViewColumn()

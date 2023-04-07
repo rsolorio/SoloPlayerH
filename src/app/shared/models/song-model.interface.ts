@@ -37,6 +37,7 @@ export interface ISongModel extends IListItemModel {
   albumWithYear: string;
   playCountText: string;
   seconds: number;
+  duration: string;
   primaryAlbum: IAlbumModel;
   playerStatus: PlayerSongStatus;
   primaryAlbumId: string;
