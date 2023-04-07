@@ -235,9 +235,9 @@
         <!-- Image Toolbar -->
         <tr class="sp-tr-image-toolbar">
           <td><i class="mdi-undo-variant mdi sp-text-big sp-cursor-pointer" (click)="onToolbarReset()"></i></td>
-          <td><i class="mdi-chevron-left mdi sp-text-big sp-cursor-pointer" (click)="onToolbarBack($event)"></i></td>
-          <td><span *ngIf="image" class="sp-text-large sp-font-family-regular sp-cursor-pointer">{{image.imageType.toUpperCase()}}</span></td>
-          <td><i class="mdi-chevron-right mdi sp-text-big sp-cursor-pointer" (click)="onToolbarNext($event)"></i></td>
+          <td><i class="mdi-chevron-left mdi sp-text-big sp-cursor-pointer" [ngClass]="{ 'sp-color-item-disabled': images.length < 2 }" (click)="onToolbarBack($event)"></i></td>
+          <td><span *ngIf="image" class="sp-text-large sp-font-family-regular">{{image.imageType.toUpperCase()}}</span></td>
+          <td><i class="mdi-chevron-right mdi sp-text-big sp-cursor-pointer" [ngClass]="{ 'sp-color-item-disabled': images.length < 2 }" (click)="onToolbarNext($event)"></i></td>
           <td>
             <i *ngIf="!isLoadingPalette" (click)="onImageControlsClose($event)" class="mdi-close mdi sp-text-big sp-cursor-pointer"></i>
             <i *ngIf="isLoadingPalette" class="mdi-loading mdi-spin mdi sp-text-big"></i>
