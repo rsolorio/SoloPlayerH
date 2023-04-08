@@ -63,7 +63,7 @@
 }
 
 .sp-progress-back {
-  background-color: $sp-color-overlay-01;
+  background-color: $sp-color-overlay-02;
   height: 3px;
   border-radius: 10px;
 }
@@ -95,7 +95,7 @@
 
 .sp-play-pause-button {
   border-radius: 50%;
-  background-color: $sp-color-overlay-01;
+  background-color: $sp-color-overlay-02;
   margin: 0 auto; // this will horizontally center div in the td
 }
 
@@ -150,15 +150,15 @@
 
 .sp-color-bar-outline {
   border-radius: 5px;
-  outline: 1px solid $sp-color-overlay-01;
+  outline: 1px solid $sp-color-overlay-02;
 }
 
 .sp-footer-outline {
-  outline: 1px solid $sp-color-overlay-01;
+  outline: 1px solid $sp-color-overlay-02;
 }
 
 .sp-color-item-disabled {
-  color: $sp-color-overlay-01;
+  color: $sp-color-overlay-02;
 }
 
 /*
