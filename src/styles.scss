@@ -345,13 +345,21 @@ body {
 }
 
 /* Applies animation to any color change with duration of 2 secs */
-.sp-ease-color {
+.sp-ease-color-1 {
+    transition: color 1s ease-in-out;
+}
+
+.sp-ease-color-2 {
     transition: color 2s ease-in-out;
 }
 
 /* Applies animation to any color change with duration of 2 secs.
 A longer duration allows to properly see the transition in the whole page. */
-.sp-ease-background-color {
+.sp-ease-background-color-1 {
+    transition: background-color 1s ease-in-out;
+}
+
+.sp-ease-background-color-2 {
     transition: background-color 2s ease-in-out;
 }
 

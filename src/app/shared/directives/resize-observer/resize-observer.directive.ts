@@ -7,6 +7,7 @@ import { ISize } from 'src/app/core/models/core.interface';
 export class ResizeObserverDirective implements OnDestroy {
   // @ts-ignore
   private parentResizeObserver: ResizeObserver;
+  public lastSize: ISize;
   @Output() public spResized: EventEmitter<ISize> = new EventEmitter();
 
   constructor(private elementRef: ElementRef) {
@@ -25,11 +26,11 @@ export class ResizeObserverDirective implements OnDestroy {
     this.parentResizeObserver = new (window as any).ResizeObserver(entries => {
       const mainEntry = entries[0];
       if (mainEntry && mainEntry.contentRect) {
-        const size: ISize = {
+        this.lastSize = {
           height: mainEntry.contentRect.height,
           width: mainEntry.contentRect.width
         };
-        this.spResized.emit(size);
+        this.spResized.emit(this.lastSize);
       }
     });
     this.parentResizeObserver.observe(this.elementRef.nativeElement);

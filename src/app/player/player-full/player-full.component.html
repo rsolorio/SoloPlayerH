@@ -258,7 +258,7 @@
                 <!-- Selected Color -->
                 <div class="sp-color-bar">
                   <i class="mdi-cursor-default-click-outline mdi sp-color-icon"></i>
-                  <div class="sp-full-height sp-full-width sp-color-bar-outline sp-clickable" (click)="onSelectedColorClick()" [ngStyle]="colorSelected.cssBgColor"></div>
+                  <div class="sp-full-height sp-full-width sp-color-bar-outline sp-clickable sp-ease-background-color-1" (click)="onSelectedColorClick()" [ngStyle]="colorSelected.cssBgColor"></div>
                 </div>
                 <!-- Palette -->
                 <div class="sp-color-palette sp-color-bar">
@@ -266,21 +266,21 @@
                     <i class="mdi-alpha-b-box-outline mdi sp-color-icon"></i>
                     <div
                     (click)="onBackgroundColorClick()"
-                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline"
+                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline sp-ease-background-color-1"
                     [ngStyle]="palette.background.cssBgColor"></div>
                   </div>
                   <div class="sp-full-height sp-color-bar-small">
                     <i class="mdi-numeric-1-box-outline mdi sp-color-icon"></i>
                     <div
                     (click)="onPrimaryColorClick()"
-                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline"
+                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline sp-ease-background-color-1"
                     [ngStyle]="palette.primary.cssBgColor"></div>
                   </div>
                   <div class="sp-full-height sp-color-bar-small">
                     <i class="mdi-numeric-2-box-outline mdi sp-color-icon"></i>
                     <div
                     (click)="onSecondaryColorClick()"
-                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline"
+                    class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline sp-ease-background-color-1"
                     [ngStyle]="palette.secondary.cssBgColor"></div>
                   </div>
                 </div>

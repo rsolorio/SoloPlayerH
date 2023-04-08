@@ -220,20 +220,19 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
    * This method assumes the track already belongs to the existing playlist.
    * If the specified track is already playing this method does nothing.
    */
-   public setCurrentTrack(track: IPlaylistSongModel, play?: boolean) {
+   public async setCurrentTrack(track: IPlaylistSongModel, play?: boolean): Promise<void> {
     if (track === this.state.playerList.current) {
       // Play only if it is not playing
       if (play && this.state.status !== PlayerStatus.Playing) {
-        this.playAudio();
+        await this.playAudio();
       }
     }
     else {
       // New track so stop the player and load the new one
-      this.stop().then(success => {
-        if (success && this.setupNewTrack(track) && play) {
-          this.playAudio();
-        }
-      });
+      const success = await this.stop();
+      if (success && this.setupNewTrack(track) && play) {
+        await this.playAudio();
+      }
     }
   }  
 

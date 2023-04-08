@@ -209,10 +209,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
     const playerList = this.playerService.getState().playerList;
     let track = playerList.getTrack(song);
     if (track) {
-      this.playerService.setCurrentTrack(track, play);
-      if (expand) {
-        this.playerOverlayService.expand();
-      }
+      this.playerService.setCurrentTrack(track, play).then(() => {
+        if (expand) {
+          this.playerOverlayService.expand();
+        }
+      });
     }
     else {
       // Since we are about to play a new track:
@@ -227,10 +228,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
           playerList.loadList(trackList);
           playerList.name = this.spListBaseComponent.model.criteriaResult.criteria.name;
           track = playerList.getTrack(song);
-          this.playerService.setCurrentTrack(track, play);
-          if (expand) {
-            this.playerOverlayService.expand();
-          }
+          this.playerService.setCurrentTrack(track, play).then(() => {
+            if (expand) {
+              this.playerOverlayService.expand();
+            }
+          });
         }
       });
     }

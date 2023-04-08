@@ -21,6 +21,7 @@ import { ImageSrcType } from 'src/app/core/globals.enum';
 import { ColorServiceName, ColorSort, IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { ImageService } from 'src/app/platform/image/image.service';
+import { ResizeObserverDirective } from 'src/app/shared/directives/resize-observer/resize-observer.directive';
 
 @Component({
   selector: 'sp-player-full',
@@ -31,6 +32,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   @ViewChild('picture') private pictureRef: ElementRef;
   @ViewChild('pictureCanvas') private pictureCanvasRef: ElementRef;
   @ViewChild('tableEyeDropper') private tableEyeDropperRef: ElementRef;
+  @ViewChild(ResizeObserverDirective) private resizeObserver: ResizeObserverDirective;
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
@@ -79,15 +81,18 @@ export class PlayerFullComponent extends PlayerComponentBase {
           }
           else {
             // If no src it means that it doesn't need resizing
+            this.resizeImageIfNeeded();
             this.loadPalette();
           }
         });
       }
       else {
+        this.resizeImageIfNeeded();
         this.loadPalette();
       }
     }
     else {
+      this.resizeImageIfNeeded();
       this.loadPalette();
     }
   }
@@ -100,6 +105,12 @@ export class PlayerFullComponent extends PlayerComponentBase {
         width: this.pictureRef.nativeElement.naturalWidth
       };
       this.imageSize = this.imageService.getResizeDimensions(imageNaturalSize, containerSize);
+    }
+  }
+
+  private resizeImageIfNeeded(): void {
+    if (!this.imageSize.height || !this.imageSize.width) {
+      this.onImageContainerResized(this.resizeObserver.lastSize);
     }
   }
 
@@ -129,29 +140,24 @@ export class PlayerFullComponent extends PlayerComponentBase {
   /**
    * Loads the color palette of the current image and fires the "paletteLoaded" event.
    */
-  private loadPalette(): void {
+  private async loadPalette(): Promise<void> {
     this.isLoadingPalette = true;
+    let colors: ColorG[];
     if (this.colorUtility.isWorkerSupported()) {
       const colorData = this.colorUtility.getColorData(this.pictureRef.nativeElement);
-      this.worker.run<IColorExtractionData, IColorG[]>(WorkerName.ColorPalette, colorData).then(response => {
-        const colors = ColorG.fromColorObjects(response);
-        this.setupPalette(colors);
-        if (this.imageControlsEnabled) {
-          this.drawCanvasAndLoadData();
-          this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
-        }
-        this.isLoadingPalette = false;
-      });
+      const rawColors = await this.worker.run<IColorExtractionData, IColorG[]>(WorkerName.ColorPalette, colorData);
+      colors = ColorG.fromColorObjects(rawColors);
     }
     else {
-      const colors = this.colorUtility.getColors(this.pictureRef.nativeElement);
-      this.setupPalette(colors);
-      if (this.imageControlsEnabled) {
-        this.drawCanvasAndLoadData();
-        this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
-      }
-      this.isLoadingPalette = false;
+      colors = this.colorUtility.getColors(this.pictureRef.nativeElement);
     }
+
+    this.setupPalette(colors);
+    if (this.imageControlsEnabled) {
+      this.drawCanvasAndLoadData();
+      this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
+    }
+    this.isLoadingPalette = false;
   }
 
   private setupPalette(colors: ColorG[]): void {

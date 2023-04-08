@@ -114,6 +114,13 @@ export class UtilityService {
     return this.windowSize;
   }
 
+  public reloadRoute(): void {
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([currentUrl]);
+    });
+  }
+
   public navigate(route: string | AppRoute, removeRouteParams?: boolean): void {
     if (removeRouteParams) {
       this.router.navigateByUrl(route);

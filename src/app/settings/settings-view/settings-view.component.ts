@@ -101,8 +101,15 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             ]
           },
           {
+            name: 'Export Data',
+            icon: 'mdi-database-export mdi',
+            dataType: 'text',
+            descriptions: ['Export data into a json file.'],
+            action: () => {}
+          },
+          {
             name: 'Purge Database',
-            icon: 'mdi-database mdi',
+            icon: 'mdi-database-remove mdi',
             dataType: 'text',
             descriptions: ['Deletes all data and recreates the database.'],
             action: settings => {
@@ -111,7 +118,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
               this.db.purge().then(() => {
                 settings.running = false;
                 settings.disabled = false;
-                // TODO: reload component or reload stats
+                this.utility.reloadRoute();
               });
             }
           }
@@ -340,6 +347,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   onTest(): void {
+    this.utility.reloadRoute();
   }
 
   private async logFileMetadata(): Promise<void> {
