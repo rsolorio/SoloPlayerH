@@ -46,6 +46,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public colorSelected = ColorG.black;
   public imageCursorPosition: IPosition;
   private imageData: ImageData;
+  private sourceImageMaxSize = 700;
   constructor(
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
@@ -70,33 +71,41 @@ export class PlayerFullComponent extends PlayerComponentBase {
 
   public onImageLoad(): void {
     if (this.image.sourceType === MusicImageSourceType.ImageFile) {
-      // Assume that only file images might need resize (for now)
+      // Assume that only file images might need shrinking (for now)
       if (this.image.srcType === ImageSrcType.FileUrl) {
-        // This means that the image hasn't been resized yet
-        this.imageService.shrinkImage(this.image, 700).then(newSrc => {
+        // A file url is the original source of the image which means it might need shrinking
+        this.imageService.shrinkImage(this.image, this.sourceImageMaxSize).then(newSrc => {
           if (newSrc) {
             // Set src type first, since once we set the src this method will be fired again
             this.image.srcType = ImageSrcType.DataUrl;
             this.image.src = newSrc;
           }
+          // If the result of the method is empty, the image didn't need shrinking
           else {
-            // If no src it means that it doesn't need resizing
-            this.resizeImageIfNeeded();
+            // A new image requires to recalculate the size
+            this.resizeImageElement();
             this.loadPalette();
           }
         });
       }
       else {
-        this.resizeImageIfNeeded();
+        // A new image requires to recalculate the size
+        this.resizeImageElement();
         this.loadPalette();
       }
     }
     else {
-      this.resizeImageIfNeeded();
+      // A new image requires to recalculate the size
+      this.resizeImageElement();
       this.loadPalette();
     }
   }
 
+  /**
+   * Resize observer event handler that tells when the parent of the image element has been resized.
+   * This process relies on the natural size of the image, so if the source image changes
+   * this calculation has to run again.
+   */
   public onImageContainerResized(containerSize: ISize): void {
     this.imageControlsEnabled = false;
     if (this.pictureRef && this.pictureRef.nativeElement) {
@@ -104,14 +113,25 @@ export class PlayerFullComponent extends PlayerComponentBase {
         height: this.pictureRef.nativeElement.naturalHeight,
         width: this.pictureRef.nativeElement.naturalWidth
       };
+      // Generate the new dimensions for the element
       this.imageSize = this.imageService.getResizeDimensions(imageNaturalSize, containerSize);
     }
   }
 
-  private resizeImageIfNeeded(): void {
-    if (!this.imageSize.height || !this.imageSize.width) {
-      this.onImageContainerResized(this.resizeObserver.lastSize);
-    }
+  /**
+   * Forces the image element to resize according to its parent.
+   * It uses the last known size of the parent.
+   * Do not confuse these two routines:
+   * 1. Resizing the image element based on its parent
+   * - This is done to react to changes in the window;
+   * - it emulates the "object-fit:contain;" css property.
+   * 2. Shrinking the actual image source
+   * - This is done to reduce the size of the image before processing colors;
+   * - it generates an image with less bits to process which makes loading the palette faster;
+   * - it also makes the eye dropper faster.
+   */
+  private resizeImageElement(): void {
+    this.onImageContainerResized(this.resizeObserver.lastSize);
   }
 
   public toggleLyrics(): void {

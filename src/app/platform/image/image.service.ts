@@ -257,6 +257,11 @@ export abstract class ImageService {
     return result;
   }
 
+  /**
+   * Generates a new image source with smaller dimensions.
+   * @param image The image to shrink
+   * @param newSize The target size.
+   */
   public shrinkImage(image: IImage, newSize: number): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       try {
