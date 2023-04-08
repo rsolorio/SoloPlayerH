@@ -92,21 +92,21 @@
       <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}&nbsp;</span>
+      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
       <!-- Artist Type -->
       <ng-container *ngIf="song.artistType">
+        <span>&nbsp;&nbsp;</span>
         <i class="mdi-microphone mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistType}}
-        </span>
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistType}}</span>
       </ng-container>
       <br>
       <!-- Album -->
       <i class="mdi-album mdi sp-text-large " [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.albumName}}&nbsp;&nbsp;</span>
+      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.albumName}}</span>
       <br>
       <!-- Year -->
       <ng-container *ngIf="song.releaseYear > 0">

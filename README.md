@@ -2,6 +2,8 @@
 
 Mp3 player, music manager, tag editor, album art finder, playlist creator, file synchronizer.
 
+This player is for music stored in your device.
+
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.
 
