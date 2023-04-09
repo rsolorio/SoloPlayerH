@@ -93,16 +93,21 @@
   width: 80px;
 }
 
-.sp-play-pause-button {
+.sp-player-button {
   border-radius: 50%;
   background-color: $sp-color-overlay-02;
   margin: 0 auto; // this will horizontally center div in the td
 }
 
-.sp-play-pause-icon {
+.sp-player-icon {
   vertical-align: middle;
   text-align: center;
   display: table-cell;
+}
+
+.sp-back-forward {
+  height: 60px;
+  width: 60px;
 }
 
 .sp-player-overlay {

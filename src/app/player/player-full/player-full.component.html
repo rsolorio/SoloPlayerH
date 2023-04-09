@@ -160,7 +160,7 @@
                   <sp-rating
                   (change)="onRatingChange($event, song)"
                   [(ngModel)]="song.rating"
-                  [classOff]="'sp-color-overlay-01'"
+                  [classOff]="'sp-color-overlay-02'"
                   [classBack]="'sp-bg-dim-black-high'">
                   </sp-rating>
                 </td>
@@ -208,22 +208,26 @@
                   <i *ngIf="model.playerList.play === PlayMode.Sequence" class="mdi-shuffle-disabled mdi"></i>
                   <i *ngIf="model.playerList.play === PlayMode.Random" class="mdi-shuffle mdi"></i>
                 </td>
-                <td (click)="onPrevious()" class="sp-td-play-control sp-text-big-fixed">
-                    <i class="mdi-skip-previous mdi"></i>
+                <td class="sp-td-play-control sp-text-big-fixed">
+                  <div (click)="onPrevious()" class="sp-player-button sp-back-forward">
+                    <i class="mdi-skip-previous mdi sp-player-icon sp-back-forward"></i>
+                  </div>
                 </td>
                 <td class="sp-td-play-control sp-text-huge-fixed">
-                    <div (click)="onPlayPause()" class="sp-play-pause sp-play-pause-button">
-                        <i *ngIf="model.status !== PlayerStatus.Playing" class="mdi-play mdi sp-play-pause sp-play-pause-icon"></i>
-                        <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-play-pause sp-play-pause-icon"></i>
-                    </div>
-                </td>
-                <td (click)="onForward()" class="sp-td-play-control sp-text-big-fixed">
-                    <i class="mdi-skip-next mdi"></i>
+                  <div (click)="onPlayPause()" class="sp-play-pause sp-player-button">
+                      <i *ngIf="model.status !== PlayerStatus.Playing" class="mdi-play mdi sp-play-pause sp-player-icon"></i>
+                      <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-play-pause sp-player-icon"></i>
+                  </div>
                 </td>
                 <td class="sp-td-play-control sp-text-big-fixed">
-                    <i *ngIf="model.playerList.repeat === RepeatMode.All" class="mdi-repeat mdi"></i>
-                    <i *ngIf="model.playerList.repeat === RepeatMode.One" class="mdi-repeat-once mdi"></i>
-                    <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" class="mdi-repeat-off mdi"></i>
+                  <div (click)="onForward()" class="sp-player-button sp-back-forward">
+                    <i class="mdi-skip-next mdi sp-player-icon sp-back-forward"></i>
+                  </div>
+                </td>
+                <td class="sp-td-play-control sp-text-big-fixed">
+                  <i *ngIf="model.playerList.repeat === RepeatMode.All" class="mdi-repeat mdi"></i>
+                  <i *ngIf="model.playerList.repeat === RepeatMode.One" class="mdi-repeat-once mdi"></i>
+                  <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" class="mdi-repeat-off mdi"></i>
                 </td>
               </tr>
             </table>
