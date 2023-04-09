@@ -8,12 +8,21 @@
 (itemRender)="onItemRender($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
-    <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
-    <span class="sp-text-medium sp-no-select">{{item.artistStylized}}</span>
-    <br>
-    <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-      <ng-container *ngIf="isAlbumArtist"><i class="mdi-album mdi">&nbsp;</i>{{item.albumCount}}&nbsp;&nbsp;</ng-container>
-      <i class="mdi-music mdi">&nbsp;</i>{{item.songCount}}
-    </span>
+    <table class="sp-table sp-table-no-padding sp-full-height sp-full-width">
+      <tr>
+        <td>
+          <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
+          <span class="sp-text-medium sp-no-select">{{item.artistStylized}}</span>
+          <br>
+          <span class="sp-color-on-bg-low sp-text-small sp-no-select">
+            <ng-container *ngIf="isAlbumArtist"><i class="mdi-album mdi">&nbsp;</i>{{item.albumCount}}&nbsp;&nbsp;</ng-container>
+            <i class="mdi-music mdi">&nbsp;</i><span>{{item.songCount}}</span>
+          </span>
+        </td>
+        <td style="width: 50px;text-align: center;" class="sp-clickable" (click)="onShowSongsClick(item)">
+          <i class="mdi-music-note mdi sp-text-xlarge"></i>
+        </td>
+      </tr>
+    </table>
   </ng-template>
 </sp-list-base>

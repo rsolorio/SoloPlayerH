@@ -122,6 +122,11 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     }
   }
 
+  public onShowSongsClick(artist: IArtistModel): void {
+    const songRoute = appRoutes[AppRoute.Songs];
+    this.showEntity(songRoute, artist);
+  }
+
   private showEntity(routeInfo: IAppRouteInfo, artist: IArtistModel): void {
     this.addBreadcrumb(artist);
     // No specific criteria, breadcrumbs will be automatically taken by the new entity

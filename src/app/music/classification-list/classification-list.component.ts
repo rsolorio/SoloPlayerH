@@ -114,6 +114,10 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     this.showEntity(appRoutes[AppRoute.AlbumArtists], classification);
   }
 
+  public onShowSongsClick(classification: IClassificationModel): void {
+    this.showEntity(appRoutes[AppRoute.Songs], classification);
+  }
+
   private addBreadcrumb(classification: IClassificationModel): void {
     const criteriaItem = new CriteriaItem('classificationId', classification.id);
     criteriaItem.displayName = classification.classificationType;

@@ -274,14 +274,15 @@ body {
 .sp-table-list {
     border-spacing: 0;
     font-family: $sp-font-family-regular;
-    td {
-        border-top: 1px solid $sp-color-on-background-separator;
-    }
-    th {
+    & > th {
         border-bottom: 1px solid $sp-color-on-background-high;
-    }
-    td, th {
         padding: 4px;
+    }
+    & > tr {
+        & > td {
+            border-top: 1px solid $sp-color-on-background-separator;
+            padding: 4px;    
+        }
     }
 }
 
