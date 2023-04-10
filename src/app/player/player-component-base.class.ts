@@ -141,6 +141,33 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     }
   }
 
+  protected getExtension(): string {
+    // TODO: save extension in table
+    if (this.model.playerList.current.song.filePath) {
+      const fileParts = this.model.playerList.current.song.filePath.split('.');
+      return fileParts[fileParts.length - 1].toUpperCase();
+    }
+    return null;
+  }
+
+  protected getBitrate(): string {
+    if (this.model.playerList.current.song.vbr) {
+      return 'Vbr';
+    }
+    const kbps = this.model.playerList.current.song.bitrate / 1000;
+    return kbps + 'Kbps';
+  }
+
+  protected getFrequency(): string {
+    const khz = this.model.playerList.current.song.frequency / 1000;
+    return khz + 'KHz';
+  }
+
+  protected getSize(): string {
+    const mb = this.model.playerList.current.song.fileSize / 1000 / 1000;
+    return this.utilityService.round(mb, 2) + 'Mb';
+  }
+
   // Public Methods ****************************************************************************
   public onSongInfoClick() {
     if (this.model.playerList.hasTrack()) {
@@ -222,30 +249,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     });
   }
 
-  public getExtension(): string {
-    // TODO: save extension in table
-    if (this.model.playerList.current.song.filePath) {
-      const fileParts = this.model.playerList.current.song.filePath.split('.');
-      return fileParts[fileParts.length - 1].toUpperCase();
-    }
-    return null;
-  }
-
-  public getBitrate(): string {
-    if (this.model.playerList.current.song.vbr) {
-      return 'VBR';
-    }
-    const kbps = this.model.playerList.current.song.bitrate / 1000;
-    return kbps + 'Kbps';
-  }
-
-  public getFrequency(): string {
-    const khz = this.model.playerList.current.song.frequency / 1000;
-    return khz + 'KHz';
-  }
-
-  public getSize(): string {
-    const mb = this.model.playerList.current.song.fileSize / 1000 / 1000;
-    return this.utilityService.round(mb, 2) + 'Mb';
+  public getFileInfo(): string {
+    return `${this.getExtension()} | ${this.getBitrate()} | ${this.getFrequency()} | ${this.getSize()}`;
   }
 }
