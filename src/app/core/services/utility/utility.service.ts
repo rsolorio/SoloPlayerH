@@ -10,6 +10,7 @@ import { ISize } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
+import { TimeAgo } from '../../globals.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -223,6 +224,32 @@ export class UtilityService {
     const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
     const utc2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
     return Math.floor((utc1 - utc2) / this.msPerDay);
+  }
+
+  public daysFromNow(date: Date): number {
+    return this.differenceInDays(new Date(), date);
+  }
+
+  public getTimeAgo(days: number): TimeAgo {
+    if (days > 365) {
+      return TimeAgo.Long;
+    }
+    if (days > 31) {
+      return TimeAgo.OneYear;
+    }
+    if (days > 14) {
+      return TimeAgo.OneMonth;
+    }
+    if (days > 7) {
+      return TimeAgo.TwoWeeks;
+    }
+    if (days > 1) {
+      return TimeAgo.OneWeek;
+    }
+    if (days > 0) {
+      return TimeAgo.Yesterday;
+    }
+    return TimeAgo.Today;
   }
 
   public toReadableDate(date: Date, dateSeparator?: string): string {

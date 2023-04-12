@@ -172,7 +172,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   public onItemRender(artist: IArtistModel): void {
     if (!artist.recentIcon) {
-      const days = this.utility.differenceInDays(new Date(), new Date(artist.songAddDateMax));
+      const days = this.utility.daysFromNow(new Date(artist.songAddDateMax));
       artist.recentIcon = this.spListBaseComponent.getRecentIcon(days);
     }
   }

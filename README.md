@@ -77,6 +77,8 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - Settings
 - Log
 
+## Icons
+
 ## Database schema
 
 ### Song table
@@ -123,6 +125,8 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
   - Full timestamp describing when the song's information was updated
   - ID3 mapping: custom ChangeDate tag
   - Fallback: file modification date
+- playDate
+  - Full timestamp describing the last time the song was played
 - language
   - The language of the song
   - ID3 mapping: TLAN

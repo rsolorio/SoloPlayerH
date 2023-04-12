@@ -266,8 +266,16 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   public onItemRender(song: ISongModel): void {
     if (!song.recentIcon) {
-      const days = this.utility.differenceInDays(new Date(), new Date(song.addDate));
+      const days = this.utility.daysFromNow(new Date(song.addDate));
       song.recentIcon = this.spListBaseComponent.getRecentIcon(days);
+    }
+
+    if (!song.popularityIcon) {
+      song.popularityIcon = {};
+      if (song.playDate) {
+        const days = this.utility.daysFromNow(new Date(song.playDate));
+        song.popularityIcon = this.playerOverlayService.getPopularityIcon(days);
+      }
     }
 
     if (!song.image.src) {

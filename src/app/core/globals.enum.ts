@@ -33,3 +33,13 @@ export enum ImageSrcType {
   FileUrl,
   WebUrl
 }
+
+export enum TimeAgo {
+  Today,
+  Yesterday,
+  OneWeek,
+  TwoWeeks,
+  OneMonth,
+  OneYear,
+  Long
+}

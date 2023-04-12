@@ -19,6 +19,7 @@
       <i *ngIf="item.live" class="mdi-broadcast mdi sp-title-icon sp-color-success" [title]="SongBadge.Live"></i>
       <i *ngIf="item.rating === 5" class="mdi-star-outline mdi sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
       <i *ngIf="item.favorite" class="mdi-heart-outline mdi sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
+      <i *ngIf="item.popularityIcon && item.popularityIcon.icon" class="sp-title-icon" [ngClass]="[item.popularityIcon.icon, item.popularityIcon.styleClass]" [title]="item.popularityIcon.tooltip"></i>
     </ng-container>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">

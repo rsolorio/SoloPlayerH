@@ -20,6 +20,7 @@ import { NavigationService } from '../../services/navigation/navigation.service'
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
+import { TimeAgo } from 'src/app/core/globals.enum';
 
 @Component({
   selector: 'sp-list-base',
@@ -364,20 +365,21 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   public getRecentIcon(days: number): IIcon {
-    if (days < 31) {
-      const tooltip = `Added ${days} days ago.`;
-      if (days < 15) {
-        if (days < 8) {
-          if (days < 2) {
-            if (days < 1) {
-              return { styleClass: 'sp-color-orange', tooltip: 'Added today.' };
-            }
-            return { styleClass: 'sp-color-orange', tooltip: 'Added yesterday.' };
-          }
-          return { styleClass: 'sp-color-yellow', tooltip: tooltip };
-        }
-        return { styleClass: 'sp-color-green', tooltip: tooltip };
-      }
+    const timeAgo = this.utilities.getTimeAgo(days);
+    if (timeAgo === TimeAgo.Today) {
+      return { styleClass: 'sp-color-orange', tooltip: 'Added today.' };
+    }
+    if (timeAgo === TimeAgo.Yesterday) {
+      return { styleClass: 'sp-color-orange', tooltip: 'Added yesterday.' };
+    }
+    const tooltip = `Added ${days} days ago.`;
+    if (timeAgo === TimeAgo.OneWeek) {
+      return { styleClass: 'sp-color-yellow', tooltip: tooltip };
+    }
+    if (timeAgo === TimeAgo.TwoWeeks) {
+      return { styleClass: 'sp-color-normal-text', tooltip: tooltip };
+    }
+    if (timeAgo === TimeAgo.OneMonth) {
       return { styleClass: 'sp-color-muted', tooltip: tooltip };
     }
     return { styleClass: 'sp-no-display' };

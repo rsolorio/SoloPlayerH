@@ -1,3 +1,4 @@
+import { IIcon } from 'src/app/core/models/core.interface';
 import { IAlbumModel } from './album-model.interface';
 import { IListItemModel } from './base-model.interface';
 import { PlayerSongStatus } from './player.enum';
@@ -18,6 +19,7 @@ export interface ISongModel extends IListItemModel {
   language: string;
   lyrics: string;
   addDate: Date;
+  playDate: Date;
   releaseDecade: number;
   /** This is a dynamic field that gets its value from either primaryAlbum object or primaryAlbumName property. */
   albumName: string;
@@ -43,4 +45,5 @@ export interface ISongModel extends IListItemModel {
   primaryAlbumId: string;
   primaryArtistId: string;
   classificationId: string;
+  popularityIcon?: IIcon;
 }

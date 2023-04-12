@@ -11,7 +11,7 @@ export class IntersectionObserverDirective implements OnDestroy {
   constructor() {
     this.mapping = new Map<Element, () => void>();
 
-    this.observer = new IntersectionObserver((entries, observer) => {
+    this.observer = new IntersectionObserver(entries => {
       for (const entry of entries) {
         const callback = this.mapping.get(entry.target);
         if (callback) {

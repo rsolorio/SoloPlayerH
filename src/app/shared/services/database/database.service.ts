@@ -884,17 +884,18 @@ export class DatabaseService {
     };
   }
 
-  public async increasePlayCount(songId: string): Promise<number> {
+  public async increasePlayCount(songId: string): Promise<SongEntity> {
     // Increase play count
     const song = await SongEntity.findOneBy({ id: songId });
     song.playCount++;
+    song.playDate = new Date();
     await song.save();
     // Add play record
     const playRecord = new PlayHistoryEntity();
     playRecord.songId = songId;
-    playRecord.playDate = new Date();
+    playRecord.playDate = song.playDate;
     await playRecord.save();
-    return song.playCount;
+    return song;
   }
 
   public async setFavoriteSong(songId: string, favorite: boolean): Promise<void> {

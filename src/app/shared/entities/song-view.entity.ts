@@ -38,6 +38,7 @@ import { SongEntity } from './song.entity';
     .addSelect('song.frequency', 'frequency')
     .addSelect('song.lyrics', 'lyrics')
     .addSelect('song.addDate', 'addDate')
+    .addSelect('song.playDate', 'playDate')
     .addSelect('album.name', 'primaryAlbumName')
     .addSelect('artist.name', 'primaryArtistName')
     .addSelect('artist.artistStylized', 'primaryArtistStylized')
@@ -99,6 +100,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   lyrics: string;
   @ViewColumn()
   addDate: Date;
+  @ViewColumn()
+  playDate: Date;
 
   // Empty properties from ISongModel interface
   classificationId: string;

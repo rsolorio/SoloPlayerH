@@ -152,7 +152,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
 
   public onItemRender(album: IAlbumModel): void {
     if (!album.recentIcon) {
-      const days = this.utility.differenceInDays(new Date(), new Date(album.songAddDateMax));
+      const days = this.utility.daysFromNow(new Date(album.songAddDateMax));
       album.recentIcon = this.spListBaseComponent.getRecentIcon(days);
     }
     if (!album.image.src) {

@@ -10,6 +10,7 @@ import { PlayerOverlayStateService } from './player-overlay-state.service';
 import { PlayerOverlayMode } from './player-overlay.enum';
 import { IPlayerOverlayModel } from './player-overlay.interface';
 import { IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 /**
  * This is the main container of the player and responsible for rendering the selected player mode.
@@ -28,7 +29,8 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
     private playerOverlayService: PlayerOverlayStateService,
     private events: EventsService,
     private db: DatabaseService,
-    private cd: ChangeDetectorRef)
+    private cd: ChangeDetectorRef,
+    private utility: UtilityService)
   {
     super();
   }
@@ -58,8 +60,11 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
       switch (eventArgs.newValue) {
         case PlayerStatus.Playing:
           if (eventArgs.oldValue !== PlayerStatus.Paused) {
-            this.db.increasePlayCount(eventArgs.track.songId).then(newPlayCount => {
-              eventArgs.track.song.playCount = newPlayCount;
+            this.db.increasePlayCount(eventArgs.track.songId).then(updatedSong => {
+              eventArgs.track.song.playCount = updatedSong.playCount;
+              eventArgs.track.song.playDate = updatedSong.playDate;
+              const days = this.utility.daysFromNow(new Date(eventArgs.track.song.playDate));
+              eventArgs.track.song.popularityIcon = this.playerOverlayService.getPopularityIcon(days);
             });
           }
           break;

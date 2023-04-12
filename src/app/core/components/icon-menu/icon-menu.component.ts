@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { IIconMenuModel } from './icon-menu-model.interface';
 import { IMenuModel } from '../../models/menu-model.interface';
 import { SlideMenu } from 'primeng/slidemenu';
@@ -9,7 +9,8 @@ import { CoreEvent } from '../../services/events/events.enum';
 @Component({
   selector: 'sp-icon-menu',
   templateUrl: './icon-menu.component.html',
-  styleUrls: ['./icon-menu.component.scss']
+  styleUrls: ['./icon-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IconMenuComponent implements OnInit {
   @ViewChild('menu') private menu: SlideMenu;

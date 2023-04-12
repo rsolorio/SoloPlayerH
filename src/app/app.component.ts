@@ -10,7 +10,6 @@ import { UtilityService } from './core/services/utility/utility.service';
 import { DatabaseService } from './shared/services/database/database.service';
 import { LogService } from './core/services/log/log.service';
 import { FeatureDetectionService } from './core/services/feature-detection/feature-detection.service';
-import { AppEvent } from './shared/models/events.enum';
 import { LogLevel } from './core/services/log/log.enum';
 import { NavigationService } from './shared/services/navigation/navigation.service';
 import { IMenuModel } from './core/models/menu-model.interface';

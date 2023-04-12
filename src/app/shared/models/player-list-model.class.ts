@@ -57,6 +57,7 @@ export class PlayerListModel implements IDbModel {
       language: null,
       lyrics: null,
       addDate: null,
+      playDate: null,
       albumWithYear: '[Empty Album]',
       artistName: '[Empty Artist]',
       primaryArtistName: '[Empty Artist]',

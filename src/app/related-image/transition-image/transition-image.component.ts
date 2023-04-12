@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { ITransitionImageModel } from './transition-image-model.interface';
 
 @Component({
   selector: 'sp-transition-image',
   templateUrl: './transition-image.component.html',
-  styleUrls: ['./transition-image.component.scss']
+  styleUrls: ['./transition-image.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransitionImageComponent {
 

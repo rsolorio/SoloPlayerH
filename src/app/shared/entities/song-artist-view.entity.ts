@@ -17,8 +17,11 @@ import { SongBaseEntity } from './song-base.entity';
  @ViewEntity({
   name: 'songArtistView',
   expression: `
-  SELECT song.id, song.name, song.filePath, song.fileSize, song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.seconds, song.duration, song.bitrate, song.vbr, song.frequency, song.favorite, song.live, song.rating, song.mood, song.language, song.lyrics, song.addDate,
-  album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.titleSort, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
+  SELECT song.id, song.name, song.filePath, song.fileSize,
+  song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.titleSort,
+  song.seconds, song.duration, song.bitrate, song.vbr, song.frequency,
+  song.favorite, song.live, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
+  album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
   FROM song
   INNER JOIN album
   ON song.primaryAlbumId = album.id
@@ -50,13 +53,13 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   mediaNumber: number;
   @ViewColumn()
+  titleSort: string;
+  @ViewColumn()
   primaryAlbumName: string;
   @ViewColumn()
   primaryArtistName: string;
   @ViewColumn()
   primaryArtistStylized: string;
-  @ViewColumn()
-  titleSort: string;
   @ViewColumn()
   seconds: number;
   @ViewColumn()
@@ -81,6 +84,8 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   lyrics: string;
   @ViewColumn()
   addDate: Date;
+  @ViewColumn()
+  playDate: Date;
   @ViewColumn()
   primaryAlbumId: string;
   @ViewColumn()
