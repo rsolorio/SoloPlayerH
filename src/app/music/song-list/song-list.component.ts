@@ -108,14 +108,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
     },
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
-    getBackdropIcon: item => {
-      const song = item as ISongModel;
-      // TODO: song should have a player status property
-      if (song.playerStatus === PlayerSongStatus.Playing) {
-        return 'mdi-play mdi';
-      }
-      return null;
-    },
     prepareItemRender: item => {
       const song = item as ISongModel;
       if (!song.recentIcon) {

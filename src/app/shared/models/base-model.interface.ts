@@ -8,6 +8,6 @@ export interface IDbModel extends ISelectable {
 
 export interface IListItemModel extends IDbModel {
   recentIcon?: IIcon;
-  image: ITransitionImageModel;
+  image?: ITransitionImageModel;
   canBeRendered: boolean;
 }

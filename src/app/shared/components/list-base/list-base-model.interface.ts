@@ -21,10 +21,6 @@ export interface IListBaseModel {
   breadcrumbsEnabled: boolean;
   /** The service used to search and load data. */
   broadcastService?: IListBroadcastService;
-  /** Routine to get the icon of each item. */
-  getItemIcon?: (item: IListItemModel) => IIconAction;
-  /** Overrides the logic that determines the backdrop icon for a list item image. */
-  getBackdropIcon?: (item: IListItemModel) => string;
   /** Overrides the logic that determines the info to display after the list is updated. */
   getDisplayInfo?: (model: IListBaseModel) => string;
   /** Helper method that can be used to apply any logic to the item before it is marked for rendering. */

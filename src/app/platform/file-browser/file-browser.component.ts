@@ -57,14 +57,6 @@ export class FileBrowserComponent implements OnInit {
         }
       }
     },
-    getItemIcon: () => {
-      // TODO: determine the proper icon
-      return {
-        icon: 'mdi-folder mdi',
-        // Just to display the hand icon since the action will be executed by the avatar click
-        action: () => {}
-      };
-    },
     getDisplayInfo: model => {
       let itemsText = `${model.criteriaResult.items.length} item`;
       itemsText += model.criteriaResult.items.length === 1 ? '' : 's';
@@ -116,10 +108,6 @@ export class FileBrowserComponent implements OnInit {
         this.navigation.forward(model.backRoute);
       }
     });
-  }
-
-  public onBeforeInit(listBaseModel: IListBaseModel): void {
-    
   }
 
   public onAfterInit(listBaseModel: IListBaseModel): void {

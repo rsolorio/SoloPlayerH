@@ -50,6 +50,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @Output() public afterInit: EventEmitter<IListBaseModel> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
+  @Input() imageOverlayTemplate: TemplateRef<any>;
   @Input() public model: IListBaseModel = {
     listUpdatedEvent: null,
     itemMenuList: [],
@@ -297,17 +298,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         this.navbarService.searchBoxFocus();
       });
     }
-  }
-
-  public getBackdropIcon(item: IListItemModel): string {
-    let result: string = null;
-    if (item.selected) {
-      result = 'mdi-check mdi';
-    }
-    if (this.model.getBackdropIcon) {
-      result = this.model.getBackdropIcon(item);
-    }
-    return result;
   }
 
   /**

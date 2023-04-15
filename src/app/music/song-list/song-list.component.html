@@ -2,9 +2,15 @@
 #spListBaseComponent
 [model]="listModel"
 [infoTemplate]="infoTemplate"
+[imageOverlayTemplate]="imageOverlayTemplate"
 (afterInit)="onListInitialized($event)"
 (itemAvatarClick)="onItemImageClick($event)"
 (itemContentClick)="onItemContentClick($event)">
+  <ng-template #imageOverlayTemplate let-item="item">
+    <div *ngIf="item.playerStatus === PlayerSongStatus.Playing" class="sp-image-overlay sp-text-big-fixed">
+      <i class="mdi-play mdi sp-color-primary"></i>
+    </div>
+  </ng-template>
   <ng-template #infoTemplate let-item="item">
     <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
     <span class="sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.name}}</span>
@@ -15,7 +21,7 @@
       <i *ngIf="item.live" class="mdi-broadcast mdi sp-title-icon sp-color-success" [title]="SongBadge.Live"></i>
       <i *ngIf="item.rating === 5" class="mdi-star-outline mdi sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
       <i *ngIf="item.favorite" class="mdi-heart-outline mdi sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
-      <i *ngIf="item.popularityIcon && item.popularityIcon.icon" class="sp-title-icon" [ngClass]="[item.popularityIcon.icon, item.popularityIcon.styleClass]" [title]="item.popularityIcon.tooltip"></i>
+      <i *ngIf="item.popularityIcon?.icon" class="sp-title-icon" [ngClass]="[item.popularityIcon.icon, item.popularityIcon.styleClass]" [title]="item.popularityIcon.tooltip"></i>
     </ng-container>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">

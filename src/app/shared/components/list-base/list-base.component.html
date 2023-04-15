@@ -26,20 +26,19 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
   [ngClass]="{ 'sp-bg-04': item.selected }">
     <!-- Real content -->
     <ng-container *ngIf="item.canBeRendered">
-      <!-- Image -->
+      <!-- Avatar -->
       <td class="sp-table-image-field" (click)="onAvatarClick(item)">
-        <ng-container *ngIf="!model.getItemIcon">
-          <!-- Optional backdrop icon -->
-          <div *ngIf="getBackdropIcon(item)" class="sp-table-image-backdrop sp-z-1">
-            <i [ngClass]="getBackdropIcon(item)" class="sp-color-primary"></i>
-          </div>
-          <!-- Img -->
+        <!-- Image -->
+        <div class="sp-image-size" style="position: relative;">
+          <!-- Img Element -->
           <sp-transition-image
+          *ngIf="item.image"
           [model]="item.image"
-          class="sp-table-loading-image"></sp-transition-image>
-        </ng-container>
-        <div *ngIf="model.getItemIcon" class="sp-table-item-icon-bg" [ngClass]="{ 'sp-clickable': model.getItemIcon(item).action }">
-          <i [ngClass]="model.getItemIcon(item).icon"></i>
+          class="sp-image-size" style="position: absolute;"></sp-transition-image>
+          <!-- Image Overlay -->
+          <div *ngIf="imageOverlayTemplate" class="sp-image-size" style="position: absolute;">
+            <ng-template [ngTemplateOutlet]="imageOverlayTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
+          </div>
         </div>
       </td>
       <!-- Info -->
