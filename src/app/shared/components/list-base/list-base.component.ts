@@ -1,4 +1,16 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  Type,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
@@ -6,16 +18,13 @@ import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IIcon, IIconAction } from 'src/app/core/models/core.interface';
-import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IListItemModel } from '../../models/base-model.interface';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
-import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { Criteria } from '../../services/criteria/criteria.class';
 import { ICriteriaResult } from '../../services/criteria/criteria.interface';
-import { RelatedImageSrc } from '../../services/database/database.images';
 import { NavigationService } from '../../services/navigation/navigation.service';
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
@@ -25,20 +34,11 @@ import { TimeAgo } from 'src/app/core/globals.enum';
 @Component({
   selector: 'sp-list-base',
   templateUrl: './list-base.component.html',
-  styleUrls: ['./list-base.component.scss']
+  styleUrls: ['./list-base.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListBaseComponent extends CoreComponent implements OnInit {
   @ViewChild('spModalHost', { read: ViewContainerRef, static: false }) public modalHostViewContainer: ViewContainerRef;
-  public RelatedImageSrc = RelatedImageSrc;
-  public model: IListBaseModel = {
-    listUpdatedEvent: null,
-    itemMenuList: [],
-    criteriaResult: {
-      criteria: new Criteria('Search Results'),
-      items: []
-    },
-    breadcrumbsEnabled: false
-  };
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
   private lastNavbarRightIcon: IIconAction;
   private filterWithCriteriaIcon = 'mdi-filter-check-outline mdi';
@@ -47,58 +47,19 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @Output() public itemRender: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemAvatarClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListItemModel> = new EventEmitter();
-  @Output() public beforeInit: EventEmitter<IListBaseModel> = new EventEmitter();
   @Output() public afterInit: EventEmitter<IListBaseModel> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
+  @Input() public model: IListBaseModel = {
+    listUpdatedEvent: null,
+    itemMenuList: [],
+    criteriaResult: {
+      criteria: new Criteria('Search Results'),
+      items: []
+    },
+    breadcrumbsEnabled: false
+  };
 
-  @Input() set listUpdatedEvent(val: string) {
-    this.model.listUpdatedEvent = val;
-  }
-  get listUpdatedEvent(): string {
-    return this.model.listUpdatedEvent;
-  }
-
-  @Input() set itemMenuList(val: IMenuModel[]) {
-    this.model.itemMenuList = val;
-  }
-  get itemMenuList(): IMenuModel[] {
-    return this.model.itemMenuList;
-  }
-
-  @Input() set title(val: string) {
-    this.model.title = val;
-  }
-  get title(): string {
-    return this.model.title;
-  }
-
-  @Input() set leftIcon(val: IIconAction) {
-    this.model.leftIcon = val;
-  }
-  get leftIcon(): IIconAction {
-    return this.model.leftIcon;
-  }
-  @Input() set rightIcon(val: IIconAction) {
-    this.model.rightIcon = val;
-  }
-  get rightIcon(): IIconAction {
-    return this.model.rightIcon;
-  }
-
-  @Input() set breadcrumbsEnabled(val: boolean) {
-    this.model.breadcrumbsEnabled = val;
-  }
-  get breadcrumbsEnabled(): boolean {
-    return this.model.breadcrumbsEnabled;
-  }
-
-  @Input() set broadcastService(val: IListBroadcastService) {
-    this.model.broadcastService = val;
-  }
-  get broadcastService(): IListBroadcastService {
-    return this.model.broadcastService;
-  }
 
   constructor(
     private events: EventsService,
@@ -107,20 +68,22 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     private breadcrumbService: BreadcrumbsStateService,
     private navigation: NavigationService,
     private route: ActivatedRoute,
-    private utilities: UtilityService
+    private utilities: UtilityService,
+    private cd: ChangeDetectorRef
   ) {
     super();
   }
 
   ngOnInit(): void {
     // List updated
-    this.subs.sink = this.events.onEvent<ICriteriaResult<any>>(this.listUpdatedEvent).subscribe(response => {
+    this.subs.sink = this.events.onEvent<ICriteriaResult<any>>(this.model.listUpdatedEvent).subscribe(response => {
       this.model.criteriaResult = response;
+      this.cd.detectChanges();
       this.afterListUpdated();
     });
 
     // Breadcrumbs
-    if (this.breadcrumbsEnabled) {
+    if (this.model.breadcrumbsEnabled) {
       this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(response => {
         if (response === BreadcrumbEventType.Remove) {
           // Create a brand new criteria but with the same info by cloning the existing one
@@ -142,7 +105,12 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       }
     });
 
-    this.beforeInit.emit(this.model);
+    if (!this.model.getDisplayInfo) {
+      this.model.getDisplayInfo = model => {
+        return `Found: ${model.criteriaResult.items.length} item` + (model.criteriaResult.items.length !== 1 ? 's' : '');
+      };
+    }
+
     this.initializeNavbar();
     this.afterInit.emit(this.model);
     this.loadData();
@@ -150,6 +118,9 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   public onIntersectionChange(isIntersecting: boolean, item: IListItemModel): void {
     if (item.canBeRendered !== isIntersecting) {
+      if (this.model.prepareItemRender) {
+        this.model.prepareItemRender(item);
+      }
       item.canBeRendered = isIntersecting;
       if (item.canBeRendered) {
         this.itemRender.emit(item);
@@ -165,19 +136,15 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.itemContentClick.emit(item);
   }
 
-  public onImageLoaded(): void {
-    
-  }
-
   private afterListUpdated(): void {
     this.updateFilterIcon();
     this.loadingService.hide();
-    if (this.model.onInfoDisplay) {
-      this.model.onInfoDisplay(this.model);
-    }
-    else {
-      this.displayListInfo();
-    }
+    this.showInfo();
+  }
+
+  public showInfo(): void {
+    const message = this.model.getDisplayInfo(this.model);
+    this.navbarService.showToast(message);
   }
 
   private updateFilterIcon(): void {
@@ -356,9 +323,9 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       navInfo.options.criteria = this.model.criteriaResult.criteria.clone();
     }
 
-    this.broadcastService.send(navInfo.options.criteria).subscribe(() => {
+    this.model.broadcastService.send(navInfo.options.criteria).subscribe(() => {
       // Enable title if no breadcrumbs
-      if (!this.breadcrumbsEnabled || !this.breadcrumbService.hasBreadcrumbs()) {
+      if (!this.model.breadcrumbsEnabled || !this.breadcrumbService.hasBreadcrumbs()) {
         this.navbarService.getState().mode = NavbarDisplayMode.Title;
       }
     });
@@ -367,12 +334,12 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public getRecentIcon(days: number): IIcon {
     const timeAgo = this.utilities.getTimeAgo(days);
     if (timeAgo === TimeAgo.Today) {
-      return { styleClass: 'sp-color-orange', tooltip: 'Added today.' };
+      return { styleClass: 'sp-color-orange', tooltip: 'Added today' };
     }
     if (timeAgo === TimeAgo.Yesterday) {
-      return { styleClass: 'sp-color-orange', tooltip: 'Added yesterday.' };
+      return { styleClass: 'sp-color-orange', tooltip: 'Added yesterday' };
     }
-    const tooltip = `Added ${days} days ago.`;
+    const tooltip = `Added ${days} days ago`;
     if (timeAgo === TimeAgo.OneWeek) {
       return { styleClass: 'sp-color-yellow', tooltip: tooltip };
     }

@@ -1,6 +1,8 @@
 import { IImage } from 'src/app/core/models/core.interface';
 import { BaseEntity, PrimaryColumn, Column } from 'typeorm';
 import { IDbModel, IListItemModel } from '../models/base-model.interface';
+import { ITransitionImageModel } from 'src/app/related-image/transition-image/transition-image-model.interface';
+import { RelatedImageSrc } from '../services/database/database.images';
 
 export class DbEntity extends BaseEntity implements IDbModel {
   @PrimaryColumn()
@@ -16,6 +18,8 @@ export class DbEntity extends BaseEntity implements IDbModel {
 
 export class ListItemEntity extends DbEntity implements IListItemModel {
   canBeRendered = false;
-  image: IImage = {};
+  image: ITransitionImageModel = {
+    defaultSrc: RelatedImageSrc.DefaultSmall
+  };
   selected = false;
 }

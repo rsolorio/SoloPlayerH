@@ -41,22 +41,11 @@ This is the component hierarchy of the application:
     - FilterView
     - HomeView
     - LogView
-    - AlbumList
-      - TransitionImage
-      - IntersectionObserver
-    - ArtistList
-      - TransitionImage
-      - IntersectionObserver
-    - ClassificationList
-      - TransitionImage
-      - IntersectionObserver
-    - PlaylistList
-      - TransitionImage
-      - IntersectionObserver
-    - SongList
-      - TransitionImage
-      - IntersectionObserver
-      - IconMenu
+    - SongList, PlaylistList, ClassificationList, ArtistList, AlbumList
+      - ListBase
+        - TransitionImage
+        - IntersectionObserver
+        - IconMenu
     - FileBrowser
     - SettingsView
     - QueryEditor

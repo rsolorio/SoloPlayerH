@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
@@ -27,20 +27,109 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
 import { ImageService } from 'src/app/platform/image/image.service';
+import { IImage } from 'src/app/core/models/core.interface';
 
 @Component({
   selector: 'sp-song-list',
   templateUrl: './song-list.component.html',
-  styleUrls: ['./song-list.component.scss']
+  styleUrls: ['./song-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SongListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
-  public AppEvent = AppEvent;
   public PlayerSongStatus = PlayerSongStatus;
   public SongBadge = SongBadge;
-  public itemMenuList: IMenuModel[] = [];
   public songAttributesVisible = true;
   private expandPlayerOnPlay = false;
+
+  // START - LIST MODEL
+  public listModel: IListBaseModel = {
+    listUpdatedEvent: AppEvent.SongListUpdated,
+    itemMenuList: [
+      {
+        caption: 'Search...',
+        icon: 'mdi-web mdi',
+        action: param => {
+          const song = param as ISongModel;
+          this.utility.googleSearch(`${song.artistName} ${song.name}`);
+        }
+      },
+      {
+        caption: 'Properties...',
+        icon: 'mdi-square-edit-outline mdi',
+        action: param => {
+          const song = param as ISongModel;
+          if (song) {
+            this.navigation.forward(AppRoute.Songs, { queryParams: [song.id] });
+          }
+        }
+      },
+      {
+        caption: 'Album Artist Songs',
+        icon: 'mdi-account-badge mdi',
+        action: param => {
+          const song = param as ISongModel;
+          this.setBreadcrumbsForAlbumArtistSongs(song);
+          // Since we are staying in the same route, use the same query info, just update the breadcrumbs
+          const criteriaClone = this.stateService.getState().criteria.clone();
+          criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+          this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
+        }
+      },
+      {
+        caption: 'Feat. Artists Songs',
+        icon: 'mdi-account-music mdi',
+        action: param => {
+          const song = param as ISongModel;
+          this.setBreadcrumbsForFeatArtistSongs(song).then(hasFeatArtists => {
+            if (hasFeatArtists) {
+              const criteriaClone = this.stateService.getState().criteria.clone();
+              criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+              this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
+            }
+          });
+        }
+      },
+      {
+        caption: 'Album Songs',
+        icon: 'mdi-album mdi',
+        action: param => {
+          const song = param as ISongModel;
+          this.setBreadcrumbsForAlbumSongs(song);
+          const criteriaClone = this.stateService.getState().criteria.clone();
+          criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+          this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
+        }
+      }
+    ],
+    criteriaResult: {
+      criteria: new Criteria('Search Results'),
+      items: []
+    },
+    breadcrumbsEnabled: true,
+    broadcastService: this.broadcastService,
+    prepareItemRender: item => {
+      const song = item as ISongModel;
+      if (!song.recentIcon) {
+        const days = this.utility.daysFromNow(new Date(song.addDate));
+        song.recentIcon = this.spListBaseComponent.getRecentIcon(days);
+      }
+
+      if (!song.popularityIcon) {
+        song.popularityIcon = {};
+        if (song.playDate) {
+          const days = this.utility.daysFromNow(new Date(song.playDate));
+          song.popularityIcon = this.playerOverlayService.getPopularityIcon(days);
+        }
+      }
+
+      if (!song.image.src && !song.image.getImage) {
+        song.image.getImage = () => this.getSongImage(song);
+      }
+    }
+  };
+
+  // END - LIST MODEL
 
   constructor(
     public broadcastService: SongListBroadcastService,
@@ -61,71 +150,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeItemMenu();
     this.db.getModuleOptions([ModuleOptionName.ExpandPlayerOnSongPlay]).then(options => {
       this.expandPlayerOnPlay = this.db.getOptionBooleanValue(options[0]);
-    });
-  }
-
-  private initializeItemMenu(): void {
-    this.itemMenuList.push({
-      caption: 'Search...',
-      icon: 'mdi-web mdi',
-      action: param => {
-        const song = param as ISongModel;
-        this.utility.googleSearch(`${song.artistName} ${song.name}`);
-      }
-    });
-
-    this.itemMenuList.push({
-      caption: 'Properties...',
-      icon: 'mdi-square-edit-outline mdi',
-      action: param => {
-        const song = param as ISongModel;
-        if (song) {
-          this.navigation.forward(AppRoute.Songs, { queryParams: [song.id] });
-        }
-      }
-    });
-
-    this.itemMenuList.push({
-      caption: 'Album Artist Songs',
-      icon: 'mdi-account-badge mdi',
-      action: param => {
-        const song = param as ISongModel;
-        this.setBreadcrumbsForAlbumArtistSongs(song);
-        // Since we are staying in the same route, use the same query info, just update the breadcrumbs
-        const criteriaClone = this.stateService.getState().criteria.clone();
-        criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
-        this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
-      }
-    });
-
-    this.itemMenuList.push({
-      caption: 'Feat. Artists Songs',
-      icon: 'mdi-account-music mdi',
-      action: param => {
-        const song = param as ISongModel;
-        this.setBreadcrumbsForFeatArtistSongs(song).then(hasFeatArtists => {
-          if (hasFeatArtists) {
-            const criteriaClone = this.stateService.getState().criteria.clone();
-            criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
-            this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
-          }
-        });
-      }
-    });
-
-    this.itemMenuList.push({
-      caption: 'Album Songs',
-      icon: 'mdi-album mdi',
-      action: param => {
-        const song = param as ISongModel;
-        this.setBreadcrumbsForAlbumSongs(song);
-        const criteriaClone = this.stateService.getState().criteria.clone();
-        criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
-        this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
-      }
     });
   }
 
@@ -264,33 +290,15 @@ export class SongListComponent extends CoreComponent implements OnInit {
     });
   }
 
-  public onItemRender(song: ISongModel): void {
-    if (!song.recentIcon) {
-      const days = this.utility.daysFromNow(new Date(song.addDate));
-      song.recentIcon = this.spListBaseComponent.getRecentIcon(days);
-    }
-
-    if (!song.popularityIcon) {
-      song.popularityIcon = {};
-      if (song.playDate) {
-        const days = this.utility.daysFromNow(new Date(song.playDate));
-        song.popularityIcon = this.playerOverlayService.getPopularityIcon(days);
-      }
-    }
-
-    if (!song.image.src) {
-      this.queueService.sink = () => this.setSongImage(song);
-    }
-  }
-
-  private async setSongImage(song: ISongModel): Promise<void> {
+  private async getSongImage(song: ISongModel): Promise<IImage> {
     let images = await RelatedImageEntity.findBy({ relatedId: song.id });
     if (!images || !images.length) {
       images = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
     }
     if (images && images.length) {
       const relatedImage = images[0];
-      song.image = await this.imageService.getImageFromSource(relatedImage);
+      return this.imageService.getImageFromSource(relatedImage);
     }
+    return null;
   }
 }

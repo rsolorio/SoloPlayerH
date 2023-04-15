@@ -31,6 +31,7 @@ export class PlayerListModel implements IDbModel {
     playlistId: null,
     name: null,
     image: {
+      defaultSrc: RelatedImageSrc.DefaultSmall,
       src: RelatedImageSrc.DefaultSmall,
       srcType: ImageSrcType.WebUrl
     },
@@ -72,6 +73,7 @@ export class PlayerListModel implements IDbModel {
       primaryAlbum: null,
       playerStatus: PlayerSongStatus.Empty,
       image: {
+        defaultSrc: RelatedImageSrc.DefaultSmall,
         src: RelatedImageSrc.DefaultSmall,
         srcType: ImageSrcType.WebUrl
       },
@@ -234,6 +236,7 @@ export class PlayerListModel implements IDbModel {
       name: song.name,
       sequence,
       image: {
+        defaultSrc: RelatedImageSrc.DefaultSmall,
         src: RelatedImageSrc.DefaultSmall,
         srcType: ImageSrcType.WebUrl
       },

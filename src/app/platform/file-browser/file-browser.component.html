@@ -1,11 +1,8 @@
 <sp-list-base
+#spListBaseComponent
 *ngIf="contentEnabled"
-[breadcrumbsEnabled]="false"
-[itemMenuList]="itemMenuList"
+[model]="listModel"
 [infoTemplate]="infoTemplate"
-[broadcastService]="broadcastService"
-[listUpdatedEvent]="AppEvent.FileListUpdated"
-(beforeInit)="onBeforeInit($event)"
 (afterInit)="onAfterInit($event)"
 (itemAvatarClick)="itemAvatarClick($event)"
 (itemContentClick)="onItemContentClick($event)">

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
@@ -15,6 +14,8 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AlbumListBroadcastService } from './album-list-broadcast.service';
 import { ImageService } from 'src/app/platform/image/image.service';
+import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
+import { IImage } from 'src/app/core/models/core.interface';
 
 @Component({
   selector: 'sp-album-list',
@@ -23,8 +24,75 @@ import { ImageService } from 'src/app/platform/image/image.service';
 })
 export class AlbumListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
-  public appEvent = AppEvent;
-  public itemMenuList: IMenuModel[] = [];
+
+  // START - LIST MODEL
+  public listModel: IListBaseModel = {
+    listUpdatedEvent: AppEvent.AlbumListUpdated,
+    itemMenuList: [
+      {
+        caption: 'Play',
+        icon: 'mdi-play mdi',
+        action: param => {}
+      },
+      {
+        caption: 'Select/Unselect',
+        icon: 'mdi-select mdi',
+        action: param => {
+          const album = param as IAlbumModel;
+          album.selected = !album.selected;
+        }
+      },
+      {
+        caption: 'Search...',
+        icon: 'mdi-web mdi',
+        action: param => {
+          const albumModel = param as IAlbumModel;
+          this.utility.googleSearch(`${albumModel.artistName} ${albumModel.name}`);
+        }
+      },
+      {
+        caption: 'Properties...',
+        icon: 'mdi-square-edit-outline mdi',
+        action: param => {
+          const album = param as IAlbumModel;
+          if (album) {
+            this.navigation.forward(AppRoute.Albums, { queryParams: [album.id] });
+          }
+        }
+      },
+      {
+        isSeparator: true,
+        caption: null
+      },
+      {
+        caption: appRoutes[AppRoute.Songs].name,
+        icon: appRoutes[AppRoute.Songs].icon,
+        action: param => {
+          const album = param as IAlbumModel;
+            if (album) {
+              this.showEntity(appRoutes[AppRoute.Songs], album);
+            }
+        }
+      }
+    ],
+    criteriaResult: {
+      criteria: new Criteria('Search Results'),
+      items: []
+    },
+    breadcrumbsEnabled: true,
+    broadcastService: this.broadcastService,
+    prepareItemRender: item => {
+      const album = item as IAlbumModel;
+      if (!album.recentIcon) {
+        const days = this.utility.daysFromNow(new Date(album.songAddDateMax));
+        album.recentIcon = this.spListBaseComponent.getRecentIcon(days);
+      }
+      if (!album.image.src && !album.image.getImage) {
+        album.image.getImage = () => this.getAlbumImage(album);
+      }
+    }
+  };
+  // END - LIST MODEL
 
   constructor(
     public broadcastService: AlbumListBroadcastService,
@@ -39,61 +107,6 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeItemMenu();
-  }
-
-  private initializeItemMenu(): void {
-    this.itemMenuList.push({
-      caption: 'Play',
-      icon: 'mdi-play mdi',
-      action: param => {}
-    });
-
-    this.itemMenuList.push({
-      caption: 'Select/Unselect',
-      icon: 'mdi-select mdi',
-      action: param => {
-        const album = param as IAlbumModel;
-        album.selected = !album.selected;
-      }
-    });
-
-    this.itemMenuList.push({
-      caption: 'Search...',
-      icon: 'mdi-web mdi',
-      action: param => {
-        const albumModel = param as IAlbumModel;
-        this.utility.googleSearch(`${albumModel.artistName} ${albumModel.name}`);
-      }
-    });
-
-    this.itemMenuList.push({
-      caption: 'Properties...',
-      icon: 'mdi-square-edit-outline mdi',
-      action: param => {
-        const album = param as IAlbumModel;
-        if (album) {
-          this.navigation.forward(AppRoute.Albums, { queryParams: [album.id] });
-        }
-      }
-    });
-
-    this.itemMenuList.push({
-      isSeparator: true,
-      caption: null
-    });
-
-    const songRoute = appRoutes[AppRoute.Songs];
-    this.itemMenuList.push({
-      caption: songRoute.name,
-      icon: songRoute.icon,
-      action: param => {
-        const album = param as IAlbumModel;
-          if (album) {
-            this.showEntity(songRoute, album);
-          }
-      }
-    });
   }
 
   public onItemContentClick(album: IAlbumModel): void {
@@ -147,24 +160,12 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     this.navigation.forward(routeInfo.route, { criteria: criteria });
   }
 
-  public onListInitialized(): void {
-  }
-
-  public onItemRender(album: IAlbumModel): void {
-    if (!album.recentIcon) {
-      const days = this.utility.daysFromNow(new Date(album.songAddDateMax));
-      album.recentIcon = this.spListBaseComponent.getRecentIcon(days);
-    }
-    if (!album.image.src) {
-      this.queueService.sink = () => this.setAlbumImage(album);
-    }
-  }
-
-  private async setAlbumImage(album: IAlbumModel): Promise<void> {
+  private async getAlbumImage(album: IAlbumModel): Promise<IImage> {
     const images = await RelatedImageEntity.findBy({ relatedId: album.id });
     if (images && images.length) {
       const relatedImage = images[0];
-      album.image = await this.imageService.getImageFromSource(relatedImage);
+      return this.imageService.getImageFromSource(relatedImage);
     }
+    return null;
   }
 }

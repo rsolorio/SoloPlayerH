@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
@@ -17,6 +16,8 @@ import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.e
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
+import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
+import { IImage } from 'src/app/core/models/core.interface';
 
 @Component({
   selector: 'sp-classification-list',
@@ -25,9 +26,78 @@ import { ClassificationListBroadcastService } from './classification-list-broadc
 })
 export class ClassificationListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
-  public appEvent = AppEvent;
-  public itemMenuList: IMenuModel[] = [];
   public isGenreList = false;
+
+  // START - LIST MODEL
+  private albumArtistRoute = appRoutes[AppRoute.AlbumArtists];
+  private albumRoute = appRoutes[AppRoute.Albums];
+  private songRoute = appRoutes[AppRoute.Songs];
+  public listModel: IListBaseModel = {
+    listUpdatedEvent: AppEvent.ClassificationListUpdated,
+    itemMenuList: [
+      {
+        caption: 'Play',
+        icon: 'mdi-play mdi',
+        action: param => {}
+      },
+      {
+        caption: 'Select/Unselect',
+        icon: 'mdi-select mdi',
+        action: param => {
+          const classification = param as IClassificationModel;
+          classification.selected = !classification.selected;
+        }
+      },
+      {
+        isSeparator: true,
+        caption: null
+      },
+      {
+        caption: this.albumArtistRoute.name,
+        icon: this.albumArtistRoute.icon,
+        action: param => {
+          const classification = param as IClassificationModel;
+          if (classification) {
+            this.showEntity(this.albumArtistRoute, classification);
+          }
+        }
+      },
+      {
+        caption: this.albumRoute.name,
+        icon: this.albumRoute.icon,
+        action: param => {
+          const classification = param as IClassificationModel;
+          if (classification) {
+            this.showEntity(this.albumRoute, classification);
+          }
+        }
+      },
+      {
+        caption: this.songRoute.name,
+        icon: this.songRoute.icon,
+        action: param => {
+          const classification = param as IClassificationModel;
+          if (classification) {
+            this.showEntity(this.songRoute, classification);
+          }
+        }
+      }
+    ],
+    criteriaResult: {
+      criteria: new Criteria('Search Results'),
+      items: []
+    },
+    breadcrumbsEnabled: true,
+    broadcastService: this.broadcastService,
+    prepareItemRender: item => {
+      const classification = item as IClassificationModel;
+      if (!classification.image.src && !classification.image.getImage) {
+        classification.image.getImage = () => this.getClassificationImage(classification);
+      }
+    }
+  };
+
+  // END - LIST MODEL
 
   constructor(
     public broadcastService: ClassificationListBroadcastService,
@@ -45,65 +115,6 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   ngOnInit(): void {
-    this.initializeItemMenu();
-  }
-
-  private initializeItemMenu(): void {
-    this.itemMenuList.push({
-      caption: 'Play',
-      icon: 'mdi-play mdi',
-      action: param => {}
-    });
-
-    this.itemMenuList.push({
-      caption: 'Select/Unselect',
-      icon: 'mdi-select mdi',
-      action: param => {
-        const classification = param as IClassificationModel;
-        classification.selected = !classification.selected;
-      }
-    });
-
-    this.itemMenuList.push({
-      isSeparator: true,
-      caption: null
-    });
-
-    const albumArtistRoute = appRoutes[AppRoute.AlbumArtists];
-    this.itemMenuList.push({
-      caption: albumArtistRoute.name,
-      icon: albumArtistRoute.icon,
-      action: param => {
-        const classification = param as IClassificationModel;
-        if (classification) {
-          this.showEntity(albumArtistRoute, classification);
-        }
-      }
-    });
-
-    const albumRoute = appRoutes[AppRoute.Albums];
-    this.itemMenuList.push({
-      caption: albumRoute.name,
-      icon: albumRoute.icon,
-      action: param => {
-        const classification = param as IClassificationModel;
-        if (classification) {
-          this.showEntity(albumRoute, classification);
-        }
-      }
-    });
-
-    const songRoute = appRoutes[AppRoute.Songs];
-    this.itemMenuList.push({
-      caption: songRoute.name,
-      icon: songRoute.icon,
-      action: param => {
-        const classification = param as IClassificationModel;
-        if (classification) {
-          this.showEntity(songRoute, classification);
-        }
-      }
-    });
   }
 
   public onItemContentClick(classification: IClassificationModel): void {
@@ -148,14 +159,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     this.navigation.forward(routeInfo.route, { criteria: criteria });
   }
 
-  public onItemRender(classification: IClassificationModel): void {
-    if (classification.image.src) {
-      return;
-    }
-    this.queueService.sink = () => this.setClassificationImage(classification);
-  }
-
-  private async setClassificationImage(classification: IClassificationModel): Promise<void> {
+  private async getClassificationImage(classification: IClassificationModel): Promise<IImage> {
     // Get one random song with this classification
     const criteria = new Criteria('Search Results');
     criteria.random = true;
@@ -169,10 +173,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       const buffer = await this.fileService.getBuffer(song.filePath);
       const audioInfo = await this.metadataService.getMetadata(buffer);
       const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
-      classification.image = this.metadataService.getImage(pictures);
+      return this.metadataService.getImage(pictures);
     }
-  }
-
-  public onListInitialized(): void {
+    return null;
   }
 }

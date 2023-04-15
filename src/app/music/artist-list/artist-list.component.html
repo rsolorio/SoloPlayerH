@@ -1,11 +1,7 @@
 <sp-list-base
 #spListBaseComponent
-[broadcastService]="broadcastService"
-[breadcrumbsEnabled]="true"
-[listUpdatedEvent]="appEvent.ArtistListUpdated"
-[itemMenuList]="itemMenuList"
+[model]="listModel"
 [infoTemplate]="infoTemplate"
-(itemRender)="onItemRender($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <table class="sp-table sp-table-no-padding sp-full-height sp-full-width">

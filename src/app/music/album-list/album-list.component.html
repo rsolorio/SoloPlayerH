@@ -1,12 +1,7 @@
 <sp-list-base
 #spListBaseComponent
-[broadcastService]="broadcastService"
-[breadcrumbsEnabled]="true"
-[listUpdatedEvent]="appEvent.AlbumListUpdated"
-[itemMenuList]="itemMenuList"
+[model]="listModel"
 [infoTemplate]="infoTemplate"
-(afterInit)="onListInitialized()"
-(itemRender)="onItemRender($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>

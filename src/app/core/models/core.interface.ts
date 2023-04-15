@@ -60,7 +60,9 @@ export interface ISelectableValue extends IValuePair, ISelectable {
 }
 
 export interface IImage {
+  /** The src attribute of the image. */
   src?: string;
+  /** The src type of the image. */
   srcType?: ImageSrcType;
 }
 

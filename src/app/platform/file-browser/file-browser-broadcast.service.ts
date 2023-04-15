@@ -45,7 +45,9 @@ export class FileBrowserBroadcastService extends ListBroadcastServiceBase<IFileB
               id: fileInfo.path,
               name: fileInfo.name,
               canBeRendered: false,
-              image: {}
+              image: {
+                defaultSrc: null
+              }
             });
           }
         }

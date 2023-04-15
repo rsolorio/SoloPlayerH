@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { IMenuModel } from 'src/app/core/models/menu-model.interface';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFileBrowserItem, IFileBrowserQueryParams } from './file-browser.interface';
@@ -10,6 +9,8 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { FileBrowserService } from './file-browser.service';
 import { FileService } from '../file/file.service';
 import { IFileInfo } from '../file/file.interface';
+import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
+import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 
 @Component({
   selector: 'sp-file-browser',
@@ -17,10 +18,65 @@ import { IFileInfo } from '../file/file.interface';
   styleUrls: ['./file-browser.component.scss']
 })
 export class FileBrowserComponent implements OnInit {
-  public AppEvent = AppEvent;
-  public itemMenuList: IMenuModel[] = [];
+  @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   /** Flag that indicates when the content is allowed to be rendered. */
   public contentEnabled = false;
+
+  // START - LIST BASE
+
+  public listModel: IListBaseModel = {
+    listUpdatedEvent: AppEvent.FileListUpdated,
+    itemMenuList: [
+      {
+        caption: 'Select',
+        icon: 'mdi-select mdi mdi',
+        action: param => {
+          const fileItem = param as IFileBrowserItem;
+          if (fileItem) {
+            this.itemAvatarClick(fileItem);
+          }
+        }
+      }
+    ],
+    criteriaResult: {
+      criteria: new Criteria('Search Results'),
+      items: []
+    },
+    breadcrumbsEnabled: false,
+    broadcastService: this.broadcastService,
+    rightIcon: {
+      icon: 'mdi-arrow-up-right-bold mdi',
+      action: async () => {
+        const queryParams = this.getQueryParams();
+        if (queryParams?.path) {
+          const parentFileInfo = await this.fileService.getParentDir(queryParams.path);
+          if (!parentFileInfo.hasError) {
+            this.navigateFolder(parentFileInfo);
+          }
+        }
+      }
+    },
+    getItemIcon: () => {
+      // TODO: determine the proper icon
+      return {
+        icon: 'mdi-folder mdi',
+        // Just to display the hand icon since the action will be executed by the avatar click
+        action: () => {}
+      };
+    },
+    getDisplayInfo: model => {
+      let itemsText = `${model.criteriaResult.items.length} item`;
+      itemsText += model.criteriaResult.items.length === 1 ? '' : 's';
+      const queryParams = this.getQueryParams();
+      if (queryParams?.path) {
+        return `${queryParams.path}  (${itemsText})`;
+      }
+      return itemsText;
+    },
+    prepareItemRender: item => {}
+  };
+
+  // END - LIST BASE
   constructor(
     public broadcastService: FileBrowserBroadcastService,
     private navigation: NavigationService,
@@ -38,6 +94,14 @@ export class FileBrowserComponent implements OnInit {
     else {
       this.contentEnabled = true;
     }
+
+    const queryParams = this.getQueryParams();
+    if (queryParams?.name) {
+      this.listModel.title = queryParams.name;
+    }
+    else {
+      this.listModel.title = '[Root]';
+    }
   }
 
   public onItemContentClick(fileItem: IFileBrowserItem): void {
@@ -54,48 +118,7 @@ export class FileBrowserComponent implements OnInit {
   }
 
   public onBeforeInit(listBaseModel: IListBaseModel): void {
-    const queryParams = this.getQueryParams();
-    if (queryParams?.name) {
-      listBaseModel.title = queryParams.name;
-    }
-    else {
-      listBaseModel.title = '[Root]';
-    }
-    listBaseModel.getItemIcon = item => {
-      // TODO: determine the proper icon
-      return {
-        icon: 'mdi-folder mdi',
-        // Just to display the hand icon since the action will be executed by the avatar click
-        action: () => {}
-      };
-    };
-    listBaseModel.rightIcon = {
-      icon: 'mdi-arrow-up-right-bold mdi',
-      action: async () => {
-        const queryParams = this.getQueryParams();
-        if (queryParams?.path) {
-          const parentFileInfo = await this.fileService.getParentDir(queryParams.path);
-          if (!parentFileInfo.hasError) {
-            this.navigateFolder(parentFileInfo);
-          }
-        }
-      }
-    };
-    listBaseModel.itemMenuList = [
-      {
-        caption: 'Select',
-        icon: 'mdi-select mdi mdi',
-        action: param => {
-          const fileItem = param as IFileBrowserItem;
-          if (fileItem) {
-            this.itemAvatarClick(fileItem);
-          }
-        }
-      }
-    ];
-    listBaseModel.onInfoDisplay = model => {
-      this.showInfo(model);
-    };
+    
   }
 
   public onAfterInit(listBaseModel: IListBaseModel): void {
@@ -117,7 +140,7 @@ export class FileBrowserComponent implements OnInit {
         caption: 'Show Info',
         icon: 'mdi-folder-eye-outline mdi',
         action: () => {
-          this.showInfo(listBaseModel);
+          this.spListBaseComponent.showInfo();
         }
       },
       {
@@ -158,17 +181,5 @@ export class FileBrowserComponent implements OnInit {
     });
     // The previous routine will stay in the same route, but we need to make sure the title is updated
     this.navbarService.getState().title = fileInfo.name;
-  }
-
-  private showInfo(model: IListBaseModel): void {
-    let itemsText = `${model.criteriaResult.items.length} item`;
-    itemsText += model.criteriaResult.items.length === 1 ? '' : 's';
-    const queryParams = this.getQueryParams();
-    if (queryParams?.path) {
-      this.navbarService.showToast(`${queryParams.path}  (${itemsText})`);
-    }
-    else {
-      this.navbarService.showToast(itemsText);
-    } 
   }
 }

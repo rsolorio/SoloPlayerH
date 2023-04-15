@@ -1,4 +1,5 @@
-import { IIcon, IImage, ISelectable } from 'src/app/core/models/core.interface';
+import { IIcon, ISelectable } from 'src/app/core/models/core.interface';
+import { ITransitionImageModel } from 'src/app/related-image/transition-image/transition-image-model.interface';
 
 export interface IDbModel extends ISelectable {
   id: string;
@@ -7,6 +8,6 @@ export interface IDbModel extends ISelectable {
 
 export interface IListItemModel extends IDbModel {
   recentIcon?: IIcon;
-  image: IImage;
+  image: ITransitionImageModel;
   canBeRendered: boolean;
 }
