@@ -107,7 +107,7 @@ export class AppComponent implements OnInit {
       if (action instanceof NavigationStart) {
         const navStart = action as NavigationStart;
         const route = this.utilities.getUrlWithoutParams(navStart.url);
-        this.events.broadcast<string>(CoreEvent.RouteChanging, route);
+        this.events.broadcast(CoreEvent.RouteChanging, route);
       }
       else if (action instanceof NavigationEnd) {
         const navEnd = action as NavigationEnd;
@@ -117,7 +117,7 @@ export class AppComponent implements OnInit {
         if (!this.navigation.current()) {
           this.navigation.init(route);
         }
-        this.events.broadcast<string>(CoreEvent.RouteChanged, route);
+        this.events.broadcast(CoreEvent.RouteChanged, route);
       }
     });
   }

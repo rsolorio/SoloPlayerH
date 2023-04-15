@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-
 import html2canvas, { Options } from 'html2canvas';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 /**
  * Provides methods to generate screenshots from html elements.
@@ -13,7 +11,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 })
 export class ScreenshotService {
 
-  constructor(private utility: UtilityService) { }
+  constructor() { }
 
   public async get(delayMs?: number, elementId?: string): Promise<string> {
     if (delayMs) {

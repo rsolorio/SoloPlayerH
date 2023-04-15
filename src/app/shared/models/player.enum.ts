@@ -1,9 +1,11 @@
+/** The status of the player. */
 export enum PlayerStatus {
   Stopped,
   Playing,
   Paused
 }
 
+/** The status of the song relative to the player. */
 export enum PlayerSongStatus {
   Empty,
   Playing,

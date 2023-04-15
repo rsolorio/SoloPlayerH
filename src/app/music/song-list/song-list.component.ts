@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { IMenuModel } from 'src/app/core/models/menu-model.interface';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
-import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlayerOverlayStateService } from 'src/app/player/player-overlay/player-overlay-state.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
@@ -28,6 +26,8 @@ import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { IImage } from 'src/app/core/models/core.interface';
+import { EventsService } from 'src/app/core/services/events/events.service';
+import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
 
 @Component({
   selector: 'sp-song-list',
@@ -108,6 +108,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     },
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
+    getBackdropIcon: item => {
+      const song = item as ISongModel;
+      // TODO: song should have a player status property
+      if (song.playerStatus === PlayerSongStatus.Playing) {
+        return 'mdi-play mdi';
+      }
+      return null;
+    },
     prepareItemRender: item => {
       const song = item as ISongModel;
       if (!song.recentIcon) {
@@ -138,13 +146,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private menuService: MenuService,
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
-    private queueService: PromiseQueueService,
+    private events: EventsService,
     private db: DatabaseService,
     private stateService: SongListStateService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
     private imagePreviewService: ImagePreviewService,
-    private imageService: ImageService
+    private imageService: ImageService,
+    private cd: ChangeDetectorRef
   ) {
     super();
   }
@@ -152,6 +161,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.db.getModuleOptions([ModuleOptionName.ExpandPlayerOnSongPlay]).then(options => {
       this.expandPlayerOnPlay = this.db.getOptionBooleanValue(options[0]);
+    });
+
+    this.subs.sink = this.events.onEvent<IPlayerStatusChangedEventArgs>(AppEvent.PlayerStatusChanged)
+    .subscribe(() => {
+      this.cd.detectChanges();
     });
   }
 
@@ -265,14 +279,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   public onListInitialized(listBaseModel: IListBaseModel): void {
-    listBaseModel.getBackdropIcon = item => {
-      const song = item as ISongModel;
-      // TODO: song should have a player status property
-      if (song.playerStatus === PlayerSongStatus.Playing) {
-        return 'mdi-play mdi';
-      }
-      return null;
-    };
     // TODO: Add new menu: Save As Playlist, Save As Filter
     const navbarModel = this.navbarService.getState();
     navbarModel.menuList.push({

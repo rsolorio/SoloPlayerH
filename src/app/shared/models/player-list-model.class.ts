@@ -99,6 +99,7 @@ export class PlayerListModel implements IDbModel {
   public isVisible: boolean;
   /** This is the list of items displayed to the user. */
   public items: IPlaylistSongModel[];
+  public doAfterSongStatusChange: (song: ISongModel, oldStatus: PlayerSongStatus) => void;
 
   // Public Methods *****************************************************************************
   /** Returns whether the playlist has a track set as current */
@@ -366,8 +367,12 @@ export class PlayerListModel implements IDbModel {
       return;
     }
     // This means we are removing the old track from being current
-    if (this.hasTrack()) {
+    if (this.hasTrack() && this.current.song.playerStatus !== PlayerSongStatus.Empty) {
+      const oldStatus = this.current.song.playerStatus;
       this.current.song.playerStatus = PlayerSongStatus.Empty;
+      if (this.doAfterSongStatusChange) {
+        this.doAfterSongStatusChange(this.current.song, oldStatus);
+      }
     }
     const args: IEventArgs<IPlaylistSongModel> = {
       oldValue: this.current,
@@ -377,9 +382,14 @@ export class PlayerListModel implements IDbModel {
     this.previous = this.innerGetPrevious(this.current);
     this.next = this.innerGetNext(this.current);
     // Now mark it as current
-    if (this.current) {
+    if (this.hasTrack() && this.current.song.playerStatus !== PlayerSongStatus.Stopped) {
+      const oldStatus = this.current.song.playerStatus;
       this.current.song.playerStatus = PlayerSongStatus.Stopped;
+      if (this.doAfterSongStatusChange) {
+        this.doAfterSongStatusChange(this.current.song, oldStatus);
+      }
     }
+
     this.events.broadcast(AppEvent.PlaylistCurrentTrackChanged, args);
   }
 

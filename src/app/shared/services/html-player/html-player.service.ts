@@ -440,6 +440,10 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     this.utilities.setDocTitle();
   }
 
+  /**
+   * Sets the specified track as current in the playlist
+   * and loads the audio file into the internal player.
+   */
   private setupNewTrack(track: IPlaylistSongModel): boolean {
     this.state.playerList.setCurrent(track);
     return this.loadAudio(this.utilities.fileToUrl(track.song.filePath));
@@ -462,16 +466,26 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     this.state.isLoading = false;
     this.state.isStalled = false;
     this.state.hasError = false;
+
+    let newSongStatus: PlayerSongStatus;
     switch (this.state.status) {
       case PlayerStatus.Playing:
-        this.state.playerList.current.song.playerStatus = PlayerSongStatus.Playing;
+        newSongStatus = PlayerSongStatus.Playing;
         break;
       case PlayerStatus.Paused:
-        this.state.playerList.current.song.playerStatus = PlayerSongStatus.Paused;
+        newSongStatus = PlayerSongStatus.Paused;
         break;
       case PlayerStatus.Stopped:
-        this.state.playerList.current.song.playerStatus = PlayerSongStatus.Stopped;
+        newSongStatus = PlayerSongStatus.Paused;
         break;
+    }
+
+    if (newSongStatus && newSongStatus !== this.state.playerList.current.song.playerStatus) {
+      const oldSongStatus = this.state.playerList.current.song.playerStatus;
+      this.state.playerList.current.song.playerStatus = newSongStatus;
+      if (this.state.playerList.doAfterSongStatusChange) {
+        this.state.playerList.doAfterSongStatusChange(this.state.playerList.current.song, oldSongStatus);
+      }
     }
     const eventArgs: IPlayerStatusChangedEventArgs = {
       oldValue: oldStatus,
@@ -479,8 +493,6 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       track: this.state.playerList.current
     };
     this.events.broadcast(AppEvent.PlayerStatusChanged, eventArgs);
-
-    // TODO: fire PlayerSongStatusChanged event as well
   }
 
   private beforeStop(): void {

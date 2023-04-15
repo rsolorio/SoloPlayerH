@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
@@ -22,7 +22,8 @@ import { IImage } from 'src/app/core/models/core.interface';
 @Component({
   selector: 'sp-classification-list',
   templateUrl: './classification-list.component.html',
-  styleUrls: ['./classification-list.component.scss']
+  styleUrls: ['./classification-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClassificationListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -17,7 +17,8 @@ import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-mo
 @Component({
   selector: 'sp-artist-list',
   templateUrl: './artist-list.component.html',
-  styleUrls: ['./artist-list.component.scss']
+  styleUrls: ['./artist-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ArtistListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;

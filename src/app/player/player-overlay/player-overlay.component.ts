@@ -3,14 +3,14 @@ import { ColorG } from 'src/app/core/models/color-g.class';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { PlayerStatus } from 'src/app/shared/models/player.enum';
-import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
+import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { PlayerOverlayStateService } from './player-overlay-state.service';
 import { PlayerOverlayMode } from './player-overlay.enum';
 import { IPlayerOverlayModel } from './player-overlay.interface';
 import { IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 
 /**
  * This is the main container of the player and responsible for rendering the selected player mode.
@@ -30,6 +30,7 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
     private events: EventsService,
     private db: DatabaseService,
     private cd: ChangeDetectorRef,
+    private playerService: HtmlPlayerService,
     private utility: UtilityService)
   {
     super();
@@ -37,8 +38,20 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
 
   ngOnInit(): void {
     this.model = this.playerOverlayService.getState();
-    this.subscribeToPlayerStatusChanged();
     this.subscribeToFullPlayerImageLoaded();
+    // Tell the player what to do when the status of a song changes.
+    // This component has this responsibility because it lives while the app is running,
+    // it is responsible for the visual representation of the player service,
+    // and has direct access to the db service.
+    this.playerService.getState().playerList.doAfterSongStatusChange = (song, oldStatus) => {
+      if (song.playerStatus === PlayerSongStatus.Playing && oldStatus !== PlayerSongStatus.Paused) {
+        song.playCount++;
+        song.playDate = new Date();
+        const days = this.utility.daysFromNow(song.playDate);
+        song.popularityIcon = this.playerOverlayService.getPopularityIcon(days);
+        this.db.updatePlayCount(song);
+      }
+    };
   }
 
   public expand() {
@@ -51,25 +64,6 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
 
   public small() {
     this.playerOverlayService.getState().mode = PlayerOverlayMode.Small;
-  }
-
-  private subscribeToPlayerStatusChanged() {
-    // TODO: why this component has this responsibility?
-    this.subs.sink = this.events.onEvent<IPlayerStatusChangedEventArgs>(AppEvent.PlayerStatusChanged)
-    .subscribe(eventArgs => {
-      switch (eventArgs.newValue) {
-        case PlayerStatus.Playing:
-          if (eventArgs.oldValue !== PlayerStatus.Paused) {
-            this.db.increasePlayCount(eventArgs.track.songId).then(updatedSong => {
-              eventArgs.track.song.playCount = updatedSong.playCount;
-              eventArgs.track.song.playDate = updatedSong.playDate;
-              const days = this.utility.daysFromNow(new Date(eventArgs.track.song.playDate));
-              eventArgs.track.song.popularityIcon = this.playerOverlayService.getPopularityIcon(days);
-            });
-          }
-          break;
-      }
-    });
   }
 
   private subscribeToFullPlayerImageLoaded() {

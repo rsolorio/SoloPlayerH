@@ -43,6 +43,7 @@ import { defaultModuleOptions } from './database.options';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
 import { RelatedImageId, RelatedImageSrc } from './database.images';
 import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../platform/audio-metadata/audio-metadata.enum';
+import { ISongModel } from '../../models/song-model.interface';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -884,15 +885,15 @@ export class DatabaseService {
     };
   }
 
-  public async increasePlayCount(songId: string): Promise<SongEntity> {
+  public async updatePlayCount(songData: ISongModel): Promise<SongEntity> {
     // Increase play count
-    const song = await SongEntity.findOneBy({ id: songId });
-    song.playCount++;
-    song.playDate = new Date();
+    const song = await SongEntity.findOneBy({ id: songData.id });
+    song.playCount = songData.playCount;
+    song.playDate = songData.playDate;
     await song.save();
     // Add play record
     const playRecord = new PlayHistoryEntity();
-    playRecord.songId = songId;
+    playRecord.songId = songData.id;
     playRecord.playDate = song.playDate;
     await playRecord.save();
     return song;

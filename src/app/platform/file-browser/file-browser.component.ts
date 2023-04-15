@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFileBrowserItem, IFileBrowserQueryParams } from './file-browser.interface';
@@ -15,7 +15,8 @@ import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base
 @Component({
   selector: 'sp-file-browser',
   templateUrl: './file-browser.component.html',
-  styleUrls: ['./file-browser.component.scss']
+  styleUrls: ['./file-browser.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileBrowserComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;

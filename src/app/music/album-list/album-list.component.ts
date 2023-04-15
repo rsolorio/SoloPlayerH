@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
@@ -20,7 +20,8 @@ import { IImage } from 'src/app/core/models/core.interface';
 @Component({
   selector: 'sp-album-list',
   templateUrl: './album-list.component.html',
-  styleUrls: ['./album-list.component.scss']
+  styleUrls: ['./album-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AlbumListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;

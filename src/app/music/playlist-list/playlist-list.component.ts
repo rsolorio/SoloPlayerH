@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
@@ -15,7 +15,8 @@ import { IImage } from 'src/app/core/models/core.interface';
 @Component({
   selector: 'sp-playlist-list',
   templateUrl: './playlist-list.component.html',
-  styleUrls: ['./playlist-list.component.scss']
+  styleUrls: ['./playlist-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlaylistListComponent extends CoreComponent implements OnInit {
 
