@@ -35,7 +35,6 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
   private htmlAudio = new Audio();
   private eventHistory: IMediaEventEntry[] = [];
   private playTimer = null;
-  private positionRefreshSuspended = false;
   private isStopping = false;
   private isManualPause = false;
   private stalledWaitTime = 2;
@@ -323,9 +322,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     this.cancelPlayTimer();
 
     this.playTimer = setInterval(() => {
-      if (!this.positionRefreshSuspended) {
-        this.updateElapsedTime();
-      }
+      this.updateElapsedTime();
     }, this.state.playTimerInterval * 1000);
   }
 
@@ -405,17 +402,13 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
   }
 
   private onAudioPause() {
-    this.positionRefreshSuspended = true;
+    this.cancelPlayTimer();
     this.setStatus(PlayerStatus.Paused);
     this.resetTitle();
   }
 
   private onAudioPlay() {
-    this.positionRefreshSuspended = false;
-    // If we come from a pause we should not restart timer
-    if (this.state.status !== PlayerStatus.Paused) {
-        this.restartPlayTimer();
-    }
+    this.restartPlayTimer();
     this.setStatus(PlayerStatus.Playing);
     this.setCurrentSongAsTitle();
     this.setMediaSessionMetadata();
