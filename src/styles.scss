@@ -549,6 +549,10 @@ A longer duration allows to properly see the transition in the whole page. */
     font-weight: bold;
 }
 
+.sp-text-capitalize {
+    text-transform: capitalize;
+}
+
 .sp-no-select {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */

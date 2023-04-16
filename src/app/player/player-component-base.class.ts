@@ -145,7 +145,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     // TODO: save extension in table
     if (this.model.playerList.current.song.filePath) {
       const fileParts = this.model.playerList.current.song.filePath.split('.');
-      return fileParts[fileParts.length - 1].toUpperCase();
+      return fileParts[fileParts.length - 1];
     }
     return null;
   }
