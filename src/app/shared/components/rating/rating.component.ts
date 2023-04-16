@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { BaseComponent, MakeValueAccessorProvider } from 'src/app/core/models/base-component.class';
 import { IEventArgs } from 'src/app/core/models/core.interface';
@@ -13,11 +13,12 @@ import { IRatingModel } from './rating.interface';
   selector: 'sp-rating',
   templateUrl: './rating.component.html',
   styleUrls: ['./rating.component.scss'],
-  providers: [MakeValueAccessorProvider(RatingComponent)]
+  providers: [MakeValueAccessorProvider(RatingComponent)],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RatingComponent extends BaseComponent<IRatingModel, number> {
   private valueChangeByClick = false;
-  private scaleUpAnimationEnabled = false;
+  public scaleUpAnimationEnabled = false;
   public hoveredValue = 0;
   public clickedValue = 0;
 
@@ -72,8 +73,8 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
     this.model.classBack = val;
   }
 
-  constructor(private sanitizer: DomSanitizer) {
-    super();
+  constructor(private sanitizer: DomSanitizer, private cd: ChangeDetectorRef) {
+    super(cd);
   }
 
   public getStyleVariables(value: string): SafeStyle {

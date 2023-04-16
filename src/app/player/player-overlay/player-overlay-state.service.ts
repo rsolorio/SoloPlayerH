@@ -35,10 +35,10 @@ export class PlayerOverlayStateService implements IStateService<IPlayerOverlayMo
     this.state.mode = PlayerOverlayMode.Hidden;
   }
 
-  public getPopularityIcon(days: number): IIcon {
+  public getRecentPlayIcon(days: number): IIcon {
     // TODO: this should be located on a music service
     const timeAgo = this.utility.getTimeAgo(days);
-    const icon = 'mdi-fire mdi';
+    const icon = 'mdi-timer-play-outline mdi';
     if (timeAgo === TimeAgo.Today) {
       return { icon: icon, styleClass: 'sp-color-red', tooltip: 'Played today' };
     }

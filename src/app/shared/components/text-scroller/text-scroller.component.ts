@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ColorG } from 'src/app/core/models/color-g.class';
 import { ITextScrollerModel } from './text-scroller-model.interface';
 import { IBasicColorPalette } from '../../services/color-utility/color-utility.interface';
@@ -6,7 +6,8 @@ import { IBasicColorPalette } from '../../services/color-utility/color-utility.i
 @Component({
   selector: 'sp-text-scroller',
   templateUrl: './text-scroller.component.html',
-  styleUrls: ['./text-scroller.component.scss']
+  styleUrls: ['./text-scroller.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TextScrollerComponent implements OnInit {
 

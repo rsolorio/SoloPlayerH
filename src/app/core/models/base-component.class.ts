@@ -1,6 +1,6 @@
 import { IValueModel } from '../../core/models/core.interface';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Input, forwardRef, Directive } from '@angular/core';
+import { Input, forwardRef, Directive, ChangeDetectorRef } from '@angular/core';
 import { CoreComponent } from './core-component.class';
 
 const noop = () => { };
@@ -41,6 +41,7 @@ export abstract class BaseComponent<TModel extends IValueModel<TValue>, TValue> 
     public writeValue(val: TValue) {
         if (val !== this.model.value) {
             this.model.value = val;
+            this.changeDetector.markForCheck();
             this.onValueChanged();
         }
     }
@@ -54,7 +55,7 @@ export abstract class BaseComponent<TModel extends IValueModel<TValue>, TValue> 
     }
 
     // Constructor ////////////////////////////////////////////////////////////////////////////////
-    constructor() {
+    constructor(private changeDetector: ChangeDetectorRef) {
       super();
       this.initializeModel();
     }

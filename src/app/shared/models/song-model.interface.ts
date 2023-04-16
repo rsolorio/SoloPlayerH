@@ -45,5 +45,5 @@ export interface ISongModel extends IListItemModel {
   primaryAlbumId: string;
   primaryArtistId: string;
   classificationId: string;
-  popularityIcon?: IIcon;
+  recentPlayIcon?: IIcon;
 }
