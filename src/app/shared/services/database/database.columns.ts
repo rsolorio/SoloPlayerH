@@ -22,6 +22,7 @@ export enum DbColumn {
   ReleaseYear = 'releaseYear',
   ReleaseDecade = 'releaseDecade',
   Lyrics = 'lyrics',
+  AddDate = 'addDate',
   SortBy = 'sortBy', // fake column for sorting purposes
   TransformAlgorithm = 'transformAlgorithm', // fake column for sorting purposes
 }
@@ -47,5 +48,6 @@ databaseColumns[DbColumn.Favorite] = { name: DbColumn.Favorite, caption: 'Favori
 databaseColumns[DbColumn.ReleaseYear] = { name: DbColumn.ReleaseYear, caption: 'Release Year', icon: 'mdi-calendar-blank-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Release Decade', icon: 'mdi-calendar-blank-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.Lyrics] = { name: DbColumn.Lyrics, caption: 'Lyrics', icon: 'mdi-script-text-outline mdi', dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.AddDate] = { name: DbColumn.AddDate, caption: 'Add Date', icon: 'mdi-calendar-plus mdi', dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.SortBy] = { name: DbColumn.SortBy, caption: 'Sort By', icon: 'mdi-sort mdi', dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.TransformAlgorithm] = { name: DbColumn.TransformAlgorithm, caption: 'Transform', icon: 'mdi-sort-alphabetical-variant mdi', dataType: CriteriaDataType.String };

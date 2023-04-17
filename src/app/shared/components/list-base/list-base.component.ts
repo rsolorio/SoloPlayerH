@@ -324,20 +324,17 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public getRecentIcon(days: number): IIcon {
     const timeAgo = this.utilities.getTimeAgo(days);
     if (timeAgo === TimeAgo.Today) {
-      return { styleClass: 'sp-color-orange', tooltip: 'Added today' };
+      return { styleClass: '', tooltip: 'Added today' };
     }
     if (timeAgo === TimeAgo.Yesterday) {
-      return { styleClass: 'sp-color-orange', tooltip: 'Added yesterday' };
+      return { styleClass: '', tooltip: 'Added yesterday' };
     }
     const tooltip = `Added ${days} days ago`;
-    if (timeAgo === TimeAgo.OneWeek) {
-      return { styleClass: 'sp-color-yellow', tooltip: tooltip };
-    }
-    if (timeAgo === TimeAgo.TwoWeeks) {
-      return { styleClass: 'sp-color-normal-text', tooltip: tooltip };
+    if (timeAgo === TimeAgo.OneWeek || timeAgo === TimeAgo.TwoWeeks) {
+      return { styleClass: 'sp-opacity-66', tooltip: tooltip };
     }
     if (timeAgo === TimeAgo.OneMonth) {
-      return { styleClass: 'sp-color-muted', tooltip: tooltip };
+      return { styleClass: 'sp-opacity-33', tooltip: tooltip };
     }
     return { styleClass: 'sp-no-display' };
   }

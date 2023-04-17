@@ -22,8 +22,10 @@
   </div>
   <div class="sp-chip-container">
     <div class="sp-chip-item sp-bg-09" *ngFor="let criteriaItem of model.sortingCriteria">
-      <span class="sp-chip-text sp-text-large">{{columnCaption(criteriaItem.columnName)}}</span>&nbsp;
-      <i class="mdi-close mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onSortCloseClick(criteriaItem)"></i>
+      <i *ngIf="criteriaItem.sortDirection === CriteriaSortDirection.Ascending" class="mdi-sort-ascending mdi sp-clickable" (click)="onSortDirectionClick(criteriaItem)"></i>
+      <i *ngIf="criteriaItem.sortDirection === CriteriaSortDirection.Descending" class="mdi-sort-descending mdi sp-clickable" (click)="onSortDirectionClick(criteriaItem)"></i>
+      <span class="sp-chip-text sp-text-large">&nbsp;{{columnCaption(criteriaItem.columnName)}}&nbsp;</span>
+      <i class="mdi-close mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onSortRemoveClick(criteriaItem)"></i>
     </div>
   </div>
   <!-- TRANSFORM ALGORITHM -->

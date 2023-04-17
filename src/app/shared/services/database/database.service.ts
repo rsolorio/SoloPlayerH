@@ -794,6 +794,7 @@ export class DatabaseService {
           { caption: databaseColumns[DbColumn.Seconds].caption, value: DbColumn.Seconds },
           { caption: databaseColumns[DbColumn.AlbumName].caption, value: DbColumn.AlbumName },
           { caption: databaseColumns[DbColumn.AlbumArtistName].caption, value: DbColumn.AlbumArtistName },
+          { caption: databaseColumns[DbColumn.AddDate].caption, value: DbColumn.AddDate }
         ]);
       }
     };

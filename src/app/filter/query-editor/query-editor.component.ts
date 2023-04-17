@@ -8,6 +8,7 @@ import { IValuePair } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
+import { CriteriaSortDirection } from 'src/app/shared/models/criteria-base-model.interface';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison, CriteriaDataType, CriteriaTransformAlgorithm, CriteriaValueEditor } from 'src/app/shared/services/criteria/criteria.enum';
 import { ICriteriaValueSelector } from 'src/app/shared/services/criteria/criteria.interface';
@@ -21,6 +22,7 @@ import { NavigationService } from 'src/app/shared/services/navigation/navigation
   styleUrls: ['./query-editor.component.scss']
 })
 export class QueryEditorComponent implements OnInit {
+  public CriteriaSortDirection = CriteriaSortDirection;
   public model: Criteria;
   public supportedSelectors: ICriteriaValueSelector[] = [];
   public sortBySelector: ICriteriaValueSelector;
@@ -219,7 +221,7 @@ export class QueryEditorComponent implements OnInit {
     return result;
   }
 
-  public onSortCloseClick(criteriaItem: CriteriaItem): void {
+  public onSortRemoveClick(criteriaItem: CriteriaItem): void {
     // Remove sorting
     const index =
       this.model.sortingCriteria.findIndex(item =>
@@ -228,6 +230,15 @@ export class QueryEditorComponent implements OnInit {
 
     if (index >= 0) {
       this.model.sortingCriteria.splice(index, 1);
+    }
+  }
+
+  public onSortDirectionClick(criteriaItem: CriteriaItem): void {
+    if (criteriaItem.sortDirection === CriteriaSortDirection.Descending) {
+      criteriaItem.sortDirection = CriteriaSortDirection.Ascending;
+    }
+    else {
+      criteriaItem.sortDirection = CriteriaSortDirection.Descending;
     }
   }
 
