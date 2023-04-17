@@ -63,6 +63,13 @@ table {
 .sp-td-inner-icon {
     width: 38px;
     text-align: center;
+    position: relative;
+}
+
+.sp-left-sub-icon {
+    position: absolute;
+    left: 24px;
+    top: 20px;
 }
 
 .sp-td-center {
@@ -80,7 +87,6 @@ table {
 
 .sp-nav-bar-search-clear-icon {
     position: absolute;
-    opacity: 0.5;
     right: 94px;
     top: 10px;
     color: $sp-color-on-background-high;

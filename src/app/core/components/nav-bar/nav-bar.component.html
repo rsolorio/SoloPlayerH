@@ -15,6 +15,10 @@
                   <i
                   [ngClass]="model.leftIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.leftIcon)"></i>
+                  <i
+                  *ngIf="model.leftSubIcon"
+                  [ngClass]="model.leftSubIcon"
+                  class="sp-left-sub-icon sp-text-tiny-fixed"></i>
               </td>
               <!-- Inner left icon menu -->
               <td *ngIf="model.leftIconMenu" class="sp-td-inner-icon">
@@ -33,7 +37,7 @@
                   <!-- Search -->
                   <div *ngIf="model.mode === NavbarDisplayMode.Search" class="sp-flex">
                     <input #spNavbarSearchBox class="sp-nav-bar-search-input" [(ngModel)]="model.searchTerm" (keyup.enter)="onSearchEnter()" type="search" placeholder="Search" />
-                    <span (click)="onSearchClearClick()" [hidden]="!model.searchTerm" class="sp-cursor-pointer sp-nav-bar-search-clear-icon">
+                    <span (click)="onSearchClearClick()" [hidden]="!model.searchTerm" class="sp-nav-bar-search-clear-icon sp-opacity-50 sp-cursor-pointer ">
                       <i class="mdi-close mdi"></i>
                     </span>
                   </div>

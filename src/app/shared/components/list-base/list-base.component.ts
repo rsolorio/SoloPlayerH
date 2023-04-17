@@ -41,8 +41,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @ViewChild('spModalHost', { read: ViewContainerRef, static: false }) public modalHostViewContainer: ViewContainerRef;
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
   private lastNavbarRightIcon: IIconAction;
-  private filterWithCriteriaIcon = 'mdi-filter-check-outline mdi';
-  private filterNoCriteriaIcon = 'mdi-filter-outline mdi';
 
   @Output() public itemRender: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemAvatarClick: EventEmitter<IListItemModel> = new EventEmitter();
@@ -151,22 +149,14 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private updateFilterIcon(): void {
     const navbar = this.navbarService.getState();
     if (this.model.criteriaResult.criteria.hasComparison(true)) {
-      // Display icon with criteria
-      if (navbar.rightIcon && navbar.rightIcon.icon === this.filterNoCriteriaIcon) {
-        navbar.rightIcon.icon = this.filterWithCriteriaIcon;
-      }
-      else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterNoCriteriaIcon) {
-        this.lastNavbarRightIcon.icon = this.filterWithCriteriaIcon;
-      }
+      navbar.leftSubIcon = 'mdi-filter mdi sp-color-primary';
+      navbar.leftIcon.action = () => {
+        this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
+      };
     }
     else {
-      // Display icon without criteria
-      if (navbar.rightIcon && navbar.rightIcon.icon === this.filterWithCriteriaIcon) {
-        navbar.rightIcon.icon = this.filterNoCriteriaIcon;
-      }
-      else if (this.lastNavbarRightIcon && this.lastNavbarRightIcon.icon === this.filterWithCriteriaIcon) {
-        this.lastNavbarRightIcon.icon = this.filterNoCriteriaIcon;
-      }
+      navbar.leftSubIcon = null;
+      navbar.leftIcon.action = null;
     }
   }
 
@@ -197,11 +187,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       navbar.rightIcon = this.model.rightIcon;
     }
     else {
-      // Filter icon by default
+      // Search icon by default
       navbar.rightIcon = {
-        icon: this.filterNoCriteriaIcon,
+        icon: 'mdi-magnify mdi',
         action: () => {
-          this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
+          this.toggleSearch(navbar);
         }
       };
     }
@@ -211,13 +201,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       if (this.model.broadcastService) {
         this.loadingService.show();
         this.model.broadcastService.search(this.model.criteriaResult.criteria.clone(), searchTerm).subscribe();
-      }
-    };
-
-    // By default, the clear will perform a search with no search value
-    navbar.onSearchClear = () => {
-      if (navbar.onSearch) {
-        navbar.onSearch(navbar.searchTerm);
       }
     };
 
@@ -234,10 +217,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // Menu list
     navbar.menuList = [
       {
-        caption: 'Search',
-        icon: 'mdi-magnify mdi',
+        caption: 'Filter',
+        icon: 'mdi-filter-outline mdi',
         action: () => {
-          this.toggleSearch(navbar);
+          this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
         }
       },
       {
@@ -279,12 +262,19 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   private toggleSearch(navbar: INavbarModel): void {
     if (navbar.mode === NavbarDisplayMode.Search) {
+      // Clear previous search value by performing an empty search
+      navbar.searchTerm = '';
+      if (navbar.onSearch) {
+        navbar.onSearch(navbar.searchTerm);
+      }
       navbar.mode = this.lastNavbarDisplayMode;
       navbar.rightIcon = this.lastNavbarRightIcon;
     }
     else {
       this.lastNavbarDisplayMode = navbar.mode;
       this.lastNavbarRightIcon = navbar.rightIcon;
+      // Starting over so clear the search
+      navbar.searchTerm = '';
       navbar.mode = NavbarDisplayMode.Search;
       // Notice we replace the whole right icon object with a new one
       navbar.rightIcon = {

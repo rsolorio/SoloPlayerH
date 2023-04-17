@@ -15,6 +15,8 @@ export interface INavbarModel {
     componentType?: Type<any>;
     /** Icon for the inner left side of the nav bar. */
     leftIcon?: IIconAction;
+    /** Mini icon displayed on the right bottom corner of the left icon */
+    leftSubIcon?: string;
     /** Icon menu for the inner left side of the nav bar. This will replace the 'leftIcon' property. */
     leftIconMenu?: IIconMenuModel;
     /** Icon for the inner right side of the nav bar. */
