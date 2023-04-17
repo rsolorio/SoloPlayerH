@@ -115,12 +115,15 @@ export class SongListComponent extends CoreComponent implements OnInit {
         song.recentIcon = this.spListBaseComponent.getRecentIcon(days);
       }
 
-      if (!song.recentPlayIcon) {
-        song.recentPlayIcon = {};
-        if (song.playDate) {
-          const days = this.utility.daysFromNow(new Date(song.playDate));
-          song.recentPlayIcon = this.playerOverlayService.getRecentPlayIcon(days);
-        }
+      // This has to run every time since this calculation is based on the current day      
+      if (song.playDate) {
+        const days = this.utility.daysFromNow(new Date(song.playDate));
+        song.recentPlayIcon = this.playerOverlayService.getRecentPlayIcon(days);
+      }
+      else {
+        song.recentPlayIcon = {
+          styleClass: 'sp-no-display'
+        };
       }
 
       if (!song.image.src && !song.image.getImage) {

@@ -618,6 +618,31 @@ input[type="text"], input[type="search"], textarea {
     display: none;
 }
 
+// It can be used to specify opacity by quarters: 25%, 50%, 75%
+.sp-opacity-25 {
+    opacity: 0.25;
+}
+
+// It can be used to specify opacity by thirds: 33%, 66%
+.sp-opacity-33 {
+    opacity: 0.33;
+}
+
+// It can be used to specify opacity by quarters: 25%, 50%, 75%
+.sp-opacity-50 {
+    opacity: 0.50;
+}
+
+// It can be used to specify opacity by thirds: 33%, 66%
+.sp-opacity-66 {
+    opacity: 0.66;
+}
+
+// It can be used to specify opacity by quarters: 25%, 50%, 75%
+.sp-opacity-75 {
+    opacity: 0.75;
+}
+
 // Causes the element to be transparent but user can still interact with it
 .sp-transparent {
     opacity: 0;
@@ -655,10 +680,6 @@ https://github.com/yapplabs/ember-modal-dialog/issues/238
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.sp-transparent {
-    opacity: 0;
 }
 
 /* This hides the scroll bars but still allows to scroll. */

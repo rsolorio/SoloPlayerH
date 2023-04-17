@@ -40,20 +40,17 @@ export class PlayerOverlayStateService implements IStateService<IPlayerOverlayMo
     const timeAgo = this.utility.getTimeAgo(days);
     const icon = 'mdi-timer-play-outline mdi';
     if (timeAgo === TimeAgo.Today) {
-      return { icon: icon, styleClass: 'sp-color-red', tooltip: 'Played today' };
+      return { icon: icon, styleClass: '', tooltip: 'Played today' };
     }
     if (timeAgo === TimeAgo.Yesterday) {
-      return { icon: icon, styleClass: 'sp-color-orange', tooltip: 'Played yesterday' };
+      return { icon: icon, styleClass: '', tooltip: 'Played yesterday' };
     }
     const tooltip = `Played ${days} days ago`;
-    if (timeAgo === TimeAgo.OneWeek) {
-      return { icon: icon, styleClass: 'sp-color-yellow', tooltip: tooltip };
-    }
-    if (timeAgo === TimeAgo.TwoWeeks) {
-      return { icon: icon, styleClass: 'sp-color-normal-text', tooltip: tooltip };
+    if (timeAgo === TimeAgo.OneWeek || timeAgo === TimeAgo.TwoWeeks) {
+      return { icon: icon, styleClass: 'sp-opacity-66', tooltip: tooltip };
     }
     if (timeAgo === TimeAgo.OneMonth) {
-      return { icon: icon, styleClass: 'sp-color-muted', tooltip: tooltip };
+      return { icon: icon, styleClass: 'sp-opacity-33', tooltip: tooltip };
     }
     return { icon: icon, styleClass: 'sp-no-display' };
   }
