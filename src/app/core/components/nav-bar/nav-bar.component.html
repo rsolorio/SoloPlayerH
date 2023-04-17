@@ -15,10 +15,11 @@
                   <i
                   [ngClass]="model.leftIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.leftIcon)"></i>
+                  <!-- Sub icon -->
                   <i
                   *ngIf="model.leftSubIcon"
                   [ngClass]="model.leftSubIcon"
-                  class="sp-left-sub-icon sp-text-tiny-fixed"></i>
+                  class="sp-left-sub-icon sp-text-small-fixed"></i>
               </td>
               <!-- Inner left icon menu -->
               <td *ngIf="model.leftIconMenu" class="sp-td-inner-icon">

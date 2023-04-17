@@ -178,6 +178,10 @@ body {
     color: $sp-color-primary;
 }
 
+.sp-color-primary-variant {
+    color: $sp-color-primary-variant;
+}
+
 .sp-color-heart {
     color: $sp-color-red;
 }
@@ -436,6 +440,10 @@ A longer duration allows to properly see the transition in the whole page. */
 }
 
 .sp-text-small {
+    font-size: 0.8em;
+}
+
+.sp-text-small-fixed {
     font-size: 0.8em;
 }
 
