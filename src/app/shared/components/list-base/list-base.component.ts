@@ -149,7 +149,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private updateFilterIcon(): void {
     const navbar = this.navbarService.getState();
     if (this.model.criteriaResult.criteria.hasComparison(true)) {
-      navbar.leftSubIcon = 'mdi-filter mdi sp-color-primary-variant';
+      navbar.leftSubIcon = 'mdi-filter mdi sp-color-primary sp-text-shadow-dark';
       navbar.leftIcon.action = () => {
         this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
       };

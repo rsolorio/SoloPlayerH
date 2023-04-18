@@ -565,6 +565,14 @@ A longer duration allows to properly see the transition in the whole page. */
     text-transform: capitalize;
 }
 
+.sp-text-shadow-dark {
+    text-shadow: 0 0 1px $sp-color-black;
+}
+
+.sp-text-shadow-light {
+    text-shadow: 0 0 1px $sp-color-white;
+}
+
 .sp-no-select {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */

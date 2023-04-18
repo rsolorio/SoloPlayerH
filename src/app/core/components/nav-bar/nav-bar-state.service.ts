@@ -85,7 +85,7 @@ export class NavBarStateService {
     this.loadComponent(navbarModel.componentType);
     this.navbarState.discardPlaceholder = navbarModel.discardPlaceholder;
     this.buildMenu(navbarModel.menuList);
-    this.setIcons(navbarModel.leftIcon, navbarModel.rightIcon, navbarModel.leftIconMenu, navbarModel.rightIconMenu);
+    this.setIcons(navbarModel);
   }
 
   /**
@@ -97,11 +97,12 @@ export class NavBarStateService {
     this.componentInstance = undefined;
   }
 
-  public setIcons(leftIcon?: IIconAction, rightIcon?: IIconAction, leftIconMenu?: IIconMenuModel, rightIconMenu?: IIconMenuModel): void {
-    this.navbarState.leftIcon = leftIcon;
-    this.navbarState.rightIcon = rightIcon;
-    this.navbarState.leftIconMenu = leftIconMenu;
-    this.navbarState.rightIconMenu = rightIconMenu;
+  public setIcons(navbarModel: INavbarModel): void {
+    this.navbarState.leftIcon = navbarModel.leftIcon;
+    this.navbarState.rightIcon = navbarModel.rightIcon;
+    this.navbarState.leftIconMenu = navbarModel.leftIconMenu;
+    this.navbarState.rightIconMenu = navbarModel.rightIconMenu;
+    this.navbarState.leftSubIcon = navbarModel.leftSubIcon;
   }
 
   public getComponentInstance<T>(): T {
