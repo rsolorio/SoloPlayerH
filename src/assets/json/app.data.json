@@ -1,0 +1,864 @@
+{
+  "tables": {
+    "moduleOption": [
+      {
+        "name": "ScanMusicFolderPath",
+        "moduleName": "Music",
+        "title": "Directory path to look for audio files",
+        "description": "",
+        "valueEditorType": "Text",
+        "multipleValues": true,
+        "system": false,
+        "values": "[\"\\\\\"]"
+      },
+      {
+        "name": "ScanPlaylistFolderPath",
+        "moduleName": "Music",
+        "title": "Directory path to look for playlist files",
+        "description": "",
+        "valueEditorType": "Text",
+        "multipleValues": true,
+        "system": false,
+        "values": "[\"\\\\\"]"
+      },
+      {
+        "name": "ArtistSplitCharacters",
+        "moduleName": "Music",
+        "title": "Artist Split Characters",
+        "description": "Symbols to be used to split the Artist tag into multiple artists.",
+        "valueEditorType": "Text",
+        "multipleValues": true,
+        "system": false,
+        "values": "[\"\\\\\"]"
+      },
+      {
+        "name": "GenreSplitCharacters",
+        "moduleName": "Music",
+        "title": "Genre Split Characters",
+        "description": "Symbols to be used to split the Genre tag into multiple genres.",
+        "valueEditorType": "Text",
+        "multipleValues": true,
+        "system": false,
+        "values": "[\"\\\\\"]"
+      },
+      {
+        "name": "ExpandPlayerOnSongPlay",
+        "moduleName": "Music",
+        "title": "Expand Player On Song Play",
+        "description": "Whether or not the full player should be expanded when a song starts to played from the song list.",
+        "valueEditorType": "YesNo",
+        "multipleValues": false,
+        "system": true,
+        "values": "true"
+      }
+    ],
+    "relatedImage": [
+      {
+        "id": "64b2898a-c856-403b-886a-891adb993774",
+        "name": "Default Full",
+        "relatedId": "00000000-0000-0000-0000-000000000000",
+        "sourcePath": "../assets/img/default-image-full.jpg",
+        "sourceType": "Url",
+        "sourceIndex": 0,
+        "imageType": "Default",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "id": "cf53c264-9a74-4e55-b930-a1ee20258236",
+        "name": "Default Large",
+        "relatedId": "00000000-0000-0000-0000-000000000000",
+        "sourcePath": "../assets/img/default-image-large.jpg",
+        "sourceType": "Url",
+        "sourceIndex": 0,
+        "imageType": "Default",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "id": "f523121c-b8ed-4932-a2c0-83d056532e46",
+        "name": "Default Medium",
+        "relatedId": "00000000-0000-0000-0000-000000000000",
+        "sourcePath": "../assets/img/default-image-medium.jpg",
+        "sourceType": "Url",
+        "sourceIndex": 0,
+        "imageType": "Default",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "id": "3228514b-53a7-4853-baef-7bf6af2c41c1",
+        "name": "Default Small",
+        "relatedId": "00000000-0000-0000-0000-000000000000",
+        "sourcePath": "../assets/img/default-image-small.jpg",
+        "sourceType": "Url",
+        "sourceIndex": 0,
+        "imageType": "Default",
+        "mimeType": "image/jpeg"
+      }
+    ],
+    "valueListType": [
+      {
+        "id": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
+        "name": "ClassificationType",
+        "system": true
+      },
+      {
+        "id": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "AlbumType",
+        "system": true
+      },
+      {
+        "id": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "ArtistType",
+        "system": true
+      },
+      {
+        "id": "794fb6f0-6fe1-4afe-99e9-3976e1b748a5",
+        "name": "Country",
+        "system": true
+      },
+      {
+        "id": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Mood",
+        "system": true
+      },
+      {
+        "id": "41c17123-ba0a-43ea-bc32-39b3b6d4ed52",
+        "name": "PlaylistType",
+        "system": true
+      },
+      {
+        "id": "79907d9f-1e09-4dad-a497-dfd92398bac0",
+        "name": "Genre",
+        "system": true
+      },
+      {
+        "id": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Subgenre",
+        "system": true
+      },
+      {
+        "id": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Occasion",
+        "system": true
+      },
+      {
+        "id": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Instrument",
+        "system": true
+      },
+      {
+        "id": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Language",
+        "system": true
+      },
+      {
+        "id": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Category",
+        "system": true
+      }
+    ],
+    "valueListEntry": [
+      {
+        "id": "79907d9f-1e09-4dad-a497-dfd92398bac0",
+        "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
+        "name": "Genre",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "id": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
+        "name": "Subgenre",
+        "isClassification": false,
+        "sequence": 2
+      },
+      {
+        "id": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
+        "name": "Occasion",
+        "isClassification": false,
+        "sequence": 3
+      },
+      {
+        "id": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
+        "name": "Instrument",
+        "isClassification": false,
+        "sequence": 4
+      },
+      {
+        "id": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
+        "name": "Language",
+        "isClassification": false,
+        "sequence": 5
+      },
+      {
+        "id": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
+        "name": "Category",
+        "isClassification": false,
+        "sequence": 6
+      },
+      {
+        "//": "MOOD",
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "No Mood",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Depressed",
+        "isClassification": false,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Sad",
+        "isClassification": false,
+        "sequence": 3
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Melancholy",
+        "isClassification": false,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Indifferent",
+        "isClassification": false,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Relaxed",
+        "isClassification": false,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Peaceful",
+        "isClassification": false,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Grateful",
+        "isClassification": false,
+        "sequence": 8
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Happy",
+        "isClassification": false,
+        "sequence": 9
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Excited",
+        "isClassification": false,
+        "sequence": 10
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Energetic",
+        "isClassification": false,
+        "sequence": 11
+      },
+      {
+        "//": "AlbumType",
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "Compilation",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "EP",
+        "isClassification": false,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "Live",
+        "isClassification": false,
+        "sequence": 3
+      },
+      {
+        "id": "c613d1e5-f7b1-4533-92a8-7d57b7906daf",
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "LP",
+        "isClassification": false,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "Mixtape",
+        "isClassification": false,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "Remix",
+        "isClassification": false,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "Single",
+        "isClassification": false,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
+        "name": "Soundtrack",
+        "isClassification": false,
+        "sequence": 8
+      },
+      {
+        "//": "ArtistType",
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Solo - Male",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Solo - Male Singer",
+        "isClassification": false,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Solo - Female",
+        "isClassification": false,
+        "sequence": 3
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Solo - Female Singer",
+        "isClassification": false,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Duo",
+        "isClassification": false,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Duo - Male Singer",
+        "isClassification": false,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Duo - Female Singer",
+        "isClassification": false,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Duo - Mixed Singers",
+        "isClassification": false,
+        "sequence": 8
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Trio",
+        "isClassification": false,
+        "sequence": 9
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Trio - Male Singer",
+        "isClassification": false,
+        "sequence": 10
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Trio - Female Singer",
+        "isClassification": false,
+        "sequence": 11
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Trio - Mixed Singers",
+        "isClassification": false,
+        "sequence": 12
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Band",
+        "isClassification": false,
+        "sequence": 13
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Band - Female Singer",
+        "isClassification": false,
+        "sequence": 14
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Band - Male Singer",
+        "isClassification": false,
+        "sequence": 15
+      },
+      {
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Band - Mixed Singers",
+        "isClassification": false,
+        "sequence": 16
+      },
+      {
+        "id": "9f0b9c29-5d9b-4086-897a-1b69fc243afc",
+        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
+        "name": "Unknown",
+        "isClassification": false,
+        "sequence": 17
+      },
+      {
+        "//": "COUNTRY",
+        "id": "77aad7f2-044e-4fb1-aed8-65cde38077a4",
+        "valueListTypeId": "794fb6f0-6fe1-4afe-99e9-3976e1b748a5",
+        "name": "Unknown",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "794fb6f0-6fe1-4afe-99e9-3976e1b748a5",
+        "name": "United States",
+        "isClassification": false,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "794fb6f0-6fe1-4afe-99e9-3976e1b748a5",
+        "name": "Mexico",
+        "isClassification": false,
+        "sequence": 3
+      },
+      {
+        "//": "SUBGENRE",
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Acoustic",
+        "isClassification": true,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Ballad",
+        "isClassification": true,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Banda",
+        "isClassification": true,
+        "sequence": 3
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Bolero",
+        "isClassification": true,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Choir",
+        "isClassification": true,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Christian",
+        "isClassification": true,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Con Mariachi",
+        "isClassification": true,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Easy Listening",
+        "isClassification": true,
+        "sequence": 8
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Merengue",
+        "isClassification": true,
+        "sequence": 9
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Reggaeton",
+        "isClassification": true,
+        "sequence": 10
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Slow Jams",
+        "isClassification": true,
+        "sequence": 11
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Soft",
+        "isClassification": true,
+        "sequence": 12
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Texano",
+        "isClassification": true,
+        "sequence": 13
+      },
+      {
+        "//": "CATEGORY",
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Animals",
+        "isClassification": true,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Child Singer",
+        "isClassification": true,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Colors",
+        "isClassification": true,
+        "sequence": 13
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Date&Time",
+        "isClassification": true,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Family",
+        "isClassification": true,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Father",
+        "isClassification": true,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Food",
+        "isClassification": true,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Friendship",
+        "isClassification": true,
+        "sequence": 8
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Girly",
+        "isClassification": true,
+        "sequence": 9
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Headphones",
+        "isClassification": true,
+        "sequence": 10
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Morning",
+        "isClassification": true,
+        "sequence": 11
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Mother",
+        "isClassification": true,
+        "sequence": 12
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Names",
+        "isClassification": true,
+        "sequence": 13
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "One Hit Wonder",
+        "isClassification": true,
+        "sequence": 14
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Oscars",
+        "isClassification": true,
+        "sequence": 15
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Oz Favorites",
+        "isClassification": true,
+        "sequence": 16
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Phone Call",
+        "isClassification": true,
+        "sequence": 17
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Places",
+        "isClassification": true,
+        "sequence": 18
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Quotes",
+        "isClassification": true,
+        "sequence": 19
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Relationship",
+        "isClassification": true,
+        "sequence": 20
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Ringtone",
+        "isClassification": true,
+        "sequence": 21
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Sports",
+        "isClassification": true,
+        "sequence": 22
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Supergroup",
+        "isClassification": true,
+        "sequence": 23
+      },
+      {
+        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Weird Voice",
+        "isClassification": true,
+        "sequence": 24
+      },
+      {
+        "//": "INSTRUMENT",
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Flute",
+        "isClassification": true,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Guitar",
+        "isClassification": true,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Harmonica-Melodica",
+        "isClassification": true,
+        "sequence": 3
+      },
+      {
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Piano",
+        "isClassification": true,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Sax",
+        "isClassification": true,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Trumpet",
+        "isClassification": true,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Vocal",
+        "isClassification": true,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "0f593be0-45e4-4de0-9367-ea52bc51c595",
+        "name": "Whistle",
+        "isClassification": true,
+        "sequence": 8
+      },
+      {
+        "//": "LANGUAGE",
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "English",
+        "isClassification": true,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "French",
+        "isClassification": true,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Italian",
+        "isClassification": true,
+        "sequence": 3
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Japanese",
+        "isClassification": true,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "None",
+        "isClassification": true,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Portuguese",
+        "isClassification": true,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Spanish",
+        "isClassification": true,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Unknown",
+        "isClassification": true,
+        "sequence": 8
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Various",
+        "isClassification": true,
+        "sequence": 9
+      },
+      {
+        "//": "OCCASION",
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Anniversary",
+        "isClassification": true,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Beach",
+        "isClassification": true,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Birthday",
+        "isClassification": true,
+        "sequence": 3
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Christmas",
+        "isClassification": true,
+        "sequence": 4
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Fast Dance",
+        "isClassification": true,
+        "sequence": 5
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Halloween",
+        "isClassification": true,
+        "sequence": 6
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Karaoke",
+        "isClassification": true,
+        "sequence": 7
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "New Year",
+        "isClassification": true,
+        "sequence": 8
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Party",
+        "isClassification": true,
+        "sequence": 9
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Rain",
+        "isClassification": true,
+        "sequence": 10
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Relaxing",
+        "isClassification": true,
+        "sequence": 11
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Romantic",
+        "isClassification": true,
+        "sequence": 12
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Sing In Group",
+        "isClassification": true,
+        "sequence": 13
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Slow Dance",
+        "isClassification": true,
+        "sequence": 14
+      },
+      {
+        "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
+        "name": "Workout",
+        "isClassification": true,
+        "sequence": 15
+      }
+    ]
+  }
+}

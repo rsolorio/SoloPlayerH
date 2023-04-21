@@ -38,12 +38,9 @@ import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, Criter
 import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
 import { AppEvent } from '../../models/events.enum';
-import { classificationEntries, valueListEntries, ValueLists } from './database.lists';
-import { defaultModuleOptions } from './database.options';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
-import { RelatedImageId, RelatedImageSrc } from './database.images';
-import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../platform/audio-metadata/audio-metadata.enum';
 import { ISongModel } from '../../models/song-model.interface';
+import { HttpClient } from '@angular/common/http';
 
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
@@ -66,7 +63,8 @@ export class DatabaseService {
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
-    private transformService: ListTransformService)
+    private transformService: ListTransformService,
+    private http: HttpClient)
   {
     this.setValueSelectors();
     this.setComparisons();
@@ -116,141 +114,80 @@ export class DatabaseService {
   }
 
   private async initializeData(): Promise<void> {
-    await this.initializeModuleOptions();
-    await this.initializeImages();
-    await this.initValueLists();
-  }
-
-  private async initializeModuleOptions(): Promise<void> {
-    for (const moduleOption of defaultModuleOptions) {
-      const option = new ModuleOptionEntity();
-      option.name = moduleOption.name;
-      this.hashDbEntity(option);
-      const existingOption = await ModuleOptionEntity.findOneBy({ id: option.id });
-      if (existingOption) {
-        continue;
-      }
-
-      option.moduleName = moduleOption.moduleName;
-      option.title = moduleOption.title;
-      option.description = moduleOption.description;
-      option.valueEditorType = moduleOption.valueEditorType;
-      option.multipleValues = moduleOption.multipleValues;
-      option.system = moduleOption.system;
-      option.values = moduleOption.values;
-      await option.save();
-    }
-    this.log.info('Module options initialized.');
-  }
-
-  private async initializeImages(): Promise<void> {
-    const imageCount = await RelatedImageEntity.count();
-    if (imageCount > 0) {
-      return;
-    }
-    const images: RelatedImageEntity[] = [];
-
-    let image = new RelatedImageEntity();
-    image.id = RelatedImageId.DefaultFull;
-    image.name = 'Default Full';
-    image.relatedId = this.utilities.guidEmpty;
-    image.sourcePath = RelatedImageSrc.DefaultFull;
-    image.sourceType = MusicImageSourceType.Url;
-    image.sourceIndex = 0;
-    image.imageType = MusicImageType.Default;
-    image.mimeType = PictureFormat.Jpg;
-    images.push(image);
-
-    image = new RelatedImageEntity();
-    image.id = RelatedImageId.DefaultLarge;
-    image.name = 'Default Large';
-    image.relatedId = this.utilities.guidEmpty;
-    image.sourcePath = RelatedImageSrc.DefaultLarge;
-    image.sourceType = MusicImageSourceType.Url;
-    image.sourceIndex = 0;
-    image.imageType = MusicImageType.Default;
-    image.mimeType = PictureFormat.Jpg;
-    images.push(image);
-
-    image = new RelatedImageEntity();
-    image.id = RelatedImageId.DefaultMedium;
-    image.name = 'Default Medium';
-    image.relatedId = this.utilities.guidEmpty;
-    image.sourcePath = RelatedImageSrc.DefaultMedium;
-    image.sourceType = MusicImageSourceType.Url;
-    image.sourceIndex = 0;
-    image.imageType = MusicImageType.Default;
-    image.mimeType = PictureFormat.Jpg;
-    images.push(image);
-
-    image = new RelatedImageEntity();
-    image.id = RelatedImageId.DefaultSmall;
-    image.name = 'Default Small';
-    image.relatedId = this.utilities.guidEmpty;
-    image.sourcePath = RelatedImageSrc.DefaultSmall;
-    image.sourceType = MusicImageSourceType.Url;
-    image.sourceIndex = 0;
-    image.imageType = MusicImageType.Default;
-    image.mimeType = PictureFormat.Jpg;
-    images.push(image);
-
-    await this.bulkInsert(RelatedImageEntity, images);
-  }
-
-  private async initValueLists(): Promise<void> {
-    await this.initValueListTypes();
-    await this.initValueListEntries();
-  }
-
-  private async initValueListTypes(): Promise<void> {
+    // HACK: determine if the default data is already inserted
+    // by getting the number of records in the value list type table
+    // TODO: make this validation using a system flag or make every table in the
+    // default data validate the records, or validate record by record
     const typeCount = await ValueListTypeEntity.count();
     if (typeCount > 0) {
+      this.log.info('Default data already exists.');
       return;
     }
-    const valueListTypes: ValueListTypeEntity[] = [];
-    for (const valueListName of Object.keys(ValueLists)) {
-      const valueListType = new ValueListTypeEntity();
-      valueListType.id = (ValueLists as any)[valueListName].id;
-      valueListType.name = valueListName;
-      valueListType.system = true;
-      valueListTypes.push(valueListType);
-    }
-    await this.bulkInsert(ValueListTypeEntity, valueListTypes);
+    const data = await this.getDefaultData();
+    await this.insertDefaultData(data);
+    this.log.info('Default data initialized.');
   }
 
-  private async initValueListEntries(): Promise<void> {
-    const entryCount = await ValueListEntryEntity.count();
-    if (entryCount > 0) {
+  private async insertDefaultData(defaultDataObj: object): Promise<void> {
+    const tables = defaultDataObj['tables'];
+    if (!tables) {
       return;
     }
-    await this.createValueListEntries(valueListEntries, false);
-    await this.createValueListEntries(classificationEntries, true);
-  }
-
-  private async createValueListEntries(entries: { [valueListTypeId: string]: string[] }, isClassification: boolean): Promise<void> {
-    const newValueListEntries: ValueListEntryEntity[] = [];
-    for (const valueListTypeId of Object.keys(entries)) {
-      const defaultEntries = entries[valueListTypeId];
-      let entrySequence = 1;
-      for (const entry of defaultEntries) {
-        const newEntry = new ValueListEntryEntity();
-        newEntry.valueListTypeId = valueListTypeId;
-        newEntry.isClassification = isClassification;
-        newEntry.sequence = entrySequence;
-        const entryInfo = entry.split('|');
-        if (entryInfo.length > 1) {
-          newEntry.id = entryInfo[0];
-          newEntry.name = entryInfo[1];
+    
+    for (const tableName of Object.keys(tables)) {
+      const entities: any[] = [];
+      const rows = tables[tableName];
+      for (const row of rows) {
+        const entity = this.getEntityFromTable(tableName);
+        for (const columnName of Object.keys(row)) {
+          if (columnName === '//') {
+            continue;
+          }
+          entity[columnName] = row[columnName];
         }
-        else {
-          newEntry.id = this.utilities.newGuid();
-          newEntry.name = entryInfo[0];
+        if (!entity['id']) {
+          entity['id'] = this.utilities.newGuid();
         }
-        newValueListEntries.push(newEntry);
-        entrySequence++;
+        entities.push(entity);
       }
+      await this.bulkInsertFromTable(tableName, entities);
     }
-    await this.bulkInsert(ValueListEntryEntity, newValueListEntries);
+  }
+
+  private getEntityFromTable(tableName: string): any {
+    let entity: any;
+    switch (tableName) {
+      case 'moduleOption':
+        entity = new ModuleOptionEntity();
+        break;
+      case 'relatedImage':
+        entity = new RelatedImageEntity();
+        break;
+      case 'valueListType':
+        entity = new ValueListTypeEntity();
+        break;
+      case 'valueListEntry':
+        entity = new ValueListEntryEntity();
+        break;
+    }
+    return entity;
+  }
+
+  private async bulkInsertFromTable(tableName: string, entities: any[]): Promise<void> {
+    switch (tableName) {
+      case 'moduleOption':
+        await this.bulkInsert(ModuleOptionEntity, entities);
+        break;
+      case 'relatedImage':
+        await this.bulkInsert(RelatedImageEntity, entities);
+        break;
+      case 'valueListType':
+        await this.bulkInsert(ValueListTypeEntity, entities);
+        break;
+      case 'valueListEntry':
+        await this.bulkInsert(ValueListEntryEntity, entities);
+        break;
+    }
   }
 
   // END - DB INIT ////////////////////////////////////////////////////////////////////////////////
@@ -922,5 +859,17 @@ export class DatabaseService {
     const song = await SongEntity.findOneBy({ id: songId });
     song.mood = mood;
     await song.save();
+  }
+
+  public getDefaultData(): Promise<object> {
+    return new Promise<object>(resolve => {
+      const fileUrl = 'assets/json/app.data.json';
+      this.http.get(fileUrl).subscribe(data => {
+        resolve(data);
+      }, () => {
+        this.log.warn('Could not load the data file: ' + fileUrl);
+        resolve(null);
+      });
+    });
   }
 }
