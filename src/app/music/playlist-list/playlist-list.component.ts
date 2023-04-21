@@ -11,6 +11,8 @@ import { PlaylistListBroadcastService } from './playlist-list-broadcast.service'
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { IImage } from 'src/app/core/models/core.interface';
+import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
+import { ImageSrcType } from 'src/app/core/globals.enum';
 
 @Component({
   selector: 'sp-playlist-list',
@@ -83,6 +85,9 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Front]);
       return this.metadataService.getImage(pictures);
     }
-    return null;
+    return {
+      src: RelatedImageSrc.DefaultLarge,
+      srcType: ImageSrcType.WebUrl
+    };
   }
 }
