@@ -23,7 +23,7 @@ export class TransitionImageComponent implements OnInit {
   constructor(private queueService: PromiseQueueService, private cd: ChangeDetectorRef) {}
 
   public ngOnInit(): void {
-    if (this.model.getImage) {
+    if (!this.model.src && this.model.getImage) {
       this.queueService.sink = () => this.setImage();
     }
   }

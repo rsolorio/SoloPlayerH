@@ -1,4 +1,3 @@
-import { IImage } from 'src/app/core/models/core.interface';
 import { BaseEntity, PrimaryColumn, Column } from 'typeorm';
 import { IDbModel, IListItemModel } from '../models/base-model.interface';
 import { ITransitionImageModel } from 'src/app/related-image/transition-image/transition-image-model.interface';
