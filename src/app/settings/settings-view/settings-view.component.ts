@@ -7,7 +7,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ModuleOptionEntity, PlaylistEntity, PlaylistSongEntity, SongEntity } from 'src/app/shared/entities';
+import { ModuleOptionEntity, PlaylistEntity, PlaylistSongEntity, SongEntity, SongViewEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
@@ -347,7 +347,13 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   onTest(): void {
-    this.utility.reloadRoute();
+    //this.testRegExp();
+
+    const fileName = 'J:\\Music\\English\\Country\\Alan Jackson\\1992 - A Lot About Livin\' (And A Little \'Bout Love)\\01 - 01 - chattahoochee.mp3';
+    //const regexp = new RegExp('(((?<media>.+) - )*(?<track>.+) - )*(?<title>.+).mp3', 'g');
+    const regexp = new RegExp('(?<dummy>.+)\\\\(?<year>.+) - (?<album>.+)\\\\(?<media>.+) - (?<track>.+) - (?<title>.+)', 'g');
+    const matchInfo = regexp.exec(fileName);
+    console.log(matchInfo);
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -372,5 +378,46 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       }
     };
     this.browserService.browse(browserModel);
+  }
+
+  private async testRegExp(): Promise<void> {
+    const allSongs = await SongViewEntity.find();
+    const songs = allSongs;
+    for (const song of songs) {
+      const pathParts = song.filePath.split('\\').reverse();
+      const fileName = pathParts[0].toLowerCase();
+      // const dir1 = pathParts[1];
+      // const dir2 = pathParts[2];
+      // const dir3 = pathParts[3];
+      // const dir4 = pathParts[4];
+      // const dir5 = pathParts[5];
+
+      // User input: %media% - %track% - %title%
+      //const regexp = /(((?<media>.+) - )*(?<track>.+) - )*(?<title>.+).mp3/g;
+      const regexp = new RegExp('(((?<media>.+) - )*(?<track>.+) - )*(?<title>.+).mp3', 'g');
+      const matchInfo = regexp.exec(fileName);
+      if (matchInfo && matchInfo.groups) {
+        const mediaGroup = matchInfo.groups['media'];
+        const trackGroup = matchInfo.groups['track'];
+        const titleGroup = matchInfo.groups['title'];
+
+        const mediaNumber = mediaGroup ? parseInt(mediaGroup, 10) : 1;
+        const trackNumber = trackGroup ? parseInt(trackGroup, 10) : 0;
+        const name = matchInfo.groups['title'];
+
+        if (song.mediaNumber !== mediaNumber || song.trackNumber !== trackNumber || song.name.toLowerCase() !== name) {
+          console.log(mediaGroup);
+          console.log(trackGroup);
+          console.log(titleGroup);
+          console.log(song.filePath);
+          console.log();
+        }
+      }
+      else {
+        console.log('no info or groups');
+        console.log(song.filePath);
+        console.log();
+      }
+    }
   }
 }
