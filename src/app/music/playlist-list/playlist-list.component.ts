@@ -12,7 +12,7 @@ import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-mo
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
-import { ImageSrcType } from 'src/app/core/globals.enum';
+import { ImageSrcType } from 'src/app/core/models/core.enum';
 
 @Component({
   selector: 'sp-playlist-list',

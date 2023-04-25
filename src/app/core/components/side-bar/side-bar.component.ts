@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ISideBarModel } from './side-bar-model.interface';
-import { Position } from '../../globals.enum';
+import { Position } from '../../models/core.enum';
 import { SideBarStateService } from './side-bar-state.service';
 
 /**

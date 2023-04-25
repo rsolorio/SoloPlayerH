@@ -3,7 +3,7 @@ import { IArea, ICoordinate, IImage, IImageSource, ISize } from 'src/app/core/mo
 import { FileService } from '../file/file.service';
 import { AudioMetadataService } from '../audio-metadata/audio-metadata.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ImageSrcType } from 'src/app/core/globals.enum';
+import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { MusicImageSourceType } from '../audio-metadata/audio-metadata.enum';
 
 export abstract class ImageService {

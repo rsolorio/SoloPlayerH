@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { IMenuModel } from '../../models/menu-model.interface';
 import { SideBarStateService } from '../side-bar/side-bar-state.service';
-import { Position } from '../../globals.enum';
+import { Position } from '../../models/core.enum';
 import { SideBarMenuStateService } from './side-bar-menu-state.service';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';

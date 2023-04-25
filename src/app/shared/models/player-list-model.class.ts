@@ -7,7 +7,7 @@ import { AppEvent } from "./events.enum";
 import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";
 import { IPlaylistSongModel } from "./playlist-song-model.interface";
 import { ISongModel } from "./song-model.interface";
-import { ImageSrcType } from "src/app/core/globals.enum";
+import { ImageSrcType } from "src/app/core/models/core.enum";
 
 /**
  * Class responsible for handling the access to the tracks and updating the playlist status.

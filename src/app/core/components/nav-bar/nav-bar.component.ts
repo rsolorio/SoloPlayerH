@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SideBarStateService } from '../side-bar/side-bar-state.service';
-import { Position } from '../../globals.enum';
+import { Position } from '../../models/core.enum';
 import { INavbarModel, INavBarOuterIcons, NavbarDisplayMode } from './nav-bar-model.interface';
 import { NavBarStateService } from './nav-bar-state.service';
 import { EventsService } from '../../services/events/events.service';

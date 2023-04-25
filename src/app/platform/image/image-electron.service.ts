@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ImageService } from './image.service';
 import { IImage } from 'src/app/core/models/core.interface';
 import { NativeImage, nativeImage } from 'electron';
-import { ImageSrcType } from 'src/app/core/globals.enum';
+import { ImageSrcType } from 'src/app/core/models/core.enum';
 import * as remoteRenderer from '@electron/remote/renderer';
 import { FileService } from '../file/file.service';
 import { AudioMetadataService } from '../audio-metadata/audio-metadata.service';

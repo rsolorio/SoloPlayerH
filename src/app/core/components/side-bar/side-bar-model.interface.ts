@@ -1,4 +1,4 @@
-import { Position } from '../../globals.enum';
+import { Position } from '../../models/core.enum';
 
 export interface ISideBarModel {
     show: boolean;

@@ -96,7 +96,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       icon: 'mdi-image-outline mdi',
       action: () => {
         this.takeScreenshot();
-      }
+      },
+      actionTimeout: 300
     });
   }
 
@@ -240,7 +241,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public takeScreenshot(): void {
-    this.imageSvc.getScreenshot(300).then(result => {
+    this.imageSvc.getScreenshot().then(result => {
       this.imagePreviewService.show({
         title: 'Screenshot',
         subTitle: 'Now Playing',

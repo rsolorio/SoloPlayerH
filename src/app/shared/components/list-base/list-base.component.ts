@@ -29,7 +29,7 @@ import { NavigationService } from '../../services/navigation/navigation.service'
 import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
-import { TimeAgo } from 'src/app/core/globals.enum';
+import { TimeAgo } from 'src/app/core/models/core.enum';
 
 @Component({
   selector: 'sp-list-base',

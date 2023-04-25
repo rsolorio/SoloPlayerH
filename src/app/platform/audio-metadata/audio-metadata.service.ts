@@ -4,7 +4,7 @@ import { IImage } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { AttachedPictureType, MusicImageType } from './audio-metadata.enum';
 import { IAudioInfo, IPictureTag } from './audio-metadata.interface';
-import { ImageSrcType } from 'src/app/core/globals.enum';
+import { ImageSrcType } from 'src/app/core/models/core.enum';
 
 @Injectable({
   providedIn: 'root'

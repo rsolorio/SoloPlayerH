@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ILogEntry } from './log.interface';
 import { LogLevel, LogType } from './log.enum';
-import { ColorCode } from '../../globals.enum';
+import { ColorCode } from '../../models/core.enum';
 
 @Injectable({
   providedIn: 'root'

@@ -1,5 +1,5 @@
 import { Directive, OnDestroy } from '@angular/core';
-import { Subscriptions } from './org-subscriptions.class';
+import { Subscriptions } from './subscriptions.class';
 
 @Directive()
 // tslint:disable:directive-class-suffix

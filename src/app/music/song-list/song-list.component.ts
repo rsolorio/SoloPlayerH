@@ -28,7 +28,7 @@ import { ImageService } from 'src/app/platform/image/image.service';
 import { IImage } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
-import { ImageSrcType } from 'src/app/core/globals.enum';
+import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
 
 @Component({
@@ -289,7 +289,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
             src: result
           });
         });
-      }
+      },
+      actionTimeout: 300
     });
   }
 

@@ -1,7 +1,7 @@
 import { Column, Entity } from 'typeorm';
 import { DbEntity } from './base.entity';
 import { IImage, IImageSource } from 'src/app/core/models/core.interface';
-import { ImageSrcType } from 'src/app/core/globals.enum';
+import { ImageSrcType } from 'src/app/core/models/core.enum';
 
 @Entity({name: 'relatedImage'})
 export class RelatedImageEntity extends DbEntity implements IImage, IImageSource {

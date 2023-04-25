@@ -102,6 +102,7 @@ export class MenuService {
     const result: MenuItem[] = [];
     if (source && source.length) {
       source.forEach(item => {
+        const timeoutMs = item.actionTimeout ? item.actionTimeout : 0;
         const newItem: MenuItem = {
           id: item.id,
           label: item.caption,
@@ -120,7 +121,7 @@ export class MenuService {
               if (item.action) {
                 item.action(actionParam);
               }
-            });
+            }, timeoutMs);
           }
         };
 

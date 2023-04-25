@@ -10,7 +10,7 @@ import { ISize } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
-import { TimeAgo } from '../../globals.enum';
+import { TimeAgo } from '../../models/core.enum';
 
 @Injectable({
   providedIn: 'root'

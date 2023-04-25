@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IIcon, IStateService } from 'src/app/core/models/core.interface';
 import { PlayerOverlayMode } from './player-overlay.enum';
 import { IPlayerOverlayModel } from './player-overlay.interface';
-import { TimeAgo } from 'src/app/core/globals.enum';
+import { TimeAgo } from 'src/app/core/models/core.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Injectable({

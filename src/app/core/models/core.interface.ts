@@ -1,4 +1,4 @@
-import { ImageSrcType } from "../globals.enum";
+import { ImageSrcType } from "./core.enum";
 
 export interface IValueModel<T> {
   value?: T;
@@ -106,6 +106,8 @@ export interface IIcon {
 }
 
 export interface IIconActionGeneric<TParam> extends IIcon {
+  /** Timeout in milliseconds before the action is performed. */
+  actionTimeout?: number;
   /** Action to be fired by the icon. */
   action?(param?: TParam): void;
 }

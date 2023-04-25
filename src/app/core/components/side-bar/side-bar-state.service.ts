@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Position } from '../../globals.enum';
+import { Position } from '../../models/core.enum';
 import { ISideBarModel } from './side-bar-model.interface';
 import { LoadingViewStateService } from '../loading-view/loading-view-state.service';
 
