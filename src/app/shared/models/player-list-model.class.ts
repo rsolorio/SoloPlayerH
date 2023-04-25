@@ -213,10 +213,10 @@ export class PlayerListModel implements IDbModel {
     this.playModeItems = [];
   }
 
-  public loadList(songList: ISongModel[]): void {
+  public loadList(songList: ISongModel[], id?: string, name?: string): void {
     if (songList) {
-      //this.Id = trackList.Id;
-      //this.Name = trackList.Name;
+      this.id = id;
+      this.name = name;
       let sequence = 0;
       this.items = [];
       for (const song of songList) {

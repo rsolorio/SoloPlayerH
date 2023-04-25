@@ -244,8 +244,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private loadSongInPlayer(song: ISongModel, play?: boolean, expand?: boolean): void {
     const playerList = this.playerService.getState().playerList;
-    let track = playerList.getTrack(song);
-    if (track) {
+    if (playerList.id === this.spListBaseComponent.model.criteriaResult.criteria.id) {
+      const track = playerList.getTrack(song);
       this.playerService.setCurrentTrack(track, play).then(() => {
         if (expand) {
           this.playerOverlayService.expand();
@@ -262,9 +262,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
           const trackList = this.spListBaseComponent.model.criteriaResult.items as ISongModel[];
           // For now, we are using this component only for search results,
           // but we should have an input property to specify the title of the play list
-          playerList.loadList(trackList);
-          playerList.name = this.spListBaseComponent.model.criteriaResult.criteria.name;
-          track = playerList.getTrack(song);
+          playerList.loadList(
+            trackList,
+            this.spListBaseComponent.model.criteriaResult.criteria.id,
+            this.spListBaseComponent.model.criteriaResult.criteria.name);
+          const track = playerList.getTrack(song);
           this.playerService.setCurrentTrack(track, play).then(() => {
             if (expand) {
               this.playerOverlayService.expand();
