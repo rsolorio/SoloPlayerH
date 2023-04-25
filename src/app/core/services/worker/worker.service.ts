@@ -29,6 +29,7 @@ export class WorkerService {
         worker.onmessage = response => {
           const result = response.data as TResult;
           resolve(result);
+          worker.terminate();
         };
         worker.postMessage(inputData);
       }
