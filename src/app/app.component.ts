@@ -106,18 +106,18 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe(action => {
       if (action instanceof NavigationStart) {
         const navStart = action as NavigationStart;
-        const route = this.utilities.getUrlWithoutParams(navStart.url);
-        this.events.broadcast(CoreEvent.RouteChanging, route);
+        const routeInfo = this.utilities.parseUrlRoute(navStart.url);
+        this.events.broadcast(CoreEvent.RouteChanging, routeInfo.route);
       }
       else if (action instanceof NavigationEnd) {
         const navEnd = action as NavigationEnd;
         const url = navEnd.urlAfterRedirects ? navEnd.urlAfterRedirects : navEnd.url;
-        const route = this.utilities.getUrlWithoutParams(url);
+        const routeInfo = this.utilities.parseUrlRoute(url);
         // Setup the very first route if missing
         if (!this.navigation.current()) {
-          this.navigation.init(route);
+          this.navigation.init(routeInfo.route, { queryParams: routeInfo.queryParams });
         }
-        this.events.broadcast(CoreEvent.RouteChanged, route);
+        this.events.broadcast(CoreEvent.RouteChanged, routeInfo.route);
       }
     });
   }

@@ -97,10 +97,17 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
     // When navigating without changing the route, the component will not reload
     // However, we can detect if the query param changed
-    this.subs.sink = this.route.queryParams.subscribe(() => {
+    // This was implemented for scenarios where the breadcrumb changes the query param
+    // but it doesn't change the route
+    this.subs.sink = this.route.queryParams.subscribe(p => {
       // Param changed, but not the route
       if (!this.navigation.routeChanged()) {
-        this.loadData();
+        // If this param matches the very first route then this is the very first time loading, so skip this step
+        // and allow the ng init to load the data
+        const firstNavigation = this.navigation.first();
+        if (!firstNavigation || !firstNavigation.options || !firstNavigation.options.queryParams || p.queryId !== firstNavigation.options.queryParams.queryId) {
+          this.loadData();
+        }
       }
     });
 

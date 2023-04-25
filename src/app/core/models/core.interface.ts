@@ -72,6 +72,12 @@ export interface IImageSource {
   sourceIndex: number;
 }
 
+export interface IRouteInfo {
+  url: string;
+  route: string;
+  queryParams?: any;
+}
+
 export interface IStateService<T> {
   getState(): T;
 }

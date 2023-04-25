@@ -6,7 +6,7 @@ import { EventsService } from '../../../core/services/events/events.service';
 import { CoreEvent } from '../../../core/services/events/events.enum';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { ISize } from 'src/app/core/models/core.interface';
+import { IRouteInfo, ISize } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
@@ -410,12 +410,20 @@ export class UtilityService {
     metaThemeColor.setAttribute('content', color);
   }
 
-  public getUrlWithoutParams(url: string): string {
+  public parseUrlRoute(url: string): IRouteInfo {
+    const result: IRouteInfo = {
+      url: url,
+      route: url
+    };
     const index = url.indexOf('?');
     if (index >= 0) {
-      return url.substring(0, index);
+      result.route = url.substring(0, index);
+      const end = url.substring(index + 1);
+      const params = new URLSearchParams(end);
+      // This is a standard already but the polyfill is missing
+      result.queryParams = (Object as any).fromEntries(params);
     }
-    return url;
+    return result;
   }
 
   /**

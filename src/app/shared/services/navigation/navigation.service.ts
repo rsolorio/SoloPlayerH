@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AppRoute } from 'src/app/app-routes';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { INavigationInfo, INavigationOptions } from './navigation.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -63,6 +62,13 @@ export class NavigationService {
   public previous(): INavigationInfo {
     if (this.history.length > 1) {
       return this.history[1];
+    }
+    return null;
+  }
+
+  public first(): INavigationInfo {
+    if (this.history.length) {
+      return this.history[this.history.length - 1];
     }
     return null;
   }
