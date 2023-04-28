@@ -11,7 +11,7 @@
     <td>
       <table class="sp-table sp-table-no-padding sp-full-width sp-full-height"><tr>
         <!-- Playlist name -->
-        <td class="sp-font-family-regular sp-text-overflow-ellipsis">
+        <td class="sp-text-overflow-ellipsis">
           <i
           class="mdi-playlist-music-outline mdi sp-text-xlarge-fixed sp-cursor-pointer"
           style="line-height: 40px;"
@@ -76,7 +76,7 @@
     </td>
   </tr>
   <!-- Song Info -->
-  <tr class="sp-tr-song-info sp-font-family-regular">
+  <tr class="sp-tr-song-info">
     <td colspan="3" class="sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
       <i class="sp-text-xlarge mdi mdi-music" [ngStyle]="palette.secondary.cssColor"></i>
@@ -183,7 +183,7 @@
           </td>
         </tr>
         <!-- Time Slider -->
-        <tr class="sp-tr-time-slider sp-font-family-regular"><td colspan="3"><table class="sp-table"><tr>
+        <tr class="sp-tr-time-slider"><td colspan="3"><table class="sp-table"><tr>
           <!-- Elapsed -->
           <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
             <span [ngClass]="{ 'sp-fade-in-out': model.status === PlayerStatus.Paused }" class="sp-time-text">{{ model.elapsedSeconds | duration }}</span>
@@ -240,7 +240,7 @@
         <tr class="sp-tr-image-toolbar">
           <td><i class="mdi-undo-variant mdi sp-text-big sp-cursor-pointer" (click)="onToolbarReset()"></i></td>
           <td><i class="mdi-chevron-left mdi sp-text-big sp-cursor-pointer" [ngClass]="{ 'sp-color-item-disabled': images.length < 2 }" (click)="onToolbarBack($event)"></i></td>
-          <td><span *ngIf="image" class="sp-text-large sp-font-family-regular">{{image.imageType.toUpperCase()}}</span></td>
+          <td><span *ngIf="image" class="sp-text-large">{{image.imageType.toUpperCase()}}</span></td>
           <td><i class="mdi-chevron-right mdi sp-text-big sp-cursor-pointer" [ngClass]="{ 'sp-color-item-disabled': images.length < 2 }" (click)="onToolbarNext($event)"></i></td>
           <td>
             <i *ngIf="!isLoadingPalette" (click)="onImageControlsClose($event)" class="mdi-close mdi sp-text-big sp-cursor-pointer"></i>

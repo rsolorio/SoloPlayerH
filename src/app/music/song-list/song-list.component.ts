@@ -30,6 +30,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
+import { PlayerListModel } from 'src/app/shared/models/player-list-model.class';
 
 @Component({
   selector: 'sp-song-list',
@@ -242,9 +243,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.loadSongInPlayer(song, true, this.expandPlayerOnPlay);
   }
 
+  private isListInPlayer(playerList?: PlayerListModel): boolean {
+    const list = playerList ? playerList : this.playerService.getState().playerList;
+    return list.id === this.spListBaseComponent.model.criteriaResult.criteria.id;
+  }
+
   private loadSongInPlayer(song: ISongModel, play?: boolean, expand?: boolean): void {
     const playerList = this.playerService.getState().playerList;
-    if (playerList.id === this.spListBaseComponent.model.criteriaResult.criteria.id) {
+    if (this.isListInPlayer(playerList)) {
       const track = playerList.getTrack(song);
       this.playerService.setCurrentTrack(track, play).then(() => {
         if (expand) {
@@ -293,6 +299,21 @@ export class SongListComponent extends CoreComponent implements OnInit {
         });
       },
       actionTimeout: 300
+    });
+
+    navbarModel.menuList.push({
+      caption: 'Scroll To Song',
+      icon: 'mdi-arrow-up-down mdi',
+      action: () => {
+        const playerList = this.playerService.getState().playerList;
+        if (this.isListInPlayer(playerList)) {
+          if (playerList.current) {
+            const index = playerList.current.sequence - 1;
+            const yPosition = index * 59;
+            this.utility.scroll(0, yPosition);
+          }
+        }
+      }
     });
   }
 

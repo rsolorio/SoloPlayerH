@@ -22,6 +22,7 @@ import { ColorServiceName, ColorSort, IFullColorPalette } from 'src/app/shared/s
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { ResizeObserverDirective } from 'src/app/shared/directives/resize-observer/resize-observer.directive';
+import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 
 @Component({
   selector: 'sp-player-full',
@@ -181,8 +182,9 @@ export class PlayerFullComponent extends PlayerComponentBase {
   }
 
   private setupPalette(colors: ColorG[]): void {
-    // TODO: we no longer need a full palette, only the three main colors
-    this.palette = this.colorUtility.buildPalette(colors[0], colors, ColorServiceName.Default, ColorSort.Contrast);
+    const bucketPalette = new BucketPalette(colors);
+    this.palette = bucketPalette.toFullPalette();
+    //this.palette = this.colorUtility.buildPalette(colors[0], colors, ColorServiceName.Default, ColorSort.Contrast);
     this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
   }
 

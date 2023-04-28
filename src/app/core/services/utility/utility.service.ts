@@ -83,6 +83,10 @@ export class UtilityService {
     }
   }
 
+  public scroll(x: number, y: number): void {
+    window.scroll(x, y);
+  }
+
   /**
    * Gets the window size information.
    * @param window The window to get the info from.

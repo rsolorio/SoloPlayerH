@@ -28,7 +28,7 @@
               <!-- Dynamic content -->
               <td>
                   <!-- Title -->
-                  <span *ngIf="model.mode === NavbarDisplayMode.Title && model.title" class="sp-font-family-regular sp-text-xlarge-fixed">{{model.title}}</span>
+                  <span *ngIf="model.mode === NavbarDisplayMode.Title && model.title" class="sp-text-xlarge-fixed">{{model.title}}</span>
                   <!-- We need to make sure this element is rendered (as invisible) even if it is not needed. -->
                   <div
                   class="sp-full-width"
@@ -66,7 +66,7 @@
   <!-- Toast (the ease class timing has to match the hideToast method in the service) -->
   <div *ngIf="model.toastMessage" [ngClass]="{ 'sp-toast-visible': model.toastVisible }" class="sp-nav-toast-container sp-full-width">
     <div class="sp-nav-toast">
-      <span [textContent]="model.toastMessage" class="sp-text-medium sp-font-family-regular"></span>
+      <span [textContent]="model.toastMessage" class="sp-text-medium"></span>
     </div>
   </div>
 </div>

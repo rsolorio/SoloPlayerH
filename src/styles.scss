@@ -285,7 +285,6 @@ body {
 // TABLES *****************************************************************************************
 .sp-table-list {
     border-spacing: 0;
-    font-family: $sp-font-family-regular;
     & > th {
         border-bottom: 1px solid $sp-color-on-background-high;
         padding: 4px;
@@ -417,6 +416,10 @@ A longer duration allows to properly see the transition in the whole page. */
     font-family: $sp-font-family-regular;
 }
 
+.sp-font-family-regular-fixed {
+    font-family: $sp-font-family-regular;
+}
+
 .sp-font-family-narrow {
     font-family: $sp-font-family-narrow;
 }
@@ -427,6 +430,12 @@ A longer duration allows to properly see the transition in the whole page. */
 
 .sp-font-family-small-caps {
     font-family: $sp-font-family-small-caps;
+}
+
+@media only screen and (max-width:$sp-media-max-width) {
+    .sp-font-family-regular {
+        font-family: $sp-font-family-narrow;
+    }
 }
 
 // TEXT SIZE  *************************************************************************************

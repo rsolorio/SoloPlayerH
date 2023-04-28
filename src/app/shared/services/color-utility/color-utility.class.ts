@@ -1,5 +1,5 @@
 import { ColorG, IColorBucket } from "src/app/core/models/color-g.class";
-import { ColorBucketGroup } from "./color-utility.interface";
+import { ColorBucketGroup, ColorServiceName, IFullColorPalette } from "./color-utility.interface";
 
 export class BucketPalette {
   private buckets: IColorBucket[];
@@ -53,6 +53,19 @@ export class BucketPalette {
     const newBucketGroups = newBucket.groups;
     newBucket.groups = currentBucket.groups;
     currentBucket.groups = newBucketGroups;
+  }
+
+  public toFullPalette(): IFullColorPalette {
+    const result: IFullColorPalette = {
+      background: this.background.selected,
+      primary: this.primary.selected,
+      secondary: this.secondary.selected,
+      dominant: this.dominant.selected,
+      colors: [],
+      serviceName: ColorServiceName.Default
+    };
+
+    return result;
   }
 
   private initialize(colors: ColorG[]): void {
