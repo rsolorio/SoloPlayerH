@@ -3,7 +3,6 @@ import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-s
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { CriteriaValueEditor } from '../../services/criteria/criteria.enum';
 import { IChipSelectionModel } from './chip-selection-model.interface';
-import { ChipSelectionService } from './chip-selection.service';
 
 @Component({
   selector: 'sp-chip-selection',

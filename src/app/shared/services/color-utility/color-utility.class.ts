@@ -64,7 +64,6 @@ export class BucketPalette {
       colors: [],
       serviceName: ColorServiceName.Default
     };
-
     return result;
   }
 

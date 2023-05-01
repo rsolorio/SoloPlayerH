@@ -21,6 +21,7 @@ import { TextScrollerComponent } from './components/text-scroller/text-scroller.
 import { RelatedImageModule } from '../related-image/related-image.module';
 import { ImageService } from '../platform/image/image.service';
 import { ImageElectronService } from '../platform/image/image-electron.service';
+import { EyeDropperDirective } from './directives/eye-dropper/eye-dropper.directive';
 
 
 
@@ -35,7 +36,8 @@ import { ImageElectronService } from '../platform/image/image-electron.service';
     ChipSelectionComponent,
     ResizeObserverDirective,
     RatingComponent,
-    TextScrollerComponent
+    TextScrollerComponent,
+    EyeDropperDirective
   ],
   imports: [
     CommonModule,
@@ -52,7 +54,8 @@ import { ImageElectronService } from '../platform/image/image-electron.service';
     IntersectionObserverTargetDirective,
     ResizeObserverDirective,
     RatingComponent,
-    TextScrollerComponent
+    TextScrollerComponent,
+    EyeDropperDirective
   ],
   entryComponents: [ QuickSearchComponent ],
   providers: [ { provide: FileService, useClass: FileElectronService }, { provide: ImageService, useClass: ImageElectronService } ]

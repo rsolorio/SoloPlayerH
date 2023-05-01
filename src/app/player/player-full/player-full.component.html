@@ -49,11 +49,12 @@
         <!-- Canvas (for image controls) -->
         <!-- Note that we set the canvas size as well as the element size -->
         <canvas
-        #pictureCanvas
         *ngIf="image"
+        spEyeDropper
+        [eyeDropperTableId]="'tableEyeDropper'"
+        [eyeDropperHoverId]="'divHoverColor'"
+        (eyeDropperColorSelected)="onColorSelected($event)"
         class="sp-img sp-cursor-eye"
-        (click)="onCanvasClick()"
-        (mousemove)="onCanvasMouseMove($event)"
         [ngClass]="{ 'sp-invisible': !imageControlsEnabled }"
         [width]="imageSize.width"
         [height]="imageSize.height"
@@ -252,12 +253,12 @@
           <td colspan="5">
             <div class="sp-colors-container sp-full-height sp-full-width sp-text-xlarge">
               <!-- Eye Dropper -->
-              <table #tableEyeDropper class="sp-table-eye-dropper sp-player-eye-dropper"></table>
+              <table id="tableEyeDropper" class="sp-table-eye-dropper sp-player-eye-dropper"></table>
               <div class="sp-full-height sp-full-width">
                 <!-- Hover Color -->
                 <div class="sp-color-bar" >
                   <i class="mdi-bullseye mdi sp-color-icon"></i>
-                  <div class="sp-full-height sp-full-width sp-color-bar-outline" [ngStyle]="colorHover.cssBgColor"></div>
+                  <div id="divHoverColor" class="sp-full-height sp-full-width sp-color-bar-outline"></div>
                 </div>
                 <!-- Selected Color -->
                 <div class="sp-color-bar">

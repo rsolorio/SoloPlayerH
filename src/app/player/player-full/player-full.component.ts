@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
 import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
 import { IEventArgs, IPosition, ISize } from 'src/app/core/models/core.interface';
@@ -18,11 +18,12 @@ import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { MusicImageSourceType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
-import { ColorServiceName, ColorSort, IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
+import { IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { ResizeObserverDirective } from 'src/app/shared/directives/resize-observer/resize-observer.directive';
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
+import { EyeDropperDirective } from 'src/app/shared/directives/eye-dropper/eye-dropper.directive';
 
 @Component({
   selector: 'sp-player-full',
@@ -31,9 +32,8 @@ import { BucketPalette } from 'src/app/shared/services/color-utility/color-utili
 })
 export class PlayerFullComponent extends PlayerComponentBase {
   @ViewChild('picture') private pictureRef: ElementRef;
-  @ViewChild('pictureCanvas') private pictureCanvasRef: ElementRef;
-  @ViewChild('tableEyeDropper') private tableEyeDropperRef: ElementRef;
   @ViewChild(ResizeObserverDirective) private resizeObserver: ResizeObserverDirective;
+  @ViewChild(EyeDropperDirective) private eyeDropper: EyeDropperDirective;
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
@@ -46,7 +46,6 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public colorHover = ColorG.black;
   public colorSelected = ColorG.black;
   public imageCursorPosition: IPosition;
-  private imageData: ImageData;
   private sourceImageMaxSize = 700;
   constructor(
     private playerService: HtmlPlayerService,
@@ -176,8 +175,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
 
     this.setupPalette(colors);
     if (this.imageControlsEnabled) {
-      this.drawCanvasAndLoadData();
-      this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData);
+      this.eyeDropper.draw(this.pictureRef.nativeElement);
     }
     this.isLoadingPalette = false;
   }
@@ -245,31 +243,18 @@ export class PlayerFullComponent extends PlayerComponentBase {
 
   public onImageClick(pointerEvent: MouseEvent): void {
     if (this.images.length) {
-      this.drawCanvasAndLoadData();
+      this.eyeDropper.draw(this.pictureRef.nativeElement);
       // This will make the eye dropper load empty
       this.imageControlsEnabled = true;
-      // This will load the eye dropper when clicking the image
+      // This will load the eye dropper just after clicking the image
       setTimeout(() => {
-        this.onCanvasMouseMove(pointerEvent);
+        this.eyeDropper.drop(pointerEvent);
       });
     }
   }
 
-  private drawCanvasAndLoadData(): void {
-    const canvas = this.pictureCanvasRef.nativeElement as HTMLCanvasElement;
-    const context = canvas.getContext('2d');
-    context.drawImage(this.pictureRef.nativeElement, 0, 0, this.pictureRef.nativeElement.width, this.pictureRef.nativeElement.height);
-    this.imageData = context.getImageData(0, 0, this.imageSize.width, this.imageSize.height);
-  }
-
-  public onCanvasClick() {
-    this.colorSelected = ColorG.fromColorObject(this.colorHover);
-  }
-
-  public onCanvasMouseMove(mouseMove: MouseEvent): void {
-    const pictureCanvasRect = this.pictureCanvasRef.nativeElement.getBoundingClientRect();
-    const coordinate = this.utility.getMouseCoordinate(pictureCanvasRect, mouseMove);
-    this.colorHover = this.imageService.buildEyeDropper(this.tableEyeDropperRef.nativeElement, this.imageData, coordinate);
+  public onColorSelected(color: IColorG): void {
+    this.colorSelected = ColorG.fromColorObject(color);
   }
 
   public onBackgroundColorClick(): void {
