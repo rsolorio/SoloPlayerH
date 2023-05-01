@@ -108,6 +108,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
    * this calculation has to run again.
    */
   public onImageContainerResized(containerSize: ISize): void {
+    // Since the canvas has to be recreated based on its size we need to close the image controls
     this.imageControlsEnabled = false;
     if (this.pictureRef && this.pictureRef.nativeElement) {
       const imageNaturalSize: ISize = {
