@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
 import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
-import { IEventArgs, IPosition, ISize } from 'src/app/core/models/core.interface';
+import { IEventArgs, ISize } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -45,7 +45,6 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public fileInfoVisible = true;
   public colorHover = ColorG.black;
   public colorSelected = ColorG.black;
-  public imageCursorPosition: IPosition;
   private sourceImageMaxSize = 700;
   constructor(
     private playerService: HtmlPlayerService,
