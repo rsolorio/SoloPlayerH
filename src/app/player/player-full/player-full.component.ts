@@ -245,6 +245,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
       this.eyeDropper.draw(this.pictureRef.nativeElement);
       // This will make the eye dropper load empty
       this.imageControlsEnabled = true;
+      this.eyeDropper.reset();
       // This will load the eye dropper just after clicking the image
       setTimeout(() => {
         this.eyeDropper.drop(pointerEvent);

@@ -64,6 +64,10 @@ export class EyeDropperDirective {
     context.drawImage(image, 0, 0, image.width, image.height);
     this.imageData = context.getImageData(0, 0, image.width, image.height);
   }
+  
+  public reset(): void {
+    this.tableElement = null;
+  }
 
   private buildEyeDropper(
     tableElement: HTMLTableElement,
