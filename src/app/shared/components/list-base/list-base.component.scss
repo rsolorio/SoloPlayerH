@@ -4,6 +4,10 @@
     visibility: collapse;
 }
 
+.sp-table-row-outline {
+    outline: 1px solid $sp-color-primary;
+}
+
 .sp-table-context-field {
     width: 50px;
 }

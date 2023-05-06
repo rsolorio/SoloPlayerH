@@ -23,7 +23,7 @@ class="sp-table-list sp-color-on-bg-high sp-table-support-overflow-ellipsis sp-f
   *ngFor="let item of model.criteriaResult.items"
   spIntersectionObserverTarget
   (intersectionChange)="onIntersectionChange($event, item)"
-  [ngClass]="{ 'sp-bg-04': item.selected }">
+  [ngClass]="{ 'sp-color-background-selected': item.selected, 'sp-table-row-outline': item.outlined }">
     <!-- Real content -->
     <ng-container *ngIf="item.canBeRendered">
       <!-- Avatar -->

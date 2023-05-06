@@ -318,6 +318,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     });
   }
 
+  public toggleSelection(item: IListItemModel): void {
+    item.selected = !item.selected;
+    this.cd.detectChanges();
+  }
+
   public getRecentIcon(days: number): IIcon {
     const timeAgo = this.utilities.getTimeAgo(days);
     if (timeAgo === TimeAgo.Today) {

@@ -10,4 +10,5 @@ export interface IListItemModel extends IDbModel {
   recentIcon?: IIcon;
   image?: ITransitionImageModel;
   canBeRendered: boolean;
+  outlined?: boolean;
 }

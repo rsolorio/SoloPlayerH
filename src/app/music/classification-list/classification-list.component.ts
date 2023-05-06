@@ -44,11 +44,10 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
         action: param => {}
       },
       {
-        caption: 'Select/Unselect',
+        caption: 'Toggle Selection',
         icon: 'mdi-select mdi',
         action: param => {
-          const classification = param as IClassificationModel;
-          classification.selected = !classification.selected;
+          this.spListBaseComponent.toggleSelection(param);
         }
       },
       {

@@ -1,7 +1,7 @@
 <ul class="sp-list-group">
   <li
   *ngFor="let menuItem of sidebarMenuModel.items"
-  [ngClass]="{ 'sp-bg-primary': menuItem.active, 'disabled': menuItem.disabled }"
+  [ngClass]="{ 'sp-bg-primary-variant': menuItem.active, 'disabled': menuItem.disabled }"
   (click)="runMenuAction(menuItem)"
   class="sp-list-group-item sp-text-large">
     <i [ngClass]="menuItem.icon"></i>

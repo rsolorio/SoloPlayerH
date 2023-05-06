@@ -35,11 +35,10 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         action: param => {}
       },
       {
-        caption: 'Select/Unselect',
+        caption: 'Toggle Selection',
         icon: 'mdi-select mdi',
         action: param => {
-          const artist = param as IArtistModel;
-          artist.selected = !artist.selected;
+          this.spListBaseComponent.toggleSelection(param);
         }
       },
       {

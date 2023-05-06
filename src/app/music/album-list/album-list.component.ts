@@ -38,11 +38,10 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         action: param => {}
       },
       {
-        caption: 'Select/Unselect',
+        caption: 'Toggle Selection',
         icon: 'mdi-select mdi',
         action: param => {
-          const album = param as IAlbumModel;
-          album.selected = !album.selected;
+          this.spListBaseComponent.toggleSelection(param);
         }
       },
       {
