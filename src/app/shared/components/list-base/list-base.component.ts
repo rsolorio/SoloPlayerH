@@ -142,6 +142,12 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.itemContentClick.emit(item);
   }
 
+  public scrollTo(index: number): void {
+    const rowHeight = 55;
+    const yPosition = index * rowHeight;
+    this.utilities.scroll(0, yPosition);
+  }
+
   private afterListUpdated(): void {
     this.updateFilterIcon();
     this.loadingService.hide();

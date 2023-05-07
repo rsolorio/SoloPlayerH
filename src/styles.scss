@@ -291,12 +291,12 @@ body {
     border-spacing: 0;
     & > th {
         border-bottom: 1px solid $sp-color-on-background-high;
-        padding: 4px;
+        padding: 2px;
     }
     & > tr {
         & > td {
             border-top: 1px solid $sp-color-on-background-separator;
-            padding: 4px;    
+            padding: 2px;    
         }
     }
 }

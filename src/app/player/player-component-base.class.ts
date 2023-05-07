@@ -22,6 +22,7 @@ import { ImagePreviewService } from '../related-image/image-preview/image-previe
 import { RelatedImageEntity } from '../shared/entities';
 import { RelatedImageId } from '../shared/services/database/database.images';
 import { ImageService } from '../platform/image/image.service';
+import { PlayerOverlayMode } from './player-overlay/player-overlay.enum';
 
 /**
  * Base component for any implementation of the player modes.
@@ -110,7 +111,9 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
    * @param songId 
    */
   protected async setupAssociatedData(song: ISongModel): Promise<void> {
-    await this.setupImages(song);
+    if (this.playerOverlayServiceBase.getState().mode === PlayerOverlayMode.Full) {
+      await this.setupImages(song);
+    }
   }
 
   protected async setupImages(song: ISongModel): Promise<void> {

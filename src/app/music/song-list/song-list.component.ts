@@ -309,8 +309,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         if (this.isListInPlayer(playerList)) {
           if (playerList.current) {
             const index = playerList.current.sequence - 1;
-            const yPosition = index * 59;
-            this.utility.scroll(0, yPosition);
+            this.spListBaseComponent.scrollTo(index);
           }
         }
       }
