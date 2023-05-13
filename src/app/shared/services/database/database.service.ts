@@ -25,7 +25,9 @@ import {
   SongClassificationViewEntity,
   PlaylistViewEntity,
   ValueListTypeEntity,
-  ValueListEntryEntity
+  ValueListEntryEntity,
+  DataSourceEntity,
+  DataMappingEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
@@ -99,7 +101,9 @@ export class DatabaseService {
         PlayHistoryEntity,
         ValueListTypeEntity,
         ValueListEntryEntity,
-        RelatedImageEntity
+        RelatedImageEntity,
+        DataSourceEntity,
+        DataMappingEntity
       ],
       synchronize: true,
       logging: ['query', 'error', 'warn']
@@ -169,6 +173,12 @@ export class DatabaseService {
       case 'valueListEntry':
         entity = new ValueListEntryEntity();
         break;
+      case 'dataSource':
+        entity = new DataSourceEntity();
+        break;
+      case 'dataMapping':
+        entity = new DataMappingEntity();
+        break;
     }
     return entity;
   }
@@ -186,6 +196,12 @@ export class DatabaseService {
         break;
       case 'valueListEntry':
         await this.bulkInsert(ValueListEntryEntity, entities);
+        break;
+      case 'dataSource':
+        await this.bulkInsert(DataSourceEntity, entities);
+        break;
+      case 'dataMapping':
+        await this.bulkInsert(DataMappingEntity, entities);
         break;
     }
   }

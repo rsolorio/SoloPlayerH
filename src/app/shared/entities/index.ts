@@ -23,3 +23,5 @@ export * from './play-history.entity';
 export * from './value-list-type.entity';
 export * from './value-list-entry.entity';
 export * from './related-image.entity';
+export * from './data-source.entity';
+export * from './data-mapping.entity';

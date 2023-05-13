@@ -50,6 +50,17 @@
         "multipleValues": false,
         "system": true,
         "values": "true"
+      },
+      {
+        "name": "ScanSongMetadataReader",
+        "moduleName": "Music",
+        "title": "Data mapping profile for scanning songs",
+        "description": "Profile that contains the mappings to read metadata from a song and save it to the database during the scan process using the songDbProcessor.",
+        "valueEditorType": "ValueList",
+        "valueListTypeId": "02d80294-90fa-472b-a2c5-459030b48e36",
+        "multipleValues": false,
+        "system": true,
+        "values": "\"ef4c2f46-8803-4dc8-b937-2c8ffb150a62\""
       }
     ],
     "relatedImage": [
@@ -153,6 +164,11 @@
       {
         "id": "9442c907-1e72-4c54-9c1d-d0c731a604af",
         "name": "Category",
+        "system": true
+      },
+      {
+        "id": "02d80294-90fa-472b-a2c5-459030b48e36",
+        "name": "DataMappingProfile",
         "system": true
       }
     ],
@@ -858,6 +874,119 @@
         "name": "Workout",
         "isClassification": true,
         "sequence": 15
+      },
+      {
+        "id": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "valueListTypeId": "02d80294-90fa-472b-a2c5-459030b48e36",
+        "name": "Default Metadata Reader",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "id": "cad4e30b-df05-4d2f-885a-560eb2feda05",
+        "valueListTypeId": "02d80294-90fa-472b-a2c5-459030b48e36",
+        "name": "Default Metadata Writer",
+        "isClassification": false,
+        "sequence": 2
+      }
+    ],
+    "dataSource": [
+      {
+        "name": "id3v2Reader",
+        "type": "Id3v2Reader",
+        "config": "title,artist,year,media,track,genre",
+        "system": true
+      },
+      {
+        "name": "fileInfoReader",
+        "type": "FileInfoReader",
+        "system": true
+      },
+      {
+        "name": "audioInfoReader",
+        "type": "AudioInfoReader",
+        "system": true
+      },
+      {
+        "id": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "name": "fullPathExp",
+        "type": "PathExpression",
+        "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%media%-%track% - %title%",
+        "system": true
+      }
+    ],
+    "dataMapping": [
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "title",
+        "destination": "songName",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "track",
+        "destination": "trackNumber",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "media",
+        "destination": "mediaNumber",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "album",
+        "destination": "albumName",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "year",
+        "destination": "releaseYear",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "artist",
+        "destination": "artistName",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "genre",
+        "destination": "genre",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
+        "source": "language",
+        "destination": "language",
+        "sequence": 1,
+        "disabled": false,
+        "system": false
       }
     ]
   }

@@ -1,4 +1,4 @@
-import { DataSourceEntity } from './data-source-entity';
+import { DataSourceEntity } from './data-source.entity';
 
 describe('DataSourceEntity', () => {
   it('should create an instance', () => {
