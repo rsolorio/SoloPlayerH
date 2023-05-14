@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Brackets, DataSource, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder, DataSourceOptions } from 'typeorm';
+import { Brackets, DataSource, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder, DataSourceOptions, EntityMetadata } from 'typeorm';
 import * as objectHash from 'object-hash'
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import {
@@ -132,6 +132,10 @@ export class DatabaseService {
     this.log.info('Default data initialized.');
   }
 
+  private findEntityMetadata(name: string): EntityMetadata {
+    return this.dataSource.entityMetadatas.find(m => m.givenTableName === name);
+  }
+
   private async insertDefaultData(defaultDataObj: object): Promise<void> {
     const tables = defaultDataObj['tables'];
     if (!tables) {
@@ -159,51 +163,13 @@ export class DatabaseService {
   }
 
   private getEntityFromTable(tableName: string): any {
-    let entity: any;
-    switch (tableName) {
-      case 'moduleOption':
-        entity = new ModuleOptionEntity();
-        break;
-      case 'relatedImage':
-        entity = new RelatedImageEntity();
-        break;
-      case 'valueListType':
-        entity = new ValueListTypeEntity();
-        break;
-      case 'valueListEntry':
-        entity = new ValueListEntryEntity();
-        break;
-      case 'dataSource':
-        entity = new DataSourceEntity();
-        break;
-      case 'dataMapping':
-        entity = new DataMappingEntity();
-        break;
-    }
-    return entity;
+    const m = this.findEntityMetadata(tableName);
+    return m.create();
   }
 
   private async bulkInsertFromTable(tableName: string, entities: any[]): Promise<void> {
-    switch (tableName) {
-      case 'moduleOption':
-        await this.bulkInsert(ModuleOptionEntity, entities);
-        break;
-      case 'relatedImage':
-        await this.bulkInsert(RelatedImageEntity, entities);
-        break;
-      case 'valueListType':
-        await this.bulkInsert(ValueListTypeEntity, entities);
-        break;
-      case 'valueListEntry':
-        await this.bulkInsert(ValueListEntryEntity, entities);
-        break;
-      case 'dataSource':
-        await this.bulkInsert(DataSourceEntity, entities);
-        break;
-      case 'dataMapping':
-        await this.bulkInsert(DataMappingEntity, entities);
-        break;
-    }
+    const m = this.findEntityMetadata(tableName);
+    await this.bulkInsert(m.target, entities);
   }
 
   // END - DB INIT ////////////////////////////////////////////////////////////////////////////////
