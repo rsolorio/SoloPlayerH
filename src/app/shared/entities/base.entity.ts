@@ -4,9 +4,9 @@ import { ITransitionImageModel } from 'src/app/related-image/transition-image/tr
 import { RelatedImageSrc } from '../services/database/database.images';
 
 export class DbEntity extends BaseEntity implements IDbModel {
-  @PrimaryColumn()
+  @PrimaryColumn({ comment: 'Unique identifier.' })
   id: string;
-  @Column()
+  @Column({ comment: 'Human readable value that identifies this record.' })
   name: string;
 
   /** Determines if the entity needs to be updated. */

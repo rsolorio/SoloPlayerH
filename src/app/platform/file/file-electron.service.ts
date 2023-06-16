@@ -57,8 +57,12 @@ export class FileElectronService extends FileService {
     return this.getRootDirectories();
   }
 
+  public getParentPath(path: string): string {
+    return join(path, '../');
+  }
+
   public getParentDir(path?: string): Promise<IFileInfo> {
-    const newPath = join(path, '../');
+    const newPath = this.getParentPath(path);
     return this.getFileInfo(newPath);
   }
 

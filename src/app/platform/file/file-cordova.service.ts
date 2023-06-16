@@ -40,6 +40,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  public getParentPath(path: string): string {
+    return null;
+  }
+
   public getParentDir(path?: string): Promise<IFileInfo> {
     return null;
   }

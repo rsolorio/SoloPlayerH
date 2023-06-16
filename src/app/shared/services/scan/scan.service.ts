@@ -248,9 +248,9 @@ export class ScanService {
 
   private processAlbumArtist(audioInfo: IAudioInfo): ArtistEntity {
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
-    const artistType = this.metadataService.getTag<string>('ArtistType', id3v2Tags, true);
-    const country = this.metadataService.getTag<string>('Country', id3v2Tags, true);
-    const artistStylized = this.metadataService.getTag<string>('ArtistStylized', id3v2Tags, true);
+    const artistType = this.metadataService.getValue<string>('ArtistType', id3v2Tags, true);
+    const country = this.metadataService.getValue<string>('Country', id3v2Tags, true);
+    const artistStylized = this.metadataService.getValue<string>('ArtistStylized', id3v2Tags, true);
     const artistSort = audioInfo.metadata.common.albumartistsort;
     let artistName = this.unknownValue;
     if (audioInfo.metadata.common.albumartist) {
@@ -344,7 +344,7 @@ export class ScanService {
     }
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
-    const albumType = this.metadataService.getTag<string>('AlbumType', id3v2Tags, true);
+    const albumType = this.metadataService.getValue<string>('AlbumType', id3v2Tags, true);
     newAlbum.albumTypeId = albumType ? this.getValueListEntryId(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP;
 
     newAlbum.favorite = false;
@@ -362,7 +362,7 @@ export class ScanService {
     song.filePath = fileInfo.path;
 
     const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
-    const id = this.metadataService.getTag<IIdentifierTag>('UFID', id3v2Tags);
+    const id = this.metadataService.getValue<IIdentifierTag>('UFID', id3v2Tags);
     if (id) {
       song.externalId = id.identifier.toString();
     }
@@ -391,31 +391,31 @@ export class ScanService {
     }
 
     song.addDate = fileInfo.addDate;
-    const addDate = this.metadataService.getTag<string>('AddDate', id3v2Tags, true);
+    const addDate = this.metadataService.getValue<string>('AddDate', id3v2Tags, true);
     if (addDate) {
       song.addDate = new Date(addDate);
     }
 
     song.changeDate = fileInfo.changeDate;
-    const changeDate = this.metadataService.getTag<string>('ChangeDate', id3v2Tags, true);
+    const changeDate = this.metadataService.getValue<string>('ChangeDate', id3v2Tags, true);
     if (changeDate) {
       song.changeDate = new Date(changeDate);
     }
 
     song.language = this.unknownValue;
-    const language = this.metadataService.getTag<string>('TLAN', id3v2Tags, true);
+    const language = this.metadataService.getValue<string>('TLAN', id3v2Tags, true);
     if (language) {
       song.language = language;
     }
 
     song.mood = this.unknownValue;
-    const mood = this.metadataService.getTag<string>('TMOO', id3v2Tags, true);
+    const mood = this.metadataService.getValue<string>('TMOO', id3v2Tags, true);
     if (mood) {
       song.mood = mood;
     }
 
     // Popularimeter that can have rating and/or play count
-    const popularimeter = this.metadataService.getTag<IPopularimeterTag>('POPM', id3v2Tags);
+    const popularimeter = this.metadataService.getValue<IPopularimeterTag>('POPM', id3v2Tags);
 
     // Rating
     song.rating = 0;
@@ -438,7 +438,7 @@ export class ScanService {
 
     // Play Count (PCNT)
     song.playCount = 0;
-    const playCount = this.metadataService.getTag<number>('PCNT', id3v2Tags);
+    const playCount = this.metadataService.getValue<number>('PCNT', id3v2Tags);
     if (playCount) {
       song.playCount = playCount;
     }
@@ -447,17 +447,12 @@ export class ScanService {
     }
     // This will only be set once just for tracking purposes
     song.initialPlayCount = song.playCount;
-    
-    const lyrics = audioInfo.metadata.common.lyrics;
-    if (lyrics && lyrics.length) {
-      song.lyrics = lyrics[0];
-    }
 
     if (audioInfo.metadata.common.lyrics && audioInfo.metadata.common.lyrics.length) {
       song.lyrics = audioInfo.metadata.common.lyrics[0];
     }
     else {
-      const unsyncLyrics = this.metadataService.getTag<IMemoTag>('USLT', id3v2Tags);
+      const unsyncLyrics = this.metadataService.getValue<IMemoTag>('USLT', id3v2Tags);
       if (unsyncLyrics) {
         song.lyrics = unsyncLyrics.text;
       }
@@ -474,7 +469,7 @@ export class ScanService {
     }
 
     song.live = false;
-    const live = this.metadataService.getTag<string>('Live', id3v2Tags, true);
+    const live = this.metadataService.getValue<string>('Live', id3v2Tags, true);
     if (live && live.toLowerCase() === 'true') {
       song.live = true;
     }
@@ -594,7 +589,7 @@ export class ScanService {
       // Try to find multiple artist sorts as well
       const id3v2Tags = this.metadataService.getId3v24Tags(audioInfo.metadata);
       // Retrieving this way since the metadata only contains one artist sort
-      const artistSorts = this.metadataService.getTags<string>('TSOP', id3v2Tags);
+      const artistSorts = this.metadataService.getValues<string>('TSOP', id3v2Tags);
       // Index to match the artist with the artist sort
       let artistIndex = 0;
       for (const artistName of audioInfo.metadata.common.artists) {

@@ -892,32 +892,39 @@
     ],
     "dataSource": [
       {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "id3v2Reader",
         "type": "Id3v2Reader",
-        "config": "title,artist,year,media,track,genre",
+        "customMapping": false,
+        "fields": "title,artist,year,media,track,genre",
+        "sequence": 3,
+        "disabled": false,
         "system": true
       },
       {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "fileInfoReader",
         "type": "FileInfoReader",
+        "customMapping": false,
+        "sequence": 2,
+        "disabled": false,
         "system": true
       },
       {
-        "name": "audioInfoReader",
-        "type": "AudioInfoReader",
-        "system": true
-      },
-      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "id": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "name": "fullPathExp",
         "type": "PathExpression",
         "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%media%-%track% - %title%",
+        "customMapping": false,
+        "fields": "language,genre,artist,year,album,media,track,title",
+        "sequence": 1,
+        "disabled": false,
         "system": true
       }
     ],
     "dataMapping": [
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "title",
         "destination": "songName",
@@ -926,7 +933,6 @@
         "system": false
       },
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "track",
         "destination": "trackNumber",
@@ -935,7 +941,6 @@
         "system": false
       },
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "media",
         "destination": "mediaNumber",
@@ -944,7 +949,6 @@
         "system": false
       },
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "album",
         "destination": "albumName",
@@ -953,7 +957,6 @@
         "system": false
       },
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "year",
         "destination": "releaseYear",
@@ -962,7 +965,6 @@
         "system": false
       },
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "artist",
         "destination": "artistName",
@@ -971,7 +973,6 @@
         "system": false
       },
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "genre",
         "destination": "genre",
@@ -980,7 +981,6 @@
         "system": false
       },
       {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
         "source": "language",
         "destination": "language",

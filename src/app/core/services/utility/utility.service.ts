@@ -497,7 +497,7 @@ export class UtilityService {
   }
 
   public groupByKey<T>(items: T[], keyProperty: string): { [key: string]: T[] } {
-    return this.group(items, item => item[keyProperty]);
+    return this.group(items, item => item[keyProperty].toString());
   }
 
   public group<T>(items: T[], getKeyFn: (item: T) => string): { [key: string]: T[] } {

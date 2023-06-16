@@ -70,6 +70,7 @@ export interface IImageSource {
   sourceType: string;
   sourcePath: string;
   sourceIndex: number;
+  mimeType: string;
 }
 
 export interface IRouteInfo {

@@ -1,5 +1,6 @@
-import { IAudioMetadata } from 'music-metadata-browser';
+import { IAudioMetadata, IPicture } from 'music-metadata-browser';
 import { IFileInfo } from '../file/file.interface';
+import { MusicImageType } from './audio-metadata.enum';
 
 /**
  * Defines the structure of the object that holds Lyrics or Comments in a tag.
@@ -15,11 +16,9 @@ export interface IIdentifierTag {
   owner_identifier?: string;
 }
 
-export interface IPictureTag {
-  data?: Buffer;
-  description?: string;
-  format?: string;
-  type?: string;
+export interface IPictureExt extends IPicture {
+  index?: number;
+  imageType?: MusicImageType;
 }
 
 export interface IAudioInfo {

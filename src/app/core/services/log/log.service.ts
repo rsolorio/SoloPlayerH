@@ -37,13 +37,23 @@ export class LogService {
   }
 
   /**
+   * Records a debug message with tabular data.
+   * @param message The debug message.
+   * @param data Array or object to display as table.
+   * @param columns An array of column names to display.
+   */
+  public table(message: string, data: any, columns?: string[]): void {
+    this.debug(message, { tabularData: data, columns: columns }, false);
+  }
+
+  /**
    * Records a debug message.
    */
   public debug(message: string, data?: any, trace?: boolean): void {
-    if (this.logLevel !== LogLevel.Verbose) {
-      return;
+    // Debug is only allowed with verbose log
+    if (this.logLevel === LogLevel.Verbose) {
+      this.log(message, LogType.Debug, data, trace);
     }
-    this.log(message, LogType.Debug, data, trace);
   }
 
   /** Records an info message. */
@@ -97,7 +107,12 @@ export class LogService {
     console.log('%c%s', `color: ${color}`, message);
 
     if (data) {
-      console.log(data);
+      if (data.tabularData) {
+        console.table(data.tabularData, data.columns);
+      }
+      else {
+        console.log(data);
+      }
       // Adding 4 spaces indent
       entry.data = JSON.stringify(data, null, 4);
     }

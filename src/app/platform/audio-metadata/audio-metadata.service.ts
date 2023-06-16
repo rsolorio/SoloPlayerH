@@ -3,7 +3,7 @@ import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-brow
 import { IImage } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { AttachedPictureType, MusicImageType } from './audio-metadata.enum';
-import { IAudioInfo, IPictureTag } from './audio-metadata.interface';
+import { IAudioInfo, IPictureExt } from './audio-metadata.interface';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 
 @Injectable({
@@ -26,6 +26,14 @@ export class AudioMetadataService {
 
     try {
       result.metadata = await parseBuffer(data);
+      // Hack for adding more info about the pictures
+      if (result.metadata.common.picture && result.metadata.common.picture.length) {
+        for (let pictureIndex = 0; pictureIndex < result.metadata.common.picture.length; pictureIndex++) {
+          const picture = result.metadata.common.picture[pictureIndex] as IPictureExt;
+          picture.index = pictureIndex;
+          picture.imageType = this.getImageType(picture);
+        }
+      }
     }
     catch (error) {
       this.log.error('Parse buffer failure while getting metadata.', error);
@@ -51,23 +59,23 @@ export class AudioMetadataService {
     return metadata.native['ID3v2.4'];
   }
 
-  public getTag<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T {
-    let result = null;
-    if (tags && tags.length) {
-      const actualTagId = isUserDefined ? 'TXXX:' + tagId.toUpperCase() : tagId.toUpperCase();
-      for (const tag of tags) {
-        if (tag.id.toUpperCase() === actualTagId) {
-          if (tag.value) {
-            result = tag.value;
-          }
-          break;
-        }
-      }
+  public getUserDefinedTags(tags: ITag[], description?: string): ITag[] {
+    let prefix = 'TXXX';
+    if (description) {
+      prefix = `${prefix}:${description.toUpperCase()}:`
     }
-    return result as T;
+    return tags.filter(t => t.id.toUpperCase().startsWith(prefix));
   }
 
-  public getTags<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T[] {
+  public getValue<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T {
+    const values = this.getValues<T>(tagId, tags, isUserDefined);
+    if (values && values.length) {
+      return values[0];
+    }
+    return null;
+  }
+
+  public getValues<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T[] {
     const result: T[] = [];
 
     if (tags && tags.length) {
@@ -128,7 +136,7 @@ export class AudioMetadataService {
     return {};
   }
 
-  public getImageType(picture: IPictureTag): MusicImageType {
+  public getImageType(picture: IPicture): MusicImageType {
     const pictureType = picture.type ? picture.type.toLowerCase() : AttachedPictureType.Other.toLowerCase();
     switch (pictureType) {
       case AttachedPictureType.Other.toLowerCase():

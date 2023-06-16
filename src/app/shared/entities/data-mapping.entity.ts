@@ -5,8 +5,6 @@ export class DataMappingEntity extends BaseEntity {
   @PrimaryColumn()
   id: string;
   @Column()
-  profileId: string;
-  @Column()
   dataSourceId: string;
   @Column()
   source: string;
