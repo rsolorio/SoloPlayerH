@@ -1,5 +1,8 @@
 import { ImageSrcType } from "./core.enum";
 
+export type KeyValuesGen<TKey> = { [key: string]: TKey[] };
+export type KeyValues = KeyValuesGen<any>;
+
 export interface IValueModel<T> {
   value?: T;
 }

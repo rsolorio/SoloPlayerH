@@ -20,6 +20,9 @@ export class Id3v2SourceService implements IDataSource {
   constructor(private metadataService: AudioMetadataService, private fileService: FileService, private log: LogService) { }
 
   public async load(info: ILoadInfo): Promise<void> {
+    if (this.loadInfo.filePath === info.filePath) {
+      return;
+    }
     this.loadInfo = info;
     const buffer = await this.fileService.getBuffer(info.filePath);
     this.audioInfo = await this.metadataService.getMetadata(buffer, true);
@@ -194,6 +197,12 @@ export class Id3v2SourceService implements IDataSource {
       case OutputField.SingleImage:
       case OutputField.OtherImage:
         return this.findImage(propertyName);
+      case OutputField.TagFullyParsed:
+        return [this.audioInfo.fullyParsed];
+      case OutputField.Error:
+        if (this.audioInfo.error) {
+          return [this.audioInfo.error];
+        }
       // default:
       //   this.log.warn(`Source property ${propertyName} not supported by Id3v2.`);
       //   break;

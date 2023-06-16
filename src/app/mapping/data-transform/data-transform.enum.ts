@@ -1,3 +1,7 @@
+export enum DataTransformId {
+  MetadataReader = 'ef4c2f46-8803-4dc8-b937-2c8ffb150a62'
+}
+
 /**
  * Supported fields for the transform tasks.
  */
@@ -80,5 +84,9 @@ export enum OutputField {
   /** FileInfo */
   FileSize = 'fileSize',
   /** Id3v2 */
-  Classification = 'classification'
+  Classification = 'classification',
+  /** Id3v2 */
+  TagFullyParsed = 'tagFullyParsed',
+  /** Id3v2 */
+  Error = 'error'
 }

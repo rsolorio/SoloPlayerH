@@ -3,6 +3,8 @@ import { DataTransformServiceBase } from './data-transform-service-base.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { KeyValues } from 'src/app/core/models/core.interface';
+import { DataTransformId } from './data-transform.enum';
 
 /**
  * A transform service to retrieve metadata from a list of data sources.
@@ -14,13 +16,17 @@ import { LogService } from 'src/app/core/services/log/log.service';
 @Injectable({
   providedIn: 'root'
 })
-export class MetadataReaderService extends DataTransformServiceBase {
+export class MetadataReaderService extends DataTransformServiceBase<KeyValues> {
 
-  constructor(private utility: UtilityService, log: LogService) {
+  constructor(private utility: UtilityService, private log: LogService) {
     super(utility, log);
   }
 
-  public process(fileInfo: IFileInfo): Promise<any> {
+  protected get profileId(): string {
+    return DataTransformId.MetadataReader;
+  }
+
+  public process(fileInfo: IFileInfo): Promise<KeyValues> {
     return this.getContext(fileInfo);
   }
 }

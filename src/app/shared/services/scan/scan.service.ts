@@ -24,6 +24,7 @@ import { FileService } from '../../../platform/file/file.service';
 import { MusicImageSourceType, MusicImageType, PictureFormat } from '../../../platform/audio-metadata/audio-metadata.enum';
 import { IAudioInfo, IIdentifierTag, IMemoTag, IPopularimeterTag } from '../../../platform/audio-metadata/audio-metadata.interface';
 import { AudioMetadataService } from '../../../platform/audio-metadata/audio-metadata.service';
+import { MetadataReaderService } from 'src/app/mapping/data-transform/metadata-reader.service';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,7 @@ export class ScanService {
   constructor(
     private fileService: FileService,
     private metadataService: AudioMetadataService,
+    private metadataReader: MetadataReaderService,
     private utilities: UtilityService,
     private db: DatabaseService,
     private events: EventsService,
@@ -83,6 +85,9 @@ export class ScanService {
     this.existingImages = await RelatedImageEntity.find();
     this.existingSongArtists = [];
     this.existingSongClassifications = [];
+
+    // Prepare reader
+    await this.metadataReader.init();
   }
 
   private async syncChangesToDatabase(): Promise<void> {

@@ -15,6 +15,9 @@ export class FileInfoSourceService implements IDataSource {
   constructor(private fileService: FileService) { }
 
   public async load(info: ILoadInfo): Promise<void> {
+    if (this.loadInfo.filePath === info.filePath) {
+      return;
+    }
     this.loadInfo = info;
     this.fileInfo = await this.fileService.getFileInfo(info.filePath);
   }

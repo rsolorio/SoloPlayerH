@@ -10,24 +10,27 @@ import { inject } from "@angular/core";
 import { FileInfoSourceService } from "../data-source/file-info-source.service";
 import { PathExpressionSourceService } from "../data-source/path-expression-source.service";
 import { LogService } from "src/app/core/services/log/log.service";
+import { KeyValues } from "src/app/core/models/core.interface";
 
-export abstract class DataTransformServiceBase implements IDataTransform {
+export abstract class DataTransformServiceBase<T> implements IDataTransform {
   protected sources: DataSourceEntity[];
   protected mappingsByDestination: { [key: string]: DataMappingEntity[] };
 
   constructor(private utilityService: UtilityService, private logService: LogService) {
   }
 
-  abstract process(fileInfo: IFileInfo): Promise<any>;
+  protected abstract get profileId(): string;
 
-  public async init(profileId: string): Promise<void> {
-    this.sources = await DataSourceEntity.findBy({ profileId: profileId });
+  public abstract process(fileInfo: IFileInfo): Promise<T>;
+
+  public async init(): Promise<void> {
+    this.sources = await DataSourceEntity.findBy({ profileId: this.profileId });
     this.sources = this.utilityService.sort(this.sources, 'sequence');
   }
 
-  protected async getContext(fileInfo: IFileInfo): Promise<{ [key: string]: any[] }> {
+  protected async getContext(fileInfo: IFileInfo): Promise<KeyValues> {
     // All values for a given destination will be saved in an array
-    const context: { [key: string]: any[] } = {};
+    const context: KeyValues = {};
     for (const source of this.sources) {
       const sourceInfo = this.getDataSourceInfo(source.id);
       if (sourceInfo && sourceInfo.data && sourceInfo.source) {
