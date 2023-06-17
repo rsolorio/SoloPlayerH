@@ -537,10 +537,11 @@ export class UtilityService {
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
-    a.download = fileName + '.jpg';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   }
 
   public async shareImage(dataUrl: string): Promise<void> {

@@ -104,18 +104,19 @@
       </ng-container>
       <br>
       <!-- Album -->
-      <i class="mdi-album mdi sp-text-large " [ngStyle]="palette.secondary.cssColor"></i>
+      <i class="mdi-album mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-large"
       [ngStyle]="palette.primary.cssColor">&nbsp;{{song.albumName}}</span>
-      <br>
       <!-- Year -->
       <ng-container *ngIf="song.releaseYear > 0">
-        <i class="mdi-calendar mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
+        <span>&nbsp;&nbsp;</span>
+        <i class="mdi-calendar mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
-        class="sp-text-medium"
-        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.releaseYear}}&nbsp;&nbsp;</span>
+        class="sp-text-large"
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.releaseYear}}</span>
       </ng-container>
+      <br>
       <!-- Genre -->
       <ng-container *ngIf="song.genre">
         <i class="mdi-tag mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
@@ -123,6 +124,11 @@
         class="sp-text-medium"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{song.genre}}&nbsp;&nbsp;</span>
       </ng-container>
+      <!-- Time -->
+      <i class="mdi-timer mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
+      <span
+        class="sp-text-medium"
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.duration}}&nbsp;&nbsp;</span>
       <!-- File Info -->
       <ng-container *ngIf="fileInfoVisible">
         <i class="mdi-file-music mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
@@ -195,9 +201,9 @@
               <div class="sp-progress-front" [style.width.%]="model.elapsedPercentage"></div>
             </div>
           </td>
-          <!-- Duration -->
+          <!-- Remaining -->
           <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
-              <span class="sp-time-text">{{ song.seconds | duration }}</span>
+              <span class="sp-time-text">{{ song.seconds - model.elapsedSeconds | duration }}</span>
           </td>
         </tr></table></td></tr>
         <!-- Play Controls -->

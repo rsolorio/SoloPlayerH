@@ -56,7 +56,7 @@ export class ImageElectronService extends ImageService {
   private async getScreenshotWithWebContents(): Promise<string> {
     const webContents = remoteRenderer.getCurrentWebContents();
     const page = await webContents.capturePage({ x: 0, y:0, width: window.innerWidth, height: window.innerHeight - 1 });
-    return page.toDataURL();
+    return `data:image/jpeg;base64,` + page.toJPEG(100).toString('base64');
   }
 
   private async getScreenshotWithImageCapture(): Promise<string> {

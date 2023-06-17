@@ -254,6 +254,6 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public getFileInfo(): string {
-    return `${this.getExtension()} | ${this.getBitrate()} | ${this.getFrequency()} | ${this.getSize()}`;
+    return `${this.getExtension()} | ${this.getBitrate()} | ${this.getFrequency()}`;
   }
 }
