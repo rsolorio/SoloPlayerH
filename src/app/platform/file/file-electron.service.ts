@@ -80,6 +80,11 @@ export class FileElectronService extends FileService {
   public async getFileInfo(path: string): Promise<IFileInfo> {
     let info: IFileInfo;
     try {
+      // Stats
+      // atime: access time, the last time the file was read
+      // mtime: modified time, the last time the contents of the file were modified
+      // ctime: changed time, the last time the metadata related to the file was changed
+      // birthtime: the time of the creation of the file
       const fileStat = await promises.stat(path);
       info = {
         isDirectory: fileStat.isDirectory(),
@@ -87,7 +92,7 @@ export class FileElectronService extends FileService {
         // Remove empty items as well
         parts: path.split('\\').filter(item => !!item).reverse(),
         size: fileStat.size,
-        addDate: fileStat.atime,
+        addDate: fileStat.birthtime,
         changeDate: fileStat.mtime
       };
       info.fullName = info.parts[0];

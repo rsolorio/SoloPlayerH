@@ -8,7 +8,7 @@
       <tr>
         <td>
           <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
-          <span class="sp-text-medium sp-no-select">{{item.artistStylized}}</span>
+          <span class="sp-main-text sp-text-medium sp-no-select">{{item.artistStylized}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">
             <ng-container *ngIf="isAlbumArtist"><i class="mdi-album mdi">&nbsp;</i>{{item.albumCount}}&nbsp;&nbsp;</ng-container>

@@ -13,7 +13,7 @@
   </ng-template>
   <ng-template #infoTemplate let-item="item">
     <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-color-yellow sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
-    <span class="sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.name}}</span>
+    <span class="sp-main-text sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.name}}</span>
     <span *ngIf="songAttributesVisible" class="sp-text-medium">
       <i *ngIf="item.bitrate === 320000" class=" mdi-waveform mdi sp-title-icon sp-color-320" [title]="SongBadge.Kbps320"></i>
       <i *ngIf="item.vbr" class=" mdi-waveform mdi sp-title-icon sp-color-vbr" [title]="SongBadge.Vbr"></i>
