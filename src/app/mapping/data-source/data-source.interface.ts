@@ -1,8 +1,8 @@
 import { DataSourceEntity } from "src/app/shared/entities";
 
 export interface IDataSource {
-  get(propertyName: string): any[];
-  load(info: ILoadInfo): Promise<void>;
+  get(propertyName: string): Promise<any[]>;
+  load(info: ILoadInfo): Promise<ILoadInfo>;
 }
 
 export interface IDataSourceInfo {
@@ -13,4 +13,6 @@ export interface IDataSourceInfo {
 export interface ILoadInfo {
   filePath: string;
   config: string;
+  error?: any;
+  // TODO: continueOnError
 }

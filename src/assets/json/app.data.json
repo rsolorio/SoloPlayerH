@@ -894,7 +894,7 @@
       {
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "id3v2Reader",
-        "type": "Id3v2Reader",
+        "type": "Id3v2",
         "customMapping": false,
         "fields": "title,artist,year,media,track,genre",
         "sequence": 3,
@@ -904,7 +904,7 @@
       {
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "fileInfoReader",
-        "type": "FileInfoReader",
+        "type": "FileInfo",
         "customMapping": false,
         "sequence": 2,
         "disabled": false,

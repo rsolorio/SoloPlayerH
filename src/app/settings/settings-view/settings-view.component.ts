@@ -13,7 +13,6 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { FileService } from 'src/app/platform/file/file.service';
-import { IAudioInfo } from 'src/app/platform/audio-metadata/audio-metadata.interface';
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
@@ -21,6 +20,8 @@ import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.s
 import { AppRoute } from 'src/app/app-routes';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
+import { OutputField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { KeyValues } from 'src/app/core/models/core.interface';
 
 @Component({
   selector: 'sp-settings-view',
@@ -285,7 +286,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     }
   }
 
-  async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<IAudioInfo[]> {
+  private async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<KeyValues[]> {
     const audios = await this.scanner.processAudioFiles(files, this.options,
       // Before file process
       async (count, file) => {
@@ -298,7 +299,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         setting.dynamicText = '';
       }
     );
-    return audios.filter(audioInfo => audioInfo.error);
+    return audios.filter(audioInfo => audioInfo[OutputField.Error].length);
   }
 
   public onPlaylistScan(setting: ISetting, folderPath: string): void {

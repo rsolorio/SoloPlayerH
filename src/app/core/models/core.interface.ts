@@ -74,6 +74,7 @@ export interface IImageSource {
   sourcePath: string;
   sourceIndex: number;
   mimeType: string;
+  imageType: string;
 }
 
 export interface IRouteInfo {

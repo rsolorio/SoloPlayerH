@@ -19,15 +19,20 @@ export class Id3v2SourceService implements IDataSource {
 
   constructor(private metadataService: AudioMetadataService, private fileService: FileService, private log: LogService) { }
 
-  public async load(info: ILoadInfo): Promise<void> {
-    if (this.loadInfo.filePath === info.filePath) {
-      return;
+  public async load(info: ILoadInfo): Promise<ILoadInfo> {
+    if (this.loadInfo && this.loadInfo.filePath === info.filePath) {
+      return info;
     }
     this.loadInfo = info;
     const buffer = await this.fileService.getBuffer(info.filePath);
     this.audioInfo = await this.metadataService.getMetadata(buffer, true);
 
     this.tags = [];
+
+    if (this.audioInfo.error) {
+      this.loadInfo.error = this.audioInfo.error;
+      return this.loadInfo;
+    }
     let id3Tags = this.audioInfo.metadata.native['ID3v2.4'];
     if (!id3Tags || !id3Tags.length) {
       id3Tags = this.audioInfo.metadata.native['ID3v2.3'];
@@ -35,9 +40,10 @@ export class Id3v2SourceService implements IDataSource {
     if (id3Tags) {
       this.tags = id3Tags;
     }
+    return this.loadInfo;
   }
 
-  public get(propertyName: string): any[] {
+  public async get(propertyName: string): Promise<any[]> {
     // If there are no tags return empty
     if (!this.tags.length) {
       return [];
@@ -125,9 +131,17 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case OutputField.AddDate:
-        return this.metadataService.getValues<string>('AddDate', this.tags, true);
+        const addDates = this.metadataService.getValues<string>('AddDate', this.tags, true);
+        if (addDates?.length) {
+          return addDates.map(d => new Date(d));
+        }
+        break;
       case OutputField.ChangeDate:
-        return this.metadataService.getValues<string>('ChangeDate', this.tags, true);
+        const changeDates = this.metadataService.getValues<string>('ChangeDate', this.tags, true);
+        if (changeDates?.length) {
+          return changeDates.map(d => new Date(d));
+        }
+        break;
       case OutputField.Language:
         return this.metadataService.getValues<string>('TLAN', this.tags, true);
       case OutputField.Mood:
@@ -171,7 +185,16 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case OutputField.UnSyncLyrics:
-        return this.metadataService.getValues<IMemoTag>('USLT', this.tags);
+        const lyricsTags = this.metadataService.getValues<IMemoTag>('USLT', this.tags);
+        if (lyricsTags?.length) {
+          const result: string[] = [];
+          lyricsTags.forEach(tag => {
+            if (tag && tag.text) {
+              result.push(tag.text);
+            }
+          });
+          return result;
+        }
       case OutputField.Live:
         return this.metadataService.getValues<string>('Live', this.tags, true);
       case OutputField.Genre:
@@ -197,15 +220,36 @@ export class Id3v2SourceService implements IDataSource {
       case OutputField.SingleImage:
       case OutputField.OtherImage:
         return this.findImage(propertyName);
+      case OutputField.Seconds:
+        if (this.audioInfo.metadata.format.duration) {
+          return [this.audioInfo.metadata.format.duration];
+        }
+        return [0];
+      case OutputField.Bitrate:
+        if (this.audioInfo.metadata.format.bitrate) {
+          return [this.audioInfo.metadata.format.bitrate];
+        }
+        return [0];
+      case OutputField.Frequency:
+        if (this.audioInfo.metadata.format.sampleRate) {
+          return [this.audioInfo.metadata.format.sampleRate];
+        }
+        return [0];
+      case OutputField.Vbr:
+        return [this.audioInfo.metadata.format.codecProfile !== 'CBR'];
+      case OutputField.ReplayGain:
+        if (this.audioInfo.metadata.format.trackGain) {
+          return [this.audioInfo.metadata.format.trackGain];
+        }
+        return [0];
       case OutputField.TagFullyParsed:
         return [this.audioInfo.fullyParsed];
       case OutputField.Error:
         if (this.audioInfo.error) {
           return [this.audioInfo.error];
         }
-      // default:
-      //   this.log.warn(`Source property ${propertyName} not supported by Id3v2.`);
-      //   break;
+      case 'subTitle':
+        return this.metadataService.getValues<string>('TIT3', this.tags);
     }
     return [];
   }
@@ -238,12 +282,14 @@ export class Id3v2SourceService implements IDataSource {
       const pictures = this.audioInfo.metadata.common.picture as IPictureExt[];
       pictures.filter(p => p.imageType === imageType).forEach(p => {
         result.push({
-          sourcePath: this.audioInfo.fileInfo.path,
+          sourcePath: this.loadInfo.filePath,
           sourceIndex: p.index,
           sourceType: MusicImageSourceType.AudioTag,
-          mimeType: p.format
+          mimeType: p.format,
+          imageType: imageType
         });
       });
     }
+    return result;
   }
 }

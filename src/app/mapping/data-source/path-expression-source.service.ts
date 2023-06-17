@@ -8,10 +8,11 @@ export class PathExpressionSourceService implements IDataSource {
 
   constructor() { }
 
-  public async load(info: ILoadInfo): Promise<void> {
+  public async load(info: ILoadInfo): Promise<ILoadInfo> {
+    return info;
   }
 
-  public get(propertyName: string): any[] {
+  public async get(propertyName: string): Promise<any[]> {
     return null;
   }
 }

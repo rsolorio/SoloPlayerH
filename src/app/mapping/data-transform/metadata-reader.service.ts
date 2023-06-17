@@ -5,6 +5,9 @@ import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { KeyValues } from 'src/app/core/models/core.interface';
 import { DataTransformId } from './data-transform.enum';
+import { Id3v2SourceService } from '../data-source/id3v2-source.service';
+import { FileInfoSourceService } from '../data-source/file-info-source.service';
+import { PathExpressionSourceService } from '../data-source/path-expression-source.service';
 
 /**
  * A transform service to retrieve metadata from a list of data sources.
@@ -18,8 +21,13 @@ import { DataTransformId } from './data-transform.enum';
 })
 export class MetadataReaderService extends DataTransformServiceBase<KeyValues> {
 
-  constructor(private utility: UtilityService, private log: LogService) {
-    super(utility, log);
+  constructor(
+    private utility: UtilityService,
+    private log: LogService,
+    private id3v2Service: Id3v2SourceService,
+    private fileInfoService: FileInfoSourceService,
+    private pathExpressionService: PathExpressionSourceService) {
+    super(utility, log, id3v2Service, fileInfoService, pathExpressionService);
   }
 
   protected get profileId(): string {
