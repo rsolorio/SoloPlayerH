@@ -7,6 +7,7 @@ $sp-play-pause-size: 42px;
 }
 
 .sp-player-small-progress {
+    top: 0; // this will place it right at the top edge of the player
     height: 1px;
     position: absolute;
     background-color: $sp-color-primary;
