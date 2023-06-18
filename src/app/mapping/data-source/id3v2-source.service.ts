@@ -195,6 +195,7 @@ export class Id3v2SourceService implements IDataSource {
           });
           return result;
         }
+        break;
       case OutputField.Live:
         return this.metadataService.getValues<string>('Live', this.tags, true);
       case OutputField.Genre:
@@ -248,6 +249,7 @@ export class Id3v2SourceService implements IDataSource {
         if (this.audioInfo.error) {
           return [this.audioInfo.error];
         }
+        break;
       case 'subTitle':
         return this.metadataService.getValues<string>('TIT3', this.tags);
     }
