@@ -265,6 +265,10 @@ export class DatabaseService {
   public async bulkInsert<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): Promise<InsertResult[]> {
     const response: InsertResult[] = [];
     const bulkSize = this.getBulkSize(entity, values);
+    if (!bulkSize) {
+      this.log.warn('Empty bulk, aborting bulk insert.');
+      return [];
+    }
     let bulkIndex = 0;
     while (values.length) {
       bulkIndex++;
@@ -286,6 +290,10 @@ export class DatabaseService {
     // Even though we are using just a few columns to do the update, in reality we are first performing an insert so we need to take in consideration
     // all columns in the entity to determine the bulk size.
     const bulkSize = this.getBulkSize(entity, values);
+    if (!bulkSize) {
+      this.log.warn('Empty bulk, aborting bulk update.');
+      return [];
+    }
     let bulkIndex = 0;
     while (values.length) {
       bulkIndex++;
@@ -302,7 +310,7 @@ export class DatabaseService {
     const repo = this.dataSource.getRepository(entity);
     const totalParameters = values.length * repo.metadata.columns.length;
     const totalBulks = Math.ceil(totalParameters / this.SQLITE_MAX_VARIABLE_NUMBER);
-    const bulkSize = Math.ceil(values.length / totalBulks);
+    const bulkSize = totalBulks > 0 ? Math.ceil(values.length / totalBulks) : 0;
     this.log.info(`Total items: ${values.length}. Total columns: ${repo.metadata.columns.length}. Total parameters: ${totalParameters}. Total bulks: ${totalBulks}. Bulk size: ${bulkSize}.`);
     return bulkSize;
   }

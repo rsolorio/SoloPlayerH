@@ -22,10 +22,24 @@ import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../../../platform/file/file.interface';
 import { FileService } from '../../../platform/file/file.service';
 import { MusicImageType } from '../../../platform/audio-metadata/audio-metadata.enum';
-import { AudioMetadataService } from '../../../platform/audio-metadata/audio-metadata.service';
 import { MetadataReaderService } from 'src/app/mapping/data-transform/metadata-reader.service';
 import { IImageSource, KeyValues } from 'src/app/core/models/core.interface';
-import { OutputField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+
+export enum ScanFileMode {
+  /** Mode where the scanner identifies a new audio file and it will be added to the database. */
+  Add = 'add',
+  /**
+   * Mode where the scanner identifies the file already exists in the database but it needs to be updated.
+   * Changes allowed in update mode:
+   * Add/update lyrics and images.
+   * Update this information: vbr, size, freq, bitrate, seconds, duration, layer, level, channel mode, changeDate.
+   * Keep older add date in the file.
+   */
+  Update = 'update',
+  /** Mode where the scanner identifies the file already exists in the database and doesn't need any changes. */
+  Skip = 'skip'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +47,11 @@ import { OutputField } from 'src/app/mapping/data-transform/data-transform.enum'
 export class ScanService {
 
   private unknownValue = 'Unknown';
+  private scanMode: ScanFileMode;
+  private songToProcess: SongEntity;
+  private options: ModuleOptionEntity[];
+
+
   private existingArtists: ArtistEntity[];
   private existingAlbums: AlbumEntity[];
   private existingClassTypes: ValueListEntryEntity[];
@@ -48,7 +67,6 @@ export class ScanService {
 
   constructor(
     private fileService: FileService,
-    private metadataService: AudioMetadataService,
     private metadataReader: MetadataReaderService,
     private utilities: UtilityService,
     private db: DatabaseService,
@@ -133,6 +151,11 @@ export class ScanService {
       await this.db.bulkInsert(SongEntity, newSongs);
       newSongs.forEach(s => s.isNew = false);
     }
+    const songsToBeUpdated = this.existingSongs.filter(song => song.hasChanges);
+    if (songsToBeUpdated.length) {
+      await this.db.bulkUpdate(SongEntity, songsToBeUpdated, ['lyrics']);
+      songsToBeUpdated.forEach(s => s.hasChanges = false);
+    }
     // SongArtists
     await this.db.bulkInsert(SongArtistEntity, this.existingSongArtists);
     // This array is only populated for new songs
@@ -151,10 +174,11 @@ export class ScanService {
 
   public async processAudioFiles(
     files: IFileInfo[],
-    options: ModuleOptionEntity[],
+    moduleOptions: ModuleOptionEntity[],
     beforeFileProcess?: (count: number, fileInfo: IFileInfo) => Promise<void>,
     beforeSyncChanges?: () => Promise<void>,
   ): Promise<KeyValues[]> {
+    this.options = moduleOptions?.length ? moduleOptions : [];
     await this.beforeProcess();
     let fileCount = 0;
     const result: KeyValues[] = [];
@@ -163,7 +187,8 @@ export class ScanService {
       if (beforeFileProcess) {
         await beforeFileProcess(fileCount, file);
       }
-      const metadata = await this.processAudioFile(file, options);
+      this.setMode(file);
+      const metadata = await this.processAudioFile(file);
       result.push(metadata);
     }
 
@@ -174,13 +199,49 @@ export class ScanService {
     return result;
   }
 
-  private async processAudioFile(fileInfo: IFileInfo, options: ModuleOptionEntity[]): Promise<KeyValues> {
+  private setMode(fileInfo: IFileInfo): void {
+    this.songToProcess = this.existingSongs.find(s => s.filePath === fileInfo.path);
+    if (this.songToProcess) {
+      if (fileInfo.changeDate > this.songToProcess.changeDate) {
+        // TODO: if lyrics file or images files changed also set edit mode
+        this.scanMode = ScanFileMode.Update;
+      }
+      else {
+        this.scanMode = ScanFileMode.Skip;
+      }
+    }
+    else {
+      this.scanMode = ScanFileMode.Add;
+    }
+  }
+
+  private async processAudioFile(fileInfo: IFileInfo): Promise<KeyValues> {
+    if (this.scanMode === ScanFileMode.Skip) {
+      return {
+        [MetaField.FileMode]: [this.scanMode],
+        [MetaField.Error]: []
+      };
+    }
+
     const metadata = await this.metadataReader.process(fileInfo);
-    const errors = metadata[OutputField.Error];
-    if (errors?.length) {
+    metadata[MetaField.FileMode] = [this.scanMode];
+
+    let errors = metadata[MetaField.Error];
+    if (!errors) {
+      errors = metadata[MetaField.Error] = [];
+    }
+    if (errors.length) {
       return metadata;
     }
 
+    if (this.scanMode === ScanFileMode.Update) {
+      return this.updateAudioFile(metadata);
+    }
+
+    return this.addAudioFile(metadata);
+  }
+
+  private async addAudioFile(metadata: KeyValues): Promise<KeyValues> {
     // // PRIMARY ALBUM ARTIST
     const primaryArtist = this.processAlbumArtist(metadata);
 
@@ -194,7 +255,7 @@ export class ScanService {
     // GENRES
     // TODO: add default genre if no one found
     let genreSplitSymbols: string[] = [];
-    const genreSplitOption = options.find(option => option.name === ModuleOptionName.GenreSplitCharacters);
+    const genreSplitOption = this.options.find(option => option.name === ModuleOptionName.GenreSplitCharacters);
     if (genreSplitOption) {
       genreSplitSymbols = this.db.getOptionArrayValue(genreSplitOption);
     }
@@ -204,26 +265,26 @@ export class ScanService {
     const classifications = this.processClassifications(metadata);
 
     // SONG - ARTISTS/GENRES/CLASSIFICATIONS
-    const song = this.processSong(primaryAlbum, metadata);
+    this.songToProcess = this.processSong(primaryAlbum, metadata);
     if (genres.length) {
       // Set the first genre found as the main genre
-      song.genre = genres[0].name;
+      this.songToProcess.genre = genres[0].name;
     }
     // Make sure the primary artist is part of the song artists
     if (!artists.find(a => a.id === primaryArtist.id)) {
       artists.push(primaryArtist);
     }
 
-    if (this.existingSongs.find(s => s.id === song.id)) {
+    if (this.existingSongs.find(s => s.id === this.songToProcess.id)) {
       // TODO: if the song already exists, update data
     }
     else {
-      this.existingSongs.push(song);
+      this.existingSongs.push(this.songToProcess);
 
       // If we are adding a new song, all its artists are new as well, so push them to cache
       for (const artist of artists) {
         const songArtist = new SongArtistEntity();
-        songArtist.songId = song.id;
+        songArtist.songId = this.songToProcess.id;
         songArtist.artistId = artist.id;
         songArtist.artistRoleTypeId = 1; // Performer
         this.existingSongArtists.push(songArtist);
@@ -239,7 +300,7 @@ export class ScanService {
         let primary = true;
         for (const classification of classificationList) {
           const songClassification = new SongClassificationEntity();
-          songClassification.songId = song.id;
+          songClassification.songId = this.songToProcess.id;
           songClassification.classificationId = classification.id;
           songClassification.primary = primary;
           // This flag will only be true in the first iteration, turn it off for the rest of the items
@@ -252,15 +313,94 @@ export class ScanService {
     return metadata;
   }
 
-  private processAlbumArtist(metadata: KeyValues): ArtistEntity {
-    const artistType = this.reduce(metadata[OutputField.ArtistType]);
-    const country = this.reduce(metadata[OutputField.Country]);
-    const artistStylized = this.reduce(metadata[OutputField.ArtistStylized]);
-    const artistSort = this.reduce(metadata[OutputField.ArtistSort]);
+  private async updateAudioFile(metadata: KeyValues): Promise<KeyValues> {
+    // Lyrics
+    let lyrics = this.reduce(metadata[MetaField.UnSyncLyrics]);
+    if (!lyrics) {
+      lyrics = this.reduce(metadata[MetaField.SyncLyrics]);
+    }
+    if (lyrics && lyrics !== this.songToProcess.lyrics) {
+      this.songToProcess.lyrics = lyrics;
+      this.songToProcess.hasChanges = true;
+    }
 
-    let artistName = this.reduce(metadata[OutputField.AlbumArtist]);
+    // Audio info
+    const seconds = this.reduce(metadata[MetaField.Seconds]);
+    if (seconds && seconds !== this.songToProcess.seconds) {
+      this.songToProcess.seconds = seconds;
+      this.songToProcess.duration = this.utilities.secondsToMinutes(seconds);
+      this.songToProcess.hasChanges = true;
+    }
+    const bitrate = this.reduce(metadata[MetaField.Bitrate]);
+    if (bitrate && bitrate !== this.songToProcess.bitrate) {
+      this.songToProcess.bitrate = bitrate;
+      this.songToProcess.hasChanges = true;
+    }
+    const frequency = this.reduce(metadata[MetaField.Frequency]);
+    if (frequency && frequency !== this.songToProcess.frequency) {
+      this.songToProcess.frequency = frequency;
+      this.songToProcess.hasChanges = true;
+    }
+    const vbr = metadata[MetaField.Vbr];
+    if (vbr?.length && vbr[0] !== this.songToProcess.vbr) {
+      this.songToProcess.vbr = vbr[0];
+      this.songToProcess.hasChanges = true;
+    }
+    const replayGain = this.reduce(metadata[MetaField.ReplayGain]);
+    if (replayGain && replayGain !== this.songToProcess.replayGain) {
+      this.songToProcess.replayGain = replayGain;
+      this.songToProcess.hasChanges = true;
+    }
+    const fileSize = this.reduce(metadata[MetaField.FileSize]);
+    if (fileSize && fileSize !== this.songToProcess.fileSize) {
+      this.songToProcess.fileSize = fileSize;
+      this.songToProcess.hasChanges = true;
+    }
+    const fullyParsed = metadata[MetaField.TagFullyParsed];
+    if (fullyParsed?.length && fullyParsed[0] !== this.songToProcess.fullyParsed) {
+      this.songToProcess.fullyParsed = fullyParsed[0];
+      this.songToProcess.hasChanges = true;
+    }
+
+    // Add date
+    let addDate = this.reduce(metadata[MetaField.AddDate]);
+    if (!addDate) {
+      addDate = new Date();
+    }
+    let changeDate = this.reduce(metadata[MetaField.ChangeDate]);
+    if (!changeDate) {
+      changeDate = new Date();
+    }
+    if (addDate > changeDate) {
+      addDate = changeDate;
+    }
+    if (this.songToProcess.addDate > addDate) {
+      this.songToProcess.addDate = addDate;
+      this.songToProcess.hasChanges = true;
+    }
+
+    if (this.songToProcess.hasChanges) {
+      this.songToProcess.changeDate = new Date();
+    }
+
+    // Images
+    const existingAlbum = this.existingAlbums.find(a => a.id === this.songToProcess.primaryAlbumId);
+    this.processImage(existingAlbum.primaryArtist.id, metadata, MetaField.ArtistImage);
+    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumImage);
+    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumSecondaryImage);
+    this.processImage(this.songToProcess.id, metadata, MetaField.SingleImage);
+    return metadata;
+  }
+
+  private processAlbumArtist(metadata: KeyValues): ArtistEntity {
+    const artistType = this.reduce(metadata[MetaField.ArtistType]);
+    const country = this.reduce(metadata[MetaField.Country]);
+    const artistStylized = this.reduce(metadata[MetaField.ArtistStylized]);
+    const artistSort = this.reduce(metadata[MetaField.ArtistSort]);
+
+    let artistName = this.reduce(metadata[MetaField.AlbumArtist]);
     if (!artistName) {
-      artistName = this.reduce(metadata[OutputField.Artist]);
+      artistName = this.reduce(metadata[MetaField.Artist]);
       if (!artistName) {
         artistName = this.unknownValue;
       }
@@ -305,7 +445,7 @@ export class ScanService {
       return existingArtist;
     }
 
-    this.processImage(newArtist.id, metadata, OutputField.AlbumArtistImage);
+    this.processImage(newArtist.id, metadata, MetaField.AlbumArtistImage);
 
     this.existingArtists.push(newArtist);
     return newArtist;
@@ -316,12 +456,12 @@ export class ScanService {
     newAlbum.isNew = true;
     newAlbum.primaryArtist = artist;
 
-    newAlbum.name = this.reduce(metadata[OutputField.Album]);
+    newAlbum.name = this.reduce(metadata[MetaField.Album]);
     if (!newAlbum.name) {
       newAlbum.name = this.unknownValue;
     }
     newAlbum.releaseYear = 0;
-    const year = this.reduce(metadata[OutputField.Year]);
+    const year = this.reduce(metadata[MetaField.Year]);
     if (year > 0 && !ignoredYears.includes(year)) {
       // Is this actually the album year? Album year and song year might be different.
       newAlbum.releaseYear = year;
@@ -342,7 +482,7 @@ export class ScanService {
       return existingAlbum;
     }
 
-    const albumSort = this.reduce(metadata[OutputField.AlbumSort]);
+    const albumSort = this.reduce(metadata[MetaField.AlbumSort]);
     if (albumSort) {
       newAlbum.albumSort = albumSort;
     }
@@ -350,13 +490,13 @@ export class ScanService {
       newAlbum.albumSort = newAlbum.name;
     }
 
-    const albumType = this.reduce(metadata[OutputField.AlbumType]);
+    const albumType = this.reduce(metadata[MetaField.AlbumType]);
     newAlbum.albumTypeId = albumType ? this.getValueListEntryId(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP;
 
     newAlbum.favorite = false;
 
-    this.processImage(newAlbum.id, metadata, OutputField.AlbumImage);
-    this.processImage(newAlbum.id, metadata, OutputField.AlbumSecondaryImage);
+    this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
+    this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
 
     this.existingAlbums.push(newAlbum);
     return newAlbum;
@@ -365,84 +505,92 @@ export class ScanService {
   private processSong(album: AlbumEntity, metadata: KeyValues): SongEntity {
     const song = new SongEntity();
     song.isNew = true;
-    song.filePath = this.reduce(metadata[OutputField.FilePath]);
+    song.filePath = this.reduce(metadata[MetaField.FilePath]);
 
-    const id = this.reduce(metadata[OutputField.UfId]);
+    const id = this.reduce(metadata[MetaField.UfId]);
     if (id) {
       song.externalId = id;
     }
 
-    song.name = this.reduce(metadata[OutputField.Title]);
+    song.name = this.reduce(metadata[MetaField.Title]);
     if (!song.name) {
-      song.name = this.reduce(metadata[OutputField.FileName]);
+      song.name = this.reduce(metadata[MetaField.FileName]);
     }
 
     song.primaryAlbum = album;
-    const trackNumber = this.reduce(metadata[OutputField.TrackNumber]);
+    const trackNumber = this.reduce(metadata[MetaField.TrackNumber]);
     song.trackNumber = trackNumber ? trackNumber : 0;
-    const mediaNumber = this.reduce(metadata[OutputField.MediaNumber]);
+    const mediaNumber = this.reduce(metadata[MetaField.MediaNumber]);
     song.mediaNumber = mediaNumber ? mediaNumber : 0;
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 
-    const composer = this.reduce(metadata[OutputField.Composer]);
+    const composer = this.reduce(metadata[MetaField.Composer]);
     if (composer) {
       song.composer = composer;
     }
-    const comment = this.reduce(metadata[OutputField.Comment]);
+    const comment = this.reduce(metadata[MetaField.Comment]);
     if (comment) {
       song.comment = comment;
     }
-    const grouping = this.reduce(metadata[OutputField.Grouping]);
+    const grouping = this.reduce(metadata[MetaField.Grouping]);
     if (grouping) {
       song.grouping = grouping;
     }
 
-    const addDate = this.reduce(metadata[OutputField.AddDate]);
-    if (addDate) {
-      song.addDate = addDate;
+    // Get dates
+    let addDate = this.reduce(metadata[MetaField.AddDate]);
+    if (!addDate) {
+      addDate = new Date();
     }
-
-    const changeDate = this.reduce(metadata[OutputField.ChangeDate]);
-    if (changeDate) {
-      song.changeDate = changeDate;
+    let changeDate = this.reduce(metadata[MetaField.ChangeDate]);
+    if (!changeDate) {
+      changeDate = new Date();
     }
+    // Grab the oldest date as the add date
+    if (addDate > changeDate) {
+      addDate = changeDate;
+    }
+    // Set dates in db
+    song.addDate = addDate;
+    song.changeDate = changeDate;
+    // TODO: Set dates in file
 
-    song.language = this.reduce(metadata[OutputField.Language]);
+    song.language = this.reduce(metadata[MetaField.Language]);
     if (!song.language) {
       song.language = this.unknownValue;
     }
 
-    song.mood = this.reduce(metadata[OutputField.Mood]);
+    song.mood = this.reduce(metadata[MetaField.Mood]);
     if (!song.mood) {
       song.mood = this.unknownValue;
     }
 
     // Rating
     song.rating = 0;
-    const rating = this.reduce(metadata[OutputField.Rating]);
+    const rating = this.reduce(metadata[MetaField.Rating]);
     if (rating) {
       song.rating = rating;
     }
 
     // Play Count
     song.playCount = 0;
-    const playCount = this.reduce(metadata[OutputField.PlayCount]);
+    const playCount = this.reduce(metadata[MetaField.PlayCount]);
     if (playCount) {
       song.playCount = playCount;
     }
     // This will only be set once just for tracking purposes
     song.initialPlayCount = song.playCount;
 
-    let lyrics = this.reduce(metadata[OutputField.UnSyncLyrics]);
+    let lyrics = this.reduce(metadata[MetaField.UnSyncLyrics]);
     if (!lyrics) {
-      lyrics = this.reduce(metadata[OutputField.SyncLyrics]);
+      lyrics = this.reduce(metadata[MetaField.SyncLyrics]);
     }
     if (lyrics) {
       song.lyrics = lyrics;
     }
 
-    const titleSort = this.reduce(metadata[OutputField.TitleSort]);
+    const titleSort = this.reduce(metadata[MetaField.TitleSort]);
     if (titleSort) {
       song.titleSort = titleSort;
     }
@@ -451,30 +599,30 @@ export class ScanService {
     }
 
     song.live = false;
-    const live = this.reduce(metadata[OutputField.Live]);
+    const live = this.reduce(metadata[MetaField.Live]);
     if (live && live.toLowerCase() === 'true') {
       song.live = true;
     }
 
-    song.seconds = this.reduce(metadata[OutputField.Seconds]);
+    song.seconds = this.reduce(metadata[MetaField.Seconds]);
     if (!song.seconds) {
       console.log(metadata);
     }
     song.duration = this.utilities.secondsToMinutes(song.seconds);
-    song.bitrate = this.reduce(metadata[OutputField.Bitrate]);
-    song.frequency = this.reduce(metadata[OutputField.Frequency]);
-    song.vbr = this.reduce(metadata[OutputField.Vbr]);
-    song.replayGain = this.reduce(metadata[OutputField.ReplayGain]);
-    song.fileSize = this.reduce(metadata[OutputField.FileSize]);
-    song.fullyParsed = this.reduce(metadata[OutputField.TagFullyParsed]);
+    song.bitrate = this.reduce(metadata[MetaField.Bitrate]);
+    song.frequency = this.reduce(metadata[MetaField.Frequency]);
+    song.vbr = this.reduce(metadata[MetaField.Vbr]);
+    song.replayGain = this.reduce(metadata[MetaField.ReplayGain]);
+    song.fileSize = this.reduce(metadata[MetaField.FileSize]);
+    song.fullyParsed = this.reduce(metadata[MetaField.TagFullyParsed]);
     song.favorite = false;
 
     this.db.hashSong(song);
-    this.processImage(song.id, metadata, OutputField.SingleImage);
+    this.processImage(song.id, metadata, MetaField.SingleImage);
     return song;
   }
 
-  private processImage(relatedId: string, metadata: KeyValues, field: OutputField): void {
+  private processImage(relatedId: string, metadata: KeyValues, field: MetaField): void {
     const image = this.reduce(metadata[field]) as IImageSource;
 
     if (image && image.sourcePath) {
@@ -502,25 +650,25 @@ export class ScanService {
 
   private getImageName(metadata: KeyValues, imageType: MusicImageType): string {
     if (imageType === MusicImageType.Single) {
-      const title = this.reduce(metadata[OutputField.Title]);
+      const title = this.reduce(metadata[MetaField.Title]);
       if (title) {
         return title;
       }
-      const fileName = this.reduce(metadata[OutputField.FileName]);
+      const fileName = this.reduce(metadata[MetaField.FileName]);
       if (fileName) {
         return fileName;
       }
     }
 
     if (imageType === MusicImageType.Front || imageType === MusicImageType.FrontAlternate) {
-      const album = this.reduce(metadata[OutputField.Album]);
+      const album = this.reduce(metadata[MetaField.Album]);
       if (album) {
         return album;
       }
     }
 
     if (imageType === MusicImageType.Artist) {
-      const albumArtist = this.reduce(metadata[OutputField.AlbumArtist]);
+      const albumArtist = this.reduce(metadata[MetaField.AlbumArtist]);
       if (albumArtist) {
         return albumArtist;
       }
@@ -533,8 +681,8 @@ export class ScanService {
     // This is the list of artists that will be eventually associated with a song
     const result: ArtistEntity[] = [];
 
-    const artists = metadata[OutputField.Artist];
-    const artistSorts = metadata[OutputField.ArtistSort];
+    const artists = metadata[MetaField.Artist];
+    const artistSorts = metadata[MetaField.ArtistSort];
 
     if (!artists || !artists.length) {
       return result;
@@ -621,7 +769,7 @@ export class ScanService {
 
   private processGenres(metadata: KeyValues, splitSymbols: string[]): ValueListEntryEntity[] {
     const result: ValueListEntryEntity[] = [];
-    const genres = metadata[OutputField.Genre];
+    const genres = metadata[MetaField.Genre];
     if (genres?.length) {
       for (const genreName of genres) {
         // First process genres by splitting the values;
@@ -671,7 +819,7 @@ export class ScanService {
   private processClassifications(metadata: KeyValues): ValueListEntryEntity[] {
     const result: ValueListEntryEntity[] = [];
 
-    const classifications = metadata[OutputField.Classification];
+    const classifications = metadata[MetaField.Classification];
     if (!classifications || !classifications.length) {
       return result;
     }

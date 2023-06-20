@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IDataSource, ILoadInfo } from './data-source.interface';
-import { OutputField } from '../data-transform/data-transform.enum';
+import { MetaField } from '../data-transform/data-transform.enum';
 import { FileService } from 'src/app/platform/file/file.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { IImageSource } from 'src/app/core/models/core.interface';
@@ -28,27 +28,27 @@ export class FileInfoSourceService implements IDataSource {
       return null;
     }
     switch (propertyName) {
-      case OutputField.FilePath:
+      case MetaField.FilePath:
         return [this.fileInfo.path];
-      case OutputField.FileName:
+      case MetaField.FileName:
         return [this.fileInfo.name];
-      case OutputField.AddDate:
+      case MetaField.AddDate:
         return [this.fileInfo.addDate];
-      case OutputField.ChangeDate:
+      case MetaField.ChangeDate:
         return [this.fileInfo.changeDate];
-      case OutputField.FileSize:
+      case MetaField.FileSize:
         return [this.fileInfo.size];
-      case OutputField.UnSyncLyrics:
+      case MetaField.UnSyncLyrics:
         const lyrics = await this.getLyrics(this.fileInfo);
         if (lyrics) {
           return [lyrics];
         }
         break;
-      case OutputField.ArtistImage:
-      case OutputField.AlbumArtistImage:
-      case OutputField.AlbumImage:
-      case OutputField.AlbumSecondaryImage:
-      case OutputField.SingleImage:
+      case MetaField.ArtistImage:
+      case MetaField.AlbumArtistImage:
+      case MetaField.AlbumImage:
+      case MetaField.AlbumSecondaryImage:
+      case MetaField.SingleImage:
         return this.getImageFile(propertyName);
     }
 
@@ -72,31 +72,31 @@ export class FileInfoSourceService implements IDataSource {
     return result;
   }
 
-  private getImageFile(field: OutputField): IImageSource[] {
+  private getImageFile(field: MetaField): IImageSource[] {
     let fileName = '';
     let levelsUp = 0;
     let imageType = MusicImageType.Default;
 
     switch (field) {
-      case OutputField.ArtistImage:
+      case MetaField.ArtistImage:
         fileName = 'artist.jpg';
         levelsUp = 1;
         imageType = MusicImageType.Artist;
         break;
-      case OutputField.AlbumArtistImage:
+      case MetaField.AlbumArtistImage:
         fileName = 'artist.jpg';
         levelsUp = 1;
         imageType = MusicImageType.Artist;
         break;
-      case OutputField.AlbumImage:
+      case MetaField.AlbumImage:
         fileName = 'front.jpg';
         imageType = MusicImageType.Front;
         break;
-      case OutputField.AlbumSecondaryImage:
+      case MetaField.AlbumSecondaryImage:
         fileName = 'front2.jpg';
         imageType = MusicImageType.FrontAlternate;
         break;
-      case OutputField.SingleImage:
+      case MetaField.SingleImage:
         fileName = this.fileInfo.name + 'jpg';
         imageType = MusicImageType.Single;
         break;

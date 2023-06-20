@@ -5,13 +5,14 @@ import { UtilityService } from "src/app/core/services/utility/utility.service";
 import { IDataSourceInfo } from "../data-source/data-source.interface";
 import { DataSourceType } from "../data-source/data-source.enum";
 import { Id3v2SourceService } from "../data-source/id3v2-source.service";
-import { OutputField } from "./data-transform.enum";
+import { MetaField } from "./data-transform.enum";
 import { FileInfoSourceService } from "../data-source/file-info-source.service";
 import { PathExpressionSourceService } from "../data-source/path-expression-source.service";
 import { LogService } from "src/app/core/services/log/log.service";
 import { KeyValues } from "src/app/core/models/core.interface";
 
 export abstract class DataTransformServiceBase<T> implements IDataTransform {
+  protected fields: MetaField[];
   protected sources: DataSourceEntity[];
   protected mappingsByDestination: { [key: string]: DataMappingEntity[] };
 
@@ -29,6 +30,8 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
   public abstract process(fileInfo: IFileInfo): Promise<T>;
 
   public async init(): Promise<void> {
+    // Exclude fields that are not directly used by the transform tasks
+    this.fields = Object.values(MetaField).filter(f => f !== MetaField.FileMode);
     this.sources = await DataSourceEntity.findBy({ profileId: this.profileId });
     this.sources = this.utilityService.sort(this.sources, 'sequence');
   }
@@ -41,7 +44,7 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
       if (sourceInfo && sourceInfo.data && sourceInfo.source) {
         const loadInfo = await sourceInfo.source.load({ filePath: fileInfo.path, config: sourceInfo.data.config });
         if (loadInfo.error) {
-          context[OutputField.Error] = [loadInfo.error];
+          context[MetaField.Error] = [loadInfo.error];
           // TODO: continueOnError for other data sources
           return context;
         }
@@ -49,8 +52,7 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
           // TODO: custom mapping and tags
         }
         else {
-          const fields = Object.values(OutputField);
-          for (const field of fields) {
+          for (const field of this.fields) {
             if (!context[field]) {
               context[field] = [];
             }

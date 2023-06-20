@@ -14,13 +14,13 @@ import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { FileService } from 'src/app/platform/file/file.service';
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
-import { ScanService } from 'src/app/shared/services/scan/scan.service';
+import { ScanFileMode, ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { AppRoute } from 'src/app/app-routes';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
-import { OutputField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { KeyValues } from 'src/app/core/models/core.interface';
 
 @Component({
@@ -260,15 +260,25 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       this.subs.unSubscribe('settingsViewScanFile');
       // Start reading file metadata
       setting.descriptions[0] = 'Reading metadata...';
-      this.processAudioFiles(mp3Files, setting).then(failures => {
+      this.processAudioFiles(mp3Files, setting).then(results => {
+        // At this point the process is done.
+
+        // Getting info
+        const addedFiles = results.filter(r => r[MetaField.FileMode][0] === ScanFileMode.Add && !r[MetaField.Error].length);
+        const updatedFiles = results.filter(r => r[MetaField.FileMode][0] === ScanFileMode.Update && !r[MetaField.Error].length);
+        const skipFiles = results.filter(r => r[MetaField.FileMode][0] === ScanFileMode.Skip && !r[MetaField.Error].length);
+        const errorFiles = results.filter(r => r[MetaField.Error].length);
+
+        const filesInfo = `Added: ${addedFiles.length}. Updated: ${updatedFiles.length}. Skipped: ${skipFiles.length}.`;
+
         setting.descriptions[0] = 'Click here to start scanning audio files.';
-        if (failures.length) {
-          this.log.debug('Scan failures', failures);
+        if (errorFiles.length) {
+          this.log.debug('Scan failures', errorFiles);
           setting.dynamicText = '';
-          setting.warningText = 'Scan process done. File errors found: ' + failures.length;
+          setting.warningText = `Scan process done. ${filesInfo} Errors: ${errorFiles.length}.`;
         }
         else {
-          setting.dynamicText = 'Scan process done. No errors found.';
+          setting.dynamicText = `Scan process done. ${filesInfo} No errors found.`;
         }
         const endTime = new Date().getTime();
         const timeSpan =  this.utility.toTimeSpan(endTime - startTime,
@@ -299,7 +309,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         setting.dynamicText = '';
       }
     );
-    return audios.filter(audioInfo => audioInfo[OutputField.Error].length);
+    return audios;
   }
 
   public onPlaylistScan(setting: ISetting, folderPath: string): void {

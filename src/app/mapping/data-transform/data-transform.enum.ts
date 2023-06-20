@@ -5,7 +5,7 @@ export enum DataTransformId {
 /**
  * Supported fields for the transform tasks.
  */
-export enum OutputField {
+export enum MetaField {
   /** String. Id3v2 */
   Artist = 'artist',
   /** String. Id3v2 */
@@ -98,5 +98,7 @@ export enum OutputField {
   /** Id3v2 */
   TagFullyParsed = 'tagFullyParsed',
   /** Id3v2 */
-  Error = 'error'
+  Error = 'error',
+  /** ScanFileMode. None. */
+  FileMode = 'fileMode'
 }

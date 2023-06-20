@@ -5,7 +5,7 @@ import { FileService } from 'src/app/platform/file/file.service';
 import { IAudioInfo, IIdentifierTag, IMemoTag, IPictureExt, IPopularimeterTag } from 'src/app/platform/audio-metadata/audio-metadata.interface';
 import { ITag } from 'music-metadata-browser';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { OutputField } from '../data-transform/data-transform.enum';
+import { MetaField } from '../data-transform/data-transform.enum';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { IImageSource } from 'src/app/core/models/core.interface';
 
@@ -49,104 +49,104 @@ export class Id3v2SourceService implements IDataSource {
       return [];
     }
     switch (propertyName) {
-      case OutputField.Artist:
+      case MetaField.Artist:
         if (this.audioInfo.metadata.common.artists) {
           return this.audioInfo.metadata.common.artists;
         }
         break;
-      case OutputField.ArtistSort:
+      case MetaField.ArtistSort:
         return this.metadataService.getValues<string>('TSOP', this.tags);
-      case OutputField.ArtistType:
+      case MetaField.ArtistType:
         return this.metadataService.getValues<string>('ArtistType', this.tags, true);
-      case OutputField.ArtistStylized:
+      case MetaField.ArtistStylized:
         return this.metadataService.getValues<string>('ArtistStylized', this.tags, true);
-      case OutputField.AlbumArtist:
+      case MetaField.AlbumArtist:
         if (this.audioInfo.metadata.common.albumartist) {
           return [this.audioInfo.metadata.common.albumartist];
         }
         break;
-      case OutputField.AlbumArtistSort:
+      case MetaField.AlbumArtistSort:
         if (this.audioInfo.metadata.common.albumartistsort) {
           return [this.audioInfo.metadata.common.albumartistsort];
         }
         break;
-      case OutputField.Album:
+      case MetaField.Album:
         if (this.audioInfo.metadata.common.album) {
           return [this.audioInfo.metadata.common.album];
         }
         break;
-      case OutputField.AlbumSort:
+      case MetaField.AlbumSort:
         if (this.audioInfo.metadata.common.albumsort) {
           return [this.audioInfo.metadata.common.albumsort];
         }
         break;
-      case OutputField.AlbumType:
+      case MetaField.AlbumType:
         return this.metadataService.getValues<string>('AlbumType', this.tags, true);
-      case OutputField.Year:
+      case MetaField.Year:
         if (this.audioInfo.metadata.common.year) {
           return [this.audioInfo.metadata.common.year];
         }
         break;
-      case OutputField.Country:
+      case MetaField.Country:
         return this.metadataService.getValues<string>('Country', this.tags, true);
-      case OutputField.UfId:
+      case MetaField.UfId:
         const id = this.metadataService.getValue<IIdentifierTag>('UFID', this.tags);
         if (id) {
           return [id.identifier.toString()];
         }
         break;
-      case OutputField.Title:
+      case MetaField.Title:
         if (this.audioInfo.metadata.common.title) {
           return [this.audioInfo.metadata.common.title];
         }
         break;
-      case OutputField.TitleSort:
+      case MetaField.TitleSort:
         if (this.audioInfo.metadata.common.titlesort) {
           return [this.audioInfo.metadata.common.titlesort];
         }
         break;
-      case OutputField.TrackNumber:
+      case MetaField.TrackNumber:
         if (this.audioInfo.metadata.common.track && this.audioInfo.metadata.common.track.no) {
           return [this.audioInfo.metadata.common.track.no];
         }
         break;
-      case OutputField.MediaNumber:
+      case MetaField.MediaNumber:
         if (this.audioInfo.metadata.common.disk && this.audioInfo.metadata.common.disk.no) {
           return [this.audioInfo.metadata.common.disk.no];
         }
         break;
-      case OutputField.Composer:
+      case MetaField.Composer:
         if (this.audioInfo.metadata.common.composer) {
           return this.audioInfo.metadata.common.composer;
         }
         break;
-      case OutputField.Comment:
+      case MetaField.Comment:
         if (this.audioInfo.metadata.common.comment) {
           return this.audioInfo.metadata.common.comment;
         }
         break;
-      case OutputField.Grouping:
+      case MetaField.Grouping:
         if (this.audioInfo.metadata.common.grouping) {
           return [this.audioInfo.metadata.common.grouping];
         }
         break;
-      case OutputField.AddDate:
+      case MetaField.AddDate:
         const addDates = this.metadataService.getValues<string>('AddDate', this.tags, true);
         if (addDates?.length) {
           return addDates.map(d => new Date(d));
         }
         break;
-      case OutputField.ChangeDate:
+      case MetaField.ChangeDate:
         const changeDates = this.metadataService.getValues<string>('ChangeDate', this.tags, true);
         if (changeDates?.length) {
           return changeDates.map(d => new Date(d));
         }
         break;
-      case OutputField.Language:
+      case MetaField.Language:
         return this.metadataService.getValues<string>('TLAN', this.tags, true);
-      case OutputField.Mood:
+      case MetaField.Mood:
         return this.metadataService.getValues<string>('TMOO', this.tags, true);
-      case OutputField.Rating:
+      case MetaField.Rating:
         if (this.audioInfo.metadata.common.rating && this.audioInfo.metadata.common.rating.length) {
           const result = [];
           this.audioInfo.metadata.common.rating.forEach(ratingItem => {
@@ -169,7 +169,7 @@ export class Id3v2SourceService implements IDataSource {
           return [Math.round(value * 5)];
         }
         break;
-      case OutputField.PlayCount:
+      case MetaField.PlayCount:
         const playCounts = this.metadataService.getValues<number>('PCNT', this.tags);
         if (playCounts.length) {
           return playCounts;
@@ -179,12 +179,12 @@ export class Id3v2SourceService implements IDataSource {
           return [playCountPopularimeter.counter];
         }
         break;
-      case OutputField.SyncLyrics:
+      case MetaField.SyncLyrics:
         if (this.audioInfo.metadata.common.lyrics) {
           return this.audioInfo.metadata.common.lyrics;
         }
         break;
-      case OutputField.UnSyncLyrics:
+      case MetaField.UnSyncLyrics:
         const lyricsTags = this.metadataService.getValues<IMemoTag>('USLT', this.tags);
         if (lyricsTags?.length) {
           const result: string[] = [];
@@ -196,14 +196,14 @@ export class Id3v2SourceService implements IDataSource {
           return result;
         }
         break;
-      case OutputField.Live:
+      case MetaField.Live:
         return this.metadataService.getValues<string>('Live', this.tags, true);
-      case OutputField.Genre:
+      case MetaField.Genre:
         if (this.audioInfo.metadata.common.genre) {
           return this.audioInfo.metadata.common.genre;
         }
         break;
-      case OutputField.Classification:
+      case MetaField.Classification:
         const classData: string[] = [];
         const customTags = this.metadataService.getUserDefinedTags(this.tags, 'ClassificationType');
         for (const customTag of customTags) {
@@ -214,38 +214,38 @@ export class Id3v2SourceService implements IDataSource {
           }
         }
         return classData;
-      case OutputField.ArtistImage:
-      case OutputField.AlbumArtistImage:
-      case OutputField.AlbumImage:
-      case OutputField.AlbumSecondaryImage:
-      case OutputField.SingleImage:
-      case OutputField.OtherImage:
+      case MetaField.ArtistImage:
+      case MetaField.AlbumArtistImage:
+      case MetaField.AlbumImage:
+      case MetaField.AlbumSecondaryImage:
+      case MetaField.SingleImage:
+      case MetaField.OtherImage:
         return this.findImage(propertyName);
-      case OutputField.Seconds:
+      case MetaField.Seconds:
         if (this.audioInfo.metadata.format.duration) {
           return [this.audioInfo.metadata.format.duration];
         }
         return [0];
-      case OutputField.Bitrate:
+      case MetaField.Bitrate:
         if (this.audioInfo.metadata.format.bitrate) {
           return [this.audioInfo.metadata.format.bitrate];
         }
         return [0];
-      case OutputField.Frequency:
+      case MetaField.Frequency:
         if (this.audioInfo.metadata.format.sampleRate) {
           return [this.audioInfo.metadata.format.sampleRate];
         }
         return [0];
-      case OutputField.Vbr:
+      case MetaField.Vbr:
         return [this.audioInfo.metadata.format.codecProfile !== 'CBR'];
-      case OutputField.ReplayGain:
+      case MetaField.ReplayGain:
         if (this.audioInfo.metadata.format.trackGain) {
           return [this.audioInfo.metadata.format.trackGain];
         }
         return [0];
-      case OutputField.TagFullyParsed:
+      case MetaField.TagFullyParsed:
         return [this.audioInfo.fullyParsed];
-      case OutputField.Error:
+      case MetaField.Error:
         if (this.audioInfo.error) {
           return [this.audioInfo.error];
         }
@@ -256,24 +256,24 @@ export class Id3v2SourceService implements IDataSource {
     return [];
   }
 
-  private findImage(field: OutputField): IImageSource[] {
+  private findImage(field: MetaField): IImageSource[] {
     const result: IImageSource[] = [];
     let imageType = MusicImageType.Default;
     switch (field) {
-      case OutputField.ArtistImage:
-      case OutputField.AlbumArtistImage:
+      case MetaField.ArtistImage:
+      case MetaField.AlbumArtistImage:
         imageType = MusicImageType.Artist;
         break;
-      case OutputField.AlbumImage:
+      case MetaField.AlbumImage:
         imageType = MusicImageType.Front;
         break;
-      case OutputField.AlbumSecondaryImage:
+      case MetaField.AlbumSecondaryImage:
         imageType = MusicImageType.FrontAlternate;
         break;
-      case OutputField.SingleImage:
+      case MetaField.SingleImage:
         imageType = MusicImageType.Single;
         break;
-      case OutputField.OtherImage:
+      case MetaField.OtherImage:
         imageType = MusicImageType.Other;
         break;
     }
