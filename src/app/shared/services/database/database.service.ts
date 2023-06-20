@@ -299,7 +299,7 @@ export class DatabaseService {
       bulkIndex++;
       const items = values.splice(0, bulkSize);
       this.log.info(`Bulk update ${bulkIndex} with ${items.length} items.`);
-      const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(values).orUpdate(updateColumns).execute();
+      const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(items).orUpdate(updateColumns).execute();
       response.push(result);
     }
 

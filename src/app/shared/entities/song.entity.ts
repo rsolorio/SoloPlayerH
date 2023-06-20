@@ -30,10 +30,12 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   composer: string;
   @Column({ nullable: true })
   comment: string;
-  @Column({ nullable: true })
+  @Column()
   addDate: Date;
-  @Column({ nullable: true })
+  @Column()
   changeDate: Date;
+  @Column({ nullable: true })
+  replaceDate: Date;
   @Column({ nullable: true })
   playDate: Date;
   @Column()
@@ -68,6 +70,8 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   favorite: boolean;
   @Column()
   live: boolean;
+  @Column()
+  primaryAlbumId: string;
 
   @ManyToOne(() => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})
@@ -83,7 +87,6 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   playlistSongs: Relation<PlaylistSongEntity[]>;
 
   // Empty properties from ISongModel interface
-  primaryAlbumId: string;
   primaryArtistId: string;
   classificationId: string;
 }

@@ -153,7 +153,8 @@ export class ScanService {
     }
     const songsToBeUpdated = this.existingSongs.filter(song => song.hasChanges);
     if (songsToBeUpdated.length) {
-      await this.db.bulkUpdate(SongEntity, songsToBeUpdated, ['lyrics']);
+      const updateColumns = ['lyrics', 'seconds', 'bitrate', 'frequency', 'vbr', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
+      await this.db.bulkUpdate(SongEntity, songsToBeUpdated, updateColumns);
       songsToBeUpdated.forEach(s => s.hasChanges = false);
     }
     // SongArtists
@@ -324,43 +325,44 @@ export class ScanService {
       this.songToProcess.hasChanges = true;
     }
 
-    // Audio info
+    // Replaced?
+    let replaced = false;
     const seconds = this.reduce(metadata[MetaField.Seconds]);
     if (seconds && seconds !== this.songToProcess.seconds) {
       this.songToProcess.seconds = seconds;
       this.songToProcess.duration = this.utilities.secondsToMinutes(seconds);
-      this.songToProcess.hasChanges = true;
+      replaced = true;
     }
     const bitrate = this.reduce(metadata[MetaField.Bitrate]);
     if (bitrate && bitrate !== this.songToProcess.bitrate) {
       this.songToProcess.bitrate = bitrate;
-      this.songToProcess.hasChanges = true;
+      replaced = true;
     }
     const frequency = this.reduce(metadata[MetaField.Frequency]);
     if (frequency && frequency !== this.songToProcess.frequency) {
       this.songToProcess.frequency = frequency;
-      this.songToProcess.hasChanges = true;
+      replaced = true;
     }
     const vbr = metadata[MetaField.Vbr];
     if (vbr?.length && vbr[0] !== this.songToProcess.vbr) {
       this.songToProcess.vbr = vbr[0];
-      this.songToProcess.hasChanges = true;
+      replaced = true;
     }
     const replayGain = this.reduce(metadata[MetaField.ReplayGain]);
     if (replayGain && replayGain !== this.songToProcess.replayGain) {
       this.songToProcess.replayGain = replayGain;
-      this.songToProcess.hasChanges = true;
+      replaced = true;
     }
     const fileSize = this.reduce(metadata[MetaField.FileSize]);
     if (fileSize && fileSize !== this.songToProcess.fileSize) {
       this.songToProcess.fileSize = fileSize;
-      this.songToProcess.hasChanges = true;
+      replaced = true;
     }
-    const fullyParsed = metadata[MetaField.TagFullyParsed];
-    if (fullyParsed?.length && fullyParsed[0] !== this.songToProcess.fullyParsed) {
-      this.songToProcess.fullyParsed = fullyParsed[0];
-      this.songToProcess.hasChanges = true;
-    }
+    // const fullyParsed = metadata[MetaField.TagFullyParsed];
+    // if (fullyParsed?.length && fullyParsed[0] !== this.songToProcess.fullyParsed) {
+    //   this.songToProcess.fullyParsed = fullyParsed[0];
+    //   replaced = true;
+    // }
 
     // Add date
     let addDate = this.reduce(metadata[MetaField.AddDate]);
@@ -383,9 +385,16 @@ export class ScanService {
       this.songToProcess.changeDate = new Date();
     }
 
+    if (replaced) {
+      this.songToProcess.replaceDate = new Date();
+      // We want to notify the process this file changed but prevent changing the changeDate
+      // if other properties didn't change so that's why we have this line after validating hasChanges
+      this.songToProcess.hasChanges = true;
+    }
+
     // Images
     const existingAlbum = this.existingAlbums.find(a => a.id === this.songToProcess.primaryAlbumId);
-    this.processImage(existingAlbum.primaryArtist.id, metadata, MetaField.ArtistImage);
+    this.processImage(existingAlbum.primaryArtistId, metadata, MetaField.ArtistImage);
     this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumImage);
     this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumSecondaryImage);
     this.processImage(this.songToProcess.id, metadata, MetaField.SingleImage);
@@ -606,7 +615,8 @@ export class ScanService {
 
     song.seconds = this.reduce(metadata[MetaField.Seconds]);
     if (!song.seconds) {
-      console.log(metadata);
+      song.seconds = 0;
+      this.log.warn('Duration not found for: ' + song.filePath);
     }
     song.duration = this.utilities.secondsToMinutes(song.seconds);
     song.bitrate = this.reduce(metadata[MetaField.Bitrate]);

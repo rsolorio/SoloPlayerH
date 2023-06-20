@@ -44,10 +44,6 @@ export class Id3v2SourceService implements IDataSource {
   }
 
   public async get(propertyName: string): Promise<any[]> {
-    // If there are no tags return empty
-    if (!this.tags.length) {
-      return [];
-    }
     switch (propertyName) {
       case MetaField.Artist:
         if (this.audioInfo.metadata.common.artists) {

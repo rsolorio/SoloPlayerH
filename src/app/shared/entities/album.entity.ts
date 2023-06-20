@@ -16,6 +16,8 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   favorite: boolean;
   @Column()
   albumSort: string;
+  @Column()
+  primaryArtistId: string;
 
   @ManyToOne(() => ArtistEntity, artist => artist.albums)
   @JoinColumn({ name: 'primaryArtistId'})

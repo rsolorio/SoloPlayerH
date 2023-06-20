@@ -122,9 +122,12 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
   - ID3 mapping: custom AddDate tag
   - Fallback: file creation date
 - changeDate
-  - Full timestamp describing when the song's information was updated
+  - Full timestamp describing when the song's metadata or information was updated
   - ID3 mapping: custom ChangeDate tag
   - Fallback: file modification date
+- replaceDate
+  - Full timestamp describing when the song's file or audio signature changed meaning that the file was replaced by a different one.
+  - Properties that define this change: file size, bitrate, frequency, seconds, vbr, replayGain
 - playDate
   - Full timestamp describing the last time the song was played
 - language
