@@ -8,11 +8,13 @@ export interface IDataSource {
 export interface IDataSourceInfo {
   source: IDataSource;
   data: DataSourceEntity;
+  fieldArray: string[];
 }
 
 export interface ILoadInfo {
   filePath: string;
   config: string;
+  fieldArray: string[];
   error?: any;
   // TODO: continueOnError
 }

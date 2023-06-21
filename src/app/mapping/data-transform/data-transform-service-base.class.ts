@@ -13,7 +13,7 @@ import { KeyValues } from "src/app/core/models/core.interface";
 
 export abstract class DataTransformServiceBase<T> implements IDataTransform {
   protected fields: MetaField[];
-  protected sources: DataSourceEntity[];
+  protected sources: IDataSourceInfo[];
   protected mappingsByDestination: { [key: string]: DataMappingEntity[] };
 
   constructor(
@@ -22,7 +22,7 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
     private id3v2SourceService: Id3v2SourceService,
     private fileInfoSourceService: FileInfoSourceService,
     private pathExpressionSourceService: PathExpressionSourceService
-    ) {
+  ) {
   }
 
   protected abstract get profileId(): string;
@@ -32,27 +32,33 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
   public async init(): Promise<void> {
     // Exclude fields that are not directly used by the transform tasks
     this.fields = Object.values(MetaField).filter(f => f !== MetaField.FileMode);
-    this.sources = await DataSourceEntity.findBy({ profileId: this.profileId });
-    this.sources = this.utilityService.sort(this.sources, 'sequence');
+
+    this.sources = [];
+    const sourceData = await DataSourceEntity.findBy({ profileId: this.profileId });
+    this.utilityService.sort(sourceData, 'sequence').forEach(sourceRow => {
+      if (!sourceRow.disabled) {
+        const info = this.getDataSourceInfo(sourceRow);
+        this.sources.push(info);
+      }
+    });
   }
 
   protected async getContext(fileInfo: IFileInfo): Promise<KeyValues> {
     // All values for a given destination will be saved in an array
     const context: KeyValues = {};
-    for (const source of this.sources) {
-      const sourceInfo = this.getDataSourceInfo(source.id);
+    for (const sourceInfo of this.sources) {
       if (sourceInfo && sourceInfo.data && sourceInfo.source) {
-        const loadInfo = await sourceInfo.source.load({ filePath: fileInfo.path, config: sourceInfo.data.config });
+        const loadInfo = await sourceInfo.source.load({ filePath: fileInfo.path, config: sourceInfo.data.config, fieldArray: sourceInfo.fieldArray });
         if (loadInfo.error) {
           context[MetaField.Error] = [loadInfo.error];
           // TODO: continueOnError for other data sources
           return context;
         }
-        if (source.customMapping) {
+        if (sourceInfo.data.customMapping) {
           // TODO: custom mapping and tags
         }
         else {
-          for (const field of this.fields) {
+          for (const field of sourceInfo.fieldArray) {
             if (!context[field]) {
               context[field] = [];
             }
@@ -66,30 +72,28 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
         }
       }
       else {
-        this.logService.warn('Data source info not found for id: ' + source.id);
+        this.logService.warn('Data source info not found for id: ' + sourceInfo.data.id);
       }
     }
     return context;
   }
 
-  protected getDataSourceInfo(dataSourceId: string): IDataSourceInfo {
-    const dataSourceData = this.sources.find(source => source.id === dataSourceId);
+  protected getDataSourceInfo(dataSource: DataSourceEntity): IDataSourceInfo {
     const result: IDataSourceInfo = {
-      data: dataSourceData,
+      data: dataSource,
+      fieldArray: dataSource.fields.split(','),
       source: null
     };
-    if (dataSourceData) {
-      switch (dataSourceData.type) {
-        case DataSourceType.Id3v2:
-          result.source = this.id3v2SourceService;
-          break;
-        case DataSourceType.FileInfo:
-          result.source = this.fileInfoSourceService;
-          break;
-        case DataSourceType.PathExpression:
-          result.source = this.pathExpressionSourceService;
-          break;
-      }
+    switch (dataSource.type) {
+      case DataSourceType.Id3v2:
+        result.source = this.id3v2SourceService;
+        break;
+      case DataSourceType.FileInfo:
+        result.source = this.fileInfoSourceService;
+        break;
+      case DataSourceType.PathExpression:
+        result.source = this.pathExpressionSourceService;
+        break;
     }
     return result;
   }

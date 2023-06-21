@@ -246,7 +246,7 @@ export class Id3v2SourceService implements IDataSource {
           return [this.audioInfo.error];
         }
         break;
-      case 'subTitle':
+      case MetaField.SubTitle:
         return this.metadataService.getValues<string>('TIT3', this.tags);
     }
     return [];

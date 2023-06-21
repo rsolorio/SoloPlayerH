@@ -34,12 +34,14 @@ export enum MetaField {
   UfId = 'ufId',
   /** String. Id3v2 */
   Title = 'title',
+  /** String. None. */
+  SubTitle = 'subTitle',
   /** String. Id3v2 */
   TitleSort = 'titleSort',
   /** Number. Id3v2 */
-  TrackNumber = 'trackNumber',
+  TrackNumber = 'track',
   /** Number. Id3v2 */
-  MediaNumber = 'mediaNumber',
+  MediaNumber = 'media',
   /** String. Id3v2 */
   Composer = 'composer',
   /** String. Id3v2 */

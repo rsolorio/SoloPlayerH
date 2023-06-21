@@ -893,18 +893,21 @@
     "dataSource": [
       {
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
-        "name": "id3v2Reader",
-        "type": "Id3v2",
+        "name": "fullPathExp",
+        "type": "PathExpression",
+        "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%media% - %track% - %title%",
+        "fields": "language,genre,artist,year,album,media,track,title",
         "customMapping": false,
-        "fields": "title,artist,year,media,track,genre",
-        "sequence": 3,
+        "sequence": 1,
         "disabled": false,
         "system": true
       },
       {
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
-        "name": "fileInfoReader",
-        "type": "FileInfo",
+        "name": "noMediaPathExp",
+        "type": "PathExpression",
+        "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%track% - %title%",
+        "fields": "language,genre,artist,year,album,track,title",
         "customMapping": false,
         "sequence": 2,
         "disabled": false,
@@ -912,81 +915,67 @@
       },
       {
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
-        "id": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "name": "fullPathExp",
+        "name": "noMediaTrackPathExp",
         "type": "PathExpression",
-        "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%media%-%track% - %title%",
+        "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%title%",
+        "fields": "language,genre,artist,year,album,title",
         "customMapping": false,
-        "fields": "language,genre,artist,year,album,media,track,title",
-        "sequence": 1,
+        "sequence": 3,
         "disabled": false,
         "system": true
-      }
-    ],
-    "dataMapping": [
-      {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "title",
-        "destination": "songName",
-        "sequence": 1,
-        "disabled": false,
-        "system": false
       },
       {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "track",
-        "destination": "trackNumber",
-        "sequence": 1,
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "noYearPathExp",
+        "type": "PathExpression",
+        "config": "%language%\\%genre%\\%artist%\\%album%\\%media% - %track% - %title%",
+        "fields": "language,genre,artist,album,media,track,title",
+        "customMapping": false,
+        "sequence": 4,
         "disabled": false,
-        "system": false
+        "system": true
       },
       {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "media",
-        "destination": "mediaNumber",
-        "sequence": 1,
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "noYearMediaPathExp",
+        "type": "PathExpression",
+        "config": "%language%\\%genre%\\%artist%\\%album%\\%track% - %title%",
+        "fields": "language,genre,artist,album,track,title",
+        "customMapping": false,
+        "sequence": 5,
         "disabled": false,
-        "system": false
+        "system": true
       },
       {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "album",
-        "destination": "albumName",
-        "sequence": 1,
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "noYearMediaTrackPathExp",
+        "type": "PathExpression",
+        "config": "%language%\\%genre%\\%artist%\\%album%\\%title%",
+        "fields": "language,genre,artist,album,title",
+        "customMapping": false,
+        "sequence": 6,
         "disabled": false,
-        "system": false
+        "system": true
       },
       {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "year",
-        "destination": "releaseYear",
-        "sequence": 1,
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "fileInfoReader",
+        "type": "FileInfo",
+        "fields": "filePath,fileName,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage",
+        "customMapping": false,
+        "sequence": 7,
         "disabled": false,
-        "system": false
+        "system": true
       },
       {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "artist",
-        "destination": "artistName",
-        "sequence": 1,
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "id3v2Reader",
+        "type": "Id3v2",
+        "fields": "artist,artistSort,artistType,artistStylized,albumArtist,albumArtistSort,album,albumSort,albumType,country,ufid,title,titleSort,track,media,composer,comment,grouping,addDate,changeDate,language,mood,rating,playCount,syncLyrics,unSyncLyrics,live,genre,classification,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,seconds,bitrate,frequency,vbr,replayGain,tagFullyParsed,error",
+        "customMapping": false,
+        "sequence": 8,
         "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "genre",
-        "destination": "genre",
-        "sequence": 1,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "785ca987-f746-4d4c-8b83-9738fbe25103",
-        "source": "language",
-        "destination": "language",
-        "sequence": 1,
-        "disabled": false,
-        "system": false
+        "system": true
       }
     ]
   }
