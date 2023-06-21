@@ -4,7 +4,8 @@ import { MetaField } from '../data-transform/data-transform.enum';
 import { FileService } from 'src/app/platform/file/file.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { IImageSource } from 'src/app/core/models/core.interface';
-import { MusicImageSourceType, MusicImageType, PictureFormat } from 'src/app/platform/audio-metadata/audio-metadata.enum';
+import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
+import { MimeType } from 'src/app/core/models/core.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -109,7 +110,7 @@ export class FileInfoSourceService implements IDataSource {
           sourcePath: filePath,
           sourceType: MusicImageSourceType.ImageFile,
           sourceIndex: 0,
-          mimeType: PictureFormat.Jpg,
+          mimeType: MimeType.Jpg,
           imageType: imageType
         };
         return [imageData];

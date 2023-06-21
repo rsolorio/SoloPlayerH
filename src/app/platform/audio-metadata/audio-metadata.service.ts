@@ -4,7 +4,7 @@ import { IImage } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { AttachedPictureType, MusicImageType } from './audio-metadata.enum';
 import { IAudioInfo, IPictureExt } from './audio-metadata.interface';
-import { ImageSrcType } from 'src/app/core/models/core.enum';
+import { ImageSrcType, MimeType } from 'src/app/core/models/core.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -18,14 +18,19 @@ export class AudioMetadataService {
 
   constructor(private log: LogService) { }
 
-  public async getMetadata(data: Buffer, enforceDuration?: boolean): Promise<IAudioInfo> {
+  public async getMetadata(data: Buffer, type?: MimeType, enforceDuration?: boolean): Promise<IAudioInfo> {
     const result: IAudioInfo = {
       metadata: null,
       fullyParsed: false
     };
 
+    if (!type) {
+      type = MimeType.Mp3;
+    }
+
     try {
-      result.metadata = await parseBuffer(data);
+      // If the type is not passed to this method, some files will throw the "cannot determine audio format" error
+      result.metadata = await parseBuffer(data, type);
       // Hack for adding more info about the pictures
       if (result.metadata.common.picture && result.metadata.common.picture.length) {
         for (let pictureIndex = 0; pictureIndex < result.metadata.common.picture.length; pictureIndex++) {

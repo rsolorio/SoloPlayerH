@@ -43,3 +43,8 @@ export enum TimeAgo {
   OneYear,
   Long
 }
+
+export enum MimeType {
+  Jpg = 'image/jpeg',
+  Mp3 = 'audio/mpeg'
+}

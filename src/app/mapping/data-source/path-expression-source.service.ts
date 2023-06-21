@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IDataSource, ILoadInfo } from './data-source.interface';
 import { MetaField } from '../data-transform/data-transform.enum';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class PathExpressionSourceService implements IDataSource {
   protected loadInfo: ILoadInfo;
   protected matchInfo: RegExpExecArray;
   protected regExpText: string;
-  constructor() { }
+  constructor(private utility: UtilityService) { }
 
   public async load(info: ILoadInfo): Promise<ILoadInfo> {
     if (this.loadInfo && this.loadInfo.filePath === info.filePath && this.loadInfo.config === info.config) {
@@ -21,7 +22,7 @@ export class PathExpressionSourceService implements IDataSource {
       this.regExpText = info.config;
       for (const field of info.fieldArray) {
         const token = `%${field}%`;
-        const group = `(?<${field}>.+)`;
+        const group = `(?<${field}>[^\\\\]+)`;
         this.regExpText = this.regExpText.replace(token, group);
       }
       // 2. Escape backslashes since they are special characters in reg exp
@@ -31,7 +32,7 @@ export class PathExpressionSourceService implements IDataSource {
       // 4. Append extension
       const extension = this.getExtension(info.filePath);
       if (extension) {
-        this.regExpText += extension;
+        this.regExpText += '\\' + extension;
       }
     }
 
@@ -49,7 +50,7 @@ export class PathExpressionSourceService implements IDataSource {
     switch (propertyName) {
       case MetaField.Language:
       case MetaField.Genre:
-      case MetaField.Artist:
+      case MetaField.AlbumArtist:
       case MetaField.Album:
       case MetaField.Title:
         const valueText = this.matchInfo.groups[propertyName];
@@ -57,6 +58,25 @@ export class PathExpressionSourceService implements IDataSource {
           return [valueText];
         }
         break;
+      case MetaField.Artist:
+        const result: any[] = [];
+        // Album artist
+        const mainArtist = this.matchInfo.groups[propertyName];
+        if (mainArtist) {
+          result.push(mainArtist);
+        }
+        // Associated artists
+        const title = this.matchInfo.groups[MetaField.Title];
+        const bracketsContents = title.match(/(?<=\[).+?(?=\])/g);
+        if (bracketsContents && bracketsContents.length) {
+          for (const content of bracketsContents) {
+            const artists = content.replace('feat ', '').replace('con ', '').split(',');
+            for (const artistName of artists) {
+              result.push(this.utility.toProperCase(artistName.trim()));
+            }
+          }
+        }
+        return result;
       case MetaField.Year:
       case MetaField.MediaNumber:
       case MetaField.TrackNumber:

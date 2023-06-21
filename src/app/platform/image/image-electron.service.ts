@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ImageService } from './image.service';
 import { IImage } from 'src/app/core/models/core.interface';
 import { NativeImage, nativeImage } from 'electron';
-import { ImageSrcType } from 'src/app/core/models/core.enum';
+import { ImageSrcType, MimeType } from 'src/app/core/models/core.enum';
 import * as remoteRenderer from '@electron/remote/renderer';
 import { FileService } from '../file/file.service';
 import { AudioMetadataService } from '../audio-metadata/audio-metadata.service';
@@ -56,7 +56,7 @@ export class ImageElectronService extends ImageService {
   private async getScreenshotWithWebContents(): Promise<string> {
     const webContents = remoteRenderer.getCurrentWebContents();
     const page = await webContents.capturePage({ x: 0, y:0, width: window.innerWidth, height: window.innerHeight - 1 });
-    return `data:image/jpeg;base64,` + page.toJPEG(100).toString('base64');
+    return `data:${MimeType.Jpg};base64,` + page.toJPEG(100).toString('base64');
   }
 
   private async getScreenshotWithImageCapture(): Promise<string> {
@@ -138,7 +138,7 @@ export class ImageElectronService extends ImageService {
           catch {
             //
           }
-          resolve(canvas.toDataURL('image/jpeg'));
+          resolve(canvas.toDataURL(MimeType.Jpg));
         };
 
         video.srcObject = stream;

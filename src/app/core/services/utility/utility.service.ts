@@ -406,6 +406,10 @@ export class UtilityService {
     return Math.floor(year / 10) * 10;
   }
 
+  public toProperCase(value: string): string {
+    return value.split(' ').map(w => w[0].toUpperCase() + w.substring(1).toLowerCase()).join(' ');
+  }
+
   /**
    * Changes the theme-color meta tag used by the mobile chrome browser.
    */

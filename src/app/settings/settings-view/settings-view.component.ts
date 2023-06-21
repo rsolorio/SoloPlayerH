@@ -22,6 +22,7 @@ import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { KeyValues } from 'src/app/core/models/core.interface';
+import { MimeType } from 'src/app/core/models/core.enum';
 
 @Component({
   selector: 'sp-settings-view',
@@ -372,7 +373,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     if (selectedFiles && selectedFiles.length) {
       const fileInfo = await this.fileService.getFileInfo(selectedFiles[0]);
       const buffer = await this.fileService.getBuffer(fileInfo.path);
-      const audioInfo = await this.metadataService.getMetadata(buffer, true);
+      const audioInfo = await this.metadataService.getMetadata(buffer, MimeType.Mp3, true);
       this.log.info('File info.', fileInfo);
       this.log.info('Audio info.', audioInfo);
     }

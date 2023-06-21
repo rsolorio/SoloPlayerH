@@ -8,6 +8,7 @@ import { LogService } from 'src/app/core/services/log/log.service';
 import { MetaField } from '../data-transform/data-transform.enum';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { IImageSource } from 'src/app/core/models/core.interface';
+import { MimeType } from 'src/app/core/models/core.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class Id3v2SourceService implements IDataSource {
     }
     this.loadInfo = info;
     const buffer = await this.fileService.getBuffer(info.filePath);
-    this.audioInfo = await this.metadataService.getMetadata(buffer, true);
+    this.audioInfo = await this.metadataService.getMetadata(buffer, MimeType.Mp3, true);
 
     this.tags = [];
 

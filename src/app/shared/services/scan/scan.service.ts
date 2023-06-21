@@ -124,7 +124,7 @@ export class ScanService {
     }
     const artistsToBeUpdated = this.existingArtists.filter(artist => artist.hasChanges);
     if (artistsToBeUpdated.length) {
-      await this.db.bulkUpdate(ArtistEntity, artistsToBeUpdated, ['artistType', 'artistSort', 'artistStylized', 'country']);
+      await this.db.bulkUpdate(ArtistEntity, artistsToBeUpdated, ['artistTypeId', 'artistSort', 'artistStylized', 'countryId']);
       artistsToBeUpdated.forEach(a => a.hasChanges = false);
     }
     // Albums
