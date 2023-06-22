@@ -7,12 +7,20 @@ import { IImageSource } from 'src/app/core/models/core.interface';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { MimeType } from 'src/app/core/models/core.enum';
 
+interface IJsonInfo {
+  artistContent?: any;
+  artistFilePath?: string;
+  albumContent?: any;
+  albumFilePath?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class FileInfoSourceService implements IDataSource {
   protected loadInfo: ILoadInfo;
   protected fileInfo: IFileInfo;
+  protected jsonInfo: IJsonInfo = {};
   constructor(private fileService: FileService) { }
 
   public async load(info: ILoadInfo): Promise<ILoadInfo> {
@@ -21,6 +29,37 @@ export class FileInfoSourceService implements IDataSource {
     }
     this.loadInfo = info;
     this.fileInfo = await this.fileService.getFileInfo(info.filePath);
+
+    const artistFilePath = this.findFile('artist.json', 1);
+    if (artistFilePath) {
+      if (artistFilePath !== this.jsonInfo.artistFilePath) {
+        this.jsonInfo.artistFilePath = artistFilePath;
+        const textContent = await this.fileService.getText(artistFilePath);
+        if (textContent) {
+          this.jsonInfo.artistContent = JSON.parse(textContent);
+        }
+      }
+    }
+    else {
+      this.jsonInfo.artistContent = null;
+      this.jsonInfo.artistFilePath = null;
+    }
+
+    const albumFilePath = this.findFile('album.json');
+    if (albumFilePath) {
+      if (albumFilePath !== this.jsonInfo.albumFilePath) {
+        this.jsonInfo.albumFilePath = albumFilePath;
+        const textContent = await this.fileService.getText(albumFilePath);
+        if (textContent) {
+          this.jsonInfo.albumContent = JSON.parse(textContent);
+        }
+      }
+    }
+    else {
+      this.jsonInfo.albumContent = null;
+      this.jsonInfo.albumFilePath = null;
+    }
+
     return this.loadInfo;
   }
 
@@ -51,6 +90,11 @@ export class FileInfoSourceService implements IDataSource {
       case MetaField.AlbumSecondaryImage:
       case MetaField.SingleImage:
         return this.getImageFile(propertyName);
+      case MetaField.ArtistStylized:
+        if (this.jsonInfo.artistContent && this.jsonInfo.artistContent[propertyName]) {
+          return [this.jsonInfo.artistContent[propertyName]];
+        }
+        break;
     }
 
     return [];
