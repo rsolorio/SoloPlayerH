@@ -61,7 +61,7 @@ export class FileInfoSourceService implements IDataSource {
     let rootPath = this.fileInfo.directoryPath;
     for (let level = 0; level <= levelsUp; level++) {
       if (!result) {
-        const filePath = rootPath + '\\' + fileName;
+        const filePath = rootPath + fileName;
         if (this.fileService.exists(filePath)) {
           result = filePath;
         }

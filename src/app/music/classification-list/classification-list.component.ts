@@ -1,25 +1,22 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
-import { SongClassificationViewEntity } from 'src/app/shared/entities';
+import { RelatedImageEntity, SongClassificationViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { FileService } from 'src/app/platform/file/file.service';
-import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
-import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
+import { ImageService } from 'src/app/platform/image/image.service';
 
 @Component({
   selector: 'sp-classification-list',
@@ -106,10 +103,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private utility: UtilityService,
     private breadcrumbService: BreadcrumbsStateService,
     private navigation: NavigationService,
-    private queueService: PromiseQueueService,
     private db: DatabaseService,
-    private fileService: FileService,
-    private metadataService: AudioMetadataService
+    private imageService: ImageService
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoute.Genres);
@@ -170,12 +165,15 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     criteria.searchCriteria.push(criteriaValue);
     const songList = await this.db.getList(SongClassificationViewEntity, criteria);
     if (songList && songList.length) {
-      // Get any of the songs associated with the album
       const song = songList[0];
-      const buffer = await this.fileService.getBuffer(song.filePath);
-      const audioInfo = await this.metadataService.getMetadata(buffer);
-      const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Single, MusicImageType.Front]);
-      return this.metadataService.getImage(pictures);
+      let images = await RelatedImageEntity.findBy({ relatedId: song.id });
+      if (!images || !images.length) {
+        images = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
+      }
+      if (images && images.length) {
+        const relatedImage = images[0];
+        return this.imageService.getImageFromSource(relatedImage);
+      }
     }
     return {
       src: RelatedImageSrc.DefaultLarge,

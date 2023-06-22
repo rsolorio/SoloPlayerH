@@ -44,6 +44,21 @@ import { RelatedImageEntity } from '../../entities/related-image.entity';
 import { ISongModel } from '../../models/song-model.interface';
 import { HttpClient } from '@angular/common/http';
 
+interface IBulkInfo {
+  /** Maximum number of parameters allowed on each bulk. */
+  parameterMax: number;
+  /** Number of rows. */
+  itemCount: number;
+  /** Number of columns on each row. */
+  columnCount: number;
+  /** Total number of parameters to be used for all columns in all rows. */
+  parameterCount: number;
+  /** Number of bulks needed to process all items. */
+  bulkCount: number;
+  /** Number of rows on each bulk. */
+  bulkSize: number;
+}
+
 /**
  * Wrapper for the typeorm library that connects to the Sqlite database.
  * Typeorm uses https://www.npmjs.com/package/reflect-metadata to get metadata from its entities.
@@ -264,16 +279,16 @@ export class DatabaseService {
    */
   public async bulkInsert<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): Promise<InsertResult[]> {
     const response: InsertResult[] = [];
-    const bulkSize = this.getBulkSize(entity, values);
-    if (!bulkSize) {
+    const bulkInfo = this.getBulkSize(entity, values);
+    if (!bulkInfo || !bulkInfo.bulkSize) {
       this.log.warn('Empty bulk, aborting bulk insert.');
       return [];
     }
     let bulkIndex = 0;
     while (values.length) {
       bulkIndex++;
-      const items = values.splice(0, bulkSize);
-      this.log.info(`Bulk insert ${bulkIndex} with ${items.length} items.`);
+      const items = values.splice(0, bulkInfo.bulkSize);
+      this.log.info(`Bulk insert ${bulkIndex} (of ${bulkInfo.bulkCount}) with ${items.length} items.`);
       const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(items).execute();
       response.push(result);
     }
@@ -289,16 +304,16 @@ export class DatabaseService {
     const response: InsertResult[] = [];
     // Even though we are using just a few columns to do the update, in reality we are first performing an insert so we need to take in consideration
     // all columns in the entity to determine the bulk size.
-    const bulkSize = this.getBulkSize(entity, values);
-    if (!bulkSize) {
+    const bulkInfo = this.getBulkSize(entity, values);
+    if (!bulkInfo || !bulkInfo.bulkSize) {
       this.log.warn('Empty bulk, aborting bulk update.');
       return [];
     }
     let bulkIndex = 0;
     while (values.length) {
       bulkIndex++;
-      const items = values.splice(0, bulkSize);
-      this.log.info(`Bulk update ${bulkIndex} with ${items.length} items.`);
+      const items = values.splice(0, bulkInfo.bulkSize);
+      this.log.info(`Bulk update ${bulkIndex} (of ${bulkInfo.bulkCount}) with ${items.length} items.`);
       const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(items).orUpdate(updateColumns).execute();
       response.push(result);
     }
@@ -306,13 +321,20 @@ export class DatabaseService {
     return response;
   }
 
-  private getBulkSize<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): number {
+  private getBulkSize<T extends ObjectLiteral>(entity: EntityTarget<T>, values: T[]): IBulkInfo {
     const repo = this.dataSource.getRepository(entity);
-    const totalParameters = values.length * repo.metadata.columns.length;
-    const totalBulks = Math.ceil(totalParameters / this.SQLITE_MAX_VARIABLE_NUMBER);
-    const bulkSize = totalBulks > 0 ? Math.ceil(values.length / totalBulks) : 0;
-    this.log.info(`Total items: ${values.length}. Total columns: ${repo.metadata.columns.length}. Total parameters: ${totalParameters}. Total bulks: ${totalBulks}. Bulk size: ${bulkSize}.`);
-    return bulkSize;
+    const bulkInfo: IBulkInfo = {
+      parameterMax: this.SQLITE_MAX_VARIABLE_NUMBER,
+      itemCount: values.length,
+      columnCount: repo.metadata.columns.length,
+      parameterCount: values.length * repo.metadata.columns.length,
+      bulkCount: 0,
+      bulkSize: 0
+    };
+    bulkInfo.bulkCount = Math.ceil(bulkInfo.parameterCount / bulkInfo.parameterMax);
+    bulkInfo.bulkSize = bulkInfo.bulkCount > 0 ? Math.ceil(bulkInfo.itemCount / bulkInfo.bulkCount) : 0;
+    this.log.info('Bulk info:', bulkInfo);
+    return bulkInfo;
   }
 
   // SQLite Bulk Actions - END

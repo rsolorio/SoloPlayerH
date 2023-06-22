@@ -3,7 +3,7 @@ export interface IFileInfo {
   isDirectory: boolean;
   /** Full file path. */
   path: string;
-  /** The parent directory path. */
+  /** The parent directory path including the trailing slash. */
   directoryPath?: string;
   /** Name and extension of the file. */
   fullName?: string;
