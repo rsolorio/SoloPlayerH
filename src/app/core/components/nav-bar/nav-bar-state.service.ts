@@ -179,7 +179,7 @@ export class NavBarStateService {
     this.outerIcons.left = {
       icon: 'mdi-arrow-left mdi',
       action: () => {
-        this.events.broadcast(CoreEvent.NavbarBack);
+        this.events.broadcast(CoreEvent.NavbarBackRequested);
       }
     };
   }

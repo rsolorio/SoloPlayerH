@@ -43,7 +43,6 @@ export class NavigationService {
       // Now move the previous route
       const navInfo = this.history[0];
       this.navigate(navInfo.route, navInfo.options);
-      this.events.broadcast(CoreEvent.NavbarBack);
     }
   }
 

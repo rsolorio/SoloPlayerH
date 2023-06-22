@@ -28,6 +28,17 @@
       <i class="mdi-close mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onSortRemoveClick(criteriaItem)"></i>
     </div>
   </div>
+  <!-- LIMIT -->
+  <div class="sp-filter-header sp-text-big sp-bg-04">
+    <span class="sp-filter-header-text">{{limitSelector.column.caption}}</span>
+    <span (click)="onLimitEditClick()" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
+  </div>
+  <div class="sp-chip-container">
+    <div class="sp-chip-item sp-bg-09">
+      <span class="sp-chip-text sp-text-large">{{limitCaption(model.paging.pageSize)}}</span>&nbsp;
+      <i class="mdi-pencil-outline mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onLimitEditClick()"></i>
+    </div>
+  </div>
   <!-- TRANSFORM ALGORITHM -->
   <div class="sp-filter-header sp-text-big sp-bg-04">
     <span class="sp-filter-header-text">{{transformSelector.column.caption}}</span>

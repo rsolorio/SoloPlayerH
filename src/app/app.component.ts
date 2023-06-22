@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
       this.navigation.forward(menuModel.route);
     });
 
-    this.events.onEvent(CoreEvent.NavbarBack).subscribe(() => {
+    this.events.onEvent(CoreEvent.NavbarBackRequested).subscribe(() => {
       this.navigation.back();
       this.navbarService.restoreOuterLeftIcon();
     });

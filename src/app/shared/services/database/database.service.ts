@@ -389,6 +389,9 @@ export class DatabaseService {
         }
       }
     }
+    if (criteria.paging.pageSize) {
+      queryBuilder.take(criteria.paging.pageSize);
+    }
   }
 
   private buildWhere<T>(
@@ -744,6 +747,21 @@ export class DatabaseService {
           { caption: databaseColumns[DbColumn.AlbumName].caption, value: DbColumn.AlbumName },
           { caption: databaseColumns[DbColumn.AlbumArtistName].caption, value: DbColumn.AlbumArtistName },
           { caption: databaseColumns[DbColumn.AddDate].caption, value: DbColumn.AddDate }
+        ]);
+      }
+    };
+
+    this.valueSelectors[DbColumn.Limit] = {
+      column: databaseColumns[DbColumn.Limit],
+      editor: CriteriaValueEditor.Single,
+      values: [],
+      getValues: () => {
+        return Promise.resolve([
+          { caption: '100', value: 100 },
+          { caption: '200', value: 200 },
+          { caption: '300', value: 300 },
+          { caption: '500', value: 500 },
+          { caption: '1,000', value: 1000 },
         ]);
       }
     };

@@ -5,6 +5,8 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { IValuePair } from 'src/app/core/models/core.interface';
+import { CoreEvent } from 'src/app/core/services/events/events.enum';
+import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
@@ -26,6 +28,7 @@ export class QueryEditorComponent implements OnInit {
   public model: Criteria;
   public supportedSelectors: ICriteriaValueSelector[] = [];
   public sortBySelector: ICriteriaValueSelector;
+  public limitSelector: ICriteriaValueSelector;
   public transformSelector: ICriteriaValueSelector;
   constructor(
     private db: DatabaseService,
@@ -34,7 +37,8 @@ export class QueryEditorComponent implements OnInit {
     private route: ActivatedRoute,
     private navbarService: NavBarStateService,
     private chipSelectionService: ChipSelectionService,
-    private loadingService: LoadingViewStateService
+    private loadingService: LoadingViewStateService,
+    private events: EventsService
   ) { }
 
   ngOnInit(): void {
@@ -94,6 +98,12 @@ export class QueryEditorComponent implements OnInit {
       const criteriaItem = criteriaClone.sortingCriteria.find(item => item.columnName === valuePair.value);
       valuePair.selected = criteriaItem && criteriaItem.sortSequence > 0;
     }
+    // Limit
+    this.limitSelector = this.db.selector(DbColumn.Limit);
+    this.limitSelector.values = await this.limitSelector.getValues();
+    for (const valuePair of this.limitSelector.values) {
+      valuePair.selected = valuePair.value === criteriaClone.paging.pageSize;
+    }
     // Transform
     this.transformSelector = this.db.selector(DbColumn.TransformAlgorithm);
     this.transformSelector.values = await this.transformSelector.getValues();
@@ -126,7 +136,7 @@ export class QueryEditorComponent implements OnInit {
         icon: 'mdi-content-save-check-outline mdi',
         action: () => {
           this.navigation.previous().options.criteria = this.model;
-          this.navigation.back();
+          this.events.broadcast(CoreEvent.NavbarBackRequested);
         }
       }
     });
@@ -244,6 +254,26 @@ export class QueryEditorComponent implements OnInit {
 
   public columnCaption(columnName: string): string {
     return this.db.displayName(columnName);
+  }
+
+  public onLimitEditClick(): void {
+    const chipSelectionModel: IChipSelectionModel = {
+      selector: this.limitSelector,
+      onOk: values => {
+        // Only one value should be selected
+        const selectedValuePair = values[0];
+        this.model.paging.pageSize = selectedValuePair.value;
+      }
+    };
+    this.chipSelectionService.showInPanel(chipSelectionModel);
+  }
+
+  public limitCaption(limit: number): string {
+    const valuePair = this.limitSelector.values.find(item => item.value === limit);
+    if (valuePair) {
+      return valuePair.caption;
+    }
+    return limit.toString();
   }
 
   public onAlgorithmEditClick(): void {
