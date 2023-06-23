@@ -126,9 +126,12 @@ export class QueryEditorComponent implements OnInit {
     for (const selector of this.supportedSelectors) {
       selector.hidden = !this.hasSelectedValues(selector);
     }
+    // Special validation for sort by
     this.sortBySelector.hidden = !this.model.sortingCriteria.hasSorting();
-    this.limitSelector.hidden = !this.hasSelectedValues(this.limitSelector);
-    this.transformSelector.hidden = !this.hasSelectedValues(this.transformSelector);
+    // Special validation for limit
+    this.limitSelector.hidden = this.limitSelector.defaultValue !== undefined && this.limitSelector.defaultValue === this.model.paging.pageSize;
+    // Special validation for transform
+    this.transformSelector.hidden = this.transformSelector.defaultValue !== undefined && this.transformSelector.defaultValue === this.model.transformAlgorithm;
   }
 
   initializeNavbar(): void {
@@ -170,6 +173,9 @@ export class QueryEditorComponent implements OnInit {
     });
   }
 
+  /**
+   * Looks for criteria values that match the column name associated with the selector.
+   */
   getSelectedValues(selector: ICriteriaValueSelector): IValuePair[] {
     const criteriaItem = this.model.userCriteria.find(item => item.columnName === selector.column.name);
     if (criteriaItem) {
@@ -178,6 +184,10 @@ export class QueryEditorComponent implements OnInit {
     return [];
   }
 
+  /**
+   * Determines if the column name associated with the selector is being used in the criteria;
+   * the default value configured in the selector is ignored from the existing values.
+   */
   hasSelectedValues(selector: ICriteriaValueSelector): boolean {
     const values = this.getSelectedValues(selector);
     if (!values.length) {
