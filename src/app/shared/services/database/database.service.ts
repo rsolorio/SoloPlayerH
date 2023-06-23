@@ -71,7 +71,7 @@ export class DatabaseService {
   private valueSelectors: { [columnName: string]: ICriteriaValueSelector } = { };
   private comparisons: { [id: number]: IComparison} = { };
   /**
-   * Maximum number of parameters in a single statement.
+   * Maximum number of parameters in a single statement for SqlLite.
    * Just an internal constant to do the limit calculations
    */
   private SQLITE_MAX_VARIABLE_NUMBER = 32766;
@@ -654,7 +654,6 @@ export class DatabaseService {
     this.valueSelectors[DbColumn.Rating] = {
       column: databaseColumns[DbColumn.Rating],
       editor: CriteriaValueEditor.Multiple,
-      values: [],
       getValues: () => {
         return Promise.resolve([
           { caption: '0', value: 0 },
@@ -664,77 +663,77 @@ export class DatabaseService {
           { caption: '4', value: 4 },
           { caption: '5', value: 5 }
         ]);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.Mood] = {
       column: databaseColumns[DbColumn.Mood],
       editor: CriteriaValueEditor.Multiple,
-      values: [],
       getValues: () => {
         return this.getSongValues(DbColumn.Mood);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.Language] = {
       column: databaseColumns[DbColumn.Language],
       editor: CriteriaValueEditor.Multiple,
-      values: [],
       getValues: () => {
         return this.getSongValues(DbColumn.Language);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.Favorite] = {
       column: databaseColumns[DbColumn.Favorite],
       editor: CriteriaValueEditor.YesNo,
-      values: [],
       getValues: () => {
         return Promise.resolve([
           { caption: 'Yes', value: true },
           { caption: 'No', value: false }
         ]);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.Live] = {
       column: databaseColumns[DbColumn.Live],
       editor: CriteriaValueEditor.YesNo,
-      values: [],
       getValues: () => {
         return Promise.resolve([
           { caption: 'Yes', value: true },
           { caption: 'No', value: false }
         ]);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.ReleaseDecade] = {
       column: databaseColumns[DbColumn.ReleaseDecade],
       editor: CriteriaValueEditor.Multiple,
-      values: [],
       getValues: () => {
         return this.getSongValues(DbColumn.ReleaseDecade);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.Lyrics] = {
       column: databaseColumns[DbColumn.Lyrics],
       editor: CriteriaValueEditor.YesNo,
-      values: [],
       getValues: () => {
         return Promise.resolve([
           { caption: 'Yes', value: true },
           { caption: 'No', value: false }
         ]);
-      }
+      },
+      values: [],
     };
 
     // Fake sort by column
     this.valueSelectors[DbColumn.SortBy] = {
       column: databaseColumns[DbColumn.SortBy],
       editor: CriteriaValueEditor.Multiple,
-      values: [],
       getValues: () => {
         return Promise.resolve([
           { caption: databaseColumns[DbColumn.TrackNumber].caption, value: DbColumn.TrackNumber },
@@ -748,35 +747,39 @@ export class DatabaseService {
           { caption: databaseColumns[DbColumn.AlbumArtistName].caption, value: DbColumn.AlbumArtistName },
           { caption: databaseColumns[DbColumn.AddDate].caption, value: DbColumn.AddDate }
         ]);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.Limit] = {
       column: databaseColumns[DbColumn.Limit],
       editor: CriteriaValueEditor.Single,
-      values: [],
+      defaultValue: 0,
       getValues: () => {
         return Promise.resolve([
+          { caption: 'None', value: 0 },
           { caption: '100', value: 100 },
           { caption: '200', value: 200 },
           { caption: '300', value: 300 },
           { caption: '500', value: 500 },
           { caption: '1,000', value: 1000 },
         ]);
-      }
+      },
+      values: [],
     };
 
     this.valueSelectors[DbColumn.TransformAlgorithm] = {
       column: databaseColumns[DbColumn.TransformAlgorithm],
       editor: CriteriaValueEditor.Single,
-      values: [],
+      defaultValue: CriteriaTransformAlgorithm.None,
       getValues: () => {
         return Promise.resolve([
           { caption: 'None', value: CriteriaTransformAlgorithm.None },
           { caption: 'Alternate Artist', value: CriteriaTransformAlgorithm.AlternateArtist },
           { caption: 'Alternate Language', value: CriteriaTransformAlgorithm.AlternateLanguage }
         ]);
-      }
+      },
+      values: [],
     };
   }
 

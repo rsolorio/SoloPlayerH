@@ -175,10 +175,13 @@ export class NavBarStateService {
     }
   }
 
-  public showBackIcon(): void {
+  public showBackIcon(beforeAction?: () => void): void {
     this.outerIcons.left = {
       icon: 'mdi-arrow-left mdi',
       action: () => {
+        if (beforeAction) {
+          beforeAction();
+        }
         this.events.broadcast(CoreEvent.NavbarBackRequested);
       }
     };

@@ -2,10 +2,10 @@
   <!-- COLUMNS -->
   <ng-container *ngFor="let selector of supportedSelectors">
     <!-- Only display the column if there are values to select. -->
-    <div *ngIf="selector.values.length">
+    <ng-container *ngIf="selector.values.length && !selector.hidden">
       <div class="sp-filter-header sp-text-big sp-bg-04">
         <span class="sp-filter-header-text">{{selector.column.caption}}</span>
-        <span (click)="onAddClick(selector)" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
+        <span (click)="onAddEditClick(selector)" class="sp-btn-add sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
       </div>
       <div class="sp-chip-container">
         <div class="sp-chip-item sp-bg-09" *ngFor="let valuePair of getSelectedValues(selector)">
@@ -13,41 +13,47 @@
           <i class="mdi-close mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onChipCloseClick(selector, valuePair)"></i>
         </div>
       </div>
-    </div>
+    </ng-container>
   </ng-container>
   <!-- SORT BY -->
-  <div class="sp-filter-header sp-text-big sp-bg-04">
-    <span class="sp-filter-header-text">{{sortBySelector.column.caption}}</span>
-    <span (click)="onSortByAddClick()" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
-  </div>
-  <div class="sp-chip-container">
-    <div class="sp-chip-item sp-bg-09" *ngFor="let criteriaItem of model.sortingCriteria">
-      <i *ngIf="criteriaItem.sortDirection === CriteriaSortDirection.Ascending" class="mdi-sort-ascending mdi sp-clickable" (click)="onSortDirectionClick(criteriaItem)"></i>
-      <i *ngIf="criteriaItem.sortDirection === CriteriaSortDirection.Descending" class="mdi-sort-descending mdi sp-clickable" (click)="onSortDirectionClick(criteriaItem)"></i>
-      <span class="sp-chip-text sp-text-large">&nbsp;{{columnCaption(criteriaItem.columnName)}}&nbsp;</span>
-      <i class="mdi-close mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onSortRemoveClick(criteriaItem)"></i>
+  <ng-container *ngIf="!sortBySelector.hidden">
+    <div class="sp-filter-header sp-text-big sp-bg-04">
+      <span class="sp-filter-header-text">{{sortBySelector.column.caption}}</span>
+      <span (click)="onSortByAddClick()" class="sp-btn-add sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
     </div>
-  </div>
+    <div class="sp-chip-container">
+      <div class="sp-chip-item sp-bg-09" *ngFor="let criteriaItem of getSortingCriteria()">
+        <i *ngIf="criteriaItem.sortDirection === CriteriaSortDirection.Ascending" class="mdi-sort-ascending mdi sp-clickable" (click)="onSortDirectionClick(criteriaItem)"></i>
+        <i *ngIf="criteriaItem.sortDirection === CriteriaSortDirection.Descending" class="mdi-sort-descending mdi sp-clickable" (click)="onSortDirectionClick(criteriaItem)"></i>
+        <span class="sp-chip-text sp-text-large">&nbsp;&nbsp;{{columnCaption(criteriaItem.columnName)}}&nbsp;&nbsp;</span>
+        <i class="mdi-close mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onSortRemoveClick(criteriaItem)"></i>
+      </div>
+    </div>
+  </ng-container>
   <!-- LIMIT -->
-  <div class="sp-filter-header sp-text-big sp-bg-04">
-    <span class="sp-filter-header-text">{{limitSelector.column.caption}}</span>
-    <span (click)="onLimitEditClick()" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
-  </div>
-  <div class="sp-chip-container">
-    <div class="sp-chip-item sp-bg-09">
-      <span class="sp-chip-text sp-text-large">{{limitCaption(model.paging.pageSize)}}</span>&nbsp;
-      <i class="mdi-pencil-outline mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onLimitEditClick()"></i>
+  <ng-container *ngIf="!limitSelector.hidden">
+    <div class="sp-filter-header sp-text-big sp-bg-04">
+      <span class="sp-filter-header-text">{{limitSelector.column.caption}}</span>
+      <span (click)="onLimitEditClick()" class="sp-btn-add sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
     </div>
-  </div>
+    <div class="sp-chip-container">
+      <div class="sp-chip-item sp-bg-09">
+        <span class="sp-chip-text sp-text-large">{{limitCaption(model.paging.pageSize)}}</span>&nbsp;
+        <i class="mdi-pencil-outline mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onLimitEditClick()"></i>
+      </div>
+    </div>
+  </ng-container>
   <!-- TRANSFORM ALGORITHM -->
-  <div class="sp-filter-header sp-text-big sp-bg-04">
-    <span class="sp-filter-header-text">{{transformSelector.column.caption}}</span>
-    <span (click)="onAlgorithmEditClick()" class="sp-btn-add sp-clickable"><i class="mdi-plus mdi"></i></span>
-  </div>
-  <div class="sp-chip-container">
-    <div class="sp-chip-item sp-bg-09">
-      <span class="sp-chip-text sp-text-large">{{algorithmCaption(model.transformAlgorithm)}}</span>&nbsp;
-      <i class="mdi-pencil-outline mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onAlgorithmEditClick()"></i>
+  <ng-container *ngIf="!transformSelector.hidden">
+    <div class="sp-filter-header sp-text-big sp-bg-04">
+      <span class="sp-filter-header-text">{{transformSelector.column.caption}}</span>
+      <span (click)="onAlgorithmEditClick()" class="sp-btn-add sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
     </div>
-  </div>
+    <div class="sp-chip-container">
+      <div class="sp-chip-item sp-bg-09">
+        <span class="sp-chip-text sp-text-large">{{algorithmCaption(model.transformAlgorithm)}}</span>&nbsp;
+        <i class="mdi-pencil-outline mdi sp-text-medium sp-color-on-bg-low sp-clickable" (click)="onAlgorithmEditClick()"></i>
+      </div>
+    </div>
+  </ng-container>
 </div>

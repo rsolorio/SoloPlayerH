@@ -31,5 +31,7 @@ export interface ICriteriaValueSelector {
   column: IColumn;
   editor: CriteriaValueEditor;
   values: ISelectableValue[];
+  hidden?: boolean;
+  defaultValue?: any;
   getValues: () => Promise<ISelectableValue[]>;
 }

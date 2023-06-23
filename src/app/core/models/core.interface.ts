@@ -60,6 +60,7 @@ export interface IValuePair {
 
 export interface ISelectableValue extends IValuePair, ISelectable {
   icon?: string;
+  sequence?: number;
 }
 
 export interface IImage {

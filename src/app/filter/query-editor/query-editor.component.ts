@@ -43,11 +43,17 @@ export class QueryEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadingService.show();
-    this.navbarService.showBackIcon();
+    this.navbarService.showBackIcon(() => {
+      const previous = this.navigation.previous();
+      if (previous?.options?.criteria && this.model) {
+        previous.options.criteria = this.model;
+      }
+    });
     this.initializeNavbar();
     this.setupSelectors().then(criteria => {
       if (criteria) {
         this.model = criteria;
+        this.setupSelectorVisibility();
       }
       else {
         // Go to home
@@ -80,9 +86,13 @@ export class QueryEditorComponent implements OnInit {
     }
 
     const criteriaClone = previousNavInfo.options.criteria.clone();
+    await this.updateSelectedValues(criteriaClone);
+    return criteriaClone;
+  }
 
+  private async updateSelectedValues(criteria: Criteria): Promise<void> {
     for (const selector of this.supportedSelectors) {
-      const criteriaItem = criteriaClone.userCriteria.find(item => item.columnName === selector.column.name);
+      const criteriaItem = criteria.userCriteria.find(item => item.columnName === selector.column.name);
       const selectedValues = criteriaItem ? criteriaItem.columnValues.map(pair => pair.value) : [];
       selector.values = await selector.getValues();
       // Clone the values, we will update the actual criteria values once the user clicks ok (onOk).
@@ -95,23 +105,30 @@ export class QueryEditorComponent implements OnInit {
     this.sortBySelector = this.db.selector(DbColumn.SortBy);
     this.sortBySelector.values = await this.sortBySelector.getValues();
     for (const valuePair of this.sortBySelector.values) {
-      const criteriaItem = criteriaClone.sortingCriteria.find(item => item.columnName === valuePair.value);
+      const criteriaItem = criteria.sortingCriteria.find(item => item.columnName === valuePair.value);
       valuePair.selected = criteriaItem && criteriaItem.sortSequence > 0;
     }
     // Limit
     this.limitSelector = this.db.selector(DbColumn.Limit);
     this.limitSelector.values = await this.limitSelector.getValues();
     for (const valuePair of this.limitSelector.values) {
-      valuePair.selected = valuePair.value === criteriaClone.paging.pageSize;
+      valuePair.selected = valuePair.value === criteria.paging.pageSize;
     }
     // Transform
     this.transformSelector = this.db.selector(DbColumn.TransformAlgorithm);
     this.transformSelector.values = await this.transformSelector.getValues();
     for (const valuePair of this.transformSelector.values) {
-      valuePair.selected = valuePair.value === criteriaClone.transformAlgorithm;
+      valuePair.selected = valuePair.value === criteria.transformAlgorithm;
     }
+  }
 
-    return criteriaClone;
+  private setupSelectorVisibility(): void {
+    for (const selector of this.supportedSelectors) {
+      selector.hidden = !this.hasSelectedValues(selector);
+    }
+    this.sortBySelector.hidden = !this.model.sortingCriteria.hasSorting();
+    this.limitSelector.hidden = !this.hasSelectedValues(this.limitSelector);
+    this.transformSelector.hidden = !this.hasSelectedValues(this.transformSelector);
   }
 
   initializeNavbar(): void {
@@ -126,17 +143,28 @@ export class QueryEditorComponent implements OnInit {
             this.navigation.previous().options.criteria = this.model;
             this.navbarService.showToast('Saved!');
           }
+        },
+        {
+          caption: 'Restore',
+          icon: 'mdi-restore mdi',
+          action: () => {}
+        },
+        {
+          caption: 'Cancel',
+          icon: 'mdi-cancel mdi',
+          action: () => {
+            this.events.broadcast(CoreEvent.NavbarBackRequested);
+          }
         }
       ],
-      title: 'Criteria Selector',
+      title: 'Filter Setup',
       leftIcon: {
         icon: 'mdi-filter-outline mdi'
       },
       rightIcon: {
-        icon: 'mdi-content-save-check-outline mdi',
-        action: () => {
-          this.navigation.previous().options.criteria = this.model;
-          this.events.broadcast(CoreEvent.NavbarBackRequested);
+        icon: 'mdi-plus mdi',
+        action: () => {          
+          this.openFieldSelectionPanel();
         }
       }
     });
@@ -150,6 +178,17 @@ export class QueryEditorComponent implements OnInit {
     return [];
   }
 
+  hasSelectedValues(selector: ICriteriaValueSelector): boolean {
+    const values = this.getSelectedValues(selector);
+    if (!values.length) {
+      return false;
+    }
+    if (values.length === 1 && selector.defaultValue && values[0] === selector.defaultValue) {
+      return false;
+    }
+    return true;
+  }
+
   onChipCloseClick(selector: ICriteriaValueSelector, chip: IValuePair): void {
     const criteriaItem = this.model.userCriteria.find(item => item.columnName === selector.column.name);
     if (criteriaItem) {
@@ -160,11 +199,12 @@ export class QueryEditorComponent implements OnInit {
     }
   }
 
-  onAddClick(selector: ICriteriaValueSelector): void {
+  onAddEditClick(selector: ICriteriaValueSelector): void {
     this.openChipSelectionPanel(selector);
   }
 
   private async openChipSelectionPanel(selector: ICriteriaValueSelector): Promise<void> {
+    await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
       selector: selector,
       onOk: values => {
@@ -205,13 +245,45 @@ export class QueryEditorComponent implements OnInit {
     this.chipSelectionService.showInPanel(chipSelectionModel);
   }
 
+  private openFieldSelectionPanel(): void {
+    const allSelectors = [...this.supportedSelectors, this.sortBySelector, this.limitSelector, this.transformSelector];
+    // Prepare the model
+    const chipSelectionModel: IChipSelectionModel = {
+      selector: {
+        column: { name: 'field', caption: 'Criteria Fields', dataType: CriteriaDataType.String },
+        values: [],
+        editor: CriteriaValueEditor.Multiple,
+        getValues: null
+      },
+      onOk: values => {
+        values.forEach(valuePair => {
+          const selector = allSelectors.find(s => s.column.name === valuePair.value);
+          if (selector) {
+            selector.hidden = false;
+          }
+        });
+      }
+    };
+    // Send hidden selectors as available values
+    allSelectors.filter(s => s.hidden).forEach(selector => {
+      chipSelectionModel.selector.values.push({ value: selector.column.name, caption: selector.column.caption });
+    });
+    this.chipSelectionService.showInPanel(chipSelectionModel);
+  }
+
   public onSortByAddClick(): void {
+    this.openSortBySelectionPanel();
+  }
+
+  private async openSortBySelectionPanel(): Promise<void> {
+    await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
       selector: this.sortBySelector,
       onOk: values => {
         // Each value corresponds to a field, so each value needs its own criteria item
         this.model.sortingCriteria = new CriteriaItems();
-        for (const valuePair of values) {
+        const sortedValues = this.utilities.sort(values, 'sequence');
+        for (const valuePair of sortedValues) {
           this.model.sortingCriteria.addSorting(valuePair.value);
         }
       }
@@ -219,16 +291,8 @@ export class QueryEditorComponent implements OnInit {
     this.chipSelectionService.showInPanel(chipSelectionModel);
   }
 
-  public getSelectedSortValues(): IValuePair[] {
-    const result: IValuePair[] = [];
-    const sortedItems = this.utilities.sort(this.model.sortingCriteria, 'sortSequence');
-    for (const criteriaItem of sortedItems) {
-      result.push({
-        value: criteriaItem.columnName,
-        caption: this.db.displayName(criteriaItem.columnName)
-      });
-    }
-    return result;
+  public getSortingCriteria(): CriteriaItem[] {
+    return this.utilities.sort(this.model.sortingCriteria, 'sortSequence');
   }
 
   public onSortRemoveClick(criteriaItem: CriteriaItem): void {

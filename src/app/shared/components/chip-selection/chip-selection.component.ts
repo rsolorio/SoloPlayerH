@@ -3,6 +3,7 @@ import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-s
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { CriteriaValueEditor } from '../../services/criteria/criteria.enum';
 import { IChipSelectionModel } from './chip-selection-model.interface';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Component({
   selector: 'sp-chip-selection',
@@ -14,7 +15,7 @@ export class ChipSelectionComponent implements OnInit {
   /** Model of the component. It will be set by the service. */
   public model: IChipSelectionModel;
 
-  constructor(private sidebarService: SideBarStateService) { }
+  constructor(private sidebarService: SideBarStateService, private utility: UtilityService) { }
 
   ngOnInit(): void {
   }
@@ -34,8 +35,23 @@ export class ChipSelectionComponent implements OnInit {
       }
     }
     else {
-      // In this mode just revert the selected state
-      chipValue.selected = !chipValue.selected;
+      let selectedValues: ISelectableValue[];
+      if (chipValue.selected) {
+        chipValue.selected = false;
+        chipValue.sequence = 0;
+        selectedValues = this.model.selector.values.filter(v => v.selected);
+        selectedValues = this.utility.sort(selectedValues, 'sequence');
+      }
+      else {
+        selectedValues = this.model.selector.values.filter(v => v.selected);
+        selectedValues = this.utility.sort(selectedValues, 'sequence');
+        chipValue.selected = true;
+        selectedValues.push(chipValue);
+      }
+      // Fix sequence in selected values
+      for (let valueIndex = 0; valueIndex < selectedValues.length; valueIndex++) {
+        selectedValues[valueIndex].sequence = valueIndex + 1;
+      }
     }
   }
 
@@ -49,7 +65,8 @@ export class ChipSelectionComponent implements OnInit {
   onOkClick(): void {
     if (this.model.onOk) {
       // Send selected values
-      this.model.onOk(this.model.selector.values.filter(value => value.selected));
+      const selectedValues = this.model.selector.values.filter(value => value.selected);
+      this.model.onOk(selectedValues);
     }
     this.sidebarService.hideRight();
   }
