@@ -203,12 +203,30 @@ export class ScanService {
   private setMode(fileInfo: IFileInfo): void {
     this.songToProcess = this.existingSongs.find(s => s.filePath === fileInfo.path);
     if (this.songToProcess) {
-      if (fileInfo.changeDate > this.songToProcess.changeDate) {
-        // TODO: if lyrics file or images files changed also set edit mode
-        this.scanMode = ScanFileMode.Update;
-      }
-      else {
+      const fileAddTime = fileInfo.addDate.getTime();
+      const dbAddTime = this.songToProcess.addDate.getTime();
+      const fileChangeTime = fileInfo.changeDate.getTime();
+      const dbChangeTime = this.songToProcess.changeDate.getTime();
+      // We need timestamps to use the equal operator with dates
+      if (fileAddTime === dbAddTime && fileChangeTime === dbChangeTime) {
         this.scanMode = ScanFileMode.Skip;
+      }
+      // TODO: if lyrics file or images files changed also set update mode
+      else {
+        // We are assuming the file was replaced or updated,
+        // so we need to update the record with the new info
+        if (fileAddTime < dbAddTime || fileChangeTime < dbChangeTime) {
+          // This should only happen if something deliberately updated the dates
+          // to an older value, so just log it as warning
+          this.log.warn('Found file with older change date.', {
+            filePath: fileInfo.path,
+            fileAddDate: fileInfo.addDate,
+            dbAddDate: this.songToProcess.addDate,
+            fileChangeDate: fileInfo.changeDate,
+            dbChangeDate: this.songToProcess.changeDate
+          });
+        }
+        this.scanMode = ScanFileMode.Update;
       }
     }
     else {
@@ -365,19 +383,22 @@ export class ScanService {
     // }
 
     // Add date
-    let addDate = this.reduce(metadata[MetaField.AddDate]);
-    if (!addDate) {
-      addDate = new Date();
+    let newAddDate = this.reduce(metadata[MetaField.AddDate]);
+    if (!newAddDate) {
+      newAddDate = new Date();
     }
-    let changeDate = this.reduce(metadata[MetaField.ChangeDate]);
-    if (!changeDate) {
-      changeDate = new Date();
+    let newChangeDate = this.reduce(metadata[MetaField.ChangeDate]);
+    if (!newChangeDate) {
+      newChangeDate = new Date();
     }
-    if (addDate > changeDate) {
-      addDate = changeDate;
+    // TODO: also use the metadata change date?
+
+
+    if (newAddDate > newChangeDate) {
+      newAddDate = newChangeDate;
     }
-    if (this.songToProcess.addDate > addDate) {
-      this.songToProcess.addDate = addDate;
+    if (this.songToProcess.addDate > newAddDate) {
+      this.songToProcess.addDate = newAddDate;
       this.songToProcess.hasChanges = true;
     }
 
