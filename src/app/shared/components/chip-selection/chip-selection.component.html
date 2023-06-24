@@ -7,7 +7,7 @@
       </div>
     </tr>
     <tr>
-      <div class="sp-chip-container">
+      <div [ngClass]="{ 'sp-chip-container': model.displayMode === ChipDisplayMode.Flex }">
         <div
         (click)="onChipValueClick(chipValue)"
         *ngFor="let chipValue of model.selector.values"

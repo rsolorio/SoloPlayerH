@@ -8,7 +8,7 @@ import { IValuePair } from 'src/app/core/models/core.interface';
 import { CoreEvent } from 'src/app/core/services/events/events.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
+import { ChipDisplayMode, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 import { CriteriaSortDirection } from 'src/app/shared/models/criteria-base-model.interface';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
@@ -193,7 +193,7 @@ export class QueryEditorComponent implements OnInit {
     if (!values.length) {
       return false;
     }
-    if (values.length === 1 && selector.defaultValue && values[0] === selector.defaultValue) {
+    if (values.length === 1 && selector.defaultValue !== undefined && values[0] === selector.defaultValue) {
       return false;
     }
     return true;
@@ -205,6 +205,7 @@ export class QueryEditorComponent implements OnInit {
       const valueIndex = criteriaItem.columnValues.findIndex(pair => pair.value === chip.value);
       if (valueIndex >= 0) {
         criteriaItem.columnValues.splice(valueIndex, 1);
+        this.doAfterCriteriaValuesUpdated(selector, criteriaItem);
       }
     }
   }
@@ -216,6 +217,7 @@ export class QueryEditorComponent implements OnInit {
   private async openChipSelectionPanel(selector: ICriteriaValueSelector): Promise<void> {
     await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
+      displayMode: ChipDisplayMode.Flex,
       selector: selector,
       onOk: values => {
         let criteriaItem = this.model.userCriteria.find(item => item.columnName === selector.column.name);
@@ -228,37 +230,41 @@ export class QueryEditorComponent implements OnInit {
           criteriaItem.comparison = CriteriaComparison.Equals;
         }
         criteriaItem.columnValues = values;
-
-        // Special cases by editor
-        if (selector.editor === CriteriaValueEditor.YesNo) {
-          // Special case only when yes/no is not a boolean
-          if (selector.column.dataType !== CriteriaDataType.Boolean) {
-            if (criteriaItem.columnValues.length) {
-              if (criteriaItem.columnValues[0].value) {
-                // YES (true) should be NOT NULL
-                criteriaItem.comparison = CriteriaComparison.IsNotNull;
-              }
-              else {
-                // NO (false) should be NULL
-                criteriaItem.comparison = CriteriaComparison.IsNull;
-              }
-            }
-            else {
-              // If no values, make sure to remove the comparison
-              criteriaItem.comparison = CriteriaComparison.None;
-            }
-          }
-        }
+        this.doAfterCriteriaValuesUpdated(selector, criteriaItem);
       }
     };
 
     this.chipSelectionService.showInPanel(chipSelectionModel);
   }
 
+  private doAfterCriteriaValuesUpdated(selector: ICriteriaValueSelector, criteriaItem: CriteriaItem): void {
+    // Special cases by editor
+    if (selector.editor === CriteriaValueEditor.YesNo) {
+      // Special case only when yes/no is not a boolean
+      if (selector.column.dataType !== CriteriaDataType.Boolean) {
+        if (criteriaItem.columnValues.length) {
+          if (criteriaItem.columnValues[0].value) {
+            // YES (true) should be NOT NULL
+            criteriaItem.comparison = CriteriaComparison.IsNotNull;
+          }
+          else {
+            // NO (false) should be NULL
+            criteriaItem.comparison = CriteriaComparison.IsNull;
+          }
+        }
+        else {
+          // If no values, make sure to remove the comparison
+          criteriaItem.comparison = CriteriaComparison.None;
+        }
+      }
+    }
+  }
+
   private openFieldSelectionPanel(): void {
     const allSelectors = [...this.supportedSelectors, this.sortBySelector, this.limitSelector, this.transformSelector];
     // Prepare the model
     const chipSelectionModel: IChipSelectionModel = {
+      displayMode: ChipDisplayMode.Block,
       selector: {
         column: { name: 'field', caption: 'Criteria Fields', dataType: CriteriaDataType.String },
         values: [],
@@ -288,6 +294,7 @@ export class QueryEditorComponent implements OnInit {
   private async openSortBySelectionPanel(): Promise<void> {
     await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
+      displayMode: ChipDisplayMode.Flex,
       selector: this.sortBySelector,
       onOk: values => {
         // Each value corresponds to a field, so each value needs its own criteria item
@@ -332,6 +339,7 @@ export class QueryEditorComponent implements OnInit {
 
   public onLimitEditClick(): void {
     const chipSelectionModel: IChipSelectionModel = {
+      displayMode: ChipDisplayMode.Flex,
       selector: this.limitSelector,
       onOk: values => {
         // Only one value should be selected
@@ -352,6 +360,7 @@ export class QueryEditorComponent implements OnInit {
 
   public onAlgorithmEditClick(): void {
     const chipSelectionModel: IChipSelectionModel = {
+      displayMode: ChipDisplayMode.Flex,
       selector: this.transformSelector,
       onOk: values => {
         // Only one value should be selected

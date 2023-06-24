@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-state.service';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { CriteriaValueEditor } from '../../services/criteria/criteria.enum';
-import { IChipSelectionModel } from './chip-selection-model.interface';
+import { ChipDisplayMode, IChipSelectionModel } from './chip-selection-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
   styleUrls: ['./chip-selection.component.scss']
 })
 export class ChipSelectionComponent implements OnInit {
-
+  public ChipDisplayMode = ChipDisplayMode;
   /** Model of the component. It will be set by the service. */
   public model: IChipSelectionModel;
 
