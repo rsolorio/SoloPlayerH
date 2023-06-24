@@ -530,8 +530,12 @@ export class UtilityService {
     window.open('https://google.com/search?q=' + encodedTerm);
   }
 
+  /**
+   * Pre-encodes the characters in the path not supported by the EncodeURI action
+   * and creates a file url.
+   */
   public fileToUrl(filePath: string): string {
-    return 'file://' + filePath;
+    return 'file://' + this.preEncodeFilePath(filePath);
   }
 
   public downloadUrl(url: string, fileName?: string): void {

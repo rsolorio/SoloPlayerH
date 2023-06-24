@@ -355,8 +355,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
   private loadAudio(audioSrc: string): boolean {
     let loadSuccess = false;
     // the html audio will automatically perform an encodeURI on the src property after it is set
-    // so we need to call this pre encode first.
-    this.htmlAudio.src = this.utilities.preEncodeFilePath(audioSrc);
+    // so the audioSrc should be already pre-encoded
+    this.htmlAudio.src = audioSrc;
     try {
       this.htmlAudio.load();
       loadSuccess = true;
