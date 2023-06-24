@@ -142,7 +142,7 @@ export class FileInfoSourceService implements IDataSource {
         imageType = MusicImageType.FrontAlternate;
         break;
       case MetaField.SingleImage:
-        fileName = this.fileInfo.name + 'jpg';
+        fileName = this.fileInfo.name + '.jpg';
         imageType = MusicImageType.Single;
         break;
     }
