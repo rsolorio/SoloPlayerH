@@ -121,7 +121,8 @@ export class DatabaseService {
         DataMappingEntity
       ],
       synchronize: true,
-      logging: ['query', 'error', 'warn']
+      logging: ['error'],
+      //logging: ['query', 'error', 'warn']
     };
     this.dataSource = new DataSource(options);
     await this.dataSource.initialize();

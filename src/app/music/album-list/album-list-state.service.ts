@@ -6,6 +6,7 @@ import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListListenerServiceBase } from 'src/app/shared/models/list-listener-service-base.class';
 
+/** Service no currently used. */
 @Injectable({
   providedIn: 'root'
 })

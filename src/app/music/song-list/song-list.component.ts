@@ -15,7 +15,6 @@ import { RelatedImageEntity, SongArtistViewEntity } from 'src/app/shared/entitie
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
-import { SongListStateService } from './song-list-state.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
@@ -74,7 +73,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumArtistSongs(song);
           // Since we are staying in the same route, use the same query info, just update the breadcrumbs
-          const criteriaClone = this.stateService.getState().criteria.clone();
+          const criteriaClone = this.spListBaseComponent.model.criteriaResult.criteria.clone();
           criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
           this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
         }
@@ -86,7 +85,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           const song = param as ISongModel;
           this.setBreadcrumbsForFeatArtistSongs(song).then(hasFeatArtists => {
             if (hasFeatArtists) {
-              const criteriaClone = this.stateService.getState().criteria.clone();
+              const criteriaClone = this.spListBaseComponent.model.criteriaResult.criteria.clone();
               criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
               this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
             }
@@ -99,7 +98,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         action: param => {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumSongs(song);
-          const criteriaClone = this.stateService.getState().criteria.clone();
+          const criteriaClone = this.spListBaseComponent.model.criteriaResult.criteria.clone();
           criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
           this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
         }
@@ -134,7 +133,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
       }
     }
   };
-
   // END - LIST MODEL
 
   constructor(
@@ -146,7 +144,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private playerOverlayService: PlayerOverlayStateService,
     private events: EventsService,
     private db: DatabaseService,
-    private stateService: SongListStateService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
     private imagePreviewService: ImagePreviewService,
