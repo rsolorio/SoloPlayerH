@@ -24,6 +24,8 @@ export enum MetaField {
   AlbumSort = 'albumSort',
   /** String. Id3v2 */
   AlbumType = 'albumType',
+  /** String. None. */
+  AlbumStylized = 'albumStylized',
   /** Number. Id3v2 */
   Year = 'year',
   /** String. Id3v2 */

@@ -1,5 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Brackets, DataSource, EntityTarget, InsertResult, ObjectLiteral, Repository, SelectQueryBuilder, DataSourceOptions, EntityMetadata } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  EntityTarget,
+  InsertResult,
+  ObjectLiteral,
+  Repository,
+  SelectQueryBuilder,
+  DataSourceOptions,
+  EntityMetadata
+} from 'typeorm';
 import * as objectHash from 'object-hash'
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import {
@@ -285,10 +295,12 @@ export class DatabaseService {
       this.log.warn('Empty bulk, aborting bulk insert.');
       return [];
     }
+    // Clone the array to prevent altering the original argument
+    const valuesClone = [...values];
     let bulkIndex = 0;
-    while (values.length) {
+    while (valuesClone.length) {
       bulkIndex++;
-      const items = values.splice(0, bulkInfo.bulkSize);
+      const items = valuesClone.splice(0, bulkInfo.bulkSize);
       this.log.info(`Bulk insert ${bulkIndex} (of ${bulkInfo.bulkCount}) with ${items.length} items.`);
       const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(items).execute();
       response.push(result);
@@ -310,10 +322,12 @@ export class DatabaseService {
       this.log.warn('Empty bulk, aborting bulk update.');
       return [];
     }
+    // Clone the array to prevent altering the original argument
+    const valuesClone = [...values];
     let bulkIndex = 0;
-    while (values.length) {
+    while (valuesClone.length) {
       bulkIndex++;
-      const items = values.splice(0, bulkInfo.bulkSize);
+      const items = valuesClone.splice(0, bulkInfo.bulkSize);
       this.log.info(`Bulk update ${bulkIndex} (of ${bulkInfo.bulkCount}) with ${items.length} items.`);
       const result = await this.dataSource.createQueryBuilder().insert().into(entity).values(items).orUpdate(updateColumns).execute();
       response.push(result);

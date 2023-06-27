@@ -516,6 +516,16 @@ export class UtilityService {
     }, {});
   }
 
+  /**
+   * Takes the first item in the array if exists, otherwise it will return null;
+   */
+  public first<T>(array: T[]): T {
+    if (array && array.length) {
+      return array[0];
+    }
+    return null;
+  }
+
   public setDocTitle(title?: string): void {
     if (title) {
       document.title = title;

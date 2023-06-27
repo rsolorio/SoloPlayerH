@@ -17,6 +17,8 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   @Column()
   albumSort: string;
   @Column()
+  albumStylized: string;
+  @Column()
   primaryArtistId: string;
 
   @ManyToOne(() => ArtistEntity, artist => artist.albums)

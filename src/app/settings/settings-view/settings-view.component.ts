@@ -7,22 +7,22 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ModuleOptionEntity, PlaylistEntity, PlaylistSongEntity, SongEntity, SongViewEntity } from 'src/app/shared/entities';
+import { ModuleOptionEntity, PlaylistEntity, PlaylistSongEntity, SongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { FileService } from 'src/app/platform/file/file.service';
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
-import { ScanFileMode, ScanService } from 'src/app/shared/services/scan/scan.service';
+import { ScanService } from 'src/app/shared/services/scan/scan.service';
 import { ISetting, ISettingCategory } from './settings-model.interface';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { AppRoute } from 'src/app/app-routes';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
-import { KeyValues } from 'src/app/core/models/core.interface';
 import { MimeType } from 'src/app/core/models/core.enum';
+import { ISyncInfo } from 'src/app/shared/services/scan/scan.interface';
 
 @Component({
   selector: 'sp-settings-view',
@@ -127,7 +127,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         ]
       },
       {
-        name: 'Audio Scanner',
+        name: 'Audio Synchronization',
         settings: [
           {
             name: 'Tag Mapping',
@@ -148,19 +148,19 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             }
           },
           {
-            name: 'Scan Audio Files',
-            icon: 'mdi-magnify-scan mdi',
+            name: 'Sync Audio Files',
+            icon: 'mdi-sync mdi',
             dataType: 'text',
             descriptions: [
-              'Click here to start scanning audio files.',
+              'Click here to start synchronizing audio files; new files will be added to the database; missing files will be deleted from the database.',
               'Files found: 0'
             ],
             action: setting => {
               if (musicPath) {
-                this.onAudioScan(setting, musicPath);
+                this.onFolderScan(setting, musicPath);
               }
               else {
-                setting.warningText = 'Unable to start scan. Please select the audio directory first.';
+                setting.warningText = 'Unable to start sync. Please select the audio directory first.';
               }
             }
           }
@@ -241,7 +241,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     ];
   }
 
-  onAudioScan(setting: ISetting, folderPath: string): void {
+  onFolderScan(setting: ISetting, folderPath: string): void {
     // Disable the setting
     setting.disabled = true;
     setting.running = true;
@@ -261,26 +261,38 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       this.subs.unSubscribe('settingsViewScanFile');
       // Start reading file metadata
       setting.descriptions[0] = 'Reading metadata...';
-      this.processAudioFiles(mp3Files, setting).then(results => {
-        // At this point the process is done.
+      this.syncAudioFiles(mp3Files, setting).then(syncInfo => {
+        // At this point the process is done.        
+        let syncMessage = '';
+        if (syncInfo.songAddedRecords.length) {
+          syncMessage = `Added: ${syncInfo.songAddedRecords.length}.`;
+        }
+        if (syncInfo.songUpdatedRecords.length) {
+          syncMessage += ` Updated: ${syncInfo.songUpdatedRecords.length}.`;
+        }
+        if (syncInfo.songSkippedRecords.length) {
+          syncMessage += ` Skipped: ${syncInfo.songSkippedRecords.length}.`;
+        }
+        if (syncInfo.songDeletedRecords.length) {
+          syncMessage += ` Deleted: ${syncInfo.songDeletedRecords.length}.`;
+        }
 
-        // Getting info
-        const addedFiles = results.filter(r => r[MetaField.FileMode][0] === ScanFileMode.Add && !r[MetaField.Error].length);
-        const updatedFiles = results.filter(r => r[MetaField.FileMode][0] === ScanFileMode.Update && !r[MetaField.Error].length);
-        const skipFiles = results.filter(r => r[MetaField.FileMode][0] === ScanFileMode.Skip && !r[MetaField.Error].length);
-        const errorFiles = results.filter(r => r[MetaField.Error].length);
-
-        const filesInfo = `Added: ${addedFiles.length}. Updated: ${updatedFiles.length}. Skipped: ${skipFiles.length}.`;
-
-        setting.descriptions[0] = 'Click here to start scanning audio files.';
+        setting.descriptions[0] = 'Click here to start synchronizing audio files.';
+        const errorFiles = syncInfo.metadataResults.filter(r => r[MetaField.Error].length);
         if (errorFiles.length) {
-          this.log.debug('Scan failures', errorFiles);
+          syncMessage += ` Errors: ${errorFiles.length}.`;
           setting.dynamicText = '';
-          setting.warningText = `Scan process done. ${filesInfo} Errors: ${errorFiles.length}.`;
+          setting.warningText = `Sync process done. ${syncMessage}`;
+          this.log.debug('Sync failures', errorFiles);
         }
         else {
-          setting.dynamicText = `Scan process done. ${filesInfo} No errors found.`;
+          setting.dynamicText = `Sync process done. ${syncMessage}`;
         }
+
+        // Before logging the sync info remove all metadata, since that could be a lot of information
+        syncInfo.metadataResults = [];
+        this.log.debug('Sync info:', syncInfo);
+
         const endTime = new Date().getTime();
         const timeSpan =  this.utility.toTimeSpan(endTime - startTime,
           [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
@@ -297,8 +309,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     }
   }
 
-  private async processAudioFiles(files: IFileInfo[], setting: ISetting): Promise<KeyValues[]> {
-    const audios = await this.scanner.processAudioFiles(files, this.options,
+  private async syncAudioFiles(files: IFileInfo[], setting: ISetting): Promise<ISyncInfo> {
+    const syncInfo = await this.scanner.syncAudioFiles(files, this.options,
       // Before file process
       async (count, file) => {
         setting.descriptions[1] = `File ${count} of ${files.length}`;
@@ -308,9 +320,14 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       async () => {
         setting.descriptions[0] = 'Synchronizing changes...';
         setting.dynamicText = '';
+      },
+      // Before cleanup
+      async () => {
+        setting.descriptions[0] = 'Cleaning up...';
+        setting.dynamicText = '';
       }
     );
-    return audios;
+    return syncInfo;
   }
 
   public onPlaylistScan(setting: ISetting, folderPath: string): void {
@@ -359,13 +376,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   onTest(): void {
-    //this.testRegExp();
-
-    const fileName = 'J:\\Music\\English\\Country\\Alan Jackson\\1992 - A Lot About Livin\' (And A Little \'Bout Love)\\01 - 01 - chattahoochee.mp3';
-    //const regexp = new RegExp('(((?<media>.+) - )*(?<track>.+) - )*(?<title>.+).mp3', 'g');
-    const regexp = new RegExp('(?<dummy>.+)\\\\(?<year>.+) - (?<album>.+)\\\\(?<media>.+) - (?<track>.+) - (?<title>.+)', 'g');
-    const matchInfo = regexp.exec(fileName);
-    console.log(matchInfo);
+    //this.testSqlConnection();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -390,46 +401,5 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       }
     };
     this.browserService.browse(browserModel);
-  }
-
-  private async testRegExp(): Promise<void> {
-    const allSongs = await SongViewEntity.find();
-    const songs = allSongs;
-    for (const song of songs) {
-      const pathParts = song.filePath.split('\\').reverse();
-      const fileName = pathParts[0].toLowerCase();
-      // const dir1 = pathParts[1];
-      // const dir2 = pathParts[2];
-      // const dir3 = pathParts[3];
-      // const dir4 = pathParts[4];
-      // const dir5 = pathParts[5];
-
-      // User input: %media% - %track% - %title%
-      //const regexp = /(((?<media>.+) - )*(?<track>.+) - )*(?<title>.+).mp3/g;
-      const regexp = new RegExp('(((?<media>.+) - )*(?<track>.+) - )*(?<title>.+).mp3', 'g');
-      const matchInfo = regexp.exec(fileName);
-      if (matchInfo && matchInfo.groups) {
-        const mediaGroup = matchInfo.groups['media'];
-        const trackGroup = matchInfo.groups['track'];
-        const titleGroup = matchInfo.groups['title'];
-
-        const mediaNumber = mediaGroup ? parseInt(mediaGroup, 10) : 1;
-        const trackNumber = trackGroup ? parseInt(trackGroup, 10) : 0;
-        const name = matchInfo.groups['title'];
-
-        if (song.mediaNumber !== mediaNumber || song.trackNumber !== trackNumber || song.name.toLowerCase() !== name) {
-          console.log(mediaGroup);
-          console.log(trackGroup);
-          console.log(titleGroup);
-          console.log(song.filePath);
-          console.log();
-        }
-      }
-      else {
-        console.log('no info or groups');
-        console.log(song.filePath);
-        console.log();
-      }
-    }
   }
 }

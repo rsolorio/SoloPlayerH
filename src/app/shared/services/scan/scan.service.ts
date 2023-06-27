@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { Not } from 'typeorm';
+import { In, Not } from 'typeorm';
 import {
   ArtistEntity,
   AlbumEntity,
@@ -13,7 +13,10 @@ import {
   SongArtistEntity,
   SongClassificationEntity,
   ValueListEntryEntity,
-  RelatedImageEntity
+  RelatedImageEntity,
+  PlayHistoryEntity,
+  AlbumViewEntity,
+  ArtistViewEntity
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
@@ -21,10 +24,12 @@ import { ValueLists } from '../database/database.lists';
 import { DatabaseService } from '../database/database.service';
 import { IFileInfo } from '../../../platform/file/file.interface';
 import { FileService } from '../../../platform/file/file.service';
-import { MusicImageType } from '../../../platform/audio-metadata/audio-metadata.enum';
+import { MusicImageSourceType, MusicImageType } from '../../../platform/audio-metadata/audio-metadata.enum';
 import { MetadataReaderService } from 'src/app/mapping/data-transform/metadata-reader.service';
 import { IImageSource, KeyValues } from 'src/app/core/models/core.interface';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { Criteria, CriteriaItem } from '../criteria/criteria.class';
+import { ISyncInfo } from './scan.interface';
 
 export enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -90,6 +95,7 @@ export class ScanService {
     });
   }
 
+  /** Initializes cache variables and the metadata reader. */
   private async beforeProcess(): Promise<void> {
     // Prepare global variables
     this.existingArtists = await ArtistEntity.find();
@@ -109,7 +115,7 @@ export class ScanService {
     await this.metadataReader.init();
   }
 
-  private async syncChangesToDatabase(): Promise<void> {
+  private async syncChangesToDatabase(syncInfo: ISyncInfo): Promise<void> {
     // Value lists
     const newCountries = this.existingCountries.filter(country => country.isNew);
     if (newCountries.length) {
@@ -146,43 +152,54 @@ export class ScanService {
       newClassifications.forEach(c => c.isNew = false);
     }
     // Songs
-    const newSongs = this.existingSongs.filter(song => song.isNew);
-    if (newSongs.length) {
-      await this.db.bulkInsert(SongEntity, newSongs);
-      newSongs.forEach(s => s.isNew = false);
+    syncInfo.songAddedRecords = this.existingSongs.filter(song => song.isNew);
+    if (syncInfo.songAddedRecords.length) {
+      await this.db.bulkInsert(SongEntity, syncInfo.songAddedRecords);
+      // Do we really need to do this? At least not for now
+      // newSongs.forEach(s => s.isNew = false);
     }
-    const songsToBeUpdated = this.existingSongs.filter(song => song.hasChanges);
-    if (songsToBeUpdated.length) {
+    syncInfo.songUpdatedRecords = this.existingSongs.filter(song => song.hasChanges);
+    if (syncInfo.songUpdatedRecords.length) {
       const updateColumns = ['lyrics', 'seconds', 'bitrate', 'frequency', 'vbr', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
-      await this.db.bulkUpdate(SongEntity, songsToBeUpdated, updateColumns);
-      songsToBeUpdated.forEach(s => s.hasChanges = false);
+      await this.db.bulkUpdate(SongEntity, syncInfo.songUpdatedRecords, updateColumns);
+      // Do we really need to do this? At least not for now
+      // songsToBeUpdated.forEach(s => s.hasChanges = false);
     }
     // SongArtists
     await this.db.bulkInsert(SongArtistEntity, this.existingSongArtists);
-    // This array is only populated for new songs
-    this.existingSongArtists = [];
     // SongClassifications
     await this.db.bulkInsert(SongClassificationEntity, this.existingSongClassifications);
-    // This array is only populated for new songs
-    this.existingSongClassifications = [];
+    
     // Images
     const newImages = this.existingImages.filter(image => image.isNew);
     if (newImages.length) {
       await this.db.bulkInsert(RelatedImageEntity, newImages);
-      newImages.forEach(i => i.isNew = false);
+      // Do we really need to do this? At least not for now
+      //newImages.forEach(i => i.isNew = false);
     }
   }
 
-  public async processAudioFiles(
+  public async syncAudioFiles(
     files: IFileInfo[],
     moduleOptions: ModuleOptionEntity[],
     beforeFileProcess?: (count: number, fileInfo: IFileInfo) => Promise<void>,
     beforeSyncChanges?: () => Promise<void>,
-  ): Promise<KeyValues[]> {
+    beforeCleanup?: () => Promise<void>
+  ): Promise<ISyncInfo> {
+    const result: ISyncInfo = {
+      songInitialCount: 0,
+      songFinalCount: 0,
+      songAddedRecords: null,
+      songUpdatedRecords: null,
+      songSkippedRecords: null,
+      songDeletedRecords: null,
+      metadataResults: null
+    };
     this.options = moduleOptions?.length ? moduleOptions : [];
     await this.beforeProcess();
+    result.songInitialCount = this.existingSongs.length;
     let fileCount = 0;
-    const result: KeyValues[] = [];
+    result.metadataResults = [];
     for (const file of files) {
       fileCount++;
       if (beforeFileProcess) {
@@ -190,13 +207,21 @@ export class ScanService {
       }
       this.setMode(file);
       const metadata = await this.processAudioFile(file);
-      result.push(metadata);
+      result.metadataResults.push(metadata);
     }
+
 
     if (beforeSyncChanges) {
       await beforeSyncChanges();
     }
-    await this.syncChangesToDatabase();
+    await this.syncChangesToDatabase(result);
+
+    if (beforeCleanup) {
+      await beforeCleanup();
+    }
+    await this.cleanUpDatabase(result);
+    result.songFinalCount = result.songAddedRecords.length + result.songUpdatedRecords.length + result.songSkippedRecords.length - result.songDeletedRecords.length;
+    this.cleanUpMemory();
     return result;
   }
 
@@ -334,9 +359,9 @@ export class ScanService {
 
   private async updateAudioFile(metadata: KeyValues): Promise<KeyValues> {
     // Lyrics
-    let lyrics = this.reduce(metadata[MetaField.UnSyncLyrics]);
+    let lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
     if (!lyrics) {
-      lyrics = this.reduce(metadata[MetaField.SyncLyrics]);
+      lyrics = this.first(metadata[MetaField.SyncLyrics]);
     }
     if (lyrics && lyrics !== this.songToProcess.lyrics) {
       this.songToProcess.lyrics = lyrics;
@@ -345,18 +370,18 @@ export class ScanService {
 
     // Replaced?
     let replaced = false;
-    const seconds = this.reduce(metadata[MetaField.Seconds]);
+    const seconds = this.first(metadata[MetaField.Seconds]);
     if (seconds && seconds !== this.songToProcess.seconds) {
       this.songToProcess.seconds = seconds;
       this.songToProcess.duration = this.utilities.secondsToMinutes(seconds);
       replaced = true;
     }
-    const bitrate = this.reduce(metadata[MetaField.Bitrate]);
+    const bitrate = this.first(metadata[MetaField.Bitrate]);
     if (bitrate && bitrate !== this.songToProcess.bitrate) {
       this.songToProcess.bitrate = bitrate;
       replaced = true;
     }
-    const frequency = this.reduce(metadata[MetaField.Frequency]);
+    const frequency = this.first(metadata[MetaField.Frequency]);
     if (frequency && frequency !== this.songToProcess.frequency) {
       this.songToProcess.frequency = frequency;
       replaced = true;
@@ -366,12 +391,12 @@ export class ScanService {
       this.songToProcess.vbr = vbr[0];
       replaced = true;
     }
-    const replayGain = this.reduce(metadata[MetaField.ReplayGain]);
+    const replayGain = this.first(metadata[MetaField.ReplayGain]);
     if (replayGain && replayGain !== this.songToProcess.replayGain) {
       this.songToProcess.replayGain = replayGain;
       replaced = true;
     }
-    const fileSize = this.reduce(metadata[MetaField.FileSize]);
+    const fileSize = this.first(metadata[MetaField.FileSize]);
     if (fileSize && fileSize !== this.songToProcess.fileSize) {
       this.songToProcess.fileSize = fileSize;
       replaced = true;
@@ -383,11 +408,11 @@ export class ScanService {
     // }
 
     // Add date
-    let newAddDate = this.reduce(metadata[MetaField.AddDate]);
+    let newAddDate = this.first(metadata[MetaField.AddDate]);
     if (!newAddDate) {
       newAddDate = new Date();
     }
-    let newChangeDate = this.reduce(metadata[MetaField.ChangeDate]);
+    let newChangeDate = this.first(metadata[MetaField.ChangeDate]);
     if (!newChangeDate) {
       newChangeDate = new Date();
     }
@@ -423,14 +448,14 @@ export class ScanService {
   }
 
   private processAlbumArtist(metadata: KeyValues): ArtistEntity {
-    const artistType = this.reduce(metadata[MetaField.ArtistType]);
-    const country = this.reduce(metadata[MetaField.Country]);
-    const artistStylized = this.reduce(metadata[MetaField.ArtistStylized]);
-    const artistSort = this.reduce(metadata[MetaField.ArtistSort]);
+    const artistType = this.first(metadata[MetaField.ArtistType]);
+    const country = this.first(metadata[MetaField.Country]);
+    const artistStylized = this.first(metadata[MetaField.ArtistStylized]);
+    const artistSort = this.first(metadata[MetaField.ArtistSort]);
 
-    let artistName = this.reduce(metadata[MetaField.AlbumArtist]);
+    let artistName = this.first(metadata[MetaField.AlbumArtist]);
     if (!artistName) {
-      artistName = this.reduce(metadata[MetaField.Artist]);
+      artistName = this.first(metadata[MetaField.Artist]);
       if (!artistName) {
         artistName = this.unknownValue;
       }
@@ -486,12 +511,19 @@ export class ScanService {
     newAlbum.isNew = true;
     newAlbum.primaryArtist = artist;
 
-    newAlbum.name = this.reduce(metadata[MetaField.Album]);
+    newAlbum.name = this.first(metadata[MetaField.Album]);
     if (!newAlbum.name) {
       newAlbum.name = this.unknownValue;
     }
+
+    let albumStylized = this.first(metadata[MetaField.AlbumStylized]);
+    if (!albumStylized) {
+      albumStylized = newAlbum.name;
+    }
+    newAlbum.albumStylized = albumStylized;
+
     newAlbum.releaseYear = 0;
-    const year = this.reduce(metadata[MetaField.Year]);
+    const year = this.first(metadata[MetaField.Year]);
     if (year > 0 && !ignoredYears.includes(year)) {
       // Is this actually the album year? Album year and song year might be different.
       newAlbum.releaseYear = year;
@@ -512,7 +544,7 @@ export class ScanService {
       return existingAlbum;
     }
 
-    const albumSort = this.reduce(metadata[MetaField.AlbumSort]);
+    const albumSort = this.first(metadata[MetaField.AlbumSort]);
     if (albumSort) {
       newAlbum.albumSort = albumSort;
     }
@@ -520,7 +552,7 @@ export class ScanService {
       newAlbum.albumSort = newAlbum.name;
     }
 
-    const albumType = this.reduce(metadata[MetaField.AlbumType]);
+    const albumType = this.first(metadata[MetaField.AlbumType]);
     newAlbum.albumTypeId = albumType ? this.getValueListEntryId(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP;
 
     newAlbum.favorite = false;
@@ -535,45 +567,45 @@ export class ScanService {
   private processSong(album: AlbumEntity, metadata: KeyValues): SongEntity {
     const song = new SongEntity();
     song.isNew = true;
-    song.filePath = this.reduce(metadata[MetaField.FilePath]);
+    song.filePath = this.first(metadata[MetaField.FilePath]);
 
-    const id = this.reduce(metadata[MetaField.UfId]);
+    const id = this.first(metadata[MetaField.UfId]);
     if (id) {
       song.externalId = id;
     }
 
-    song.name = this.reduce(metadata[MetaField.Title]);
+    song.name = this.first(metadata[MetaField.Title]);
     if (!song.name) {
-      song.name = this.reduce(metadata[MetaField.FileName]);
+      song.name = this.first(metadata[MetaField.FileName]);
     }
 
     song.primaryAlbum = album;
-    const trackNumber = this.reduce(metadata[MetaField.TrackNumber]);
+    const trackNumber = this.first(metadata[MetaField.TrackNumber]);
     song.trackNumber = trackNumber ? trackNumber : 0;
-    const mediaNumber = this.reduce(metadata[MetaField.MediaNumber]);
+    const mediaNumber = this.first(metadata[MetaField.MediaNumber]);
     song.mediaNumber = mediaNumber ? mediaNumber : 0;
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 
-    const composer = this.reduce(metadata[MetaField.Composer]);
+    const composer = this.first(metadata[MetaField.Composer]);
     if (composer) {
       song.composer = composer;
     }
-    const comment = this.reduce(metadata[MetaField.Comment]);
+    const comment = this.first(metadata[MetaField.Comment]);
     if (comment) {
       song.comment = comment;
     }
-    const grouping = this.reduce(metadata[MetaField.Grouping]);
+    const grouping = this.first(metadata[MetaField.Grouping]);
     if (grouping) {
       song.grouping = grouping;
     }
 
     // Get dates
-    let addDate = this.reduce(metadata[MetaField.AddDate]);
+    let addDate = this.first(metadata[MetaField.AddDate]);
     if (!addDate) {
       addDate = new Date();
     }
-    let changeDate = this.reduce(metadata[MetaField.ChangeDate]);
+    let changeDate = this.first(metadata[MetaField.ChangeDate]);
     if (!changeDate) {
       changeDate = new Date();
     }
@@ -586,41 +618,41 @@ export class ScanService {
     song.changeDate = changeDate;
     // TODO: Set dates in file
 
-    song.language = this.reduce(metadata[MetaField.Language]);
+    song.language = this.first(metadata[MetaField.Language]);
     if (!song.language) {
       song.language = this.unknownValue;
     }
 
-    song.mood = this.reduce(metadata[MetaField.Mood]);
+    song.mood = this.first(metadata[MetaField.Mood]);
     if (!song.mood) {
       song.mood = this.unknownValue;
     }
 
     // Rating
     song.rating = 0;
-    const rating = this.reduce(metadata[MetaField.Rating]);
+    const rating = this.first(metadata[MetaField.Rating]);
     if (rating) {
       song.rating = rating;
     }
 
     // Play Count
     song.playCount = 0;
-    const playCount = this.reduce(metadata[MetaField.PlayCount]);
+    const playCount = this.first(metadata[MetaField.PlayCount]);
     if (playCount) {
       song.playCount = playCount;
     }
     // This will only be set once just for tracking purposes
     song.initialPlayCount = song.playCount;
 
-    let lyrics = this.reduce(metadata[MetaField.UnSyncLyrics]);
+    let lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
     if (!lyrics) {
-      lyrics = this.reduce(metadata[MetaField.SyncLyrics]);
+      lyrics = this.first(metadata[MetaField.SyncLyrics]);
     }
     if (lyrics) {
       song.lyrics = lyrics;
     }
 
-    const titleSort = this.reduce(metadata[MetaField.TitleSort]);
+    const titleSort = this.first(metadata[MetaField.TitleSort]);
     if (titleSort) {
       song.titleSort = titleSort;
     }
@@ -629,23 +661,23 @@ export class ScanService {
     }
 
     song.live = false;
-    const live = this.reduce(metadata[MetaField.Live]);
+    const live = this.first(metadata[MetaField.Live]);
     if (live && live.toLowerCase() === 'true') {
       song.live = true;
     }
 
-    song.seconds = this.reduce(metadata[MetaField.Seconds]);
+    song.seconds = this.first(metadata[MetaField.Seconds]);
     if (!song.seconds) {
       song.seconds = 0;
       this.log.warn('Duration not found for: ' + song.filePath);
     }
     song.duration = this.utilities.secondsToMinutes(song.seconds);
-    song.bitrate = this.reduce(metadata[MetaField.Bitrate]);
-    song.frequency = this.reduce(metadata[MetaField.Frequency]);
-    song.vbr = this.reduce(metadata[MetaField.Vbr]);
-    song.replayGain = this.reduce(metadata[MetaField.ReplayGain]);
-    song.fileSize = this.reduce(metadata[MetaField.FileSize]);
-    song.fullyParsed = this.reduce(metadata[MetaField.TagFullyParsed]);
+    song.bitrate = this.first(metadata[MetaField.Bitrate]);
+    song.frequency = this.first(metadata[MetaField.Frequency]);
+    song.vbr = this.first(metadata[MetaField.Vbr]);
+    song.replayGain = this.first(metadata[MetaField.ReplayGain]);
+    song.fileSize = this.first(metadata[MetaField.FileSize]);
+    song.fullyParsed = this.first(metadata[MetaField.TagFullyParsed]);
     song.favorite = false;
 
     this.db.hashSong(song);
@@ -654,7 +686,7 @@ export class ScanService {
   }
 
   private processImage(relatedId: string, metadata: KeyValues, field: MetaField): void {
-    const image = this.reduce(metadata[field]) as IImageSource;
+    const image = this.first(metadata[field]) as IImageSource;
 
     if (image && image.sourcePath) {
       const existingImage = this.existingImages.find (i =>
@@ -681,25 +713,25 @@ export class ScanService {
 
   private getImageName(metadata: KeyValues, imageType: MusicImageType): string {
     if (imageType === MusicImageType.Single) {
-      const title = this.reduce(metadata[MetaField.Title]);
+      const title = this.first(metadata[MetaField.Title]);
       if (title) {
         return title;
       }
-      const fileName = this.reduce(metadata[MetaField.FileName]);
+      const fileName = this.first(metadata[MetaField.FileName]);
       if (fileName) {
         return fileName;
       }
     }
 
     if (imageType === MusicImageType.Front || imageType === MusicImageType.FrontAlternate) {
-      const album = this.reduce(metadata[MetaField.Album]);
+      const album = this.first(metadata[MetaField.Album]);
       if (album) {
         return album;
       }
     }
 
     if (imageType === MusicImageType.Artist) {
-      const albumArtist = this.reduce(metadata[MetaField.AlbumArtist]);
+      const albumArtist = this.first(metadata[MetaField.AlbumArtist]);
       if (albumArtist) {
         return albumArtist;
       }
@@ -992,10 +1024,127 @@ export class ScanService {
     return null;
   }
 
-  private reduce<T>(array: T[]): T {
-    if (array && array.length) {
-      return array[0];
+  /**
+   * Removes unnecessary records from the database like song records associated with missing files.
+  */
+  private async cleanUpDatabase(syncInfo: ISyncInfo): Promise<void> {
+    // 00. Start with images to delete
+    // Do we really want to do this?
+    const imageIdsToDelete: string[] = [];
+    const skipImages = this.existingImages.filter(i => !i.isNew && i.sourceType === MusicImageSourceType.ImageFile);
+    for (const image of skipImages) {
+      if (!this.fileService.exists(image.sourcePath)) {
+        imageIdsToDelete.push(image.id);
+      }
     }
-    return null;
+
+    if (imageIdsToDelete.length) {
+      // Delete related images
+      await RelatedImageEntity.delete({ id: In(imageIdsToDelete) });
+    }
+
+    // 01. Determine songs to be deleted (missing song files)
+    syncInfo.songSkippedRecords = [];
+    syncInfo.songDeletedRecords = [];
+    const albumIdsToAnalyze: string[] = [];
+    const noChangeSongs = this.existingSongs.filter(song => !song.isNew && !song.hasChanges);
+    for (const song of noChangeSongs) {
+      if (this.fileService.exists(song.filePath)) {
+        syncInfo.songSkippedRecords.push(song);
+      }
+      else {
+        syncInfo.songDeletedRecords.push(song);
+        if (!albumIdsToAnalyze.includes(song.primaryAlbumId)) {
+          albumIdsToAnalyze.push(song.primaryAlbumId);
+        }
+      }
+    }
+    if (!syncInfo.songDeletedRecords.length) {
+      return;
+    }
+    const songIdsToDelete = syncInfo.songDeletedRecords.map(song => song.id);
+
+    // DELETE ASSOCIATED SONG RECORDS
+    // 02. Song classification
+    await SongClassificationEntity.delete({ songId: In(songIdsToDelete) });
+    // 03. Song artist
+    await SongArtistEntity.delete({ songId: In(songIdsToDelete) });
+    // 04. Related image
+    // In theory this will take care of images that match the file path of the song being deleted
+    await RelatedImageEntity.delete({ relatedId: In(songIdsToDelete) });
+    // 05. Playlist history
+    await PlayHistoryEntity.delete({ songId: In(songIdsToDelete) });
+    // 06. Playlist song
+    await PlaylistSongEntity.delete({ songId: In(songIdsToDelete) });
+    // 07. Songs
+    await SongEntity.delete({ id: In(songIdsToDelete) });
+
+    // 08. Determine albums to be deleted (with no songs)
+    const albumCriteria = new Criteria();
+    albumCriteria.searchCriteria.push(new CriteriaItem('songCount', 0));
+    const albumIdCriteria = new CriteriaItem('id');
+    for (const albumId of albumIdsToAnalyze) {
+      albumIdCriteria.columnValues.push({ value: albumId});
+    }
+    const albumsToDelete = await this.db.getList(AlbumViewEntity, albumCriteria);
+    if (!albumsToDelete.length) {
+      return;
+    }
+    const albumIdsToDelete = albumsToDelete.map(album => album.id);
+    const artistIdsToAnalyze = albumsToDelete
+      .map(album => album.primaryArtistId)
+      // Remove duplicates
+      .reduce((previousValue, currentItem) => {
+        if (!previousValue.includes(currentItem)) {
+          previousValue.push(currentItem);
+        }
+        return previousValue;
+      }, []);
+    // DELETE ASSOCIATED ALBUM RECORDS
+    // 09. Related image
+    await RelatedImageEntity.delete({ relatedId: In(albumIdsToDelete) });
+    // 10. Albums
+    await AlbumEntity.delete({ id: In(albumIdsToDelete) });
+    // 11. Determine artists to be deleted (with no albums and no songs)
+    const artistCriteria = new Criteria();
+    artistCriteria.searchCriteria.push(new CriteriaItem('songCount', 0));
+    const artistIdCriteria = new CriteriaItem('id');
+    for (const artistId of artistIdsToAnalyze) {
+      artistIdCriteria.columnValues.push({ value: artistId });
+    }
+    const artistsToDelete = await this.db.getList(ArtistViewEntity, artistCriteria);
+    if (!artistsToDelete.length) {
+      return;
+    }
+    const artistIdsToDelete = artistsToDelete.map(artist => artist.id);
+    // DELETE ASSOCIATED ARTIST RECORDS
+    // 12. Related image
+    await RelatedImageEntity.delete({ relatedId: In(artistIdsToDelete) });
+    // 13. Song artist
+    // In theory there shouldn't be records in this table to delete since they were deleted
+    // when the song ids were deleted
+    // await SongArtistEntity.delete({ artistId: In(artistIdsToDelete) });
+    // 14. Artists
+    await ArtistEntity.delete({ id: In(artistIdsToDelete) });
+  }
+
+  private cleanUpMemory(): void {
+    this.existingCountries = [];
+    this.existingArtists = [];
+    this.existingAlbums = [];
+    this.existingGenres = [];
+    this.existingClassifications = [];
+    this.existingSongs = [];
+    this.existingClassTypes = [];
+    this.existingCountries = [];
+    this.existingArtistTypes = [];
+    this.existingAlbumTypes = [];
+    this.existingImages = [];
+    this.existingSongArtists = [];
+    this.existingSongClassifications = [];
+  }
+
+  private first<T>(array: T[]): T {
+    return this.utilities.first(array);
   }
 }

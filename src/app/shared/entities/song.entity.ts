@@ -72,6 +72,10 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   live: boolean;
   @Column()
   primaryAlbumId: string;
+  @Column({ nullable: true })
+  infoUrl: string;
+  @Column({ nullable: true })
+  videoUrl: string;
 
   @ManyToOne(() => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})
