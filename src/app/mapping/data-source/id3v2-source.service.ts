@@ -34,13 +34,15 @@ export class Id3v2SourceService implements IDataSource {
       this.loadInfo.error = this.audioInfo.error;
       return this.loadInfo;
     }
-    let id3Tags = this.audioInfo.metadata.native['ID3v2.4'];
-    if (!id3Tags || !id3Tags.length) {
-      id3Tags = this.audioInfo.metadata.native['ID3v2.3'];
-    }
-    if (id3Tags) {
-      this.tags = id3Tags;
-    }
+    // ID3v1 is being handled by the metadata.common properties
+    const tagVersions = ['ID3v2.4', 'ID3v2.3', 'ID3v1'];
+    this.tags = [];
+    tagVersions.forEach(version => {
+      const newTags = this.audioInfo.metadata.native[version];
+      if (newTags && newTags.length) {
+        this.tags = this.tags.concat(newTags);
+      }
+    });
     return this.loadInfo;
   }
 
@@ -120,6 +122,11 @@ export class Id3v2SourceService implements IDataSource {
       case MetaField.Comment:
         if (this.audioInfo.metadata.common.comment) {
           return this.audioInfo.metadata.common.comment;
+        }
+        break;
+      case MetaField.Copyright:
+        if (this.audioInfo.metadata.common.copyright) {
+          return [this.audioInfo.metadata.common.copyright];
         }
         break;
       case MetaField.Grouping:

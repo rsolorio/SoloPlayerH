@@ -38,7 +38,7 @@ export class SongBaseEntity extends ListItemEntity {
   }
 
   public get albumWithYear(): string {
-    const yearText = this.releaseYear >= 0 ? ` (${this.releaseYear})` : '';
+    const yearText = this.releaseYear > 0 ? ` (${this.releaseYear})` : '';
     return this.albumName + yearText;
   }
 

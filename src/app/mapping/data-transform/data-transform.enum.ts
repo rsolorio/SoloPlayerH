@@ -6,7 +6,7 @@ export enum DataTransformId {
  * Supported fields for the transform tasks.
  */
 export enum MetaField {
-  /** String. Id3v2 */
+  /** String. Id3v2, Id3v1 */
   Artist = 'artist',
   /** String. Id3v2 */
   ArtistSort = 'artistSort',
@@ -18,7 +18,7 @@ export enum MetaField {
   AlbumArtist = 'albumArtist',
   /** String. Id3v2 */
   AlbumArtistSort = 'albumArtistSort',
-  /** String. Id3v2 */
+  /** String. Id3v2, Id3v1 */
   Album = 'album',
   /** String. Id3v2 */
   AlbumSort = 'albumSort',
@@ -26,28 +26,30 @@ export enum MetaField {
   AlbumType = 'albumType',
   /** String. None. */
   AlbumStylized = 'albumStylized',
-  /** Number. Id3v2 */
+  /** Number. Id3v2, Id3v1 */
   Year = 'year',
   /** String. Id3v2 */
   Country = 'country',
-  /** String. Id3v2 */
+  /** String. Id3v2, Id3v1 */
   Genre = 'genre',
   /** String. Id3v2 */
   UfId = 'ufId',
-  /** String. Id3v2 */
+  /** String. Id3v2, Id3v1 */
   Title = 'title',
   /** String. None. */
   SubTitle = 'subTitle',
   /** String. Id3v2 */
   TitleSort = 'titleSort',
-  /** Number. Id3v2 */
+  /** Number. Id3v2, Id3v1 */
   TrackNumber = 'track',
   /** Number. Id3v2 */
   MediaNumber = 'media',
   /** String. Id3v2 */
   Composer = 'composer',
-  /** String. Id3v2 */
+  /** String. Id3v2, Id3v1 */
   Comment = 'comment',
+  /** String. Id3v2 */
+  Copyright = 'copyright',
   /** String. Id3v2 */
   Grouping = 'grouping',
   /** Date. Id3v2 */

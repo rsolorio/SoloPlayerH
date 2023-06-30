@@ -376,7 +376,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   onTest(): void {
-    //this.testSqlConnection();
+    this.logFileMetadata();
   }
 
   private async logFileMetadata(): Promise<void> {

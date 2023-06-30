@@ -3,8 +3,7 @@ import { ISongModel } from '../models/song-model.interface';
 import { SongBaseEntity } from './song-base.entity';
 
 /**
- * This view combines the song entity with the songArtist entity.
- * It is intended to be used by filtering using the artistId column;
+ * This view combines the song entity with the songClassification entity.
  * Fields: id, name, filePath, playCount, releaseYear, releaseDecade,
  * trackNumber, mediaNumber, seconds, favorite, rating, mood, language,
  * lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized,
