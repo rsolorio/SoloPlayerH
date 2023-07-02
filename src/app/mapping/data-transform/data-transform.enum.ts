@@ -14,6 +14,8 @@ export enum MetaField {
   ArtistType = 'artistType',
   /** String. Id3v2 */
   ArtistStylized = 'artistStylized',
+  /** String. PathExpression. */
+  FeaturingArtist = 'featuring',
   /** String. Id3v2 */
   AlbumArtist = 'albumArtist',
   /** String. Id3v2 */

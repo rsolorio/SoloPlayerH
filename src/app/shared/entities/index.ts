@@ -25,3 +25,4 @@ export * from './value-list-entry.entity';
 export * from './related-image.entity';
 export * from './data-source.entity';
 export * from './data-mapping.entity';
+export * from './party-relation.entity';

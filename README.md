@@ -197,10 +197,13 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - favorite
 - artistSort
 
-### SongArtist table
+### PartyRelation table
+- id
+- relatedId
 - songId
+- albumId
 - artistId
-- artistRoleTypeId
+- relationTypeId
 
 ### Playlist table
 - id

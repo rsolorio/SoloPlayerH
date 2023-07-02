@@ -59,24 +59,26 @@ export class PathExpressionSourceService implements IDataSource {
         }
         break;
       case MetaField.Artist:
-        const result: any[] = [];
+        const mainArtists: string[] = [];
         // Album artist
         const mainArtist = this.matchInfo.groups[propertyName];
         if (mainArtist) {
-          result.push(mainArtist);
+          mainArtists.push(mainArtist);
         }
-        // Associated artists
+        return mainArtists;
+      case MetaField.FeaturingArtist:
+        const featuring: string[] = [];
         const title = this.matchInfo.groups[MetaField.Title];
         const bracketsContents = title.match(/(?<=\[).+?(?=\])/g);
         if (bracketsContents && bracketsContents.length) {
           for (const content of bracketsContents) {
             const artists = content.replace('feat ', '').replace('con ', '').split(',');
             for (const artistName of artists) {
-              result.push(this.utility.toProperCase(artistName.trim()));
+              featuring.push(this.utility.toProperCase(artistName.trim()));
             }
           }
         }
-        return result;
+        return featuring;
       case MetaField.Year:
       case MetaField.MediaNumber:
       case MetaField.TrackNumber:

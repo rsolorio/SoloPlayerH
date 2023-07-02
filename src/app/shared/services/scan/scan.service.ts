@@ -10,13 +10,13 @@ import {
   PlaylistEntity,
   PlaylistSongEntity,
   ModuleOptionEntity,
-  SongArtistEntity,
   SongClassificationEntity,
   ValueListEntryEntity,
   RelatedImageEntity,
   PlayHistoryEntity,
   AlbumViewEntity,
-  ArtistViewEntity
+  ArtistViewEntity,
+  PartyRelationEntity
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
@@ -30,6 +30,7 @@ import { IImageSource, KeyValues } from 'src/app/core/models/core.interface';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { ISyncInfo } from './scan.interface';
+import { PartyRelationType } from '../../models/music.enum';
 
 export enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -66,7 +67,7 @@ export class ScanService {
   private existingArtistTypes: ValueListEntryEntity[];
   private existingAlbumTypes: ValueListEntryEntity[];
   private existingSongs: SongEntity[];
-  private existingSongArtists: SongArtistEntity[];
+  private existingPartyRelations: PartyRelationEntity[];
   private existingSongClassifications: SongClassificationEntity[];
   private existingImages: RelatedImageEntity[];
 
@@ -108,7 +109,9 @@ export class ScanService {
     this.existingAlbumTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.AlbumType.id });
     this.existingSongs = await SongEntity.find();
     this.existingImages = await RelatedImageEntity.find();
-    this.existingSongArtists = [];
+    // These two entities are only used when adding new songs which means matching records will not previously exist in the db,
+    // so we don't need to cache data from the db
+    this.existingPartyRelations = [];
     this.existingSongClassifications = [];
 
     // Prepare reader
@@ -165,8 +168,9 @@ export class ScanService {
       // Do we really need to do this? At least not for now
       // songsToBeUpdated.forEach(s => s.hasChanges = false);
     }
-    // SongArtists
-    await this.db.bulkInsert(SongArtistEntity, this.existingSongArtists);
+    // All records for party relation and song classifications should be new
+    // PartyRelation
+    await this.db.bulkInsert(PartyRelationEntity, this.existingPartyRelations);
     // SongClassifications
     await this.db.bulkInsert(SongClassificationEntity, this.existingSongClassifications);
     
@@ -286,7 +290,7 @@ export class ScanService {
   }
 
   private async addAudioFile(metadata: KeyValues): Promise<KeyValues> {
-    // // PRIMARY ALBUM ARTIST
+    // PRIMARY ALBUM ARTIST
     const primaryArtist = this.processAlbumArtist(metadata);
 
     // MULTIPLE ARTISTS
@@ -308,49 +312,55 @@ export class ScanService {
     // CLASSIFICATIONS
     const classifications = this.processClassifications(metadata);
 
-    // SONG - ARTISTS/GENRES/CLASSIFICATIONS
+    // SONG
     this.songToProcess = this.processSong(primaryAlbum, metadata);
+    // Add the new song
+    this.existingSongs.push(this.songToProcess);
+
+    // PARTY RELATIONS
+    // Primary artist
+    const mainArtistRelation = new PartyRelationEntity();
+    mainArtistRelation.id = this.utilities.newGuid();
+    mainArtistRelation.relatedId = primaryArtist.id;
+    mainArtistRelation.songId = this.songToProcess.id;
+    mainArtistRelation.relationTypeId = PartyRelationType.Primary;
+    this.existingPartyRelations.push(mainArtistRelation);
+    // Featuring
+    for (const artist of artists) {
+      // Do not include the primary artist as featuring artist
+      if (artist.name !== primaryArtist.name) {
+        const partyRelation = new PartyRelationEntity();
+        partyRelation.id = this.utilities.newGuid();
+        partyRelation.relatedId = artist.id;
+        partyRelation.songId = this.songToProcess.id;
+        partyRelation.relationTypeId = PartyRelationType.Featuring;
+        this.existingPartyRelations.push(partyRelation);
+      }
+    }
+
+    // SONG/CLASSIFICATIONS
     if (genres.length) {
       // Set the first genre found as the main genre
       this.songToProcess.genre = genres[0].name;
     }
-    // Make sure the primary artist is part of the song artists
-    if (!artists.find(a => a.id === primaryArtist.id)) {
-      artists.push(primaryArtist);
-    }
 
-    if (this.existingSongs.find(s => s.id === this.songToProcess.id)) {
-      // TODO: if the song already exists, update data
-    }
-    else {
-      this.existingSongs.push(this.songToProcess);
-
-      // If we are adding a new song, all its artists are new as well, so push them to cache
-      for (const artist of artists) {
-        const songArtist = new SongArtistEntity();
-        songArtist.songId = this.songToProcess.id;
-        songArtist.artistId = artist.id;
-        songArtist.artistRoleTypeId = 1; // Performer
-        this.existingSongArtists.push(songArtist);
-      }
-      // Same for classifications
-      // In this case valueListTypeId represents the classificationTypeId
-      const classificationGroups = this.utilities.groupByKey(classifications, 'valueListTypeId');
-      // Add genres to this grouping
-      classificationGroups[ValueLists.Genre.id] = genres;
-      // For each type setup a primary value which will be the first one
-      for (const classificationType of Object.keys(classificationGroups)) {
-        const classificationList = classificationGroups[classificationType];
-        let primary = true;
-        for (const classification of classificationList) {
-          const songClassification = new SongClassificationEntity();
-          songClassification.songId = this.songToProcess.id;
-          songClassification.classificationId = classification.id;
-          songClassification.primary = primary;
-          // This flag will only be true in the first iteration, turn it off for the rest of the items
-          primary = false;
-          this.existingSongClassifications.push(songClassification);
-        }
+    // Same for classifications
+    // In this case valueListTypeId represents the classificationTypeId
+    const classificationGroups = this.utilities.groupByKey(classifications, 'valueListTypeId');
+    // Add genres to this grouping
+    classificationGroups[ValueLists.Genre.id] = genres;
+    // For each type setup a primary value which will be the first one
+    for (const classificationType of Object.keys(classificationGroups)) {
+      const classificationList = classificationGroups[classificationType];
+      let primary = true;
+      for (const classification of classificationList) {
+        const songClassification = new SongClassificationEntity();
+        songClassification.songId = this.songToProcess.id;
+        songClassification.classificationId = classification.id;
+        songClassification.primary = primary;
+        // This flag will only be true in the first iteration, turn it off for the rest of the items
+        primary = false;
+        this.existingSongClassifications.push(songClassification);
       }
     }
 
@@ -744,15 +754,23 @@ export class ScanService {
     // This is the list of artists that will be eventually associated with a song
     const result: ArtistEntity[] = [];
 
-    const artists = metadata[MetaField.Artist];
+    let artistNames: string[] = [];
+    const otherArtists = metadata[MetaField.Artist];
+    if (otherArtists && otherArtists.length) {
+      artistNames = artistNames.concat(otherArtists);
+    }
     const artistSorts = metadata[MetaField.ArtistSort];
+    const featuringArtists = metadata[MetaField.FeaturingArtist];
+    if (featuringArtists && featuringArtists.length) {
+      artistNames = artistNames.concat(featuringArtists);
+    }
 
-    if (!artists || !artists.length) {
+    if (!artistNames.length) {
       return result;
     }
 
     let artistIndex = 0;
-    for (const artistName of artists) {
+    for (const artistName of artistNames) {
       // Assuming sorts come in the same order as artists
       const artistSort = artistSorts && artistSorts.length > artistIndex ? artistSorts[artistIndex] : artistName;
       // Move to the next index since we are done using this one
@@ -1067,8 +1085,9 @@ export class ScanService {
     // DELETE ASSOCIATED SONG RECORDS
     // 02. Song classification
     await SongClassificationEntity.delete({ songId: In(songIdsToDelete) });
-    // 03. Song artist
-    await SongArtistEntity.delete({ songId: In(songIdsToDelete) });
+    // 03. PartyRelation
+    await PartyRelationEntity.delete({ relatedId: In(songIdsToDelete)});
+    await PartyRelationEntity.delete({ songId: In(songIdsToDelete)});
     // 04. Related image
     // In theory this will take care of images that match the file path of the song being deleted
     await RelatedImageEntity.delete({ relatedId: In(songIdsToDelete) });
@@ -1101,11 +1120,14 @@ export class ScanService {
         return previousValue;
       }, []);
     // DELETE ASSOCIATED ALBUM RECORDS
-    // 09. Related image
+    // 09. PartyRelation
+    await PartyRelationEntity.delete({ relatedId: In(albumIdsToDelete)});
+    await PartyRelationEntity.delete({ albumId: In(albumIdsToDelete)});
+    // 10. Related image
     await RelatedImageEntity.delete({ relatedId: In(albumIdsToDelete) });
-    // 10. Albums
+    // 11. Albums
     await AlbumEntity.delete({ id: In(albumIdsToDelete) });
-    // 11. Determine artists to be deleted (with no albums and no songs)
+    // 12. Determine artists to be deleted (with no albums and no songs)
     const artistCriteria = new Criteria();
     artistCriteria.searchCriteria.push(new CriteriaItem('songCount', 0));
     const artistIdCriteria = new CriteriaItem('id');
@@ -1118,13 +1140,12 @@ export class ScanService {
     }
     const artistIdsToDelete = artistsToDelete.map(artist => artist.id);
     // DELETE ASSOCIATED ARTIST RECORDS
-    // 12. Related image
+    // 13. PartyRelation
+    await PartyRelationEntity.delete({ relatedId: In(artistIdsToDelete)});
+    await PartyRelationEntity.delete({ artistId: In(artistIdsToDelete)});
+    // 14. Related image
     await RelatedImageEntity.delete({ relatedId: In(artistIdsToDelete) });
-    // 13. Song artist
-    // In theory there shouldn't be records in this table to delete since they were deleted
-    // when the song ids were deleted
-    // await SongArtistEntity.delete({ artistId: In(artistIdsToDelete) });
-    // 14. Artists
+    // 15. Artists
     await ArtistEntity.delete({ id: In(artistIdsToDelete) });
   }
 
@@ -1140,7 +1161,7 @@ export class ScanService {
     this.existingArtistTypes = [];
     this.existingAlbumTypes = [];
     this.existingImages = [];
-    this.existingSongArtists = [];
+    this.existingPartyRelations = [];
     this.existingSongClassifications = [];
   }
 

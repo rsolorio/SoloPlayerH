@@ -2,7 +2,6 @@ import { Column, Entity, ManyToOne, Relation, JoinColumn, OneToMany } from 'type
 import { ISongModel } from '../models/song-model.interface';
 import { AlbumEntity } from './album.entity';
 import { PlaylistSongEntity } from './playlist-song.entity';
-import { SongArtistEntity } from './song-artist.entity';
 import { SongBaseEntity } from './song-base.entity';
 import { SongClassificationEntity } from './song-classification.entity';
 
@@ -80,9 +79,6 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   @ManyToOne(() => AlbumEntity, album => album.songs)
   @JoinColumn({ name: 'primaryAlbumId'})
   primaryAlbum: Relation<AlbumEntity>;
-
-  @OneToMany(() => SongArtistEntity, songArtist => songArtist.song)
-  songArtists: Relation<SongArtistEntity[]>;
 
   @OneToMany(() => SongClassificationEntity, songClassification => songClassification.song)
   songClassifications: Relation<SongClassificationEntity[]>;

@@ -29,7 +29,6 @@ import {
   PlaylistSongEntity,
   PlaylistSongViewEntity,
   ModuleOptionEntity,
-  SongArtistEntity,
   SongClassificationEntity,
   PlayHistoryEntity,
   SongClassificationViewEntity,
@@ -37,7 +36,8 @@ import {
   ValueListTypeEntity,
   ValueListEntryEntity,
   DataSourceEntity,
-  DataMappingEntity
+  DataMappingEntity,
+  PartyRelationEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
@@ -121,7 +121,7 @@ export class DatabaseService {
         PlaylistViewEntity,
         PlaylistSongViewEntity,
         ModuleOptionEntity,
-        SongArtistEntity,
+        PartyRelationEntity,
         SongClassificationEntity,
         PlayHistoryEntity,
         ValueListTypeEntity,

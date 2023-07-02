@@ -1,6 +1,5 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
-import { ArtistEntity } from './artist.entity';
 import { ListItemEntity } from './base.entity';
 
 /**
@@ -8,17 +7,16 @@ import { ListItemEntity } from './base.entity';
  */
 @ViewEntity({
   name: 'artistView',
-  expression: ds => ds
-    .createQueryBuilder(ArtistEntity, 'artist')
-    .innerJoin('artist.songArtists', 'songArtist')
-    .innerJoin('songArtist.song', 'song')
-    .select('artist.id', 'id')
-    .addSelect('artist.name', 'name')
-    .addSelect('artist.artistSort', 'artistSort')
-    .addSelect('artist.artistStylized', 'artistStylized')
-    .addSelect('COUNT(artist.id)', 'songCount')
-    .addSelect('NULL', 'songAddDateMax')
-    .groupBy('artist.id')
+  expression: `
+    SELECT artist.id, artist.name, artist.artistSort, artist.artistStylized, COUNT(artist.id) AS songCount, NULL AS songAddDateMax
+    FROM artist
+    INNER JOIN partyRelation
+    ON artist.id = partyRelation.relatedId
+    INNER JOIN song
+    ON partyRelation.songId = song.id
+    WHERE partyRelation.relationTypeId = 'Artist-Song-Primary' OR partyRelation.relationTypeId = 'Artist-Song-Featuring'
+    GROUP BY artist.id
+  `
 })
 export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
   @ViewColumn()

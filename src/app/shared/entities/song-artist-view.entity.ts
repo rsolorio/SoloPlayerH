@@ -3,7 +3,8 @@ import { ISongModel } from '../models/song-model.interface';
 import { SongBaseEntity } from './song-base.entity';
 
 /**
- * This view combines the song entity with the songArtist entity.
+ * This view combines the song entity with the PartyRelation entity.
+ * It only considers songs where the Artist is the primary or featuring.
  * It can be used to determine which artists are related with a particular song filtering by id (songId).
  * It can be used to get all the songs associated with one artist filtering by artistId.
  * However, it cannot be used with multiple artists since it will not return unique song rows
@@ -21,14 +22,16 @@ import { SongBaseEntity } from './song-base.entity';
   song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.titleSort,
   song.seconds, song.duration, song.bitrate, song.vbr, song.frequency,
   song.favorite, song.live, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
-  album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.primaryAlbumId, album.primaryArtistId, songArtist.artistId
+  album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.primaryAlbumId, album.primaryArtistId,
+  partyRelation.relatedId AS artistId
   FROM song
   INNER JOIN album
   ON song.primaryAlbumId = album.id
   INNER JOIN artist
   ON album.primaryArtistId = artist.id
-  INNER JOIN songArtist
-  ON song.id = songArtist.songId
+  INNER JOIN partyRelation
+  ON song.id = partyRelation.songId
+  WHERE partyRelation.relationTypeId = 'Artist-Song-Primary' OR partyRelation.relationTypeId = 'Artist-Song-Featuring'
 `
 })
 export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {

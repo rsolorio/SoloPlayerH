@@ -1,7 +1,8 @@
-import { BaseEntity, PrimaryColumn, Entity, Relation, ManyToOne } from 'typeorm';
-import { ArtistEntity } from './artist.entity';
-import { SongEntity } from './song.entity';
+import { BaseEntity, PrimaryColumn, Entity } from 'typeorm';
 
+/**
+ * OBSOLETE. Use PartyRelationEntity instead.
+ */
 @Entity({name: 'songArtist'})
 export class SongArtistEntity extends BaseEntity {
   @PrimaryColumn()
@@ -12,10 +13,4 @@ export class SongArtistEntity extends BaseEntity {
 
   @PrimaryColumn()
   artistRoleTypeId: number;
-
-  @ManyToOne(() => ArtistEntity, artist => artist.songArtists)
-  artist: Relation<ArtistEntity>;
-
-  @ManyToOne(() => SongEntity, song => song.songArtists)
-  song: Relation<SongEntity>;
 }
