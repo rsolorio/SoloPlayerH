@@ -25,9 +25,18 @@ export class Id3v2SourceService implements IDataSource {
       return info;
     }
     this.loadInfo = info;
-    const buffer = await this.fileService.getBuffer(info.filePath);
-    this.audioInfo = await this.metadataService.getMetadata(buffer, MimeType.Mp3, true);
 
+    let buffer: Buffer;
+    try {
+      buffer = await this.fileService.getBuffer(info.filePath);
+    }
+    catch (err) {
+      this.loadInfo.error = err;
+      return this.loadInfo;
+    }
+
+    // If we get here is because there was no error getting the buffer
+    this.audioInfo = await this.metadataService.getMetadata(buffer, MimeType.Mp3, true);
     this.tags = [];
 
     if (this.audioInfo.error) {
