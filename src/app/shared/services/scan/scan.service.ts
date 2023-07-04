@@ -16,7 +16,8 @@ import {
   PlayHistoryEntity,
   AlbumViewEntity,
   ArtistViewEntity,
-  PartyRelationEntity
+  PartyRelationEntity,
+  ComposerViewEntity
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
@@ -1128,17 +1129,17 @@ export class ScanService {
     // 11. Albums
     await AlbumEntity.delete({ id: In(albumIdsToDelete) });
     // 12. Determine artists to be deleted (with no albums and no songs)
-    const artistCriteria = new Criteria();
-    artistCriteria.searchCriteria.push(new CriteriaItem('songCount', 0));
-    const artistIdCriteria = new CriteriaItem('id');
-    for (const artistId of artistIdsToAnalyze) {
-      artistIdCriteria.columnValues.push({ value: artistId });
-    }
-    const artistsToDelete = await this.db.getList(ArtistViewEntity, artistCriteria);
-    if (!artistsToDelete.length) {
+    const artistsWithNoSongs = await ArtistViewEntity.findBy({ id: In(artistIdsToAnalyze), songCount: 0 });
+    if (!artistsWithNoSongs.length) {
       return;
     }
-    const artistIdsToDelete = artistsToDelete.map(artist => artist.id);
+    // Now determine if these artists have no songs as composers
+    const composerIdsToAnalyze = artistsWithNoSongs.map(artist => artist.id);
+    const composersWithNoSongs = await ComposerViewEntity.findBy( { id: In(composerIdsToAnalyze), songCount: 0});
+    if (!composersWithNoSongs.length) {
+      return;
+    }
+    const artistIdsToDelete = composersWithNoSongs.map(composer => composer.id);
     // DELETE ASSOCIATED ARTIST RECORDS
     // 13. PartyRelation
     await PartyRelationEntity.delete({ relatedId: In(artistIdsToDelete)});

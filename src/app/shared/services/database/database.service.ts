@@ -53,6 +53,7 @@ import { AppEvent } from '../../models/events.enum';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
 import { ISongModel } from '../../models/song-model.interface';
 import { HttpClient } from '@angular/common/http';
+import { ComposerViewEntity } from '../../entities/composer-view.entity';
 
 interface IBulkInfo {
   /** Maximum number of parameters allowed on each bulk. */
@@ -108,6 +109,7 @@ export class DatabaseService {
         AlbumEntity,
         ArtistEntity,
         ArtistViewEntity,
+        ComposerViewEntity,
         AlbumArtistViewEntity,
         AlbumViewEntity,
         ClassificationViewEntity,
