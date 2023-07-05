@@ -91,8 +91,16 @@ export class FileInfoSourceService implements IDataSource {
       case MetaField.SingleImage:
         return this.getImageFile(propertyName);
       case MetaField.ArtistStylized:
-        if (this.jsonInfo.artistContent && this.jsonInfo.artistContent[propertyName]) {
-          return [this.jsonInfo.artistContent[propertyName]];
+      case MetaField.Contributor:
+      case MetaField.Singer:
+        if (this.jsonInfo.artistContent) {
+          const propertyValue = this.jsonInfo.artistContent[propertyName];
+          if (propertyValue) {
+            if (Array.isArray(propertyValue)) {
+              return propertyValue;
+            }
+            return [this.jsonInfo.artistContent[propertyName]];
+          }
         }
         break;
     }

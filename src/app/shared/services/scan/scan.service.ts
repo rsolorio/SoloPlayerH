@@ -313,31 +313,13 @@ export class ScanService {
     // CLASSIFICATIONS
     const classifications = this.processClassifications(metadata);
 
-    // SONG
+    // MAIN SONG
     this.songToProcess = this.processSong(primaryAlbum, metadata);
     // Add the new song
     this.existingSongs.push(this.songToProcess);
 
     // PARTY RELATIONS
-    // Primary artist
-    const mainArtistRelation = new PartyRelationEntity();
-    mainArtistRelation.id = this.utilities.newGuid();
-    mainArtistRelation.relatedId = primaryArtist.id;
-    mainArtistRelation.songId = this.songToProcess.id;
-    mainArtistRelation.relationTypeId = PartyRelationType.Primary;
-    this.existingPartyRelations.push(mainArtistRelation);
-    // Featuring
-    for (const artist of artists) {
-      // Do not include the primary artist as featuring artist
-      if (artist.name !== primaryArtist.name) {
-        const partyRelation = new PartyRelationEntity();
-        partyRelation.id = this.utilities.newGuid();
-        partyRelation.relatedId = artist.id;
-        partyRelation.songId = this.songToProcess.id;
-        partyRelation.relationTypeId = PartyRelationType.Featuring;
-        this.existingPartyRelations.push(partyRelation);
-      }
-    }
+    this.processArtistRelations(metadata, primaryArtist, artists);
 
     // SONG/CLASSIFICATIONS
     if (genres.length) {
@@ -945,6 +927,73 @@ export class ScanService {
       }
     }
     return result;
+  }
+
+  private processArtistRelations(metadata: KeyValues, primaryArtist: ArtistEntity, artists: ArtistEntity[]): void {
+    // Primary artist
+    const mainArtistRelation = new PartyRelationEntity();
+    mainArtistRelation.id = this.utilities.newGuid();
+    mainArtistRelation.relatedId = primaryArtist.id;
+    mainArtistRelation.songId = this.songToProcess.id;
+    mainArtistRelation.relationTypeId = PartyRelationType.Primary;
+    this.existingPartyRelations.push(mainArtistRelation);
+
+    // Featuring
+    for (const artist of artists) {
+      // Do not include the primary artist as featuring artist
+      if (artist.name !== primaryArtist.name) {
+        const partyRelation = new PartyRelationEntity();
+        partyRelation.id = this.utilities.newGuid();
+        partyRelation.relatedId = artist.id;
+        partyRelation.songId = this.songToProcess.id;
+        partyRelation.relationTypeId = PartyRelationType.Featuring;
+        this.existingPartyRelations.push(partyRelation);
+      }
+    }
+
+    // Singers
+    const singers = metadata[MetaField.Singer];
+    if (singers && singers.length) {
+      for (const singer of singers) {
+        const newArtist = this.createArtist(singer, singer);
+        const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
+        if (!existingArtist) {
+          this.existingArtists.push(newArtist);
+        }
+        const existingRelation = this.existingPartyRelations.find(r =>
+          r.relatedId === newArtist.id && r.artistId === primaryArtist.id && r.relationTypeId === PartyRelationType.Singer);
+        if (!existingRelation) {
+          const singerRelation = new PartyRelationEntity();
+          singerRelation.id = this.utilities.newGuid();
+          singerRelation.relatedId = newArtist.id;
+          singerRelation.artistId = primaryArtist.id;
+          singerRelation.relationTypeId = PartyRelationType.Singer;
+          this.existingPartyRelations.push(singerRelation);
+        }
+      }
+    }
+
+    // Contributors
+    const contributors = metadata[MetaField.Contributor];
+    if (contributors && contributors.length) {
+      for (const contributor of contributors) {
+        const newArtist = this.createArtist(contributor, contributor);
+        const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
+        if (!existingArtist) {
+          this.existingArtists.push(newArtist);
+        }
+        const existingRelation = this.existingPartyRelations.find(r =>
+          r.relatedId === newArtist.id && r.artistId === primaryArtist.id && r.relationTypeId === PartyRelationType.Contributor);
+        if (!existingRelation) {
+          const contributorRelation = new PartyRelationEntity();
+          contributorRelation.id = this.utilities.newGuid();
+          contributorRelation.relatedId = newArtist.id;
+          contributorRelation.artistId = primaryArtist.id;
+          contributorRelation.relationTypeId = PartyRelationType.Contributor;
+          this.existingPartyRelations.push(contributorRelation);
+        }
+      }
+    }
   }
 
   public async processPlaylistFile(fileInfo: IFileInfo): Promise<any> {

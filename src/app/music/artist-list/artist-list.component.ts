@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
+import { In } from 'typeorm';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
@@ -13,6 +14,8 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
+import { ArtistEntity, PartyRelationEntity } from 'src/app/shared/entities';
+import { PartyRelationType } from 'src/app/shared/models/music.enum';
 
 @Component({
   selector: 'sp-artist-list',
@@ -114,12 +117,23 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
     const songRoute = appRoutes[AppRoute.Songs];
     this.listModel.itemMenuList.push({
-      caption: songRoute.name,
-      icon: songRoute.icon,
+      caption: 'Artist Songs',
+      icon: 'mdi-music-box-outline mdi',
       action: param => {
         const artist = param as IArtistModel;
           if (artist) {
             this.showEntity(songRoute, artist);
+          }
+      }
+    });
+
+    this.listModel.itemMenuList.push({
+      caption: 'Associated Songs',
+      icon: 'mdi-music-box-multiple-outline mdi',
+      action: param => {
+        const artist = param as IArtistModel;
+          if (artist) {
+            this.showAssociatedSongs(songRoute, artist);
           }
       }
     });
@@ -148,6 +162,21 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     // No specific criteria, breadcrumbs will be automatically taken by the new entity
     const criteria = new Criteria('Search Results');
     this.navigation.forward(routeInfo.route, { criteria: criteria });
+  }
+
+  private async showAssociatedSongs(routeInfo: IAppRouteInfo, artist: IArtistModel): Promise<void> {
+    const newBreadcrumb = this.addBreadcrumb(artist);
+    const relations = await PartyRelationEntity.findBy({ relatedId: artist.id, relationTypeId: In([PartyRelationType.Contributor, PartyRelationType.Singer])});
+    if (relations && relations.length) {
+      const relatedArtists = await ArtistEntity.findBy({ id: In(relations.map(r => r.artistId)) });
+      for (const relatedArtist of relatedArtists) {
+        newBreadcrumb.criteriaItem.columnValues.push({
+          value: relatedArtist.id,
+          caption: relatedArtist.name
+        });
+      }
+    }
+    this.navigation.forward(routeInfo.route, { criteria: new Criteria('Search Results') });
   }
 
   private createBreadcrumb(artist: IArtistModel): IBreadcrumbModel {
@@ -180,9 +209,11 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   /**
    * Adds the specified artist as a new breadcrumb.
    */
-  private addBreadcrumb(artist: IArtistModel): void {
+  private addBreadcrumb(artist: IArtistModel): IBreadcrumbModel {
+    const breadcrumb = this.createBreadcrumb(artist);
     // Suppress event so this component doesn't react to this change;
     // these breadcrumbs are for another list that hasn't been loaded yet
-    this.breadcrumbService.addOne(this.createBreadcrumb(artist), { suppressEvents: true });
+    this.breadcrumbService.addOne(breadcrumb, { suppressEvents: true });
+    return breadcrumb;
   }
 }

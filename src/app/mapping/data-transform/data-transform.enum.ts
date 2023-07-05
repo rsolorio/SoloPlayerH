@@ -52,6 +52,10 @@ export enum MetaField {
   Comment = 'comment',
   /** String. Id3v2 */
   Copyright = 'copyright',
+  /** String. FileInfo */
+  Contributor = 'contributor',
+  /** String. FileInfo */
+  Singer = 'singer',
   /** String. Id3v2 */
   Grouping = 'grouping',
   /** Date. Id3v2 */
