@@ -1,8 +1,8 @@
 import { DataMappingEntity, DataSourceEntity } from "src/app/shared/entities";
-import { IDataTransform } from "./data-transform.interface";
+import { IDataTransform, IDataTransformConfig } from "./data-transform.interface";
 import { IFileInfo } from "src/app/platform/file/file.interface";
 import { UtilityService } from "src/app/core/services/utility/utility.service";
-import { IDataSourceInfo } from "../data-source/data-source.interface";
+import { IDataSource, IDataSourceInfo } from "../data-source/data-source.interface";
 import { DataSourceType } from "../data-source/data-source.enum";
 import { Id3v2SourceService } from "../data-source/id3v2-source.service";
 import { MetaField } from "./data-transform.enum";
@@ -29,7 +29,7 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
 
   public abstract process(fileInfo: IFileInfo): Promise<T>;
 
-  public async init(): Promise<void> {
+  public async init(config?: IDataTransformConfig): Promise<void> {
     // Exclude fields that are not directly used by the transform tasks
     this.fields = Object.values(MetaField).filter(f => f !== MetaField.FileMode);
 
@@ -37,7 +37,7 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
     const sourceData = await DataSourceEntity.findBy({ profileId: this.profileId });
     this.utilityService.sort(sourceData, 'sequence').forEach(sourceRow => {
       if (!sourceRow.disabled) {
-        const info = this.getDataSourceInfo(sourceRow);
+        const info = this.getDataSourceInfo(sourceRow, config?.dynamicFields);
         this.sources.push(info);
       }
     });
@@ -58,17 +58,8 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
           // TODO: custom mapping and tags
         }
         else {
-          for (const field of sourceInfo.fieldArray) {
-            if (!context[field]) {
-              context[field] = [];
-            }
-            if (!context[field].length) {
-              const values = await sourceInfo.source.get(field);
-              if (values && values.length) {
-                context[field] = values;
-              }
-            }
-          }
+          await this.setValues(context, sourceInfo.source, sourceInfo.fieldArray);
+          await this.setValues(context, sourceInfo.source, sourceInfo.dynamicFieldArray, true);
         }
       }
       else {
@@ -78,7 +69,24 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
     return context;
   }
 
-  protected getDataSourceInfo(dataSource: DataSourceEntity): IDataSourceInfo {
+  protected async setValues(context: KeyValues, dataSource: IDataSource, fields: string[], isDynamic?: boolean): Promise<void> {
+    if (!fields || !fields.length) {
+      return;
+    }
+    for (const field of fields) {
+      if (!context[field]) {
+        context[field] = [];
+      }
+      if (!context[field].length) {
+        const values = await dataSource.get(field, isDynamic);
+        if (values && values.length) {
+          context[field] = values;
+        }
+      }
+    }
+  }
+
+  protected getDataSourceInfo(dataSource: DataSourceEntity, dynamicFields?: string[]): IDataSourceInfo {
     const result: IDataSourceInfo = {
       data: dataSource,
       fieldArray: dataSource.fields.split(','),
@@ -87,6 +95,8 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
     switch (dataSource.type) {
       case DataSourceType.Id3v2:
         result.source = this.id3v2SourceService;
+        // Only id3 supports dynamic fields for now
+        result.dynamicFieldArray = dynamicFields;
         break;
       case DataSourceType.FileInfo:
         result.source = this.fileInfoSourceService;

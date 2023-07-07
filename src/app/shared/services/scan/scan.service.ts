@@ -103,8 +103,11 @@ export class ScanService {
     this.existingArtists = await ArtistEntity.find();
     this.existingAlbums = await AlbumEntity.find();
     this.existingClassTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.ClassificationType.id });
-    this.existingGenres = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Genre.id });
+    // Do not include genre as a class type since it is handled separately
+    this.existingClassTypes = this.existingClassTypes.filter(classType => classType.id !== ValueLists.Genre.id);
+    // Do not include genres as classifications
     this.existingClassifications = await ValueListEntryEntity.findBy({ isClassification: true, valueListTypeId: Not(ValueLists.Genre.id) });
+    this.existingGenres = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Genre.id });
     this.existingCountries = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Country.id });
     this.existingArtistTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.ArtistType.id });
     this.existingAlbumTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.AlbumType.id });
@@ -115,8 +118,9 @@ export class ScanService {
     this.existingPartyRelations = [];
     this.existingSongClassifications = [];
 
-    // Prepare reader
-    await this.metadataReader.init();
+    // Prepare reader, clarify that classification types will be handled as dynamic fields
+    // TODO: how to exclude class types already handled: Genre, Language
+    await this.metadataReader.init({ dynamicFields: this.existingClassTypes.map(c => c.name) });
   }
 
   private async syncChangesToDatabase(syncInfo: ISyncInfo): Promise<void> {
@@ -611,6 +615,7 @@ export class ScanService {
     song.changeDate = changeDate;
     // TODO: Set dates in file
 
+    // TODO: add language to value list entry if it doesn't exist
     song.language = this.first(metadata[MetaField.Language]);
     if (!song.language) {
       song.language = this.unknownValue;
@@ -880,47 +885,41 @@ export class ScanService {
     return genre;
   }
 
+  /**
+   * It will iterate each classification type declared in the database as so; each type will be
+   * used to get classifications from the metadata as a dynamic field;
+   * if you need a new classification type to be processed, add a new type to the db.
+   * It creates the records for new classifications and returns the list of classifications
+   * that need to be associated with the current song.
+   */
   private processClassifications(metadata: KeyValues): ValueListEntryEntity[] {
     const result: ValueListEntryEntity[] = [];
 
-    const classifications = metadata[MetaField.Classification];
-    if (!classifications || !classifications.length) {
-      return result;
-    }
-
-    for (const classData of classifications) {
-      const classDataArray = classData.split('|');
-      if (classDataArray.length !== 2) {
-        continue;
-      }
-      const classTypeName = classDataArray[0];
-      // We don't support adding class types in the scan process.
-      // The type has to exist in order to add the classification.
-      const classType = this.existingClassTypes.find(item => item.name === classTypeName);
-      const classificationNames = classDataArray[1];
-      if (classType && classificationNames) {
-        const names = classificationNames.split(',');
+    for (const classificationType of this.existingClassTypes) {
+      const classData = this.first(metadata[classificationType.name]);
+      if (classData) {
+        let names = classData.split(',');
+        names = this.utilities.removeDuplicates(names);
         for (const name of names) {
-          const newClassification = new ValueListEntryEntity();
-          newClassification.id = this.utilities.newGuid();
-          newClassification.isNew = true;
-          newClassification.name = name;
-          newClassification.valueListTypeId = classType.id;
-          newClassification.isClassification = true;
-          // TODO: determine how to specify the proper sequence
-          newClassification.sequence = 0;
-
+          // Find out if the classification (name and type) exists in the db
           const existingGlobalClass = this.existingClassifications.find(c =>
-            c.name === newClassification.name && c.valueListTypeId === newClassification.valueListTypeId);
+            c.name === name && c.valueListTypeId === classificationType.id);
+
           if (existingGlobalClass) {
-            const existingLocalClassification = result.find(c =>
-              c.name === existingGlobalClass.name && c.valueListTypeId === existingGlobalClass.valueListTypeId);
-            if (!existingLocalClassification) {
-              result.push(existingGlobalClass);
-            }
+            result.push(existingGlobalClass);
           }
           else {
+            const newClassification = new ValueListEntryEntity();
+            newClassification.id = this.utilities.newGuid();
+            newClassification.isNew = true;
+            newClassification.name = name;
+            newClassification.valueListTypeId = classificationType.id;
+            newClassification.isClassification = true;
+            // TODO: determine how to specify the proper sequence
+            newClassification.sequence = 0;
+            // Add it to cache to it is added as a new record
             this.existingClassifications.push(newClassification);
+            // Add it as part of the result of this method
             result.push(newClassification);
           }
         }

@@ -157,13 +157,13 @@
         "system": true
       },
       {
-        "id": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
-        "name": "Language",
+        "id": "9442c907-1e72-4c54-9c1d-d0c731a604af",
+        "name": "Category",
         "system": true
       },
       {
-        "id": "9442c907-1e72-4c54-9c1d-d0c731a604af",
-        "name": "Category",
+        "id": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Language",
         "system": true
       },
       {
@@ -202,18 +202,11 @@
         "sequence": 4
       },
       {
-        "id": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
-        "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
-        "name": "Language",
-        "isClassification": false,
-        "sequence": 5
-      },
-      {
         "id": "9442c907-1e72-4c54-9c1d-d0c731a604af",
         "valueListTypeId": "81ba5a10-385d-42c1-90e4-b76a4cbbd1a1",
         "name": "Category",
         "isClassification": false,
-        "sequence": 6
+        "sequence": 5
       },
       {
         "//": "MOOD",
@@ -893,12 +886,32 @@
     "dataSource": [
       {
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "id3v2Reader",
+        "type": "Id3v2",
+        "fields": "artist,artistSort,artistType,artistStylized,albumArtist,albumArtistSort,album,albumSort,albumType,country,ufid,title,titleSort,track,media,composer,comment,grouping,addDate,changeDate,language,mood,rating,playCount,syncLyrics,unSyncLyrics,live,genre,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,seconds,bitrate,frequency,vbr,replayGain,tagFullyParsed,error",
+        "customMapping": false,
+        "sequence": 1,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "fileInfoReader",
+        "type": "FileInfo",
+        "fields": "filePath,fileName,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,artistStylized,contributor,singer",
+        "customMapping": false,
+        "sequence": 2,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "fullPathExp",
         "type": "PathExpression",
         "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%media%-%track% - %title%",
         "fields": "language,genre,artist,year,album,media,track,title,featuring",
         "customMapping": false,
-        "sequence": 1,
+        "sequence": 3,
         "disabled": false,
         "system": true
       },
@@ -909,7 +922,7 @@
         "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%track% - %title%",
         "fields": "language,genre,artist,year,album,track,title,featuring",
         "customMapping": false,
-        "sequence": 2,
+        "sequence": 4,
         "disabled": false,
         "system": true
       },
@@ -920,7 +933,7 @@
         "config": "%language%\\%genre%\\%artist%\\%year% - %album%\\%title%",
         "fields": "language,genre,artist,year,album,title,featuring",
         "customMapping": false,
-        "sequence": 3,
+        "sequence": 5,
         "disabled": false,
         "system": true
       },
@@ -931,7 +944,7 @@
         "config": "%language%\\%genre%\\%artist%\\%album%\\%media%-%track% - %title%",
         "fields": "language,genre,artist,album,media,track,title,featuring",
         "customMapping": false,
-        "sequence": 4,
+        "sequence": 6,
         "disabled": false,
         "system": true
       },
@@ -942,7 +955,7 @@
         "config": "%language%\\%genre%\\%artist%\\%album%\\%track% - %title%",
         "fields": "language,genre,artist,album,track,title,featuring",
         "customMapping": false,
-        "sequence": 5,
+        "sequence": 7,
         "disabled": false,
         "system": true
       },
@@ -952,26 +965,6 @@
         "type": "PathExpression",
         "config": "%language%\\%genre%\\%artist%\\%album%\\%title%",
         "fields": "language,genre,artist,album,title,featuring",
-        "customMapping": false,
-        "sequence": 6,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
-        "name": "fileInfoReader",
-        "type": "FileInfo",
-        "fields": "filePath,fileName,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,artistStylized,contributor,singer",
-        "customMapping": false,
-        "sequence": 7,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
-        "name": "id3v2Reader",
-        "type": "Id3v2",
-        "fields": "artist,artistSort,artistType,artistStylized,albumArtist,albumArtistSort,album,albumSort,albumType,country,ufid,title,titleSort,track,media,composer,comment,grouping,addDate,changeDate,language,mood,rating,playCount,syncLyrics,unSyncLyrics,live,genre,classification,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,seconds,bitrate,frequency,vbr,replayGain,tagFullyParsed,error",
         "customMapping": false,
         "sequence": 8,
         "disabled": false,

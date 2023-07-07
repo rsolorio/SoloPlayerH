@@ -3,6 +3,9 @@ import { DataTransformServiceBase } from './data-transform-service-base.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { Id3v2SourceService } from '../data-source/id3v2-source.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
+import { LogService } from 'src/app/core/services/log/log.service';
+import { FileInfoSourceService } from '../data-source/file-info-source.service';
+import { PathExpressionSourceService } from '../data-source/path-expression-source.service';
 
 /**
  * A transform service to save metadata to an audio file.
@@ -15,10 +18,19 @@ import { IFileInfo } from 'src/app/platform/file/file.interface';
 @Injectable({
   providedIn: 'root'
 })
-export class MetadataWriterService extends DataTransformServiceBase {
+export class MetadataWriterService extends DataTransformServiceBase<any> {
 
-  constructor(private utility: UtilityService, id3v2: Id3v2SourceService) {
-    super(utility, id3v2);
+  constructor(
+    private utility: UtilityService,
+    private log: LogService,
+    private id3v2Service: Id3v2SourceService,
+    private fileInfoService: FileInfoSourceService,
+    private pathExpressionService: PathExpressionSourceService) {
+    super(utility, log, id3v2Service, fileInfoService, pathExpressionService);
+  }
+
+  protected get profileId(): string {
+    return null;
   }
 
   public process(fileInfo: IFileInfo): Promise<any> {

@@ -1,3 +1,9 @@
+/**
+ * A class that exposes the ids of the value list types and their entries.
+ * Classification types are a special case because they exist in the database
+ * as valueListType records and also as valueListEntry records and they share
+ * the same primary key for both tables.
+ */
 export class ValueLists {
   static ClassificationType = {
     id: '81ba5a10-385d-42c1-90e4-b76a4cbbd1a1'
@@ -38,10 +44,10 @@ export class ValueLists {
   static Instrument = {
     id: '0f593be0-45e4-4de0-9367-ea52bc51c595'
   };
-  static Language = {
-    id: '65c31ee4-fbba-4086-b4eb-5fa6b2a499f7'
-  };
   static Category = {
     id: '9442c907-1e72-4c54-9c1d-d0c731a604af'
+  };
+  static Language = {
+    id: '65c31ee4-fbba-4086-b4eb-5fa6b2a499f7'
   };
 }

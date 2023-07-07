@@ -526,6 +526,10 @@ export class UtilityService {
     return null;
   }
 
+  public removeDuplicates<T>(array: T[]): T[] {
+    return array.filter((item, index) => array.indexOf(item) === index);
+  }
+
   public setDocTitle(title?: string): void {
     if (title) {
       document.title = title;

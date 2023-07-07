@@ -55,7 +55,10 @@ export class Id3v2SourceService implements IDataSource {
     return this.loadInfo;
   }
 
-  public async get(propertyName: string): Promise<any[]> {
+  public async get(propertyName: string, isDynamic?: boolean): Promise<any[]> {
+    if (isDynamic) {
+      return this.metadataService.getValues<string>(propertyName, this.tags, true);
+    }
     switch (propertyName) {
       case MetaField.Artist:
         if (this.audioInfo.metadata.common.artists) {
