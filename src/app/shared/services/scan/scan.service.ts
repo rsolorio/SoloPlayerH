@@ -576,7 +576,7 @@ export class ScanService {
     const trackNumber = this.first(metadata[MetaField.TrackNumber]);
     song.trackNumber = trackNumber ? trackNumber : 0;
     const mediaNumber = this.first(metadata[MetaField.MediaNumber]);
-    song.mediaNumber = mediaNumber ? mediaNumber : 0;
+    song.mediaNumber = mediaNumber ? mediaNumber : 1;
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 
