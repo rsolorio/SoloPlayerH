@@ -1031,6 +1031,7 @@ export class ScanService {
     playlist.name = name;
     playlist.favorite = false;
     playlist.imported = true;
+    playlist.changeDate = new Date();
     this.db.hashPlaylist(playlist);
     const playlistExists = await this.db.exists(playlist.id, PlaylistEntity);
     if (playlistExists) {
