@@ -4,12 +4,12 @@
       {
         "name": "ScanMusicFolderPath",
         "moduleName": "Music",
-        "title": "Directory path to look for audio files",
+        "title": "Directory paths to look for audio files",
         "description": "",
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,
-        "values": "[\"\\\\\"]"
+        "values": "[]"
       },
       {
         "name": "ScanPlaylistFolderPath",
@@ -19,7 +19,7 @@
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,
-        "values": "[\"\\\\\"]"
+        "values": "[]"
       },
       {
         "name": "ArtistSplitCharacters",
@@ -29,7 +29,7 @@
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,
-        "values": "[\"\\\\\"]"
+        "values": "[]"
       },
       {
         "name": "GenreSplitCharacters",
@@ -39,7 +39,7 @@
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,
-        "values": "[\"\\\\\"]"
+        "values": "[]"
       },
       {
         "name": "ExpandPlayerOnSongPlay",

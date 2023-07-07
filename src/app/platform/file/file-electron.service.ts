@@ -25,9 +25,9 @@ export class FileElectronService extends FileService {
     });
   }
 
-  getFiles(directoryPath: string): Observable<IFileInfo> {
+  getFiles(directoryPaths: string[]): Observable<IFileInfo> {
     return new Observable<IFileInfo>(observer => {
-      this.pushFiles(directoryPath, observer).then(() => {
+      this.pushFiles(directoryPaths, observer).then(() => {
         observer.complete();
       });
     });
@@ -37,14 +37,16 @@ export class FileElectronService extends FileService {
     return existsSync(path);
   }
 
-  private async pushFiles(directoryPath: string, observer: Subscriber<IFileInfo>): Promise<void> {
-    const items = await this.getDirItems(directoryPath);
-    for (const fileInfo of items) {
-      if (fileInfo.isDirectory) {
-        await this.pushFiles(fileInfo.path, observer);
-      }
-      else {
-        observer.next(fileInfo);
+  private async pushFiles(directoryPaths: string[], observer: Subscriber<IFileInfo>): Promise<void> {
+    for (const directoryPath of directoryPaths) {
+      const items = await this.getDirItems(directoryPath);
+      for (const fileInfo of items) {
+        if (fileInfo.isDirectory) {
+          await this.pushFiles([fileInfo.path], observer);
+        }
+        else {
+          observer.next(fileInfo);
+        }
       }
     }
   }

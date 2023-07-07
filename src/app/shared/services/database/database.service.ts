@@ -655,10 +655,15 @@ export class DatabaseService {
     return null;
   }
 
-  public async saveModuleOptionText(name: ModuleOptionName, value: string): Promise<void> {
+  public async saveModuleOptionText(name: ModuleOptionName, values: string[]): Promise<void> {
     const moduleOption = await ModuleOptionEntity.findOneBy({ name: name });
     if (moduleOption) {
-      moduleOption.values = JSON.stringify(value);
+      if (moduleOption.multipleValues) {
+        moduleOption.values = JSON.stringify(values);
+      }
+      else {
+        moduleOption.values = JSON.stringify(values[0]);
+      }
       await moduleOption.save();
     }
   }

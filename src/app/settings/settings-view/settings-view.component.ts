@@ -78,9 +78,9 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
 
   private async initializeSettings(): Promise<void> {
     const musicPathOption = this.options.find(option => option.name === ModuleOptionName.ScanMusicFolderPath);
-    const musicPath = await this.db.getOptionTextValue(musicPathOption);
+    const musicPaths = await this.db.getOptionArrayValue(musicPathOption);
     const playlistPathOptions = this.options.find(option => option.name === ModuleOptionName.ScanPlaylistFolderPath);
-    const playlistPath = await this.db.getOptionTextValue(playlistPathOptions);
+    const playlistPaths = await this.db.getOptionArrayValue(playlistPathOptions);
     const playlistCount = await PlaylistEntity.count();
     const songCount = await SongEntity.count();
     let hours = this.utility.secondsToHours(0);
@@ -140,8 +140,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             icon: 'mdi-folder-music-outline mdi',
             dataType: 'text',
             descriptions: [
-              ' Click here to set the scan directory for audio.',
-              `Scan directory: <span class="sp-color-primary">${(musicPath ? musicPath : '[Not Selected]')}</span>`
+              ' Click here to set the sync directories for audio.',
+              `Directories: <br><span class="sp-color-primary">${(musicPaths?.length ? musicPaths.join('<br>') : '[Not Selected]')}</span>`
             ],
             action: () => {
               this.showFileBrowserAndSave(ModuleOptionName.ScanMusicFolderPath);
@@ -156,8 +156,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
               'Files found: 0'
             ],
             action: setting => {
-              if (musicPath) {
-                this.onFolderScan(setting, musicPath);
+              if (musicPaths && musicPaths.length) {
+                this.onFolderScan(setting, musicPaths);
               }
               else {
                 setting.warningText = 'Unable to start sync. Please select the audio directory first.';
@@ -175,7 +175,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             dataType: 'text',
             descriptions: [
               'Click here to set the scan directory for playlists',
-              `Scan directory: <span class="sp-color-primary">${(playlistPath ? playlistPath : '[Not Selected]')}</span>`
+              `Directories: <br><span class="sp-color-primary">${(playlistPaths?.length ? playlistPaths.join('<br>') : '[Not Selected]')}</span>`
             ],
             action: () => {
               this.showFileBrowserAndSave(ModuleOptionName.ScanPlaylistFolderPath);
@@ -190,8 +190,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
               'Playlists created: 0/0'
             ],
             action: setting => {
-              if (playlistPath) {
-                this.onPlaylistScan(setting, playlistPath);
+              if (playlistPaths && playlistPaths.length) {
+                this.onPlaylistScan(setting, playlistPaths);
               }
               else {
                 setting.warningText = 'Unable to start scan. Please select the playlist directory first.';
@@ -241,7 +241,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     ];
   }
 
-  onFolderScan(setting: ISetting, folderPath: string): void {
+  onFolderScan(setting: ISetting, folderPaths: string[]): void {
     // Disable the setting
     setting.disabled = true;
     setting.running = true;
@@ -256,7 +256,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     // Start scanning
     const startTime = new Date().getTime();
     setting.descriptions[0] = 'Calculating file count...';
-    this.scanner.scan(folderPath, '.mp3').then(mp3Files => {
+    this.scanner.scan(folderPaths, '.mp3').then(mp3Files => {
       // Calculation process done, delete subscription
       this.subs.unSubscribe('settingsViewScanFile');
       // Start reading file metadata
@@ -330,12 +330,12 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     return syncInfo;
   }
 
-  public onPlaylistScan(setting: ISetting, folderPath: string): void {
+  public onPlaylistScan(setting: ISetting, folderPaths: string[]): void {
     setting.disabled = true;
     setting.running = true;
     setting.descriptions[0] = 'Scanning playlists...';
     // Start scan process
-    this.scanner.scan(folderPath, '.m3u').then(playlistFiles => {
+    this.scanner.scan(folderPaths, '.m3u').then(playlistFiles => {
       setting.descriptions[1] = 'Playlist created: 0/' + playlistFiles.length;
       let playlistCount = 0;
       let trackCount = 0;
@@ -396,7 +396,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       backRoute: AppRoute.Settings,
       onOk: async values => {
         // save value in DB
-        await this.db.saveModuleOptionText(optionToSave, values[0].fileInfo.path);        
+        await this.db.saveModuleOptionText(optionToSave, values.map(v => v.fileInfo.path));
         return true;
       }
     };

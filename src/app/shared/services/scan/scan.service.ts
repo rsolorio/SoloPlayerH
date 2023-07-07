@@ -80,14 +80,17 @@ export class ScanService {
     private events: EventsService,
     private log: LogService) { }
 
-  scan(folderPath: string, extension: string): Promise<IFileInfo[]> {
+  scan(folderPaths: string[], extension: string): Promise<IFileInfo[]> {
     return new Promise(resolve => {
       const files: IFileInfo[] = [];
-      this.fileService.getFiles(folderPath).subscribe({
+      this.fileService.getFiles(folderPaths).subscribe({
         next: fileInfo => {
-          if (fileInfo.extension.toLowerCase() == extension.toLowerCase()) {
-            files.push(fileInfo);
-            this.events.broadcast(AppEvent.ScanFile, fileInfo);
+          if (fileInfo.extension.toLowerCase() === extension.toLowerCase()) {
+            const existingFile = files.find(f => f.path === fileInfo.path);
+            if (!existingFile) {
+              files.push(fileInfo);
+              this.events.broadcast(AppEvent.ScanFile, fileInfo);
+            }
           }
         },
         complete: () => {
@@ -1039,7 +1042,7 @@ export class ScanService {
     return playlist;
   }
 
-  private async processPls(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<PlaylistSongEntity[]> {
+  private async processPls(playlist: PlaylistEntity, playlistFileInfo: IFileInfo, lines: string[]): Promise<PlaylistSongEntity[]> {
     const tracks: PlaylistSongEntity[] = [];
     let trackSequence = 1;
     for (const line of lines) {
@@ -1048,7 +1051,7 @@ export class ScanService {
         if (lineParts.length > 1) {
           // TODO: validate proper audio extension
           const relativeFilePath = lineParts[1];
-          const playlistSong = await this.createPlaylistSong(playlist, fileInfo.directoryPath, relativeFilePath, trackSequence);
+          const playlistSong = await this.createPlaylistSong(playlist, playlistFileInfo.directoryPath, relativeFilePath, trackSequence);
           if (playlistSong) {
             trackSequence++;
             tracks.push(playlistSong);

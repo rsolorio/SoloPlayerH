@@ -20,7 +20,7 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
-  getFiles(directoryPath: string): Observable<IFileInfo> {
+  getFiles(directoryPaths: string[]): Observable<IFileInfo> {
     return null;
   }
 

@@ -34,7 +34,6 @@ export class QueryEditorComponent implements OnInit {
     private db: DatabaseService,
     private utilities: UtilityService,
     private navigation: NavigationService,
-    private route: ActivatedRoute,
     private navbarService: NavBarStateService,
     private chipSelectionService: ChipSelectionService,
     private loadingService: LoadingViewStateService,
@@ -65,7 +64,7 @@ export class QueryEditorComponent implements OnInit {
 
   private async setupSelectors(): Promise<Criteria> {
     // TODO: save query objects on their own service
-    // const queryId = this.utilities.getRouteParam('id', this.route);
+    // const queryId = this.utilities.getRouteParam('id', ActivatedRoute);
     // Hack: we are getting the required information from the previous route,
     // but we should get everything from the route param: query object, entity, etc
     // Clone the object so we don't affect the original value until we save
