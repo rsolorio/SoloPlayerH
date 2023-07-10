@@ -10,7 +10,7 @@ import { SongBaseEntity } from './song-base.entity';
  * However, it cannot be used with multiple artists since it will not return unique song rows
  * since the artistId column is part of the query and it causes the song rows to be duplicated;
  * for instance, if two artists are associated with one song, you will get two song rows.
- * Fields: id, name, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite,
+ * Fields: id, name, hash, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite,
  * rating, mood, language, lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized,
  * titleSort, primaryAlbumId, primaryArtistId, artistId
  * TODO: use standard typeorm syntax to create query, example: PlaylistSongViewEntity
@@ -18,7 +18,7 @@ import { SongBaseEntity } from './song-base.entity';
  @ViewEntity({
   name: 'songArtistView',
   expression: `
-  SELECT song.id, song.name, song.filePath, song.fileSize,
+  SELECT song.id, song.name, song.hash, song.filePath, song.fileSize,
   song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.titleSort,
   song.seconds, song.duration, song.bitrate, song.vbr, song.frequency,
   song.favorite, song.live, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
@@ -39,6 +39,8 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   id: string;
   @ViewColumn()
   name: string;
+  @ViewColumn()
+  hash: string;
   @ViewColumn()
   filePath: string;
   @ViewColumn()

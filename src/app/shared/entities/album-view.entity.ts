@@ -5,7 +5,7 @@ import { AlbumEntity } from './album.entity';
 import { ListItemEntity } from './base.entity';
 
 /**
- * Fields: id, primaryArtistId, name, albumSort, releaseYear, releaseDecade, artistName, artistStylized, songCount, songAddDateMax
+ * Fields: id, primaryArtistId, name, hash, albumSort, releaseYear, releaseDecade, artistName, artistStylized, songCount, songAddDateMax
  */
 @ViewEntity({
   name: 'albumView',
@@ -16,6 +16,7 @@ import { ListItemEntity } from './base.entity';
     .select('album.id', 'id')
     .addSelect('artist.id', 'primaryArtistId')
     .addSelect('album.name', 'name')
+    .addSelect('album.hash', 'hash')
     .addSelect('album.albumSort', 'albumSort')
     .addSelect('album.releaseYear', 'releaseYear')
     .addSelect('album.releaseDecade', 'releaseDecade')
@@ -31,6 +32,8 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   id: string;
   @ViewColumn()
   name: string;
+  @ViewColumn()
+  hash: string;
   @ViewColumn()
   songCount: number;
   @ViewColumn()

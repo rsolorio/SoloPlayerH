@@ -29,7 +29,7 @@
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,
-        "values": "[]"
+        "values": "[\"\\\\\"]"
       },
       {
         "name": "GenreSplitCharacters",
@@ -39,7 +39,7 @@
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,
-        "values": "[]"
+        "values": "[\"\\\\\"]"
       },
       {
         "name": "ExpandPlayerOnSongPlay",
@@ -66,6 +66,7 @@
     "relatedImage": [
       {
         "id": "64b2898a-c856-403b-886a-891adb993774",
+        "hash": "64b2898a-c856-403b-886a-891adb993774",
         "name": "Default Full",
         "relatedId": "00000000-0000-0000-0000-000000000000",
         "sourcePath": "../assets/img/default-image-full.jpg",
@@ -76,6 +77,7 @@
       },
       {
         "id": "cf53c264-9a74-4e55-b930-a1ee20258236",
+        "hash": "cf53c264-9a74-4e55-b930-a1ee20258236",
         "name": "Default Large",
         "relatedId": "00000000-0000-0000-0000-000000000000",
         "sourcePath": "../assets/img/default-image-large.jpg",
@@ -86,6 +88,7 @@
       },
       {
         "id": "f523121c-b8ed-4932-a2c0-83d056532e46",
+        "hash": "f523121c-b8ed-4932-a2c0-83d056532e46",
         "name": "Default Medium",
         "relatedId": "00000000-0000-0000-0000-000000000000",
         "sourcePath": "../assets/img/default-image-medium.jpg",
@@ -96,6 +99,7 @@
       },
       {
         "id": "3228514b-53a7-4853-baef-7bf6af2c41c1",
+        "hash": "3228514b-53a7-4853-baef-7bf6af2c41c1",
         "name": "Default Small",
         "relatedId": "00000000-0000-0000-0000-000000000000",
         "sourcePath": "../assets/img/default-image-small.jpg",

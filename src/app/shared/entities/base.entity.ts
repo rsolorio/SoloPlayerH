@@ -8,6 +8,8 @@ export class DbEntity extends BaseEntity implements IDbModel {
   id: string;
   @Column({ comment: 'Human readable value that identifies this record.' })
   name: string;
+  @Column({ comment: 'A value that makes this record unique amongst all its siblings and used to find/compare records. Do not confuse this value with the id; the hash is not globally unique.' })
+  hash: string;
 
   /** Determines if the entity needs to be updated. */
   hasChanges?: boolean;

@@ -3,12 +3,12 @@ import { ArtistViewEntity } from './artist-view.entity';
 
 /**
  * Retrieves all the records from the artist table with associated songs as composer.
- * Fields: id, name, artistSort, artistStylized, songCount
+ * Fields: id, name, hash, artistSort, artistStylized, songCount
  */
 @ViewEntity({
   name: 'composerView',
   expression: `
-    SELECT artist.id, artist.name, artist.artistSort, artist.artistStylized, COUNT(partyRelation.songId) AS songCount, NULL AS songAddDateMax
+    SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, COUNT(partyRelation.songId) AS songCount, NULL AS songAddDateMax
     FROM artist
     LEFT JOIN (
       SELECT relatedId, songId

@@ -7,8 +7,8 @@ import { ListItemEntity } from './base.entity';
 @ViewEntity({
   name: 'classificationView',
   expression: `
-  SELECT classification.id, classification.name, valueListType.id AS classificationTypeId, valueListType.name AS classificationType, COUNT(classification.id) AS songCount
-  FROM (SELECT id, name, valueListTypeId FROM valueListEntry WHERE isClassification = true) AS classification
+  SELECT classification.id, classification.name, classification.hash, valueListType.id AS classificationTypeId, valueListType.name AS classificationType, COUNT(classification.id) AS songCount
+  FROM (SELECT id, name, hash, valueListTypeId FROM valueListEntry WHERE isClassification = true) AS classification
   INNER JOIN valueListType
   ON classification.valueListTypeId = valueListType.id
   INNER JOIN songClassification
@@ -21,6 +21,8 @@ export class ClassificationViewEntity extends ListItemEntity implements IClassif
   id: string;
   @ViewColumn()
   name: string;
+  @ViewColumn()
+  hash: string;
   @ViewColumn()
   songCount: number;
   @ViewColumn()

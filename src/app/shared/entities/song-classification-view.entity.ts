@@ -4,7 +4,7 @@ import { SongBaseEntity } from './song-base.entity';
 
 /**
  * This view combines the song entity with the songClassification entity.
- * Fields: id, name, filePath, playCount, releaseYear, releaseDecade,
+ * Fields: id, name, hash, filePath, playCount, releaseYear, releaseDecade,
  * trackNumber, mediaNumber, seconds, favorite, rating, mood, language,
  * lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized,
  * titleSort, primaryAlbumId, primaryArtistId, classificationId
@@ -12,7 +12,7 @@ import { SongBaseEntity } from './song-base.entity';
  @ViewEntity({
   name: 'songClassificationView',
   expression: `
-  SELECT song.id, song.name, song.filePath, song.fileSize,
+  SELECT song.id, song.name, song.hash, song.filePath, song.fileSize,
   song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.titleSort,
   song.seconds, song.duration, song.bitrate, song.vbr, song.frequency,
   song.favorite, song.live, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
@@ -31,6 +31,8 @@ export class SongClassificationViewEntity extends SongBaseEntity implements ISon
   id: string;
   @ViewColumn()
   name: string;
+  @ViewColumn()
+  hash: string;
   @ViewColumn()
   filePath: string;
   @ViewColumn()

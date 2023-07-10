@@ -10,7 +10,6 @@ import {
   DataSourceOptions,
   EntityMetadata
 } from 'typeorm';
-import * as objectHash from 'object-hash'
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import {
   ArtistEntity,
@@ -54,6 +53,7 @@ import { RelatedImageEntity } from '../../entities/related-image.entity';
 import { ISongModel } from '../../models/song-model.interface';
 import { HttpClient } from '@angular/common/http';
 import { ComposerViewEntity } from '../../entities/composer-view.entity';
+import { DatabaseLookupService } from './database-lookup.service';
 
 interface IBulkInfo {
   /** Maximum number of parameters allowed on each bulk. */
@@ -91,6 +91,7 @@ export class DatabaseService {
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
+    private lookupService: DatabaseLookupService,
     private transformService: ListTransformService,
     private http: HttpClient)
   {
@@ -173,9 +174,11 @@ export class DatabaseService {
     for (const tableName of Object.keys(tables)) {
       const entities: any[] = [];
       const rows = tables[tableName];
+      const entityMetadata = this.findEntityMetadata(tableName);
       for (const row of rows) {
-        const entity = this.getEntityFromTable(tableName);
+        const entity = entityMetadata.create();
         for (const columnName of Object.keys(row)) {
+          // Json comment data
           if (columnName === '//') {
             continue;
           }
@@ -184,15 +187,15 @@ export class DatabaseService {
         if (!entity['id']) {
           entity['id'] = this.utilities.newGuid();
         }
+        // Set hash if needed
+        if (entityMetadata.columns.find(c => c.databaseName === 'hash') && !entity['hash']) {
+          entity['hash'] = this.lookupService.hashValues([entity['name'].toLowerCase()]);
+        }
+
         entities.push(entity);
       }
       await this.bulkInsertFromTable(tableName, entities);
     }
-  }
-
-  private getEntityFromTable(tableName: string): any {
-    const m = this.findEntityMetadata(tableName);
-    return m.create();
   }
 
   private async bulkInsertFromTable(tableName: string, entities: any[]): Promise<void> {
@@ -218,36 +221,6 @@ export class DatabaseService {
     return databaseColumns[columnName].caption;
   }
 
-  public hash(value: string): string {
-    // Defaults to sha1 with hex encoding
-    return objectHash(value);
-  }
-
-  public hashDbEntity(entity: DbEntity): void {
-    entity.id = this.hash(entity.name.toLowerCase());
-  }
-
-  public hashArtist(artist: ArtistEntity): void {
-    this.hashDbEntity(artist);
-  }
-
-  public hashAlbum(album: AlbumEntity): void {
-    // Combine these fields to make album unique: ArtistName|AlbumName|ReleaseYear
-    album.id = this.hash(`${album.primaryArtist.name.toLowerCase()}|${album.name.toLowerCase()}|${album.releaseYear}`);
-  }
-
-  public hashSong(song: SongEntity): void {
-    song.id = this.hash(song.filePath.toLowerCase());
-  }
-
-  public hashPlaylist(playlist: PlaylistEntity): void {
-    this.hashDbEntity(playlist);
-  }
-
-  public hashModuleOption(moduleOption: ModuleOptionEntity): void {
-    this.hashDbEntity(moduleOption);
-  }
-
   /**
    * Adds a new record to the database if the entity does not exist (based on its id).
    * @param entity The entity to be inserted in the database.
@@ -255,23 +228,11 @@ export class DatabaseService {
    */
   public async add<T extends DbEntity>(entity: T, entityType: typeof DbEntity): Promise<T> {
     // TODO: determine type from entity parameter
-    const exists = await this.exists(entity.id, entityType);
+    const exists = await this.lookupService.exists(entity.id, entityType);
     if (exists) {
       return entity;
     }
     return entity.save();
-  }
-
-  public exists(id: string, entityType: typeof DbEntity): Promise<boolean> {
-    return entityType.findOneBy({ id }).then(entity => {
-      return entity !== null;
-    });
-  }
-
-  public exists2(id: string): Promise<boolean> {
-    return DbEntity.findOneBy({ id }).then(entity => {
-      return entity !== null;
-    });
   }
 
   // SQLite Bulk Actions - BEGIN

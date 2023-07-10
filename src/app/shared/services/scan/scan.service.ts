@@ -17,7 +17,8 @@ import {
   AlbumViewEntity,
   ArtistViewEntity,
   PartyRelationEntity,
-  ComposerViewEntity
+  ComposerViewEntity,
+  DbEntity
 } from '../../entities';
 import { AppEvent } from '../../models/events.enum';
 import { ModuleOptionName } from '../../models/module-option.enum';
@@ -32,6 +33,7 @@ import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { ISyncInfo } from './scan.interface';
 import { PartyRelationType } from '../../models/music.enum';
+import { DatabaseLookupService } from '../database/database-lookup.service';
 
 export enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -57,7 +59,7 @@ export class ScanService {
   private scanMode: ScanFileMode;
   private songToProcess: SongEntity;
   private options: ModuleOptionEntity[];
-
+  private genreSplitSymbols: string[];
 
   private existingArtists: ArtistEntity[];
   private existingAlbums: AlbumEntity[];
@@ -77,6 +79,7 @@ export class ScanService {
     private metadataReader: MetadataReaderService,
     private utilities: UtilityService,
     private db: DatabaseService,
+    private lookupService: DatabaseLookupService,
     private events: EventsService,
     private log: LogService) { }
 
@@ -121,59 +124,65 @@ export class ScanService {
     this.existingPartyRelations = [];
     this.existingSongClassifications = [];
 
+    const genreSplitOption = this.lookupService.findModuleOption(ModuleOptionName.GenreSplitCharacters, this.options);
+    if (genreSplitOption) {
+      this.genreSplitSymbols = this.db.getOptionArrayValue(genreSplitOption);
+    }
+
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language
     await this.metadataReader.init({ dynamicFields: this.existingClassTypes.map(c => c.name) });
   }
 
   private async syncChangesToDatabase(syncInfo: ISyncInfo): Promise<void> {
+    // TODO: determine if we really need to clear the isNew flag on all entities
+    // There are a few places where the new flag is still used after this routine
     // Value lists
     const newCountries = this.existingCountries.filter(country => country.isNew);
     if (newCountries.length) {
       await this.db.bulkInsert(ValueListEntryEntity, newCountries);
-      newCountries.forEach(c => c.isNew = false);
+      //newCountries.forEach(c => c.isNew = false);
     }
     // Artists
     const newArtists = this.existingArtists.filter(artist => artist.isNew);
     if (newArtists.length) {
       await this.db.bulkInsert(ArtistEntity, newArtists);
-      newArtists.forEach(a => a.isNew = false);
+      //newArtists.forEach(a => a.isNew = false);
     }
     const artistsToBeUpdated = this.existingArtists.filter(artist => artist.hasChanges);
     if (artistsToBeUpdated.length) {
-      await this.db.bulkUpdate(ArtistEntity, artistsToBeUpdated, ['artistTypeId', 'artistSort', 'artistStylized', 'countryId']);
-      artistsToBeUpdated.forEach(a => a.hasChanges = false);
+      const artistUpdateColumns = ['artistTypeId', 'artistSort', 'artistStylized', 'countryId'];
+      await this.db.bulkUpdate(ArtistEntity, artistsToBeUpdated, artistUpdateColumns);
+      //artistsToBeUpdated.forEach(a => a.hasChanges = false);
     }
     // Albums
     const newAlbums = this.existingAlbums.filter(album => album.isNew);
     if (newAlbums.length) {
       await this.db.bulkInsert(AlbumEntity, newAlbums);
-      newAlbums.forEach(a => a.isNew = false);
+      //newAlbums.forEach(a => a.isNew = false);
     }
     // Genres
     const newGenres = this.existingGenres.filter(genre => genre.isNew);
     if (newGenres.length) {
       await this.db.bulkInsert(ValueListEntryEntity, newGenres);
-      newGenres.forEach(g => g.isNew = false);
+      //newGenres.forEach(g => g.isNew = false);
     }
     // Classifications
     const newClassifications = this.existingClassifications.filter(classification => classification.isNew);
     if (newClassifications.length) {
       await this.db.bulkInsert(ValueListEntryEntity, newClassifications);
-      newClassifications.forEach(c => c.isNew = false);
+      //newClassifications.forEach(c => c.isNew = false);
     }
     // Songs
     syncInfo.songAddedRecords = this.existingSongs.filter(song => song.isNew);
     if (syncInfo.songAddedRecords.length) {
       await this.db.bulkInsert(SongEntity, syncInfo.songAddedRecords);
-      // Do we really need to do this? At least not for now
       // newSongs.forEach(s => s.isNew = false);
     }
     syncInfo.songUpdatedRecords = this.existingSongs.filter(song => song.hasChanges);
     if (syncInfo.songUpdatedRecords.length) {
-      const updateColumns = ['lyrics', 'seconds', 'bitrate', 'frequency', 'vbr', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
-      await this.db.bulkUpdate(SongEntity, syncInfo.songUpdatedRecords, updateColumns);
-      // Do we really need to do this? At least not for now
+      const songUpdateColumns = ['lyrics', 'seconds', 'bitrate', 'frequency', 'vbr', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
+      await this.db.bulkUpdate(SongEntity, syncInfo.songUpdatedRecords, songUpdateColumns);
       // songsToBeUpdated.forEach(s => s.hasChanges = false);
     }
     // All records for party relation and song classifications should be new
@@ -186,7 +195,6 @@ export class ScanService {
     const newImages = this.existingImages.filter(image => image.isNew);
     if (newImages.length) {
       await this.db.bulkInsert(RelatedImageEntity, newImages);
-      // Do we really need to do this? At least not for now
       //newImages.forEach(i => i.isNew = false);
     }
   }
@@ -238,7 +246,7 @@ export class ScanService {
   }
 
   private setMode(fileInfo: IFileInfo): void {
-    this.songToProcess = this.existingSongs.find(s => s.filePath === fileInfo.path);
+    this.songToProcess = this.lookupService.findSong(fileInfo.path, this.existingSongs);
     if (this.songToProcess) {
       const fileAddTime = fileInfo.addDate.getTime();
       const dbAddTime = this.songToProcess.addDate.getTime();
@@ -310,12 +318,7 @@ export class ScanService {
 
     // GENRES
     // TODO: add default genre if no one found
-    let genreSplitSymbols: string[] = [];
-    const genreSplitOption = this.options.find(option => option.name === ModuleOptionName.GenreSplitCharacters);
-    if (genreSplitOption) {
-      genreSplitSymbols = this.db.getOptionArrayValue(genreSplitOption);
-    }
-    const genres = this.processGenres(metadata, genreSplitSymbols);
+    const genres = this.processGenres(metadata, this.genreSplitSymbols);
 
     // CLASSIFICATIONS
     const classifications = this.processClassifications(metadata);
@@ -448,11 +451,6 @@ export class ScanService {
   }
 
   private processAlbumArtist(metadata: KeyValues): ArtistEntity {
-    const artistType = this.first(metadata[MetaField.ArtistType]);
-    const country = this.first(metadata[MetaField.Country]);
-    const artistStylized = this.first(metadata[MetaField.ArtistStylized]);
-    const artistSort = this.first(metadata[MetaField.ArtistSort]);
-
     let artistName = this.first(metadata[MetaField.AlbumArtist]);
     if (!artistName) {
       artistName = this.first(metadata[MetaField.Artist]);
@@ -461,66 +459,54 @@ export class ScanService {
       }
     }
 
+    const artistType = this.first(metadata[MetaField.ArtistType]);
+    const country = this.first(metadata[MetaField.Country]);
+    const artistStylized = this.first(metadata[MetaField.ArtistStylized]);
+    const artistSort = this.first(metadata[MetaField.ArtistSort]);
+
     const newArtist = new ArtistEntity();
-    newArtist.isNew = true;
     newArtist.name = artistName;
     newArtist.artistSort = artistSort ? artistSort : newArtist.name;
-    newArtist.favorite = false;
     newArtist.artistTypeId = artistType ? this.getValueListEntryId(artistType, ValueLists.ArtistType.id, this.existingArtistTypes) : ValueLists.ArtistType.entries.Unknown;
     newArtist.countryId = country ? this.getValueListEntryId(country, ValueLists.Country.id, this.existingCountries) : ValueLists.Country.entries.Unknown;
     newArtist.artistStylized = artistStylized ? artistStylized : artistName;
-    this.db.hashArtist(newArtist);
 
-    const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
+    const existingArtist = this.lookupService.findArtist(newArtist.name, this.existingArtists);
     if (existingArtist) {
       if (existingArtist.artistTypeId === ValueLists.ArtistType.entries.Unknown && existingArtist.artistTypeId !== newArtist.artistTypeId) {
         existingArtist.artistTypeId = newArtist.artistTypeId;
-        if (!existingArtist.isNew) {
-          existingArtist.hasChanges = true;
-        }
+        this.setChangesIfNotNew(existingArtist);
       }
       if (existingArtist.countryId === ValueLists.Country.entries.Unknown && existingArtist.countryId !== newArtist.countryId) {
         existingArtist.countryId = newArtist.countryId;
-        if (!existingArtist.isNew) {
-          existingArtist.hasChanges = true;
-        }
+        this.setChangesIfNotNew(existingArtist);
       }
       if (existingArtist.artistStylized === existingArtist.name && existingArtist.artistStylized !== newArtist.artistStylized) {
         existingArtist.artistStylized = newArtist.artistStylized;
-        if (!existingArtist.isNew) {
-          existingArtist.hasChanges = true;
-        }
+        this.setChangesIfNotNew(existingArtist);
       }
-      if (existingArtist.artistSort === existingArtist.artistSort && existingArtist.artistSort !== newArtist.artistSort) {
+      if (existingArtist.artistSort === existingArtist.name && existingArtist.artistSort !== newArtist.artistSort) {
         existingArtist.artistSort = newArtist.artistSort;
-        if (!existingArtist.isNew) {
-          existingArtist.hasChanges = true;
-        }
+        this.setChangesIfNotNew(existingArtist);
       }
       return existingArtist;
     }
 
+    newArtist.isNew = true;
+    newArtist.id = this.utilities.newGuid();
+    newArtist.favorite = false;
+    newArtist.hash = this.lookupService.hashArtist(newArtist.name);
     this.processImage(newArtist.id, metadata, MetaField.AlbumArtistImage);
-
     this.existingArtists.push(newArtist);
     return newArtist;
   }
 
   private processAlbum(artist: ArtistEntity, metadata: KeyValues, ignoredYears?: number[]): AlbumEntity {
     const newAlbum = new AlbumEntity();
-    newAlbum.isNew = true;
-    newAlbum.primaryArtist = artist;
-
     newAlbum.name = this.first(metadata[MetaField.Album]);
     if (!newAlbum.name) {
       newAlbum.name = this.unknownValue;
     }
-
-    let albumStylized = this.first(metadata[MetaField.AlbumStylized]);
-    if (!albumStylized) {
-      albumStylized = newAlbum.name;
-    }
-    newAlbum.albumStylized = albumStylized;
 
     newAlbum.releaseYear = 0;
     const year = this.first(metadata[MetaField.Year]);
@@ -528,21 +514,12 @@ export class ScanService {
       // Is this actually the album year? Album year and song year might be different.
       newAlbum.releaseYear = year;
     }
-    newAlbum.releaseDecade = this.utilities.getDecade(newAlbum.releaseYear);
-    // We have enough information to hash
-    this.db.hashAlbum(newAlbum);
 
-    const existingAlbum = this.existingAlbums.find(a => a.id === newAlbum.id);
-    if (existingAlbum) {
-      // TODO: update other fields if info is missing
-
-      // Use the latest song year to set the album year
-      if (newAlbum.releaseYear > existingAlbum.releaseYear) {
-        existingAlbum.releaseYear = newAlbum.releaseYear;
-        existingAlbum.hasChanges = true;
-      }
-      return existingAlbum;
+    let albumStylized = this.first(metadata[MetaField.AlbumStylized]);
+    if (!albumStylized) {
+      albumStylized = newAlbum.name;
     }
+    newAlbum.albumStylized = albumStylized;
 
     const albumSort = this.first(metadata[MetaField.AlbumSort]);
     if (albumSort) {
@@ -552,11 +529,33 @@ export class ScanService {
       newAlbum.albumSort = newAlbum.name;
     }
 
+    const existingAlbum = this.lookupService.findAlbum(newAlbum.name, newAlbum.releaseYear, artist.id, this.existingAlbums);
+    if (existingAlbum) {
+      // Use the latest song year to set the album year
+      if (existingAlbum.releaseYear < newAlbum.releaseYear) {
+        existingAlbum.releaseYear = newAlbum.releaseYear;
+        this.setChangesIfNotNew(existingAlbum);
+      }
+      if (existingAlbum.albumStylized === existingAlbum.name && existingAlbum.albumStylized !== newAlbum.albumStylized) {
+        existingAlbum.albumStylized = newAlbum.albumStylized;
+        this.setChangesIfNotNew(existingAlbum);
+      }
+      if (existingAlbum.albumSort === existingAlbum.name && existingAlbum.albumSort !== newAlbum.albumSort) {
+        existingAlbum.albumStylized = newAlbum.albumSort;
+        this.setChangesIfNotNew(existingAlbum);
+      }
+      return existingAlbum;
+    }
+
+    newAlbum.isNew = true;
+    newAlbum.id = this.utilities.newGuid();
+    newAlbum.favorite = false;
+    newAlbum.primaryArtist = artist;
+    newAlbum.primaryArtistId = artist.id;
+    newAlbum.releaseDecade = this.utilities.getDecade(newAlbum.releaseYear);
     const albumType = this.first(metadata[MetaField.AlbumType]);
     newAlbum.albumTypeId = albumType ? this.getValueListEntryId(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP;
-
-    newAlbum.favorite = false;
-
+    newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
 
@@ -566,12 +565,14 @@ export class ScanService {
 
   private processSong(album: AlbumEntity, metadata: KeyValues): SongEntity {
     const song = new SongEntity();
+    song.id = this.utilities.newGuid();
     song.isNew = true;
     song.filePath = this.first(metadata[MetaField.FilePath]);
+    song.hash = this.lookupService.hashSong(song.filePath);
 
-    const id = this.first(metadata[MetaField.UfId]);
-    if (id) {
-      song.externalId = id;
+    const ufId = this.first(metadata[MetaField.UfId]);
+    if (ufId) {
+      song.externalId = ufId;
     }
 
     song.name = this.first(metadata[MetaField.Title]);
@@ -580,6 +581,7 @@ export class ScanService {
     }
 
     song.primaryAlbum = album;
+    song.primaryAlbumId = album.id;
     const trackNumber = this.first(metadata[MetaField.TrackNumber]);
     song.trackNumber = trackNumber ? trackNumber : 0;
     const mediaNumber = this.first(metadata[MetaField.MediaNumber]);
@@ -681,7 +683,6 @@ export class ScanService {
     song.fullyParsed = this.first(metadata[MetaField.TagFullyParsed]);
     song.favorite = false;
 
-    this.db.hashSong(song);
     this.processImage(song.id, metadata, MetaField.SingleImage);
     return song;
   }
@@ -690,15 +691,13 @@ export class ScanService {
     const image = this.first(metadata[field]) as IImageSource;
 
     if (image && image.sourcePath) {
-      const existingImage = this.existingImages.find (i =>
-        i.relatedId === relatedId &&
-        i.sourceType === image.sourceType &&
-        i.sourceIndex === image.sourceIndex &&
-        i.sourcePath === image.sourcePath);
+      const existingImage = this.lookupService.findImage(relatedId, image, this.existingImages);
 
       if (!existingImage) {
         const newImage = new RelatedImageEntity();
         newImage.id = this.utilities.newGuid();
+        // TODO: determine rules to create the proper hash
+        newImage.hash = newImage.id;
         newImage.name = this.getImageName(metadata, image.imageType as MusicImageType);
         newImage.relatedId = relatedId;
         newImage.sourcePath = image.sourcePath;
@@ -766,20 +765,21 @@ export class ScanService {
       const artistSort = artistSorts && artistSorts.length > artistIndex ? artistSorts[artistIndex] : artistName;
       // Move to the next index since we are done using this one
       artistIndex++;
-      const newArtist = this.createArtist(artistName, artistSort);
-      const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
+      const existingArtist = this.lookupService.findArtist(artistName, this.existingArtists);
       if (existingArtist) {
-        if (existingArtist.artistSort === existingArtist.name && existingArtist.artistSort !== newArtist.artistSort) {
-          existingArtist.artistSort = newArtist.artistSort;
+        if (existingArtist.artistSort === existingArtist.name && existingArtist.artistSort !== artistSort) {
+          existingArtist.artistSort = artistSort;
           if (!existingArtist.isNew) {
             existingArtist.hasChanges = true;
           }
         }
-        if (!result.find(a => a.id === existingArtist.id)) {
+        const existingResult = this.lookupService.findArtist(existingArtist.name, result);
+        if (!existingResult) {
           result.push(existingArtist);
         }
       }
       else {
+        const newArtist = this.createArtist(artistName, artistSort);
         // First, add the artist as it is
         this.existingArtists.push(newArtist);
         result.push(newArtist);
@@ -789,14 +789,15 @@ export class ScanService {
           for (const splitSymbol of splitSymbols) {
             const splitArtistNames = artistName.split(splitSymbol);
             for (const splitArtistName of splitArtistNames) {
-              const newSplitArtist = this.createArtist(splitArtistName, splitArtistName);
-              const existingSplitArtist = this.existingArtists.find(a => a.id === newSplitArtist.id);
+              const existingSplitArtist = this.lookupService.findArtist(splitArtistName, this.existingArtists);
               if (existingSplitArtist) {
-                if (!result.find(a => a.id === existingSplitArtist.id)) {
+                const existingResult = this.lookupService.findArtist(existingSplitArtist.name, result);
+                if (!existingResult) {
                   result.push(existingSplitArtist);
                 }
               }
               else {
+                const newSplitArtist = this.createArtist(splitArtistName, splitArtistName);
                 this.existingArtists.push(newSplitArtist);
                 result.push(newSplitArtist);
               }
@@ -811,6 +812,7 @@ export class ScanService {
 
   private createArtist(artistName: string, artistSort: string): ArtistEntity {
     const artist = new ArtistEntity();
+    artist.id = this.utilities.newGuid();
     artist.isNew = true;
     artist.name = artistName;
     artist.artistStylized = artistName;
@@ -818,17 +820,18 @@ export class ScanService {
     artist.favorite = false;
     artist.artistTypeId = ValueLists.ArtistType.entries.Unknown;
     artist.countryId = ValueLists.Country.entries.Unknown;
-    this.db.hashArtist(artist);
+    artist.hash = this.lookupService.hashArtist(artistName);
     return artist;
   }
 
   private getValueListEntryId(entryName: string, valueListTypeId: string, entries: ValueListEntryEntity[]): string {
-    const existingEntry = entries.find(e => e.name === entryName);
+    const existingEntry = this.lookupService.findValueListEntry(entryName, null, entries);
     if (existingEntry) {
       return existingEntry.id;
     }
     const newEntry = new ValueListEntryEntity();
     newEntry.id = this.utilities.newGuid();
+    newEntry.hash = this.lookupService.hashValueListEntry(entryName);
     newEntry.valueListTypeId = valueListTypeId;
     newEntry.name = entryName;
     // TODO: specify proper sequence
@@ -863,9 +866,10 @@ export class ScanService {
   }
 
   private processGenre(name: string, genres: ValueListEntryEntity[]): void {
-    const existingGenre = this.existingGenres.find(g => g.name === name);
+    const existingGenre = this.lookupService.findValueListEntry(name, null, this.existingGenres);
     if (existingGenre) {
-      if (!genres.find(g => g.name === existingGenre.name)) {
+      const existingResult = this.lookupService.findValueListEntry(existingGenre.name, null, genres);
+      if (!existingResult) {
         genres.push(existingGenre);
       }
     }
@@ -885,6 +889,7 @@ export class ScanService {
     genre.valueListTypeId = ValueLists.Genre.id;
     // TODO: determine how to specify the proper sequence
     genre.sequence = 0;
+    genre.hash = this.lookupService.hashValueListEntry(genre.name);
     return genre;
   }
 
@@ -904,10 +909,7 @@ export class ScanService {
         let names = classData.split(',');
         names = this.utilities.removeDuplicates(names);
         for (const name of names) {
-          // Find out if the classification (name and type) exists in the db
-          const existingGlobalClass = this.existingClassifications.find(c =>
-            c.name === name && c.valueListTypeId === classificationType.id);
-
+          const existingGlobalClass = this.lookupService.findValueListEntry(name, classificationType.id, this.existingClassifications);
           if (existingGlobalClass) {
             result.push(existingGlobalClass);
           }
@@ -920,6 +922,7 @@ export class ScanService {
             newClassification.isClassification = true;
             // TODO: determine how to specify the proper sequence
             newClassification.sequence = 0;
+            newClassification.hash = this.lookupService.hashValueListEntry(newClassification.name);
             // Add it to cache to it is added as a new record
             this.existingClassifications.push(newClassification);
             // Add it as part of the result of this method
@@ -957,17 +960,23 @@ export class ScanService {
     const singers = metadata[MetaField.Singer];
     if (singers && singers.length) {
       for (const singer of singers) {
-        const newArtist = this.createArtist(singer, singer);
-        const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
-        if (!existingArtist) {
+        let newRelatedId: string;
+        const existingArtist = this.lookupService.findArtist(singer, this.existingArtists);
+        if (existingArtist) {
+          const existingRelation = this.lookupService.findSingerRelation(existingArtist.id, primaryArtist.id, this.existingPartyRelations);
+          if (!existingRelation) {
+            newRelatedId = existingArtist.id;
+          }
+        }
+        else {
+          const newArtist = this.createArtist(singer, singer);
+          newRelatedId = newArtist.id;
           this.existingArtists.push(newArtist);
         }
-        const existingRelation = this.existingPartyRelations.find(r =>
-          r.relatedId === newArtist.id && r.artistId === primaryArtist.id && r.relationTypeId === PartyRelationType.Singer);
-        if (!existingRelation) {
+        if (newRelatedId) {
           const singerRelation = new PartyRelationEntity();
           singerRelation.id = this.utilities.newGuid();
-          singerRelation.relatedId = newArtist.id;
+          singerRelation.relatedId = newRelatedId;
           singerRelation.artistId = primaryArtist.id;
           singerRelation.relationTypeId = PartyRelationType.Singer;
           this.existingPartyRelations.push(singerRelation);
@@ -979,17 +988,23 @@ export class ScanService {
     const contributors = metadata[MetaField.Contributor];
     if (contributors && contributors.length) {
       for (const contributor of contributors) {
-        const newArtist = this.createArtist(contributor, contributor);
-        const existingArtist = this.existingArtists.find(a => a.id === newArtist.id);
-        if (!existingArtist) {
+        let newRelatedId: string;
+        const existingArtist = this.lookupService.findArtist(contributor, this.existingArtists);
+        if (existingArtist) {
+          const existingRelation = this.lookupService.findContributorRelation(existingArtist.id, primaryArtist.id, this.existingPartyRelations);
+          if (!existingRelation) {
+            newRelatedId = existingArtist.id;
+          }
+        }
+        else {
+          const newArtist = this.createArtist(contributor, contributor);
+          newRelatedId = newArtist.id;
           this.existingArtists.push(newArtist);
         }
-        const existingRelation = this.existingPartyRelations.find(r =>
-          r.relatedId === newArtist.id && r.artistId === primaryArtist.id && r.relationTypeId === PartyRelationType.Contributor);
-        if (!existingRelation) {
+        if (newRelatedId) {
           const contributorRelation = new PartyRelationEntity();
           contributorRelation.id = this.utilities.newGuid();
-          contributorRelation.relatedId = newArtist.id;
+          contributorRelation.relatedId = newRelatedId;
           contributorRelation.artistId = primaryArtist.id;
           contributorRelation.relationTypeId = PartyRelationType.Contributor;
           this.existingPartyRelations.push(contributorRelation);
@@ -998,46 +1013,40 @@ export class ScanService {
     }
   }
 
-  public async processPlaylistFile(fileInfo: IFileInfo): Promise<any> {
+  public async processPlaylistFile(fileInfo: IFileInfo): Promise<void> {
     const fileContent = await this.fileService.getText(fileInfo.path);
     // Remove \r and then split by \n
     const fileLines = fileContent.replace(/(\r)/gm, '').split('\n');
     if (fileLines.length) {
       let tracks: PlaylistSongEntity[];
       const firstLine = fileLines[0].toUpperCase();
+      const existingPlaylist = await this.lookupService.lookupPlaylist(fileInfo.name);
+      if (existingPlaylist) {
+        return;
+      }
 
       if (firstLine === '[PLAYLIST]') {
-        const playlist = await this.createPlaylist(fileInfo.name);
-        if (playlist) {
+          const playlist = await this.createPlaylist(fileInfo.name);
           tracks = await this.processPls(playlist, fileInfo, fileLines);
-        }
       } else if (firstLine === '#EXTM3U') {
         const playlist = await this.createPlaylist(fileInfo.name);
-        if (playlist) {
-          tracks = await this.processM3u(playlist, fileInfo, fileLines);
-        }
+        tracks = await this.processM3u(playlist, fileInfo, fileLines);
       }
 
       if (tracks && tracks.length) {
         this.db.bulkInsert(PlaylistSongEntity, tracks);
       }
     }
-
-    return null;
   }
 
   private async createPlaylist(name: string): Promise<PlaylistEntity> {
     const playlist = new PlaylistEntity();
+    playlist.id = this.utilities.newGuid();
     playlist.name = name;
     playlist.favorite = false;
     playlist.imported = true;
     playlist.changeDate = new Date();
-    this.db.hashPlaylist(playlist);
-    const playlistExists = await this.db.exists(playlist.id, PlaylistEntity);
-    if (playlistExists) {
-      // Playlist already exists
-      return null;
-    }
+    playlist.hash = this.lookupService.hashPlaylist(playlist.name);
     await playlist.save();
     this.events.broadcast(AppEvent.ScanPlaylistCreated, playlist);
     return playlist;
@@ -1187,7 +1196,7 @@ export class ScanService {
     }
     // Now determine if these artists have no songs as composers
     const composerIdsToAnalyze = artistsWithNoSongs.map(artist => artist.id);
-    const composersWithNoSongs = await ComposerViewEntity.findBy( { id: In(composerIdsToAnalyze), songCount: 0});
+    const composersWithNoSongs = await ComposerViewEntity.findBy({ id: In(composerIdsToAnalyze), songCount: 0});
     if (!composersWithNoSongs.length) {
       return;
     }
@@ -1216,6 +1225,12 @@ export class ScanService {
     this.existingImages = [];
     this.existingPartyRelations = [];
     this.existingSongClassifications = [];
+  }
+
+  private setChangesIfNotNew(entity: DbEntity): void {
+    if (!entity.isNew) {
+      entity.hasChanges = true;
+    }
   }
 
   private first<T>(array: T[]): T {

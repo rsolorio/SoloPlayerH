@@ -8,12 +8,12 @@ import { ListItemEntity } from './base.entity';
  * It is intended to be used by filtering using the classificationId column;
  * if that's not the case, the view will return duplicate album records.
  * If using more than one classificationId values, you will need to use a DISTINCT clause.
- * Fields: id, primaryArtistId, name, albumSort, releaseYear, artistName, artistStylized, classificationId, songCount
+ * Fields: id, primaryArtistId, name, hash, albumSort, releaseYear, artistName, artistStylized, classificationId, songCount
  */
  @ViewEntity({
   name: 'albumClassificationView',
   expression: `
-  SELECT album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, album.releaseDecade, artist.name AS artistName, artist.artistStylized AS artistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount, SUM(songClass.seconds) AS seconds, MAX(songClass.addDate) AS songAddDateMax
+  SELECT album.id, album.primaryArtistId, album.name, album.hash, album.albumSort, album.releaseYear, album.releaseDecade, artist.name AS artistName, artist.artistStylized AS artistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount, SUM(songClass.seconds) AS seconds, MAX(songClass.addDate) AS songAddDateMax
   FROM album INNER JOIN artist
   ON album.primaryArtistId = artist.id INNER JOIN (
     SELECT song.id, song.primaryAlbumId, song.seconds, song.addDate, songClassification.classificationId
@@ -29,6 +29,8 @@ export class AlbumClassificationViewEntity extends ListItemEntity implements IAl
   id: string;
   @ViewColumn()
   name: string;
+  @ViewColumn()
+  hash: string;
   @ViewColumn()
   songCount: number;
   @ViewColumn()

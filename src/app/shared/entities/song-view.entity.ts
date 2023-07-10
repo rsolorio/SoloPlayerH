@@ -4,7 +4,7 @@ import { SongBaseEntity } from './song-base.entity';
 import { SongEntity } from './song.entity';
 
 /**
- * Field list: id, primaryAlbumId, primaryArtistId, name, filePath, titleSort, playCount, releaseYear, releaseDecade,
+ * Field list: id, primaryAlbumId, primaryArtistId, name, hash, filePath, titleSort, playCount, releaseYear, releaseDecade,
  * trackNumber, mediaNumber, seconds, rating, language, mood, favorite, bitrate, vbr, lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized
  */
 @ViewEntity({
@@ -17,6 +17,7 @@ import { SongEntity } from './song.entity';
     .addSelect('album.id', 'primaryAlbumId')
     .addSelect('artist.id', 'primaryArtistId')
     .addSelect('song.name', 'name')
+    .addSelect('song.hash', 'hash')
     .addSelect('song.filePath', 'filePath')
     .addSelect('song.fileSize', 'fileSize')
     .addSelect('song.titleSort', 'titleSort')
@@ -48,6 +49,8 @@ export class SongViewEntity extends SongBaseEntity implements ISongModel {
   id: string;
   @ViewColumn()
   name: string;
+  @ViewColumn()
+  hash: string;
   @ViewColumn()
   filePath: string;
   @ViewColumn()
