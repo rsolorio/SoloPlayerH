@@ -22,6 +22,7 @@ import { RelatedImageModule } from '../related-image/related-image.module';
 import { ImageService } from '../platform/image/image.service';
 import { ImageElectronService } from '../platform/image/image-electron.service';
 import { EyeDropperDirective } from './directives/eye-dropper/eye-dropper.directive';
+import { EntityEditorComponent } from './components/entity-editor/entity-editor.component';
 
 
 
@@ -37,7 +38,8 @@ import { EyeDropperDirective } from './directives/eye-dropper/eye-dropper.direct
     ResizeObserverDirective,
     RatingComponent,
     TextScrollerComponent,
-    EyeDropperDirective
+    EyeDropperDirective,
+    EntityEditorComponent
   ],
   imports: [
     CommonModule,
@@ -55,7 +57,8 @@ import { EyeDropperDirective } from './directives/eye-dropper/eye-dropper.direct
     ResizeObserverDirective,
     RatingComponent,
     TextScrollerComponent,
-    EyeDropperDirective
+    EyeDropperDirective,
+    EntityEditorComponent
   ],
   entryComponents: [ QuickSearchComponent ],
   providers: [ { provide: FileService, useClass: FileElectronService }, { provide: ImageService, useClass: ImageElectronService } ]

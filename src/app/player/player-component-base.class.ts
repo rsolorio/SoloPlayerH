@@ -11,7 +11,6 @@ import { EventsService } from '../core/services/events/events.service';
 import { AppEvent } from '../shared/models/events.enum';
 import { IEventArgs } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
-import { DatabaseService } from '../shared/services/database/database.service';
 import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../platform/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
@@ -23,6 +22,7 @@ import { RelatedImageEntity } from '../shared/entities';
 import { RelatedImageId } from '../shared/services/database/database.images';
 import { ImageService } from '../platform/image/image.service';
 import { PlayerOverlayMode } from './player-overlay/player-overlay.enum';
+import { DatabaseEntitiesService } from '../shared/services/database/database-entities.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -44,7 +44,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private playerOverlayServiceBase: PlayerOverlayStateService,
     private eventService: EventsService,
     private menuServiceBase: MenuService,
-    private database: DatabaseService,
+    private databaseEntityService: DatabaseEntitiesService,
     private dialogService: DialogService,
     private utilityService: UtilityService,
     private imagePreviewService: ImagePreviewService,
@@ -193,7 +193,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   public onFavoriteClick(song: ISongModel) {
     const newValue = !song.favorite;
-    this.database.setFavoriteSong(song.id, newValue).then(() => {
+    this.databaseEntityService.setFavoriteSong(song.id, newValue).then(() => {
       song.favorite = newValue;
     });
   }
@@ -214,7 +214,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       onOk: selectedEntries => {
         if (selectedEntries && selectedEntries.length) {
           const newMood = selectedEntries[0].name;
-          this.database.setMood(song.id, newMood).then(() => {
+          this.databaseEntityService.setMood(song.id, newMood).then(() => {
             song.mood = newMood;
           });
         }
@@ -240,7 +240,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     if (e.oldValue === e.newValue) {
       return;
     }
-    this.database.setRating(song.id, song.rating);
+    this.databaseEntityService.setRating(song.id, song.rating);
   }
 
   public takeScreenshot(): void {

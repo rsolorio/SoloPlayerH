@@ -8,11 +8,11 @@ import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-play
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
-import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
 import { ImageService } from 'src/app/platform/image/image.service';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -30,13 +30,13 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private utilities: UtilityService,
     private events: EventsService,
     private menuService: MenuService,
-    private db: DatabaseService,
+    private entityService: DatabaseEntitiesService,
     private dialog: DialogService,
     private imagePreview: ImagePreviewService,
     private valueListService: ValueListSelectorService,
     private imageService: ImageService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utilities, imagePreview, valueListService, imageService);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, imagePreview, valueListService, imageService);
   }
 
   public ngOnInit() {

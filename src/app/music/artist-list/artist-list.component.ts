@@ -58,7 +58,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         action: param => {
           const artist = param as IArtistModel;
           if (artist) {
-            this.navigation.forward(AppRoute.Artists, { queryParams: [artist.id] });
+            this.navigation.forward(AppRoute.Artists, { routeParams: [artist.id] });
           }
         }
       },

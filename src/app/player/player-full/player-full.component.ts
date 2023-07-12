@@ -10,7 +10,6 @@ import { ImagePreviewService } from 'src/app/related-image/image-preview/image-p
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
-import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
@@ -24,6 +23,7 @@ import { ImageService } from 'src/app/platform/image/image.service';
 import { ResizeObserverDirective } from 'src/app/shared/directives/resize-observer/resize-observer.directive';
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { EyeDropperDirective } from 'src/app/shared/directives/eye-dropper/eye-dropper.directive';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-player-full',
@@ -50,7 +50,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private playerService: HtmlPlayerService,
     private playerOverlayService: PlayerOverlayStateService,
     private menuService: MenuService,
-    private db: DatabaseService,
+    private entityService: DatabaseEntitiesService,
     private colorUtility: ColorUtilityService,
     private imageService: ImageService,
     private worker: WorkerService,
@@ -60,7 +60,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private imagePreview: ImagePreviewService,
     private valueListService: ValueListSelectorService)
   {
-    super(playerService, playerOverlayService, events, menuService, db, dialog, utility, imagePreview, valueListService, imageService);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, imagePreview, valueListService, imageService);
   }
 
   public onInit(): void {
@@ -152,7 +152,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public toggleLive(): void {
     const song = this.model.playerList.current.song;
     const newValue = !song.live;
-    this.db.setLive(song.id, newValue).then(() => {
+    this.entityService.setLive(song.id, newValue).then(() => {
       song.live = newValue;
     });
   }

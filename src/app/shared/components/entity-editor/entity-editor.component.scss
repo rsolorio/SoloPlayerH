@@ -1,0 +1,41 @@
+@import "../../../../styles-variables";
+
+.sp-input-group {
+  position: relative;
+  display: flex;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.sp-input-prepend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 34px;
+  min-width: 34px;
+  // Blends the right margin of this element with the left margin of the input
+  margin-right: -1px;
+  border: 1px solid $sp-color-on-background-low;
+  border-radius: 0.25rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.sp-input-control {
+  height: 34px;
+  padding-left: 10px;
+  padding-right: 10px;
+  outline: none;
+  border: 1px solid $sp-color-on-background-low;
+  border-radius: 0.25rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.sp-input-edit {
+  position: absolute;
+  right: 12px;
+  top: 4px;
+}

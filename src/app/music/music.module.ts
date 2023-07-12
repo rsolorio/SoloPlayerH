@@ -14,6 +14,8 @@ import { FileCordovaService } from '../platform/file/file-cordova.service';
 import { ListTransformService } from '../shared/services/list-transform/list-transform.service';
 import { SongValidatorFactory } from './transform-validators/song-validator-factory';
 import { ValueListModule } from '../value-list/value-list.module';
+import { ArtistViewComponent } from './artist-view/artist-view.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -21,14 +23,20 @@ import { ValueListModule } from '../value-list/value-list.module';
     AlbumListComponent,
     ClassificationListComponent,
     SongListComponent,
-    PlaylistListComponent
+    PlaylistListComponent,
+    ArtistViewComponent
   ],
   imports: [
     CommonModule,
     CoreModule,
     FormsModule,
     SharedModule,
-    ValueListModule
+    ValueListModule,
+    RouterModule.forChild([
+      {
+        path: 'artists/:id', component: ArtistViewComponent
+      }
+    ])
   ],
   entryComponents: [],
   providers: [ { provide: FileService, useClass: FileElectronService }]

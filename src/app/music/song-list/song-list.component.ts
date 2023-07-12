@@ -11,7 +11,7 @@ import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { RelatedImageEntity, SongArtistViewEntity } from 'src/app/shared/entities';
+import { ModuleOptionEntity, RelatedImageEntity, SongArtistViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
@@ -30,6 +30,7 @@ import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.inte
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
 import { PlayerListModel } from 'src/app/shared/models/player-list-model.class';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -144,6 +145,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private playerOverlayService: PlayerOverlayStateService,
     private events: EventsService,
     private db: DatabaseService,
+    private entityService: DatabaseEntitiesService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
     private imagePreviewService: ImagePreviewService,
@@ -154,10 +156,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.db.getModuleOptions([ModuleOptionName.ExpandPlayerOnSongPlay]).then(options => {
-      this.expandPlayerOnPlay = this.db.getOptionBooleanValue(options[0]);
+    ModuleOptionEntity.findOneBy({ name: ModuleOptionName.ExpandPlayerOnSongPlay }).then(moduleOption => {
+      this.expandPlayerOnPlay = this.entityService.getOptionBooleanValue(moduleOption);
     });
-
     this.subs.sink = this.events.onEvent<IPlayerStatusChangedEventArgs>(AppEvent.PlayerStatusChanged)
     .subscribe(() => {
       this.cd.detectChanges();

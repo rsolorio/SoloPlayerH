@@ -34,6 +34,7 @@ import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { ISyncInfo } from './scan.interface';
 import { PartyRelationType } from '../../models/music.enum';
 import { DatabaseLookupService } from '../database/database-lookup.service';
+import { DatabaseEntitiesService } from '../database/database-entities.service';
 
 export enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -79,6 +80,7 @@ export class ScanService {
     private metadataReader: MetadataReaderService,
     private utilities: UtilityService,
     private db: DatabaseService,
+    private entityService: DatabaseEntitiesService,
     private lookupService: DatabaseLookupService,
     private events: EventsService,
     private log: LogService) { }
@@ -126,7 +128,7 @@ export class ScanService {
 
     const genreSplitOption = this.lookupService.findModuleOption(ModuleOptionName.GenreSplitCharacters, this.options);
     if (genreSplitOption) {
-      this.genreSplitSymbols = this.db.getOptionArrayValue(genreSplitOption);
+      this.genreSplitSymbols = this.entityService.getOptionArrayValue(genreSplitOption);
     }
 
     // Prepare reader, clarify that classification types will be handled as dynamic fields

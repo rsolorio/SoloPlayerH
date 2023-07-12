@@ -3,7 +3,6 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
-import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { FileService } from 'src/app/platform/file/file.service';
 import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
@@ -13,6 +12,7 @@ import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-playlist-list',
@@ -60,7 +60,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     public broadcastService: PlaylistListBroadcastService,
     private fileService: FileService,
     private metadataService: AudioMetadataService,
-    private db: DatabaseService,
+    private entityService: DatabaseEntitiesService,
     private utilities: UtilityService
   ){
     super();
@@ -76,7 +76,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   private onPlaylistClick(playlist: IPlaylistModel): void {}
 
   private async getPlaylistImage(playlist: IPlaylistModel): Promise<IImage> {
-    const playlistWithSongs = await this.db.getPlaylistWithSongs(playlist.id);
+    const playlistWithSongs = await this.entityService.getPlaylistWithSongs(playlist.id);
     if (playlistWithSongs.playlistSongs && playlistWithSongs.playlistSongs.length) {
       playlistWithSongs.playlistSongs = this.utilities.sort(playlistWithSongs.playlistSongs, 'sequence');
       const track = playlistWithSongs.playlistSongs[0];
