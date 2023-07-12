@@ -17,7 +17,7 @@ import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { MusicImageSourceType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
-import { IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
+import { IBasicColors, IFullColorPalette } from 'src/app/shared/services/color-utility/color-utility.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { ResizeObserverDirective } from 'src/app/shared/directives/resize-observer/resize-observer.directive';
@@ -65,7 +65,8 @@ export class PlayerFullComponent extends PlayerComponentBase {
 
   public onInit(): void {
     super.onInit();
-    this.setupPalette(this.colorUtility.getDefaultColors());
+    this.palette = this.colorUtility.getDefaultPalette();
+    this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
   }
 
   public onImageLoad(): void {
@@ -161,7 +162,32 @@ export class PlayerFullComponent extends PlayerComponentBase {
    * Loads the color palette of the current image and fires the "paletteLoaded" event.
    */
   private async loadPalette(): Promise<void> {
+    if (!this.image) {
+      return;
+    }
     this.isLoadingPalette = true;
+
+    if (this.image.colorSelection) {
+      this.palette = this.getPaletteFromDb();
+    }
+    else {
+      this.palette = await this.getPaletteFromImage();
+      await this.savePaletteToDb();
+    }
+    this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+
+    if (this.imageControlsEnabled) {
+      this.eyeDropper.draw(this.pictureRef.nativeElement);
+    }
+    this.isLoadingPalette = false;
+  }
+
+  private getPaletteFromDb(): IFullColorPalette {
+    const basicColors = JSON.parse(this.image.colorSelection) as IBasicColors;
+    return this.colorUtility.basicColorsToFullPalette(basicColors);
+  }
+
+  private async getPaletteFromImage(): Promise<IFullColorPalette> {
     let colors: ColorG[];
     if (this.colorUtility.isWorkerSupported()) {
       const colorData = this.colorUtility.getColorData(this.pictureRef.nativeElement);
@@ -172,18 +198,16 @@ export class PlayerFullComponent extends PlayerComponentBase {
       colors = this.colorUtility.getColors(this.pictureRef.nativeElement);
     }
 
-    this.setupPalette(colors);
-    if (this.imageControlsEnabled) {
-      this.eyeDropper.draw(this.pictureRef.nativeElement);
-    }
-    this.isLoadingPalette = false;
+    const bucketPalette = new BucketPalette(colors);
+    return bucketPalette.toFullPalette();
   }
 
-  private setupPalette(colors: ColorG[]): void {
-    const bucketPalette = new BucketPalette(colors);
-    this.palette = bucketPalette.toFullPalette();
-    //this.palette = this.colorUtility.buildPalette(colors[0], colors, ColorServiceName.Default, ColorSort.Contrast);
-    this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+  private async savePaletteToDb(): Promise<void> {
+    if (this.image && this.palette) {
+      const basicColors = this.colorUtility.fullPaletteToBasicColors(this.palette);
+      this.image.colorSelection = JSON.stringify(basicColors);
+      await this.image.save();
+    }
   }
 
   public onImageControlsClose(e: Event): void {
@@ -233,6 +257,8 @@ export class PlayerFullComponent extends PlayerComponentBase {
   }
 
   public onToolbarReset(): void {
+    // Clear the color selection to reset the toolbar
+    this.image.colorSelection = null;
     this.loadPalette();
   }
 
@@ -260,14 +286,17 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public onBackgroundColorClick(): void {
     this.palette.background = ColorG.fromColorObject(this.colorSelected);
     this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+    this.savePaletteToDb();
   }
   public onPrimaryColorClick(): void {
     this.palette.primary = ColorG.fromColorObject(this.colorSelected);
     this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+    this.savePaletteToDb();
   }
   public onSecondaryColorClick(): void {
     this.palette.secondary = ColorG.fromColorObject(this.colorSelected);
     this.events.broadcast(AppEvent.FullPlayerPaletteLoaded, this.palette);
+    this.savePaletteToDb();
   }
   public onSelectedColorClick(): void {
     this.colorSelected = this.colorSelected.blackOrWhite;

@@ -110,19 +110,29 @@ export class ColorUtilityService {
     return service.getExtractor() !== null;
   }
 
-  public getDefaultColors(): ColorG[] {
-    // Third color: #6c757d (gray)
-    return [ColorG.black, ColorG.white, ColorG.fromRgbaArray([108, 117, 125])];
+  public getDefaultBasicColors(): IBasicColors {
+    return {
+      dominant: { hex: ColorG.black.hex },
+      background: { hex: ColorG.black.hex },
+      primary: { hex: ColorG.white.hex },
+      secondary: { hex: ColorG.gray.hex }
+    };
   }
 
   public getDefaultPalette(): IFullColorPalette {
-    const colors = this.getDefaultColors();
+    const basicColors = this.getDefaultBasicColors();
+    const colors = [
+      ColorG.fromColorObject(basicColors.dominant),
+      ColorG.fromColorObject(basicColors.background),
+      ColorG.fromColorObject(basicColors.primary),
+      ColorG.fromColorObject(basicColors.secondary)
+    ];
     return {
       serviceName: ColorServiceName.Default,
       dominant: colors[0],
-      background: colors[0],
-      primary: colors[1],
-      secondary: colors[2],
+      background: colors[1],
+      primary: colors[2],
+      secondary: colors[3],
       colors: colors
     };
   }
