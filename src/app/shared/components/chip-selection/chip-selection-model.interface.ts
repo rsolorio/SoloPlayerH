@@ -4,13 +4,14 @@ import { ICriteriaValueSelector } from "../../services/criteria/criteria.interfa
 export interface IChipSelectionModel {
   title?: string;
   selector: ICriteriaValueSelector;
-  /** If true, every chip will be displayed as a one line block. */
   displayMode: ChipDisplayMode;
   onCancel?: () => void;
   onOk: (values: ISelectableValue[]) => void;
 }
 
 export enum ChipDisplayMode {
+  /** Chips will be displayed as a flex layout. */
   Flex = 'flex',
+  /** Every chip will be displayed as one line block. */
   Block = 'block'
 }

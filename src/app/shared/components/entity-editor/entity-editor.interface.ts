@@ -6,4 +6,5 @@ export interface IEntityEditorModel {
 export interface IEntityFieldModel {
   propertyName: string;
   icon: string;
+  onEdit?: (field: IEntityFieldModel) => void;
 }

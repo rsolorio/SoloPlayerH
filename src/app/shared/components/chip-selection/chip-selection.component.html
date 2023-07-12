@@ -3,7 +3,7 @@
     <tr class="sp-chip-selection-title-row">
       <div class="sp-chip-selection-title">
         <span *ngIf="model.title" class="sp-text-big">{{model.title}}</span>
-        <span *ngIf="model.selector.column.caption" class="sp-text-big">{{model.selector.column.caption}}</span>
+        <span *ngIf="model.selector.column?.caption" class="sp-text-big">{{model.selector.column.caption}}</span>
       </div>
     </tr>
     <tr>
