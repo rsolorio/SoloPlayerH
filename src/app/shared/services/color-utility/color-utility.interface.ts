@@ -1,11 +1,18 @@
 import { IColorExtractionData, IColorExtractor } from 'src/app/core/models/color-extractor-factory.class';
-import { ColorG } from 'src/app/core/models/color-g.class';
+import { ColorG, IColorG } from 'src/app/core/models/color-g.class';
 
 export interface IColorUtilityModel {
   /** Number of colors to return from the extractor library. */
   count: number;
   /** Library to use to get the colors. */
   serviceName: ColorServiceName;
+}
+
+export interface IBasicColors {
+  background: IColorG;
+  primary: IColorG;
+  secondary: IColorG;
+  dominant: IColorG;
 }
 
 export interface IBasicColorPalette {

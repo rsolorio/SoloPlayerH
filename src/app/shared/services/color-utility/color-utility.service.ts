@@ -11,7 +11,8 @@ import {
   IColorService,
   IFullColorPalette,
   IColorUtilityModel,
-  ColorSort
+  ColorSort,
+  IBasicColors
 } from './color-utility.interface';
 
 @Injectable({
@@ -79,6 +80,26 @@ export class ColorUtilityService {
     return new BucketPalette(colors);
   }
 
+  public fullPaletteToBasicColors(input: IFullColorPalette): IBasicColors {
+    return {
+      dominant: { hex: input.dominant.hex },
+      background: { hex: input.background.hex },
+      primary: { hex: input.primary.hex },
+      secondary: { hex: input.secondary.hex },
+    };
+  }
+
+  public basicColorsToFullPalette(input: IBasicColors): IFullColorPalette {
+    return {
+      dominant: ColorG.fromColorObject(input.dominant),
+      background: ColorG.fromColorObject(input.background),
+      primary: ColorG.fromColorObject(input.primary),
+      secondary: ColorG.fromColorObject(input.secondary),
+      colors: [],
+      serviceName: ColorServiceName.Default
+    }
+  }
+
   public getColorData(imageElement: any): IColorExtractionData {
     const colorService = this.getColorService();
     return colorService.getColorData(imageElement, this.model.count);
@@ -144,9 +165,7 @@ export class ColorUtilityService {
   }
 
   private sortByLuminance(palette: IFullColorPalette) {
-    // TODO: save luminance in the color object to we don't need to use the tagNumber
-    palette.colors.forEach(color => color.tagNumber = color.luminance);
-    palette.colors = this.utilityService.sort(palette.colors, 'tagNumber', true);
+    palette.colors = this.utilityService.sort(palette.colors, 'luminance', true);
   }
 
   /**

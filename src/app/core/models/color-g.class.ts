@@ -78,8 +78,7 @@ export interface IColorBucket {
 
 export interface IColorG {
   hex: string;
-  tagNumber: number;
-  dominance: number;
+  dominance?: number;
 }
 
 /**
@@ -103,10 +102,9 @@ export class ColorG implements IColorG {
   private _closest: IColorInfoMatch;
   /** RGBA value of this color. */
   private _rgba = this.createDefaultRgba();
+  private _luminance = -1;
   public hex: string;
   private _lab: ILabColor;
-  /** Generic tag. */
-  public tagNumber: number;
   /** Used to give the dominance a numeric value.
    * When using the "average" method,
    * the dominance will be the number of colors used to get the value.
@@ -274,8 +272,7 @@ export class ColorG implements IColorG {
   public get i(): IColorG {
     return {
       hex: this.hex,
-      dominance: this.dominance,
-      tagNumber: this.tagNumber
+      dominance: this.dominance
     };
   }
 
@@ -373,11 +370,15 @@ export class ColorG implements IColorG {
    * Returns a value from 0.00 to 1.00 that represents the luminance of the color.
    */
   public get luminance(): number {
+    if (this._luminance >= 0) {
+      return this._luminance;
+    }
     const actualRgbArray = this.rgbRatioArray;
     const newRgbArray = actualRgbArray.map(value => {
       return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
     });
-    return newRgbArray[0] * 0.2126 + newRgbArray[1] * 0.7152 + newRgbArray[2] * 0.0722;
+    this._luminance = newRgbArray[0] * 0.2126 + newRgbArray[1] * 0.7152 + newRgbArray[2] * 0.0722;
+    return this._luminance;
   }
 
   public get xyzArray(): number[] {
@@ -657,8 +658,9 @@ export class ColorG implements IColorG {
 
   private fromColorObject(color: IColorG) {
     this.fromHex(color.hex);
-    this.dominance = color.dominance;
-    this.tagNumber = color.tagNumber;
+    if (color.dominance) {
+      this.dominance = color.dominance;
+    }
   }
 
   private fromHex(hexColor: string) {
