@@ -410,6 +410,21 @@ export class UtilityService {
     return value.split(' ').map(w => w[0].toUpperCase() + w.substring(1).toLowerCase()).join(' ');
   }
 
+  public isTrue(value: string): boolean {
+    if (value) {
+      if (value === '1') {
+        return true;
+      }
+      if (value.toLowerCase() === 'true') {
+        return true;
+      }
+      if (value.toLowerCase() === 'yes') {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Changes the theme-color meta tag used by the mobile chrome browser.
    */

@@ -667,8 +667,20 @@ export class ScanService {
 
     song.live = false;
     const live = this.first(metadata[MetaField.Live]);
-    if (live && live.toLowerCase() === 'true') {
+    if (live) {
       song.live = true;
+    }
+
+    song.favorite = false;
+    const favorite = this.first(metadata[MetaField.Favorite]);
+    if (favorite) {
+      song.favorite = true;
+    }
+
+    song.explicit = false;
+    const explicit = this.first(metadata[MetaField.Explicit]);
+    if (explicit) {
+      song.explicit = true;
     }
 
     song.seconds = this.first(metadata[MetaField.Seconds]);
@@ -683,8 +695,7 @@ export class ScanService {
     song.replayGain = this.first(metadata[MetaField.ReplayGain]);
     song.fileSize = this.first(metadata[MetaField.FileSize]);
     song.fullyParsed = this.first(metadata[MetaField.TagFullyParsed]);
-    song.favorite = false;
-    song.explicit = false;
+    song.infoUrl = this.first(metadata[MetaField.Url]);
 
     this.processImage(song.id, metadata, MetaField.SingleImage);
     return song;

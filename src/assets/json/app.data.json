@@ -892,7 +892,7 @@
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "id3v2Reader",
         "type": "Id3v2",
-        "fields": "artist,artistSort,artistType,artistStylized,albumArtist,albumArtistSort,album,albumSort,albumType,country,ufid,title,titleSort,track,media,composer,comment,grouping,addDate,changeDate,language,mood,rating,playCount,url,syncLyrics,unSyncLyrics,live,genre,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,seconds,bitrate,frequency,vbr,replayGain,tagFullyParsed,error",
+        "fields": "artist,artistSort,artistType,artistStylized,albumArtist,albumArtistSort,album,albumSort,albumType,country,ufid,title,titleSort,track,media,composer,comment,grouping,addDate,changeDate,language,mood,rating,playCount,url,syncLyrics,unSyncLyrics,live,explicit,favorite,genre,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,seconds,bitrate,frequency,vbr,replayGain,tagFullyParsed,error",
         "customMapping": false,
         "sequence": 1,
         "disabled": false,

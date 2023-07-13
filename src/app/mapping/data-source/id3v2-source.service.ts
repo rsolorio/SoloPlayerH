@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { IDataSource, ILoadInfo } from './data-source.interface';
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
 import { FileService } from 'src/app/platform/file/file.service';
-import { IAudioInfo, IIdentifierTag, IMemoTag, IPictureExt, IPopularimeterTag } from 'src/app/platform/audio-metadata/audio-metadata.interface';
+import { IAudioInfo, IIdentifierTag, IMemoTag, IPictureExt, IPopularimeterTag, IUrlTag } from 'src/app/platform/audio-metadata/audio-metadata.interface';
 import { ITag } from 'music-metadata-browser';
-import { LogService } from 'src/app/core/services/log/log.service';
 import { MetaField } from '../data-transform/data-transform.enum';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { IImageSource } from 'src/app/core/models/core.interface';
 import { MimeType } from 'src/app/core/models/core.enum';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class Id3v2SourceService implements IDataSource {
   protected audioInfo: IAudioInfo;
   protected tags: ITag[];
 
-  constructor(private metadataService: AudioMetadataService, private fileService: FileService, private log: LogService) { }
+  constructor(private metadataService: AudioMetadataService, private fileService: FileService, private utility: UtilityService) { }
 
   public async load(info: ILoadInfo): Promise<ILoadInfo> {
     if (this.loadInfo && this.loadInfo.filePath === info.filePath) {
@@ -196,7 +196,11 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.Url:
-        return this.metadataService.getValues<string>('WXXX', this.tags);
+        const urlTags =  this.metadataService.getValues<IUrlTag>('WXXX', this.tags);
+        if (urlTags?.length && urlTags[0].url) {
+          return [urlTags[0].url];
+        }
+        break;
       case MetaField.SyncLyrics:
         if (this.audioInfo.metadata.common.lyrics) {
           return this.audioInfo.metadata.common.lyrics;
@@ -215,10 +219,32 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.Live:
-        return this.metadataService.getValues<string>('Live', this.tags, true);
+        const liveText = this.metadataService.getValue<string>('Live', this.tags, true);
+        // Only return a value if exists
+        if (liveText) {
+          return [this.utility.isTrue(liveText)];
+        }
+        break;
       case MetaField.Genre:
         if (this.audioInfo.metadata.common.genre) {
           return this.audioInfo.metadata.common.genre;
+        }
+        break;
+      case MetaField.Favorite:
+        const favoriteText = this.metadataService.getValue<string>('Favorite', this.tags, true);
+        // Only return a value if exists
+        if (favoriteText) {
+          return [this.utility.isTrue(favoriteText)];
+        }
+        break;
+      case MetaField.Explicit:
+        const advisoryText = this.metadataService.getValue<string>('iTunesAdvisory', this.tags, true);
+        if (advisoryText) {
+          return [this.utility.isTrue(advisoryText)];
+        }
+        const explicitText = this.metadataService.getValue<string>('Explicit', this.tags, true);
+        if (explicitText) {
+          return [this.utility.isTrue(explicitText)];
         }
         break;
       case MetaField.Classification:

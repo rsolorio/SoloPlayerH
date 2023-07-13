@@ -33,3 +33,8 @@ export interface IPopularimeterTag {
   email: string;
   rating: number;
 }
+
+export interface IUrlTag {
+  description: string;
+  url: string;
+}

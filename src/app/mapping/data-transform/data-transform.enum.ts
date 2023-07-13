@@ -76,9 +76,11 @@ export enum MetaField {
   SyncLyrics = 'syncLyrics',
   /** String. Id3v2 */
   UnSyncLyrics = 'unSyncLyrics',
-  /** String. Id3v2 */
+  /** Boolean. Id3v2 */
   Live = 'live',
-  /** Not implemented yet. */
+  /** Boolean. Id3v2. */
+  Favorite = 'favorite',
+  /** Boolean. Id3v2. */
   Explicit = 'explicit',
   /** IImageSource. FileInfo, Id3v2 */
   ArtistImage = 'artistImage',
