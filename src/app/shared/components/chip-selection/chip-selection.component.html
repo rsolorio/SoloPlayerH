@@ -1,12 +1,15 @@
 <div class="sp-full-height sp-full-width sp-chip-selection-container" *ngIf="model">
   <table class="sp-full-height sp-full-width">
-    <tr class="sp-chip-selection-title-row">
+    <tr class="sp-chip-selection-title-row"><td class="sp-chip-selection-title-col">
       <div class="sp-chip-selection-title">
-        <span *ngIf="model.title" class="sp-text-big">{{model.title}}</span>
-        <span *ngIf="model.subTitle" class="sp-text-big">{{model.subTitle}}</span>
+        <span *ngIf="model.title" class="sp-text-xlarge">{{model.title}}</span>
+        <ng-container *ngIf="model.subTitle">
+          <br>
+          <span class="sp-text-large">{{model.subTitle}}</span>
+        </ng-container>
       </div>
-    </tr>
-    <tr>
+    </td></tr>
+    <tr><td>
       <div class="sp-chip-selection-body sp-full-height" [ngClass]="{ 'sp-chip-container': model.displayMode === ChipDisplayMode.Flex }">
         <div
         (click)="onChipValueClick(chipValue)"
@@ -16,12 +19,12 @@
           <span class="sp-chip-text sp-text-large">{{chipValue.caption}}</span>
         </div>
       </div>
-    </tr>
-    <tr class="sp-chip-selection-toolbar-row">
+    </td></tr>
+    <tr class="sp-chip-selection-toolbar-row"><td class="sp-chip-selection-toolbar-col">
       <div class="sp-chip-selection-toolbar">
         <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">Cancel</div>
         <div (click)="onOkClick()" class="sp-chip-item sp-bg-primary sp-clickable">OK</div>
       </div>
-    </tr>
+    </td></tr>
   </table>
 </div>

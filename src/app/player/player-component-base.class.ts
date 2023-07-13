@@ -9,20 +9,20 @@ import { HtmlPlayerService } from '../shared/services/html-player/html-player.se
 import { MenuService } from '../core/services/menu/menu.service';
 import { EventsService } from '../core/services/events/events.service';
 import { AppEvent } from '../shared/models/events.enum';
-import { IEventArgs } from '../core/models/core.interface';
+import { IEventArgs, ISelectableValue } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
 import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../platform/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
-import { ValueListSelectorService } from '../value-list/value-list-selector/value-list-selector.service';
-import { IValueListSelectorModel, ValueListSelectMode } from '../value-list/value-list-selector/value-list-selector-model.interface';
 import { ValueLists } from '../shared/services/database/database.lists';
 import { ImagePreviewService } from '../related-image/image-preview/image-preview.service';
-import { RelatedImageEntity } from '../shared/entities';
+import { RelatedImageEntity, ValueListEntryEntity } from '../shared/entities';
 import { RelatedImageId } from '../shared/services/database/database.images';
 import { ImageService } from '../platform/image/image.service';
 import { PlayerOverlayMode } from './player-overlay/player-overlay.enum';
 import { DatabaseEntitiesService } from '../shared/services/database/database-entities.service';
+import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../shared/components/chip-selection/chip-selection-model.interface';
+import { ChipSelectionService } from '../shared/components/chip-selection/chip-selection.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -48,7 +48,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private dialogService: DialogService,
     private utilityService: UtilityService,
     private imagePreviewService: ImagePreviewService,
-    private valueListSelectorService: ValueListSelectorService,
+    private chipSelectionService: ChipSelectionService,
     private imageSvc: ImageService)
   {
     super();
@@ -199,28 +199,34 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public onMoodClick(song: ISongModel): void {
-    const selectedValues: string[] = [];
-    if (song.mood) {
-      selectedValues.push(song.mood);
-    }
-    const valueListModel: IValueListSelectorModel = {
-      title: 'Mood',
-      titleIcon: 'mdi-emoticon-happy-outline mdi',
-      subTitle: song.name,
-      subTitleIcon: 'mdi-music-note mdi',
-      valueListTypeId: ValueLists.Mood.id,
-      selectMode: ValueListSelectMode.Quick,
-      selectedValues: selectedValues,
-      onOk: selectedEntries => {
-        if (selectedEntries && selectedEntries.length) {
-          const newMood = selectedEntries[0].name;
-          this.databaseEntityService.setMood(song.id, newMood).then(() => {
-            song.mood = newMood;
-          });
+    ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Mood.id}).then(entries => {
+      const values = entries.map(e => {
+        const valuePair: ISelectableValue = {
+          value: e.id,
+          caption: e.name
         }
-      }
-    };
-    this.valueListSelectorService.show(valueListModel);
+        if(valuePair.caption === song.mood) {
+          valuePair.selected = true;
+        }
+        return valuePair;
+      });
+      const selectionModel: IChipSelectionModel = {
+        title: 'Mood',
+        subTitle: song.name,
+        type: ChipSelectorType.Single,
+        displayMode: ChipDisplayMode.Block,
+        values: values,
+        onOk: selectedValues => {
+          if (selectedValues && selectedValues.length) {
+            const newMood = selectedValues[0].caption;
+            this.databaseEntityService.setMood(song.id, newMood).then(() => {
+              song.mood = newMood;
+            });
+          }
+        }
+      };
+      this.chipSelectionService.showInPanel(selectionModel);
+    });
   }
 
   public onTogglePlaylist() {

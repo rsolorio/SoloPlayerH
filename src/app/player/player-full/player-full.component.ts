@@ -12,7 +12,6 @@ import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
-import { ValueListSelectorService } from 'src/app/value-list/value-list-selector/value-list-selector.service';
 import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { MusicImageSourceType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
@@ -24,6 +23,7 @@ import { ResizeObserverDirective } from 'src/app/shared/directives/resize-observ
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { EyeDropperDirective } from 'src/app/shared/directives/eye-dropper/eye-dropper.directive';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 
 @Component({
   selector: 'sp-player-full',
@@ -58,9 +58,9 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private dialog: DialogService,
     private utility: UtilityService,
     private imagePreview: ImagePreviewService,
-    private valueListService: ValueListSelectorService)
+    private chipSelection: ChipSelectionService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, imagePreview, valueListService, imageService);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, imagePreview, chipSelection, imageService);
   }
 
   public onInit(): void {

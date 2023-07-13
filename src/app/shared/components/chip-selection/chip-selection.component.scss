@@ -8,6 +8,10 @@
   height: 60px;
 }
 
+.sp-chip-selection-title-col {
+  border-bottom: 1px solid $sp-color-on-background-low;
+}
+
 .sp-chip-selection-title {
   padding: 5px;
 }
@@ -18,6 +22,10 @@
 
 .sp-chip-selection-toolbar-row {
   height: 40px;
+}
+
+.sp-chip-selection-toolbar-col {
+  border-top: 1px solid $sp-color-on-background-low;
 }
 
 .sp-chip-selection-toolbar {
