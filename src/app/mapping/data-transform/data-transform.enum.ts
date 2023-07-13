@@ -71,11 +71,14 @@ export enum MetaField {
   /** Number. Id3v2 */
   PlayCount = 'playCount',
   /** String. Id3v2 */
+  Url = 'url',
+  /** String. Id3v2 */
   SyncLyrics = 'syncLyrics',
   /** String. Id3v2 */
   UnSyncLyrics = 'unSyncLyrics',
   /** String. Id3v2 */
   Live = 'live',
+  /** Not implemented yet. */
   Explicit = 'explicit',
   /** IImageSource. FileInfo, Id3v2 */
   ArtistImage = 'artistImage',

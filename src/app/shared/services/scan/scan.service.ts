@@ -684,6 +684,7 @@ export class ScanService {
     song.fileSize = this.first(metadata[MetaField.FileSize]);
     song.fullyParsed = this.first(metadata[MetaField.TagFullyParsed]);
     song.favorite = false;
+    song.explicit = false;
 
     this.processImage(song.id, metadata, MetaField.SingleImage);
     return song;

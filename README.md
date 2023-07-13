@@ -127,6 +127,7 @@ All standard entities have three main fields:
 - grouping
   - If the song belongs to a larger category
   - ID3 mapping: TIT1 (content group description)
+  - This can be used to group tracks that belong to the same album
 - addDate
   - Full timestamp describing when the song was added to the collection
   - ID3 mapping: custom AddDate tag
@@ -186,7 +187,12 @@ All standard entities have three main fields:
   - False by default, set by the user
 - primaryAlbumId
   - The album associated with the track
-- TODO: url, explicit, coverSongId, popularity
+- infoUrl
+  - A url that refers to information about the track
+  - ID3 mapping: WXXX
+- videoUrl
+  - A url that refers to a video of the track
+- TODO: explicit, coverSongId, popularity
 
 
 ### Album table

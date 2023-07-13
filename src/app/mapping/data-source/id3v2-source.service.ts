@@ -195,6 +195,8 @@ export class Id3v2SourceService implements IDataSource {
           return [playCountPopularimeter.counter];
         }
         break;
+      case MetaField.Url:
+        return this.metadataService.getValues<string>('WXXX', this.tags);
       case MetaField.SyncLyrics:
         if (this.audioInfo.metadata.common.lyrics) {
           return this.audioInfo.metadata.common.lyrics;
