@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
@@ -8,12 +7,13 @@ import { IValuePair } from 'src/app/core/models/core.interface';
 import { CoreEvent } from 'src/app/core/services/events/events.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ChipDisplayMode, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
+import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 import { CriteriaSortDirection } from 'src/app/shared/models/criteria-base-model.interface';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
-import { CriteriaComparison, CriteriaDataType, CriteriaTransformAlgorithm, CriteriaValueEditor } from 'src/app/shared/services/criteria/criteria.enum';
+import { CriteriaComparison, CriteriaDataType, CriteriaTransformAlgorithm } from 'src/app/shared/services/criteria/criteria.enum';
 import { ICriteriaValueSelector } from 'src/app/shared/services/criteria/criteria.interface';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { DbColumn } from 'src/app/shared/services/database/database.columns';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -32,6 +32,7 @@ export class QueryEditorComponent implements OnInit {
   public transformSelector: ICriteriaValueSelector;
   constructor(
     private db: DatabaseService,
+    private entities: DatabaseEntitiesService,
     private utilities: UtilityService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
@@ -73,27 +74,40 @@ export class QueryEditorComponent implements OnInit {
       return null;
     }
     if (previousNavInfo.route === AppRoute.Songs) {
-      this.supportedSelectors = [
-        this.db.selector(DbColumn.Rating),
-        this.db.selector(DbColumn.Mood),
-        this.db.selector(DbColumn.Language),
-        this.db.selector(DbColumn.Favorite),
-        this.db.selector(DbColumn.Live),
-        this.db.selector(DbColumn.ReleaseDecade),
-        this.db.selector(DbColumn.Lyrics)
+      const columns = [
+        DbColumn.Rating,
+        DbColumn.Mood,
+        DbColumn.Language,
+        DbColumn.Favorite,
+        DbColumn.Live,
+        DbColumn.ReleaseDecade,
+        DbColumn.Lyrics
       ];
+      for (const column of columns) {
+        const selector = await this.entities.createSelector(column);
+        this.supportedSelectors.push(selector);
+      }
     }
+
+    // TODO: Sort by fields will depend on the route
+    this.sortBySelector = await this.entities.createSelector(DbColumn.SortBy);
+    this.limitSelector = await this.entities.createSelector(DbColumn.Limit);
+    // TODO: Algorithm will depend on the route
+    this.transformSelector = await this.entities.createSelector(DbColumn.TransformAlgorithm);
 
     const criteriaClone = previousNavInfo.options.criteria.clone();
     await this.updateSelectedValues(criteriaClone);
     return criteriaClone;
   }
 
+  /**
+   * It gets the values of every selector and compares against the criteria values to determine
+   * which ones are actually selected.
+   */
   private async updateSelectedValues(criteria: Criteria): Promise<void> {
     for (const selector of this.supportedSelectors) {
       const criteriaItem = criteria.userCriteria.find(item => item.columnName === selector.column.name);
       const selectedValues = criteriaItem ? criteriaItem.columnValues.map(pair => pair.value) : [];
-      selector.values = await selector.getValues();
       // Clone the values, we will update the actual criteria values once the user clicks ok (onOk).
       for (const valuePair of selector.values) {
         valuePair.selected = selectedValues.includes(valuePair.value);
@@ -101,21 +115,15 @@ export class QueryEditorComponent implements OnInit {
     }
 
     // Sort By
-    this.sortBySelector = this.db.selector(DbColumn.SortBy);
-    this.sortBySelector.values = await this.sortBySelector.getValues();
     for (const valuePair of this.sortBySelector.values) {
       const criteriaItem = criteria.sortingCriteria.find(item => item.columnName === valuePair.value);
       valuePair.selected = criteriaItem && criteriaItem.sortSequence > 0;
     }
     // Limit
-    this.limitSelector = this.db.selector(DbColumn.Limit);
-    this.limitSelector.values = await this.limitSelector.getValues();
     for (const valuePair of this.limitSelector.values) {
       valuePair.selected = valuePair.value === criteria.paging.pageSize;
     }
     // Transform
-    this.transformSelector = this.db.selector(DbColumn.TransformAlgorithm);
-    this.transformSelector.values = await this.transformSelector.getValues();
     for (const valuePair of this.transformSelector.values) {
       valuePair.selected = valuePair.value === criteria.transformAlgorithm;
     }
@@ -216,8 +224,10 @@ export class QueryEditorComponent implements OnInit {
   private async openChipSelectionPanel(selector: ICriteriaValueSelector): Promise<void> {
     await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
+      title: selector.column.caption,
       displayMode: ChipDisplayMode.Flex,
-      selector: selector,
+      type: selector.type,
+      values: selector.values,
       onOk: values => {
         let criteriaItem = this.model.userCriteria.find(item => item.columnName === selector.column.name);
         if (!criteriaItem) {
@@ -238,7 +248,7 @@ export class QueryEditorComponent implements OnInit {
 
   private doAfterCriteriaValuesUpdated(selector: ICriteriaValueSelector, criteriaItem: CriteriaItem): void {
     // Special cases by editor
-    if (selector.editor === CriteriaValueEditor.YesNo) {
+    if (selector.type === ChipSelectorType.YesNo) {
       // Special case only when yes/no is not a boolean
       if (selector.column.dataType !== CriteriaDataType.Boolean) {
         if (criteriaItem.columnValues.length) {
@@ -264,12 +274,9 @@ export class QueryEditorComponent implements OnInit {
     // Prepare the model
     const chipSelectionModel: IChipSelectionModel = {
       displayMode: ChipDisplayMode.Block,
-      selector: {
-        column: { name: 'field', caption: 'Criteria Fields', dataType: CriteriaDataType.String },
-        values: [],
-        editor: CriteriaValueEditor.Multiple,
-        getValues: null
-      },
+      title: 'Criteria Fields',
+      values: [],
+      type: ChipSelectorType.Multiple,
       onOk: values => {
         values.forEach(valuePair => {
           const selector = allSelectors.find(s => s.column.name === valuePair.value);
@@ -281,7 +288,7 @@ export class QueryEditorComponent implements OnInit {
     };
     // Send hidden selectors as available values
     allSelectors.filter(s => s.hidden).forEach(selector => {
-      chipSelectionModel.selector.values.push({ value: selector.column.name, caption: selector.column.caption });
+      chipSelectionModel.values.push({ value: selector.column.name, caption: selector.column.caption });
     });
     this.chipSelectionService.showInPanel(chipSelectionModel);
   }
@@ -293,8 +300,10 @@ export class QueryEditorComponent implements OnInit {
   private async openSortBySelectionPanel(): Promise<void> {
     await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
+      title: this.sortBySelector.column.caption,
       displayMode: ChipDisplayMode.Flex,
-      selector: this.sortBySelector,
+      type: this.sortBySelector.type,
+      values: this.sortBySelector.values,
       onOk: values => {
         // Each value corresponds to a field, so each value needs its own criteria item
         this.model.sortingCriteria = new CriteriaItems();
@@ -339,7 +348,8 @@ export class QueryEditorComponent implements OnInit {
   public onLimitEditClick(): void {
     const chipSelectionModel: IChipSelectionModel = {
       displayMode: ChipDisplayMode.Flex,
-      selector: this.limitSelector,
+      type: this.limitSelector.type,
+      values: this.limitSelector.values,
       onOk: values => {
         // Only one value should be selected
         const selectedValuePair = values[0];
@@ -359,8 +369,10 @@ export class QueryEditorComponent implements OnInit {
 
   public onAlgorithmEditClick(): void {
     const chipSelectionModel: IChipSelectionModel = {
+      title: this.transformSelector.column.caption,
       displayMode: ChipDisplayMode.Flex,
-      selector: this.transformSelector,
+      type: this.transformSelector.type,
+      values: this.transformSelector.values,
       onOk: values => {
         // Only one value should be selected
         const selectedValuePair = values[0];

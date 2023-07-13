@@ -5,11 +5,10 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ChipDisplayMode, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
+import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 import { IEntityEditorModel } from 'src/app/shared/components/entity-editor/entity-editor.interface';
 import { ArtistEntity, ValueListEntryEntity } from 'src/app/shared/entities';
-import { CriteriaValueEditor } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 
@@ -96,12 +95,8 @@ export class ArtistViewComponent implements OnInit {
     const chipSelectionModel: IChipSelectionModel = {
       title: 'Artist Type',
       displayMode: ChipDisplayMode.Block,
-      selector: {
-        column: null,
-        editor: CriteriaValueEditor.Single,
-        values: values,
-        getValues: null
-      },
+      type: ChipSelectorType.Single,
+      values: values,
       onOk: values => {
         const valuePair = values[0];
         if (valuePair.value !== this.entityEditorModel.data['artist_artistTypeId']) {
@@ -132,12 +127,8 @@ export class ArtistViewComponent implements OnInit {
     const chipSelectionModel: IChipSelectionModel = {
       title: 'Country',
       displayMode: ChipDisplayMode.Block,
-      selector: {
-        column: null,
-        editor: CriteriaValueEditor.Single,
-        values: values,
-        getValues: null
-      },
+      type: ChipSelectorType.Single,
+      values: values,
       onOk: values => {
         const valuePair = values[0];
         if (valuePair.value !== this.entityEditorModel.data['artist_countryId']) {

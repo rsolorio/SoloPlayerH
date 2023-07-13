@@ -1,7 +1,8 @@
 import { ISelectableValue } from "src/app/core/models/core.interface";
 import { IListModel } from "../../models/list-model.interface";
 import { Criteria } from "./criteria.class";
-import { CriteriaDataType, CriteriaValueEditor } from "./criteria.enum";
+import { CriteriaDataType } from "./criteria.enum";
+import { ChipSelectorType } from "../../components/chip-selection/chip-selection-model.interface";
 
 export interface IColumn {
   name: string;
@@ -29,9 +30,8 @@ export interface ICriteriaResult<T> extends IListModel<T> {
 
 export interface ICriteriaValueSelector {
   column: IColumn;
-  editor: CriteriaValueEditor;
+  type: ChipSelectorType;
   values: ISelectableValue[];
   hidden?: boolean;
   defaultValue?: any;
-  getValues: () => Promise<ISelectableValue[]>;
 }

@@ -109,9 +109,11 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             icon: 'mdi-database-export mdi',
             dataType: 'text',
             descriptions: ['Export data into a json file.'],
-            action: () => {
+            action: setting => {
+              setting.running = true;
               this.entityService.export().then(data => {
                 this.utility.downloadJson(data, 'sp-backup.json');
+                setting.running = false;
               });
             }
           },
@@ -120,12 +122,12 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             icon: 'mdi-database-remove mdi',
             dataType: 'text',
             descriptions: ['Deletes all data and recreates the database.'],
-            action: settings => {
-              settings.disabled = true;
-              settings.running = true;
+            action: setting => {
+              setting.disabled = true;
+              setting.running = true;
               this.db.purge().then(() => {
-                settings.running = false;
-                settings.disabled = false;
+                setting.running = false;
+                setting.disabled = false;
                 this.utility.reloadRoute();
               });
             }

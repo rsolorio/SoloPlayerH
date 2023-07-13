@@ -3,13 +3,19 @@ import { ArtistEntity, ModuleOptionEntity, PlayHistoryEntity, PlaylistEntity, Re
 import { ISongModel } from '../../models/song-model.interface';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
 import { IsNull, Not } from 'typeorm';
+import { ICriteriaValueSelector } from '../criteria/criteria.interface';
+import { DbColumn, databaseColumns } from './database.columns';
+import { ChipSelectorType } from '../../components/chip-selection/chip-selection-model.interface';
+import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseEntitiesService {
 
-  constructor() { }
+  constructor(private utilities: UtilityService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -154,6 +160,105 @@ export class DatabaseEntitiesService {
         colorSelection: i.colorSelection
       };
     });
+    return result;
+  }
+
+  public async getSongValues(columnName: string): Promise<ISelectableValue[]> {
+    switch(columnName) {
+      case DbColumn.Rating:
+        return [
+          { caption: '0', value: 0 },
+          { caption: '1', value: 1 },
+          { caption: '2', value: 2 },
+          { caption: '3', value: 3 },
+          { caption: '4', value: 4 },
+          { caption: '5', value: 5 }];
+      case DbColumn.Favorite:
+      case DbColumn.Live:
+      case DbColumn.Lyrics:
+        return [{ caption: 'Yes', value: true }, { caption: 'No', value: false }];
+    }
+    const results = await SongEntity
+      .getRepository()
+      .createQueryBuilder('song')
+      .select(columnName)
+      .distinct(true)
+      .getRawMany();
+    const items = results.map(result => {
+      const item: ISelectableValue = {
+        caption: result[columnName],
+        value: result[columnName]
+      };
+      return item;
+    });
+    return this.utilities.sort(items, 'caption');
+  }
+
+  public async createSelector(columnName: string): Promise<ICriteriaValueSelector> {
+    // Create a default yes/no selector
+    const result: ICriteriaValueSelector = {
+      column: databaseColumns[columnName],
+      type: ChipSelectorType.YesNo,
+      values: [
+        { caption: 'Yes', value: true },
+        { caption: 'No', value: false }
+      ]
+    };
+    switch (columnName) {
+      case DbColumn.Rating:
+        result.type = ChipSelectorType.Multiple;
+        result.values = [
+          { caption: '0', value: 0 },
+          { caption: '1', value: 1 },
+          { caption: '2', value: 2 },
+          { caption: '3', value: 3 },
+          { caption: '4', value: 4 },
+          { caption: '5', value: 5 }
+        ];
+        break;
+      case DbColumn.Mood:
+      case DbColumn.Language:
+      case DbColumn.ReleaseDecade:
+        result.type = ChipSelectorType.Multiple;
+        result.values = await this.getSongValues(columnName);
+        break;
+      case DbColumn.SortBy:
+        result.type = ChipSelectorType.Multiple;
+        result.values = [
+          { caption: databaseColumns[DbColumn.TrackNumber].caption, value: DbColumn.TrackNumber },
+          { caption: databaseColumns[DbColumn.MediaNumber].caption, value: DbColumn.MediaNumber },
+          { caption: databaseColumns[DbColumn.Title].caption, value: DbColumn.Title },
+          { caption: databaseColumns[DbColumn.TitleSort].caption, value: DbColumn.TitleSort },
+          { caption: databaseColumns[DbColumn.Rating].caption, value: DbColumn.Rating },
+          { caption: databaseColumns[DbColumn.PlayCount].caption, value: DbColumn.PlayCount },
+          { caption: databaseColumns[DbColumn.Seconds].caption, value: DbColumn.Seconds },
+          { caption: databaseColumns[DbColumn.AlbumName].caption, value: DbColumn.AlbumName },
+          { caption: databaseColumns[DbColumn.AlbumArtistName].caption, value: DbColumn.AlbumArtistName },
+          { caption: databaseColumns[DbColumn.AddDate].caption, value: DbColumn.AddDate }
+        ];
+        break;
+      case DbColumn.Limit:
+        result.type = ChipSelectorType.Single;
+        result.defaultValue = 0;
+        result.values = [
+          { caption: 'None', value: 0 },
+          { caption: '100', value: 100 },
+          { caption: '200', value: 200 },
+          { caption: '300', value: 300 },
+          { caption: '500', value: 500 },
+          { caption: '1,000', value: 1000 },
+        ];
+        break;
+      case DbColumn.TransformAlgorithm:
+        result.type = ChipSelectorType.Single;
+        result.defaultValue = CriteriaTransformAlgorithm.None;
+        result.values = [
+          { caption: 'None', value: CriteriaTransformAlgorithm.None },
+          { caption: 'Alternate Artist', value: CriteriaTransformAlgorithm.AlternateArtist },
+          { caption: 'Alternate Language', value: CriteriaTransformAlgorithm.AlternateLanguage }
+        ];
+        break;
+    }
     return result;
   }
 }

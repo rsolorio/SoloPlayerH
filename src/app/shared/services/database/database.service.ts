@@ -39,18 +39,15 @@ import {
   PartyRelationEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
-import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { databaseColumns, DbColumn } from './database.columns';
-import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { databaseColumns } from './database.columns';
 import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
-import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm, CriteriaValueEditor } from '../criteria/criteria.enum';
-import { IComparison, ICriteriaValueSelector } from '../criteria/criteria.interface';
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection } from '../criteria/criteria.enum';
+import { IComparison } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
 import { AppEvent } from '../../models/events.enum';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
-import { ISongModel } from '../../models/song-model.interface';
 import { HttpClient } from '@angular/common/http';
 import { ComposerViewEntity } from '../../entities/composer-view.entity';
 import { DatabaseLookupService } from './database-lookup.service';
@@ -79,7 +76,6 @@ interface IBulkInfo {
 })
 export class DatabaseService {
   private dataSource: DataSource;
-  private valueSelectors: { [columnName: string]: ICriteriaValueSelector } = { };
   private comparisons: { [id: number]: IComparison} = { };
   /**
    * Maximum number of parameters in a single statement for SqlLite.
@@ -95,7 +91,6 @@ export class DatabaseService {
     private transformService: ListTransformService,
     private http: HttpClient)
   {
-    this.setValueSelectors();
     this.setComparisons();
   }
 
@@ -484,174 +479,6 @@ export class DatabaseService {
       queryBuilder.take(limit);
     }
     return queryBuilder;
-  }
-
-  public async getSongValues(columnName: string): Promise<ISelectableValue[]> {
-    switch(columnName) {
-      case DbColumn.Rating:
-        return [
-          { caption: '0', value: 0 },
-          { caption: '1', value: 1 },
-          { caption: '2', value: 2 },
-          { caption: '3', value: 3 },
-          { caption: '4', value: 4 },
-          { caption: '5', value: 5 }];
-      case DbColumn.Favorite:
-      case DbColumn.Live:
-      case DbColumn.Lyrics:
-        return [{ caption: 'Yes', value: true }, { caption: 'No', value: false }];
-    }
-    const results = await this.dataSource
-      .getRepository(SongEntity)
-      .createQueryBuilder('song')
-      .select(columnName)
-      .distinct(true)
-      .getRawMany();
-    const items = results.map(result => {
-      const item: ISelectableValue = {
-        caption: result[columnName],
-        value: result[columnName]
-      };
-      return item;
-    });
-    return this.utilities.sort(items, 'caption');
-  }
-
-  public selector(columnName: string): ICriteriaValueSelector {
-    return this.valueSelectors[columnName];
-  }
-
-  private setValueSelectors(): void {
-    this.valueSelectors[DbColumn.Rating] = {
-      column: databaseColumns[DbColumn.Rating],
-      editor: CriteriaValueEditor.Multiple,
-      getValues: () => {
-        return Promise.resolve([
-          { caption: '0', value: 0 },
-          { caption: '1', value: 1 },
-          { caption: '2', value: 2 },
-          { caption: '3', value: 3 },
-          { caption: '4', value: 4 },
-          { caption: '5', value: 5 }
-        ]);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.Mood] = {
-      column: databaseColumns[DbColumn.Mood],
-      editor: CriteriaValueEditor.Multiple,
-      getValues: () => {
-        return this.getSongValues(DbColumn.Mood);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.Language] = {
-      column: databaseColumns[DbColumn.Language],
-      editor: CriteriaValueEditor.Multiple,
-      getValues: () => {
-        return this.getSongValues(DbColumn.Language);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.Favorite] = {
-      column: databaseColumns[DbColumn.Favorite],
-      editor: CriteriaValueEditor.YesNo,
-      getValues: () => {
-        return Promise.resolve([
-          { caption: 'Yes', value: true },
-          { caption: 'No', value: false }
-        ]);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.Live] = {
-      column: databaseColumns[DbColumn.Live],
-      editor: CriteriaValueEditor.YesNo,
-      getValues: () => {
-        return Promise.resolve([
-          { caption: 'Yes', value: true },
-          { caption: 'No', value: false }
-        ]);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.ReleaseDecade] = {
-      column: databaseColumns[DbColumn.ReleaseDecade],
-      editor: CriteriaValueEditor.Multiple,
-      getValues: () => {
-        return this.getSongValues(DbColumn.ReleaseDecade);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.Lyrics] = {
-      column: databaseColumns[DbColumn.Lyrics],
-      editor: CriteriaValueEditor.YesNo,
-      getValues: () => {
-        return Promise.resolve([
-          { caption: 'Yes', value: true },
-          { caption: 'No', value: false }
-        ]);
-      },
-      values: [],
-    };
-
-    // Fake sort by column
-    this.valueSelectors[DbColumn.SortBy] = {
-      column: databaseColumns[DbColumn.SortBy],
-      editor: CriteriaValueEditor.Multiple,
-      getValues: () => {
-        return Promise.resolve([
-          { caption: databaseColumns[DbColumn.TrackNumber].caption, value: DbColumn.TrackNumber },
-          { caption: databaseColumns[DbColumn.MediaNumber].caption, value: DbColumn.MediaNumber },
-          { caption: databaseColumns[DbColumn.Title].caption, value: DbColumn.Title },
-          { caption: databaseColumns[DbColumn.TitleSort].caption, value: DbColumn.TitleSort },
-          { caption: databaseColumns[DbColumn.Rating].caption, value: DbColumn.Rating },
-          { caption: databaseColumns[DbColumn.PlayCount].caption, value: DbColumn.PlayCount },
-          { caption: databaseColumns[DbColumn.Seconds].caption, value: DbColumn.Seconds },
-          { caption: databaseColumns[DbColumn.AlbumName].caption, value: DbColumn.AlbumName },
-          { caption: databaseColumns[DbColumn.AlbumArtistName].caption, value: DbColumn.AlbumArtistName },
-          { caption: databaseColumns[DbColumn.AddDate].caption, value: DbColumn.AddDate }
-        ]);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.Limit] = {
-      column: databaseColumns[DbColumn.Limit],
-      editor: CriteriaValueEditor.Single,
-      defaultValue: 0,
-      getValues: () => {
-        return Promise.resolve([
-          { caption: 'None', value: 0 },
-          { caption: '100', value: 100 },
-          { caption: '200', value: 200 },
-          { caption: '300', value: 300 },
-          { caption: '500', value: 500 },
-          { caption: '1,000', value: 1000 },
-        ]);
-      },
-      values: [],
-    };
-
-    this.valueSelectors[DbColumn.TransformAlgorithm] = {
-      column: databaseColumns[DbColumn.TransformAlgorithm],
-      editor: CriteriaValueEditor.Single,
-      defaultValue: CriteriaTransformAlgorithm.None,
-      getValues: () => {
-        return Promise.resolve([
-          { caption: 'None', value: CriteriaTransformAlgorithm.None },
-          { caption: 'Alternate Artist', value: CriteriaTransformAlgorithm.AlternateArtist },
-          { caption: 'Alternate Language', value: CriteriaTransformAlgorithm.AlternateLanguage }
-        ]);
-      },
-      values: [],
-    };
   }
 
   public comparison(criteriaComparison: CriteriaComparison): IComparison {
