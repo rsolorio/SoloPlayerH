@@ -11,6 +11,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 })
 export class ChipSelectionComponent implements OnInit {
   public ChipDisplayMode = ChipDisplayMode;
+  public ChipSelectorType = ChipSelectorType;
   /** Model of the component. It will be set by the service. */
   public model: IChipSelectionModel;
 
@@ -20,7 +21,9 @@ export class ChipSelectionComponent implements OnInit {
   }
 
   onChipValueClick(chipValue: ISelectableValue): void {
-    if (this.model.type === ChipSelectorType.Single || this.model.type === ChipSelectorType.YesNo) {
+    if (this.model.type === ChipSelectorType.Single ||
+      this.model.type === ChipSelectorType.YesNo ||
+      this.model.type === ChipSelectorType.Quick) {
       // In this mode, we only allow to select (but not to un-select)
       if (!chipValue.selected) {
         // Select item
@@ -30,6 +33,11 @@ export class ChipSelectionComponent implements OnInit {
           if (valuePair.value !== chipValue.value) {
             valuePair.selected = false;
           }
+        }
+        
+        // Confirm immediately
+        if (this.model.type === ChipSelectorType.Quick) {
+          this.onOkClick();
         }
       }
     }

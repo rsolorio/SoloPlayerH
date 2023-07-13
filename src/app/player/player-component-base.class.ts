@@ -213,7 +213,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       const selectionModel: IChipSelectionModel = {
         title: 'Mood',
         subTitle: song.name,
-        type: ChipSelectorType.Single,
+        type: ChipSelectorType.Quick,
         displayMode: ChipDisplayMode.Block,
         values: values,
         onOk: selectedValues => {

@@ -18,7 +18,12 @@ export enum ChipDisplayMode {
 }
 
 export enum ChipSelectorType {
+  /** Allows to select multiple values and then click Ok to confirm. */
   Multiple,
+  /** Allows to select only one value and then click Ok to confirm. This mode does not allow to unselect. */
   Single,
-  YesNo
+  /** Allows to select only one value between Yes and No and then click Ok to confirm. This mode does not allow to unselect. */
+  YesNo,
+  /** Allows to select only one value without clicking Ok; the panel will close as soon as the value is selected. */
+  Quick
 }

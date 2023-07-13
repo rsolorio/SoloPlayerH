@@ -16,6 +16,7 @@ The breadcrumbs are displayed as you navigate in the following entities: Classif
 Each list view supports quick filters which allow you to filter by the most common fields.
 
 ### Playlist Support
+The application has the ability to import playlists from these file types:
 - PLS
 - M3U
 
@@ -29,12 +30,13 @@ Each list view supports quick filters which allow you to filter by the most comm
 - Multiple artists (multiple tags)
 - Multiple covers
 - Language
+- Mood
 
 ### Tag Mapping
 You can configure how the tag information is retrieved and where it will be stored.
 
 ### Album Art Color Palette
-The application gets a list of dominant colors for each album art, and you can customize the player view for each individual album art.
+The application gets a list of dominant colors for each album art, and you can customize the colors of player view for each individual album art.
 
 ### Playlists and Filters
 A playlist is a static list of tracks selected by the user. A playlist and its selected tracks are saved in the database. The content of a playlist never changes unless the user adds/removes tracks.
@@ -44,8 +46,8 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 ### And More...
 - 0-5 rating mechanism
 - Favorites
-- Mood
-- Language
+- Custom classifications
+- Artist/Song associations
 
 ## Menu
 - Home
@@ -80,11 +82,19 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 ## Icons
 
 ## Database schema
-
-### Song table
+All standard entities have three main fields:
 - id
   - unique identifier
   - automatically created
+- name
+  - a human readable text that represents the entity
+- hash
+  - a value that makes the record unique amongst all its siblings and used to find/compare records
+  - do not confuse this value with the id; the hash is not globally unique
+
+### Song table
+- id
+- hash
 - name
   - the title of the song
   - ID3 mapping: title
