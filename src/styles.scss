@@ -607,6 +607,7 @@ input[type="text"], input[type="search"], textarea {
 .sp-chip-container {
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
 }
 
 .sp-chip-item {

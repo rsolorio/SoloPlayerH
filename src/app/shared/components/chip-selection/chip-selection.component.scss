@@ -12,6 +12,10 @@
   padding: 5px;
 }
 
+.sp-chip-selection-body {
+  overflow-y: auto;
+}
+
 .sp-chip-selection-toolbar-row {
   height: 40px;
 }
@@ -19,5 +23,4 @@
 .sp-chip-selection-toolbar {
   display: flex;
   justify-content: flex-end;
-  padding: 10px;
 }
