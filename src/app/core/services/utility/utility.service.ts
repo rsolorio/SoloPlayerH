@@ -566,6 +566,13 @@ export class UtilityService {
     document.body.removeChild(a);
   }
 
+  public downloadJson(obj: any, fileName: string): void {
+    const objText = JSON.stringify(obj);
+    const blob = new Blob([objText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    this.downloadUrl(url, fileName);
+  }
+
   public async shareImage(dataUrl: string): Promise<void> {
     const fetchResponse = await fetch(dataUrl);
     const blob = await fetchResponse.blob();

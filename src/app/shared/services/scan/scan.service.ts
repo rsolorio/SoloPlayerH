@@ -693,13 +693,12 @@ export class ScanService {
     const image = this.first(metadata[field]) as IImageSource;
 
     if (image && image.sourcePath) {
-      const existingImage = this.lookupService.findImage(relatedId, image, this.existingImages);
+      const existingImage = this.lookupService.findImage(image, this.existingImages);
 
       if (!existingImage) {
         const newImage = new RelatedImageEntity();
         newImage.id = this.utilities.newGuid();
-        // TODO: determine rules to create the proper hash
-        newImage.hash = newImage.id;
+        newImage.hash = this.lookupService.hashImage(image.sourcePath, image.sourceIndex);
         newImage.name = this.getImageName(metadata, image.imageType as MusicImageType);
         newImage.relatedId = relatedId;
         newImage.sourcePath = image.sourcePath;

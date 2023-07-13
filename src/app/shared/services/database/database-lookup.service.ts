@@ -11,9 +11,12 @@ export class DatabaseLookupService {
 
   constructor() { }
 
-  public hashValues(values: string[]): string {
+  public hashValues(values: string[], ignoreCase: boolean = true): string {
     const hashSeparator = '|';
-    const value = values.join(hashSeparator);
+    let value = values.join(hashSeparator);
+    if (ignoreCase) {
+      value = value.toLowerCase();
+    }
     // Defaults to sha1 with hex encoding
     return objectHash(value);
   }
@@ -26,7 +29,7 @@ export class DatabaseLookupService {
 
   // ARTIST
   public hashArtist(name: string): string {
-    return this.hashValues([name.toLowerCase()]);
+    return this.hashValues([name]);
   }
 
   public findArtist(name: string, items: ArtistEntity[]): ArtistEntity {
@@ -40,7 +43,7 @@ export class DatabaseLookupService {
 
   // ALBUM
   public hashAlbum(name: string, releaseYear: number): string {
-    return this.hashValues([name.toLowerCase(), releaseYear.toString()]);
+    return this.hashValues([name, releaseYear.toString()]);
   }
 
   public findAlbum(name: string, releaseYear: number, primaryArtistId: string, items: AlbumEntity[]): AlbumEntity {
@@ -54,7 +57,7 @@ export class DatabaseLookupService {
 
   // SONG
   public hashSong(filePath: string): string {
-    return this.hashValues([filePath.toLowerCase()]);
+    return this.hashValues([filePath]);
   }
 
   public findSong(filePath: string, items: SongEntity[]): SongEntity {
@@ -68,7 +71,7 @@ export class DatabaseLookupService {
 
   // PLAYLIST
   public hashPlaylist(name: string): string {
-    return this.hashValues([name.toLowerCase()]);
+    return this.hashValues([name]);
   }
 
   public findPlaylist(name: string, items: PlaylistEntity[]): PlaylistEntity {
@@ -82,7 +85,7 @@ export class DatabaseLookupService {
 
   // MODULE OPTION
   public hashModuleOption(name: string): string {
-    return this.hashValues([name.toLowerCase()]);
+    return this.hashValues([name]);
   }
 
   public findModuleOption(name: string, items: ModuleOptionEntity[]): ModuleOptionEntity {
@@ -96,7 +99,7 @@ export class DatabaseLookupService {
 
   // VALUE LIST ENTRY
   public hashValueListEntry(name: string): string {
-    return this.hashValues([name.toLowerCase()]);
+    return this.hashValues([name]);
   }
 
   public findValueListEntry(name: string, valueListTypeId: string, items: ValueListEntryEntity[]): ValueListEntryEntity {
@@ -121,11 +124,15 @@ export class DatabaseLookupService {
   }
 
   // RELATED IMAGE
-  public findImage(relatedId: string, imageSource: IImageSource, items: RelatedImageEntity[]): RelatedImageEntity {
-    return items.find(i =>
-      i.relatedId === relatedId &&
-      i.sourceType === imageSource.sourceType &&
-      i.sourceIndex === imageSource.sourceIndex &&
-      i.sourcePath === imageSource.sourcePath);
+  public hashImage(sourcePath: string, sourceIndex: number): string {
+    // This method does not use the relatedId or the sourceType fields to perform
+    // the search since a particular sourcePath and sourceIndex will always be associated
+    // only with one relatedId and it will always have the same sourceType.
+    return this.hashValues([sourcePath, sourceIndex.toString()]);
+  }
+
+  public findImage(imageSource: IImageSource, items: RelatedImageEntity[]): RelatedImageEntity {
+    const hash = this.hashImage(imageSource.sourcePath, imageSource.sourceIndex);
+    return items.find(i => i.hash === hash);
   }
 }

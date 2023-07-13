@@ -109,7 +109,11 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             icon: 'mdi-database-export mdi',
             dataType: 'text',
             descriptions: ['Export data into a json file.'],
-            action: () => {}
+            action: () => {
+              this.entityService.export().then(data => {
+                this.utility.downloadJson(data, 'sp-backup.json');
+              });
+            }
           },
           {
             name: 'Purge Database',

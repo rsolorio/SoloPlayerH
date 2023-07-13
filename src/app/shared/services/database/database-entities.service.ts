@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ArtistEntity, ModuleOptionEntity, PlayHistoryEntity, PlaylistEntity, SongEntity } from '../../entities';
+import { ArtistEntity, ModuleOptionEntity, PlayHistoryEntity, PlaylistEntity, RelatedImageEntity, SongEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
+import { IsNull, Not } from 'typeorm';
 
 @Injectable({
   providedIn: 'root'
@@ -142,5 +143,17 @@ export class DatabaseEntitiesService {
       .where('artist.id = :artistId')
       .setParameter('artistId', artistId)
       .getRawOne();
+  }
+
+  public async export(): Promise<any> {
+    const result: any = {};
+    const images = await RelatedImageEntity.findBy({ colorSelection: Not(IsNull()) });
+    result['relatedImage'] = images.map(i => {
+      return {
+        hash: i.hash,
+        colorSelection: i.colorSelection
+      };
+    });
+    return result;
   }
 }
