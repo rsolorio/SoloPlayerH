@@ -15,13 +15,25 @@
     <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-color-yellow sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
     <span class="sp-main-text sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.name}}</span>
     <span *ngIf="songAttributesVisible" class="sp-text-medium">
+      <!-- 
+        Icon / Color
+        320 / Pink
+        Vbr / Purple
+        Lyrics / BlueLight
+        Live / Green
+        Rating / Orange
+        Favorite / Red
+        Recent / Blue
+        Explicit / Yellow
+       -->
       <i *ngIf="item.bitrate === 320000" class=" mdi-waveform mdi sp-title-icon sp-color-320" [title]="SongBadge.Kbps320"></i>
       <i *ngIf="item.vbr" class=" mdi-waveform mdi sp-title-icon sp-color-vbr" [title]="SongBadge.Vbr"></i>
       <i *ngIf="item.lyrics" class="mdi-script-text-outline mdi sp-title-icon sp-color-lyric" [title]="SongBadge.Lyrics"></i>
       <i *ngIf="item.live" class="mdi-broadcast mdi sp-title-icon sp-color-success" [title]="SongBadge.Live"></i>
       <i *ngIf="item.rating === 5" class="mdi-star-outline mdi sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
       <i *ngIf="item.favorite" class="mdi-heart-outline mdi sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
-      <i *ngIf="item.recentPlayIcon" class="mdi-timer-play-outline mdi sp-color-yellow sp-title-icon" [ngClass]="item.recentPlayIcon.styleClass" [title]="item.recentPlayIcon.tooltip"></i>
+      <i *ngIf="item.recentPlayIcon" class="mdi-timer-play-outline mdi sp-title-icon sp-color-info" [ngClass]="item.recentPlayIcon.styleClass" [title]="item.recentPlayIcon.tooltip"></i>
+      <i *ngIf="item.explicit" class="mdi-message-alert-outline mdi sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
     </span>
     <br>
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">

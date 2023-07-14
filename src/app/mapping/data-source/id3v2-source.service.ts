@@ -92,6 +92,7 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.AlbumArtistSort:
+        // TSOP
         if (this.audioInfo.metadata.common.albumartistsort) {
           return [this.audioInfo.metadata.common.albumartistsort];
         }
@@ -102,6 +103,7 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.AlbumSort:
+        // TSOA
         if (this.audioInfo.metadata.common.albumsort) {
           return [this.audioInfo.metadata.common.albumsort];
         }
@@ -127,6 +129,7 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.TitleSort:
+        // TSOT
         if (this.audioInfo.metadata.common.titlesort) {
           return [this.audioInfo.metadata.common.titlesort];
         }

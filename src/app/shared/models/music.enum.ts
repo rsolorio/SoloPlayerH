@@ -4,7 +4,8 @@ export enum SongBadge {
   Vbr = 'VBR',
   Live = 'LIVE',
   Favorite = 'FAVORITE',
-  TopRated = 'TOP RATED'
+  TopRated = 'TOP RATED',
+  Explicit = 'EXPLICIT'
 }
 
 /**

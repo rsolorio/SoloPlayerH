@@ -3,6 +3,10 @@ import { IAlbumModel } from './album-model.interface';
 import { IListItemModel } from './base-model.interface';
 import { PlayerSongStatus } from './player.enum';
 
+/**
+ * This interface defines the fields needed for the views that return song records
+ * like: songView, songClassificationView, songArtistView
+ */
 export interface ISongModel extends IListItemModel {
   filePath: string;
   fileSize: number;
@@ -11,6 +15,7 @@ export interface ISongModel extends IListItemModel {
   genre: string;
   favorite: boolean;
   live: boolean;
+  explicit: boolean;
   bitrate: number;
   vbr: boolean;
   frequency: number;
