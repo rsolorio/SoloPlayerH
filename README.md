@@ -130,11 +130,11 @@ All standard entities have three main fields:
   - This can be used to group tracks that belong to the same album
 - addDate
   - Full timestamp describing when the song was added to the collection
-  - ID3 mapping: custom AddDate tag
+  - ID3 mapping: custom TXXX:AddDate
   - Fallback: file creation date
 - changeDate
   - Full timestamp describing when the song's metadata or information was updated
-  - ID3 mapping: custom ChangeDate tag
+  - ID3 mapping: custom TXXX:ChangeDate
   - Fallback: file modification date
 - replaceDate
   - Full timestamp describing when the song's file or audio signature changed meaning that the file was replaced by a different one.
@@ -181,10 +181,16 @@ All standard entities have three main fields:
   - Not used in the app, only for research purposes
 - favorite
   - Flag that indicates if this is a favorite audio
-  - False by default, set by user
+  - ID3 mapping: custom TXXX:Favorite
+  - It can be set the by user
 - live
   - Flag that indicates if this track is a live performance
-  - False by default, set by the user
+  - ID3 mapping: custom TXXX:Live
+  - It can be set the by user
+- explicit
+  - Flag that indicates if the song has explicit content
+  - ID3 mapping: iTunesAdvisory or TXXX:Explicit
+  - It can be set the by user
 - primaryAlbumId
   - The album associated with the track
 - infoUrl
@@ -192,7 +198,7 @@ All standard entities have three main fields:
   - ID3 mapping: WXXX
 - videoUrl
   - A url that refers to a video of the track
-- TODO: explicit, coverSongId, popularity
+- TODO: coverSongId, popularity
 
 
 ### Album table

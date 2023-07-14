@@ -66,7 +66,22 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.ArtistSort:
-        return this.metadataService.getValues<string>('TSOP', this.tags);
+        // The library that I use to write tags (taglib-sharp) supports an array of strings
+        // for this tag; however, the audio metadata library only supports one string.
+        // What's happening here is that the array is being converted to a single string
+        // with the items separated by unicode null character: \u0000.
+        // For now we only case about multiple artists, that's why we don't need to do the same
+        // for album artist sort, album sort, title sort.
+        // Here's the process to parse that value.
+        const result: string[] = [];
+        const artistSorts = this.metadataService.getValues<string>('TSOP', this.tags);
+        for (const artistSort of artistSorts) {
+          const sorts = artistSort.split('\u0000');
+          for (const sort of sorts) {
+            result.push(sort);
+          }
+        }
+        return result;
       case MetaField.ArtistType:
         return this.metadataService.getValues<string>('ArtistType', this.tags, true);
       case MetaField.ArtistStylized:

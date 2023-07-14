@@ -464,7 +464,7 @@ export class ScanService {
     const artistType = this.first(metadata[MetaField.ArtistType]);
     const country = this.first(metadata[MetaField.Country]);
     const artistStylized = this.first(metadata[MetaField.ArtistStylized]);
-    const artistSort = this.first(metadata[MetaField.ArtistSort]);
+    const artistSort = this.first(metadata[MetaField.AlbumArtistSort]);
 
     const newArtist = new ArtistEntity();
     newArtist.name = artistName;
