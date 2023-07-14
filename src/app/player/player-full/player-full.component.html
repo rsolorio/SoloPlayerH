@@ -80,6 +80,7 @@
   <tr class="sp-tr-song-info">
     <td colspan="3" class="sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
+      <i *ngIf="song.explicit" class="mdi-alpha-e-box-outline mdi sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <i class="mdi-music mdi sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-xlarge sp-text-bold"
