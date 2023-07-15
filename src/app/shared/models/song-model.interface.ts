@@ -16,6 +16,7 @@ export interface ISongModel extends IListItemModel {
   favorite: boolean;
   live: boolean;
   explicit: boolean;
+  performers: number;
   bitrate: number;
   vbr: boolean;
   frequency: number;

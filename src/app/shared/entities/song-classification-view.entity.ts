@@ -5,7 +5,7 @@ import { SongBaseEntity } from './song-base.entity';
 /**
  * This view combines the song entity with the songClassification entity.
  * Fields: id, name, hash, filePath, playCount, releaseYear, releaseDecade,
- * trackNumber, mediaNumber, seconds, favorite, live, explicit, rating, mood, language,
+ * trackNumber, mediaNumber, seconds, favorite, live, explicit, performers, rating, mood, language,
  * lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized,
  * titleSort, primaryAlbumId, primaryArtistId, classificationId
  */
@@ -15,7 +15,7 @@ import { SongBaseEntity } from './song-base.entity';
   SELECT song.id, song.name, song.hash, song.filePath, song.fileSize,
   song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.titleSort,
   song.seconds, song.duration, song.bitrate, song.vbr, song.frequency,
-  song.favorite, song.live, song.explicit, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
+  song.favorite, song.live, song.explicit, song.performers, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
   album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.primaryAlbumId, album.primaryArtistId, songClassification.classificationId
   FROM song
   INNER JOIN album
@@ -67,6 +67,8 @@ export class SongClassificationViewEntity extends SongBaseEntity implements ISon
   live: boolean;
   @ViewColumn()
   explicit: boolean;
+  @ViewColumn()
+  performers: number;
   @ViewColumn()
   rating: number;
   @ViewColumn()

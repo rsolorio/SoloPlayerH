@@ -48,6 +48,8 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - Favorites
 - Custom classifications
 - Artist/Song associations
+  - Featuring artists
+  - Contributors
 
 ## Menu
 - Home
@@ -191,6 +193,10 @@ All standard entities have three main fields:
   - Flag that indicates if the song has explicit content
   - ID3 mapping: iTunesAdvisory or TXXX:Explicit
   - It can be set the by user
+- performers
+  - Number of artists performing the song
+  - ID3 mapping: custom TXXX:Performers
+  - If not present it will automatically calculated based on featuring artists
 - primaryAlbumId
   - The album associated with the track
 - infoUrl

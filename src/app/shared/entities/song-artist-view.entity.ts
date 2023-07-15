@@ -10,7 +10,7 @@ import { SongBaseEntity } from './song-base.entity';
  * However, it cannot be used with multiple artists since it will not return unique song rows
  * since the artistId column is part of the query and it causes the song rows to be duplicated;
  * for instance, if two artists are associated with one song, you will get two song rows.
- * Fields: id, name, hash, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, live, explicit,
+ * Fields: id, name, hash, filePath, playCount, releaseYear, trackNumber, mediaNumber, seconds, favorite, live, explicit, performers,
  * rating, mood, language, lyrics, primaryAlbumName, primaryArtistName, primaryArtistStylized,
  * titleSort, primaryAlbumId, primaryArtistId, artistId
  * TODO: use standard typeorm syntax to create query, example: PlaylistSongViewEntity
@@ -21,7 +21,7 @@ import { SongBaseEntity } from './song-base.entity';
   SELECT song.id, song.name, song.hash, song.filePath, song.fileSize,
   song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.titleSort,
   song.seconds, song.duration, song.bitrate, song.vbr, song.frequency,
-  song.favorite, song.live, song.explicit, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
+  song.favorite, song.live, song.explicit, song.performers, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
   album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.primaryAlbumId, album.primaryArtistId,
   partyRelation.relatedId AS artistId
   FROM song
@@ -81,6 +81,8 @@ export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
   live: boolean;
   @ViewColumn()
   explicit: boolean;
+  @ViewColumn()
+  performers: number;
   @ViewColumn()
   rating: number;
   @ViewColumn()

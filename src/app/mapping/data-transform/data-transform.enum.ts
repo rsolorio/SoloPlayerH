@@ -82,6 +82,8 @@ export enum MetaField {
   Favorite = 'favorite',
   /** Boolean. Id3v2. */
   Explicit = 'explicit',
+  /** Number. Id3v2. */
+  Performers = 'performers',
   /** IImageSource. FileInfo, Id3v2 */
   ArtistImage = 'artistImage',
   /** IImageSource. FileInfo, Id3v2 */

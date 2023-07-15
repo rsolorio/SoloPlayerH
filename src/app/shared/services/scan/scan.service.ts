@@ -697,6 +697,14 @@ export class ScanService {
       song.explicit = true;
     }
 
+    // Let's start with zero but this cannot be the final value, it should be at least 1
+    // If this value is not found here, the processArtistRelations will figure it out
+    song.performers = 0;
+    const performers = this.first(metadata[MetaField.Performers]);
+    if (performers) {
+      song.performers = performers;
+    }
+
     song.seconds = this.first(metadata[MetaField.Seconds]);
     if (!song.seconds) {
       song.seconds = 0;
@@ -971,6 +979,7 @@ export class ScanService {
     this.existingPartyRelations.push(mainArtistRelation);
 
     // Featuring
+    let featuringCount = 0;
     for (const artist of artists) {
       // Do not include the primary artist as featuring artist
       if (artist.name !== primaryArtist.name) {
@@ -980,6 +989,20 @@ export class ScanService {
         partyRelation.songId = this.songToProcess.id;
         partyRelation.relationTypeId = PartyRelationType.Featuring;
         this.existingPartyRelations.push(partyRelation);
+        featuringCount++;
+      }
+    }
+    if (!this.songToProcess.performers) {
+      if (featuringCount) {
+        this.songToProcess.performers = featuringCount;
+        // Also take the primary artist in consideration, except for Various which is not an actual artist
+        if (primaryArtist.id !== EntityId.ArtistVarious) {
+          this.songToProcess.performers++;
+        }
+      }
+      else {
+        // Default
+        this.songToProcess.performers = 1;
       }
     }
 

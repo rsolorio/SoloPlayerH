@@ -72,6 +72,8 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   @Column()
   explicit: boolean;
   @Column()
+  performers: number;
+  @Column()
   primaryAlbumId: string;
   @Column({ nullable: true })
   infoUrl: string;

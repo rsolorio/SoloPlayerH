@@ -83,9 +83,10 @@ export class Id3v2SourceService implements IDataSource {
         }
         return result;
       case MetaField.ArtistType:
-        return this.metadataService.getValues<string>('ArtistType', this.tags, true);
+      case MetaField.AlbumType:
       case MetaField.ArtistStylized:
-        return this.metadataService.getValues<string>('ArtistStylized', this.tags, true);
+      case MetaField.Country:
+        return this.metadataService.getValues<string>(propertyName, this.tags, true);
       case MetaField.AlbumArtist:
         if (this.audioInfo.metadata.common.albumartist) {
           return [this.audioInfo.metadata.common.albumartist];
@@ -108,15 +109,11 @@ export class Id3v2SourceService implements IDataSource {
           return [this.audioInfo.metadata.common.albumsort];
         }
         break;
-      case MetaField.AlbumType:
-        return this.metadataService.getValues<string>('AlbumType', this.tags, true);
       case MetaField.Year:
         if (this.audioInfo.metadata.common.year) {
           return [this.audioInfo.metadata.common.year];
         }
         break;
-      case MetaField.Country:
-        return this.metadataService.getValues<string>('Country', this.tags, true);
       case MetaField.UfId:
         const id = this.metadataService.getValue<IIdentifierTag>('UFID', this.tags);
         if (id) {
@@ -165,15 +162,10 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.AddDate:
-        const addDates = this.metadataService.getValues<string>('AddDate', this.tags, true);
-        if (addDates?.length) {
-          return addDates.map(d => new Date(d));
-        }
-        break;
       case MetaField.ChangeDate:
-        const changeDates = this.metadataService.getValues<string>('ChangeDate', this.tags, true);
-        if (changeDates?.length) {
-          return changeDates.map(d => new Date(d));
+        const dates = this.metadataService.getValues<string>(propertyName, this.tags, true);
+        if (dates?.length) {
+          return dates.map(d => new Date(d));
         }
         break;
       case MetaField.Language:
@@ -204,13 +196,22 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.PlayCount:
-        const playCounts = this.metadataService.getValues<number>('PCNT', this.tags);
-        if (playCounts.length) {
-          return playCounts;
+        const playCount = this.metadataService.getValue<number>('PCNT', this.tags);
+        if (playCount) {
+          return [playCount];
         }
         const playCountPopularimeter = this.metadataService.getValue<IPopularimeterTag>('POPM', this.tags);
         if (playCountPopularimeter && playCountPopularimeter.counter) {
           return [playCountPopularimeter.counter];
+        }
+        break;
+      case MetaField.Performers:
+        const performersText = this.metadataService.getValue<string>(propertyName, this.tags, true);
+        if (performersText) {
+          const performers = parseInt(performersText, 10);
+          if (performers > 0) {
+            return [performers];
+          }
         }
         break;
       case MetaField.Url:
@@ -237,10 +238,11 @@ export class Id3v2SourceService implements IDataSource {
         }
         break;
       case MetaField.Live:
-        const liveText = this.metadataService.getValue<string>('Live', this.tags, true);
+      case MetaField.Favorite:
+        const booleanText = this.metadataService.getValue<string>(propertyName, this.tags, true);
         // Only return a value if exists
-        if (liveText) {
-          return [this.utility.isTrue(liveText)];
+        if (booleanText) {
+          return [this.utility.isTrue(booleanText)];
         }
         break;
       case MetaField.Genre:
@@ -248,19 +250,12 @@ export class Id3v2SourceService implements IDataSource {
           return this.audioInfo.metadata.common.genre;
         }
         break;
-      case MetaField.Favorite:
-        const favoriteText = this.metadataService.getValue<string>('Favorite', this.tags, true);
-        // Only return a value if exists
-        if (favoriteText) {
-          return [this.utility.isTrue(favoriteText)];
-        }
-        break;
       case MetaField.Explicit:
         const advisoryText = this.metadataService.getValue<string>('iTunesAdvisory', this.tags, true);
         if (advisoryText) {
           return [this.utility.isTrue(advisoryText)];
         }
-        const explicitText = this.metadataService.getValue<string>('Explicit', this.tags, true);
+        const explicitText = this.metadataService.getValue<string>(propertyName, this.tags, true);
         if (explicitText) {
           return [this.utility.isTrue(explicitText)];
         }

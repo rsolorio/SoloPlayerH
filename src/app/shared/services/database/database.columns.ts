@@ -20,6 +20,7 @@ export enum DbColumn {
   Favorite = 'favorite',
   Live = 'live',
   Explicit = 'explicit',
+  Performers = 'performers',
   ReleaseYear = 'releaseYear',
   ReleaseDecade = 'releaseDecade',
   Lyrics = 'lyrics',
@@ -51,6 +52,7 @@ databaseColumns[DbColumn.Language] = { name: DbColumn.Language, caption: 'Langua
 databaseColumns[DbColumn.Live] = { name: DbColumn.Live, caption: 'Live', icon: 'mdi-broadcast mdi', dataType: CriteriaDataType.Boolean };
 databaseColumns[DbColumn.Favorite] = { name: DbColumn.Favorite, caption: 'Favorite', icon: 'mdi-heart-outline mdi', dataType: CriteriaDataType.Boolean };
 databaseColumns[DbColumn.Explicit] = { name: DbColumn.Explicit, caption: 'Explicit', icon: 'mdi-message-alert-outline mdi', dataType: CriteriaDataType.Boolean };
+databaseColumns[DbColumn.Performers] = { name: DbColumn.Performers, caption: 'Performers', icon: 'mdi-account-multiple mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.ReleaseYear] = { name: DbColumn.ReleaseYear, caption: 'Year', icon: 'mdi-calendar-blank-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Decade', icon: 'mdi-calendar-blank-outline mdi', dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.Lyrics] = { name: DbColumn.Lyrics, caption: 'Lyrics', icon: 'mdi-script-text-outline mdi', dataType: CriteriaDataType.String };
