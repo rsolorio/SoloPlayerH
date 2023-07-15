@@ -1,10 +1,14 @@
 export interface IEntityEditorModel {
   data: any;
-  fields: IEntityFieldModel[];
+  groups: IEntityGroupModel[];
 }
 
 export interface IEntityFieldModel {
   propertyName: string;
   icon: string;
   onEdit?: (field: IEntityFieldModel) => void;
+}
+
+export interface IEntityGroupModel {
+  fields: IEntityFieldModel[];
 }

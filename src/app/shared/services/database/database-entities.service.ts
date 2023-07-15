@@ -151,6 +151,19 @@ export class DatabaseEntitiesService {
       .getRawOne();
   }
 
+  public getSongDetails(songId: string): Promise<any> {
+    return SongEntity
+      .getRepository()
+      .createQueryBuilder('song')
+      .innerJoin('album', 'album', 'song.primaryAlbumId = album.id')
+      .innerJoin('artist', 'artist', 'album.primaryArtistId = artist.id')
+      .addSelect('album.name', 'primaryAlbumName')
+      .addSelect('artist.name', 'primaryArtistName')
+      .where('song.id = :songId')
+      .setParameter('songId', songId)
+      .getRawOne();
+  }
+
   public async export(): Promise<any> {
     const result: any = {};
     const images = await RelatedImageEntity.findBy({ colorSelection: Not(IsNull()) });

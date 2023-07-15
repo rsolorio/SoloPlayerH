@@ -10,12 +10,13 @@ import { SongListComponent } from './song-list/song-list.component';
 import { PlaylistListComponent } from './playlist-list/playlist-list.component';
 import { FileService } from '../platform/file/file.service';
 import { FileElectronService } from '../platform/file/file-electron.service';
-import { FileCordovaService } from '../platform/file/file-cordova.service';
 import { ListTransformService } from '../shared/services/list-transform/list-transform.service';
 import { SongValidatorFactory } from './transform-validators/song-validator-factory';
 import { ValueListModule } from '../value-list/value-list.module';
 import { ArtistViewComponent } from './artist-view/artist-view.component';
 import { RouterModule } from '@angular/router';
+import { SongViewComponent } from './song-view/song-view.component';
+import { FileCordovaService } from '../platform/file/file-cordova.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { RouterModule } from '@angular/router';
     ClassificationListComponent,
     SongListComponent,
     PlaylistListComponent,
-    ArtistViewComponent
+    ArtistViewComponent,
+    SongViewComponent
   ],
   imports: [
     CommonModule,
@@ -35,6 +37,9 @@ import { RouterModule } from '@angular/router';
     RouterModule.forChild([
       {
         path: 'artists/:id', component: ArtistViewComponent
+      },
+      {
+        path: 'songs/:id', component: SongViewComponent
       }
     ])
   ],

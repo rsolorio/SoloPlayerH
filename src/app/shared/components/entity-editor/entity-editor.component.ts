@@ -11,7 +11,7 @@ export class EntityEditorComponent implements OnInit {
 
   @Input() public model: IEntityEditorModel = {
     data: null,
-    fields: []
+    groups: []
   };
 
   ngOnInit(): void {

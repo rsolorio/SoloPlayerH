@@ -1,5 +1,7 @@
-<div *ngFor="let field of model.fields" class="sp-input-group">
-  <span class="sp-input-prepend sp-text-large"><i [ngClass]="field.icon"></i></span>
-  <input type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" readonly>
-  <span *ngIf="field.onEdit" (click)="field.onEdit(field)" class="sp-input-edit sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
+<div *ngFor="let group of model.groups" class="sp-field-group">
+  <div *ngFor="let field of group.fields" class="sp-input-group">
+    <span class="sp-input-prepend sp-text-large"><i [ngClass]="field.icon"></i></span>
+    <input type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" readonly>
+    <span *ngIf="field.onEdit" (click)="field.onEdit(field)" class="sp-input-edit sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
+  </div>
 </div>

@@ -63,7 +63,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         action: param => {
           const song = param as ISongModel;
           if (song) {
-            this.navigation.forward(AppRoute.Songs, { queryParams: [song.id] });
+            this.navigation.forward(AppRoute.Songs, { routeParams: [song.id] });
           }
         }
       },

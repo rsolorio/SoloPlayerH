@@ -45,20 +45,32 @@ export class ArtistViewComponent implements OnInit {
     const data = await this.entityService.getArtistDetails(artistId);
     this.entityEditorModel = {
       data: data,
-      fields: [
+      groups: [
         {
-          propertyName: 'artist_name',
-          icon: 'mdi-account mdi'
+          fields: [
+            {
+              propertyName: 'artist_name',
+              icon: 'mdi-account mdi'
+            }
+          ]
         },
         {
-          propertyName: 'artistType',
-          icon: 'mdi-account-multiple-outline mdi',
-          onEdit: () => this.editArtistType()
+          fields: [
+            {
+              propertyName: 'artistType',
+              icon: 'mdi-account-multiple-outline mdi',
+              onEdit: () => this.editArtistType()
+            }
+          ]
         },
         {
-          propertyName: 'country',
-          icon: 'mdi-earth mdi',
-          onEdit: () => this.editCountry()
+          fields: [
+            {
+              propertyName: 'country',
+              icon: 'mdi-earth mdi',
+              onEdit: () => this.editCountry()
+            }
+          ]
         }
       ]
     };    
