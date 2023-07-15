@@ -90,25 +90,27 @@
       class="sp-text-medium sp-play-count"
       [ngStyle]="palette.secondary.cssColor">&nbsp;{{song.playCount}}</span>
       <br>
-      <!-- Artist Name -->
-      <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
-      <span
-      class="sp-text-large"
-      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
-      <ng-container *ngIf="contributors">
+      <!-- Artists -->
+      <ng-container *ngIf="song.primaryArtistId !== EntityId.ArtistVarious">
+        <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
+        <span
+        class="sp-text-large"
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
+      </ng-container>
+      <ng-container *ngIf="song.primaryArtistId === EntityId.ArtistVarious && !contributors">
+        <i class="mdi-account-group mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
+        <span
+        class="sp-text-large"
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
+      </ng-container>
+      <ng-container *ngIf="song.primaryArtistId !== EntityId.ArtistVarious && contributors">
         <span>&nbsp;&nbsp;</span>
+      </ng-container>
+      <ng-container *ngIf="contributors">
         <i class="mdi-account-multiple mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{contributors}}</span>
-      </ng-container>
-      <!-- Artist Type -->
-      <ng-container *ngIf="song.artistType">
-        <span>&nbsp;&nbsp;</span>
-        <i class="mdi-microphone mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
-        <span
-        class="sp-text-large"
-        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistType}}</span>
       </ng-container>
       <br>
       <!-- Album -->

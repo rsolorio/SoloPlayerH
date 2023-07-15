@@ -24,6 +24,7 @@ import { BucketPalette } from 'src/app/shared/services/color-utility/color-utili
 import { EyeDropperDirective } from 'src/app/shared/directives/eye-dropper/eye-dropper.directive';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
+import { EntityId } from 'src/app/shared/services/database/database.seed';
 
 @Component({
   selector: 'sp-player-full',
@@ -37,6 +38,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
+  public EntityId = EntityId;
   public palette: IFullColorPalette;
   public imageSize: ISize = { height: 0, width: 0 };
   public isLoadingPalette = false;
