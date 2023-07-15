@@ -19,3 +19,7 @@ export enum RelatedImageSrc {
   /** Default image at 100x100. */
   DefaultSmall = '../assets/img/default-image-small.jpg'
 }
+
+export enum EntityId {
+  ArtistVarious = '85904485-14b3-4d3c-a5ef-f9277e38c480'
+}

@@ -1,7 +1,7 @@
 import { IEventArgs } from "src/app/core/models/core.interface";
 import { EventsService } from "src/app/core/services/events/events.service";
 import { UtilityService } from "src/app/core/services/utility/utility.service";
-import { RelatedImageSrc } from "../services/database/database.images";
+import { RelatedImageSrc } from "../services/database/database.seed";
 import { IDbModel } from "./base-model.interface";
 import { AppEvent } from "./events.enum";
 import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";

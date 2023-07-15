@@ -1,5 +1,16 @@
 {
   "tables": {
+    "artist": [
+      {
+        "id": "85904485-14b3-4d3c-a5ef-f9277e38c480",
+        "name": "Various",
+        "artistTypeId": "9f0b9c29-5d9b-4086-897a-1b69fc243afc",
+        "countryId": "77aad7f2-044e-4fb1-aed8-65cde38077a4",
+        "favorite": false,
+        "artistSort": "Various",
+        "artistStylized": "Various"
+      }
+    ],
     "moduleOption": [
       {
         "name": "ScanMusicFolderPath",

@@ -28,7 +28,7 @@ import { IImage } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { IPlayerStatusChangedEventArgs } from 'src/app/shared/models/player.interface';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
-import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
+import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { PlayerListModel } from 'src/app/shared/models/player-list-model.class';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 

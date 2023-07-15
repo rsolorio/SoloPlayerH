@@ -16,7 +16,7 @@ import { AlbumListBroadcastService } from './album-list-broadcast.service';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { IImage } from 'src/app/core/models/core.interface';
-import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
+import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 
 @Component({

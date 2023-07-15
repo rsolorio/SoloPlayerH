@@ -10,7 +10,7 @@ import { PlaylistListBroadcastService } from './playlist-list-broadcast.service'
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { IImage } from 'src/app/core/models/core.interface';
-import { RelatedImageSrc } from 'src/app/shared/services/database/database.images';
+import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 

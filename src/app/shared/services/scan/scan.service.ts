@@ -35,6 +35,7 @@ import { ISyncInfo } from './scan.interface';
 import { PartyRelationType } from '../../models/music.enum';
 import { DatabaseLookupService } from '../database/database-lookup.service';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
+import { EntityId } from '../database/database.seed';
 
 export enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -60,7 +61,8 @@ export class ScanService {
   private scanMode: ScanFileMode;
   private songToProcess: SongEntity;
   private options: ModuleOptionEntity[];
-  private genreSplitSymbols: string[];
+  private genreSplitSymbols: string[] = [];
+  private artistSplitSymbols: string[] = [];
 
   private existingArtists: ArtistEntity[];
   private existingAlbums: AlbumEntity[];
@@ -129,6 +131,10 @@ export class ScanService {
     const genreSplitOption = this.lookupService.findModuleOption(ModuleOptionName.GenreSplitCharacters, this.options);
     if (genreSplitOption) {
       this.genreSplitSymbols = this.entityService.getOptionArrayValue(genreSplitOption);
+    }
+    const artistSplitOption = this.lookupService.findModuleOption(ModuleOptionName.ArtistSplitCharacters, this.options);
+    if (artistSplitOption) {
+      this.artistSplitSymbols = this.entityService.getOptionArrayValue(artistSplitOption);
     }
 
     // Prepare reader, clarify that classification types will be handled as dynamic fields
@@ -312,7 +318,7 @@ export class ScanService {
     const primaryArtist = this.processAlbumArtist(metadata);
 
     // MULTIPLE ARTISTS
-    const artists = this.processArtists(metadata, []);
+    const artists = this.processArtists(metadata, this.artistSplitSymbols);
 
     // PRIMARY ALBUM
     // Hack for SoloSoft: ignore 1900
@@ -581,6 +587,14 @@ export class ScanService {
     if (!song.name) {
       song.name = this.first(metadata[MetaField.FileName]);
     }
+    // Clean file name from brackets
+    // TODO: use a module option to perform this action
+    const brackets = this.utilities.matchBrackets(song.name);
+    if (brackets && brackets.length) {
+      for (const bracket of brackets) {
+        song.name = song.name.replace(bracket, '').trim();
+      }
+    }
 
     song.primaryAlbum = album;
     song.primaryAlbumId = album.id;
@@ -794,8 +808,8 @@ export class ScanService {
       else {
         const newArtist = this.createArtist(artistName, artistSort);
         // First, add the artist as it is
-        this.existingArtists.push(newArtist);
-        result.push(newArtist);
+        //this.existingArtists.push(newArtist);
+        //result.push(newArtist);
 
         // Second, perform split if specified
         if (splitSymbols && splitSymbols.length) {
@@ -1185,15 +1199,6 @@ export class ScanService {
       return;
     }
     const albumIdsToDelete = albumsToDelete.map(album => album.id);
-    const artistIdsToAnalyze = albumsToDelete
-      .map(album => album.primaryArtistId)
-      // Remove duplicates
-      .reduce((previousValue, currentItem) => {
-        if (!previousValue.includes(currentItem)) {
-          previousValue.push(currentItem);
-        }
-        return previousValue;
-      }, []);
     // DELETE ASSOCIATED ALBUM RECORDS
     // 09. PartyRelation
     await PartyRelationEntity.delete({ relatedId: In(albumIdsToDelete)});
@@ -1203,6 +1208,22 @@ export class ScanService {
     // 11. Albums
     await AlbumEntity.delete({ id: In(albumIdsToDelete) });
     // 12. Determine artists to be deleted (with no albums and no songs)
+    const artistIdsToAnalyze = albumsToDelete
+      .map(album => album.primaryArtistId)
+      // Remove duplicates
+      .reduce((previousValue, currentItem) => {
+        if (!previousValue.includes(currentItem)) {
+          previousValue.push(currentItem);
+        }
+        return previousValue;
+      }, [] as string[]);
+    // Ignore Various from the delete process
+    let indexToRemove = artistIdsToAnalyze.indexOf(EntityId.ArtistVarious);
+    while (indexToRemove >= 0) {
+      artistIdsToAnalyze.splice(indexToRemove, 1);
+      indexToRemove = artistIdsToAnalyze.indexOf(EntityId.ArtistVarious);
+    }
+
     const artistsWithNoSongs = await ArtistViewEntity.findBy({ id: In(artistIdsToAnalyze), songCount: 0 });
     if (!artistsWithNoSongs.length) {
       return;

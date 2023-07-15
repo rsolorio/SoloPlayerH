@@ -1,7 +1,7 @@
 import { BaseEntity, PrimaryColumn, Column } from 'typeorm';
 import { IDbModel, IListItemModel } from '../models/base-model.interface';
 import { ITransitionImageModel } from 'src/app/related-image/transition-image/transition-image-model.interface';
-import { RelatedImageSrc } from '../services/database/database.images';
+import { RelatedImageSrc } from '../services/database/database.seed';
 
 export class DbEntity extends BaseEntity implements IDbModel {
   @PrimaryColumn({ comment: 'Unique identifier.' })

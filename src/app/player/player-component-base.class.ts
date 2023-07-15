@@ -16,13 +16,15 @@ import { DialogService } from '../platform/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
 import { ValueLists } from '../shared/services/database/database.lists';
 import { ImagePreviewService } from '../related-image/image-preview/image-preview.service';
-import { RelatedImageEntity, ValueListEntryEntity } from '../shared/entities';
-import { RelatedImageId } from '../shared/services/database/database.images';
+import { ArtistEntity, PartyRelationEntity, RelatedImageEntity, ValueListEntryEntity } from '../shared/entities';
+import { RelatedImageId } from '../shared/services/database/database.seed';
 import { ImageService } from '../platform/image/image.service';
 import { PlayerOverlayMode } from './player-overlay/player-overlay.enum';
 import { DatabaseEntitiesService } from '../shared/services/database/database-entities.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from '../shared/components/chip-selection/chip-selection.service';
+import { PartyRelationType } from '../shared/models/music.enum';
+import { In } from 'typeorm';
 
 /**
  * Base component for any implementation of the player modes.
@@ -38,6 +40,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public PlayMode = PlayMode;
   public images: RelatedImageEntity[] = [];
   public selectedImageIndex = -1;
+  public contributors: string;
 
   constructor(
     private playerServiceBase: HtmlPlayerService,
@@ -112,7 +115,19 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
    */
   protected async setupAssociatedData(song: ISongModel): Promise<void> {
     if (this.playerOverlayServiceBase.getState().mode === PlayerOverlayMode.Full) {
+      await this.setupContributors(song.id);
       await this.setupImages(song);
+    }
+  }
+
+  protected async setupContributors(songId: string): Promise<void> {
+    this.contributors = null;
+    const relations = await PartyRelationEntity.findBy({ songId: songId, relationTypeId: PartyRelationType.Featuring });
+    if (relations.length) {
+      const artists = await ArtistEntity.findBy({ id: In(relations.map(r => r.relatedId ))});
+      if (artists.length) {
+        this.contributors = artists.map(a => a.artistStylized).join(', ');
+      }
     }
   }
 
