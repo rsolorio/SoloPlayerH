@@ -2,6 +2,7 @@ export interface ISetting {
   name: string;
   dataType: string;
   descriptions: string[];
+  descriptionsLargeSize?: string[];
   dynamicText?: string;
   warningText?: string;
   errorText?: string;

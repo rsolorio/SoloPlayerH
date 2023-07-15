@@ -98,9 +98,10 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
             name: 'Statistics',
             icon: 'mdi-chart-bar mdi',
             dataType: 'text',
-            descriptions: [
-              `Tracks: <span class="sp-color-primary">${songCount}</span>`,
-              `Playlists: <span class="sp-color-primary">${playlistCount}</span>`,
+            descriptions: [],
+            descriptionsLargeSize: [
+              `Tracks: <span class="sp-color-primary sp-font-family-digital">${songCount}</span>`,
+              `Playlists: <span class="sp-color-primary sp-font-family-digital">${playlistCount}</span>`,
               `Playing time: <span class="sp-color-primary sp-font-family-digital">${hours}</span>`
             ]
           },
