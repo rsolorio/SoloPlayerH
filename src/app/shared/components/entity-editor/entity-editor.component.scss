@@ -9,16 +9,19 @@
 }
 
 .sp-input-group {
+  // Allows to place the edit icon properly
   position: relative;
+  // This is the container property so its children can use flex
   display: flex;
-  flex-grow: 1;
+  // These are flex item properties since its parent is also a flex container
+  flex-grow: 1; // All with the same size
+  flex-basis: 0; // When set to 0 all elements have the same starting point to calculate size, ending with the same size
 }
 
-.sp-input-prepend {
+.sp-input-prepend-icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
   height: 34px;
   min-width: 34px;
   // Blends the right margin of this element with the left margin of the input
@@ -27,6 +30,22 @@
   border-radius: 0.25rem;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+.sp-input-prepend-label {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  height: 34px;
+  // Blends the right margin of this element with the left margin of the input
+  margin-right: -1px;
+  border: 1px solid $sp-color-on-background-low;
+  border-radius: 0.25rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  white-space: nowrap;
 }
 
 .sp-input-control {

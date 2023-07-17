@@ -45,7 +45,8 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_name',
-              icon: 'mdi-music mdi'
+              icon: 'mdi-music mdi',
+              label: 'Title'
             }
           ]
         },
@@ -53,7 +54,8 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'primaryArtistName',
-              icon: 'mdi-account-music mdi'
+              icon: 'mdi-account-music mdi',
+              label: 'Artist'
             }
           ]
         },
@@ -61,7 +63,8 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'primaryAlbumName',
-              icon: 'mdi-album mdi'
+              icon: 'mdi-album mdi',
+              label: 'Album'
             }
           ]
         },
@@ -70,11 +73,13 @@ export class SongViewComponent implements OnInit {
             {
               propertyName: 'song_trackNumber',
               icon: 'mdi-pound mdi',
+              label: 'Track',
               onEdit: () => {}
             },
             {
               propertyName: 'song_duration',
-              icon: 'mdi-clock-outline mdi'
+              icon: 'mdi-clock-outline mdi',
+              label: 'Duration'
             }
           ]
         },
@@ -82,11 +87,13 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_releaseYear',
-              icon: 'mdi-calendar-blank mdi'
+              icon: 'mdi-calendar-blank mdi',
+              label: 'Year'
             },
             {
               propertyName: 'song_genre',
               icon: 'mdi-tag mdi',
+              label: 'Genre',
               onEdit: () => {}
             }
           ]
@@ -96,11 +103,13 @@ export class SongViewComponent implements OnInit {
             {
               propertyName: 'song_language',
               icon: 'mdi-translate mdi',
+              label: 'Language',
               onEdit: () => {}
             },
             {
               propertyName: 'song_mood',
               icon: 'mdi-emoticon mdi',
+              label: 'Mood',
               onEdit: () => {}
             }
           ]
@@ -109,11 +118,13 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_playCount',
-              icon: 'mdi-play mdi'
+              icon: 'mdi-play mdi',
+              label: 'Play Count'
             },
             {
               propertyName: 'song_addDate',
-              icon: 'mdi-calendar-plus mdi'
+              icon: 'mdi-calendar-plus mdi',
+              label: 'Add Date'
             }
           ]
         }

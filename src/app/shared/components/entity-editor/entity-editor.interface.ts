@@ -6,6 +6,8 @@ export interface IEntityEditorModel {
 export interface IEntityFieldModel {
   propertyName: string;
   icon: string;
+  label: string;
+  labelVisible?: boolean;
   onEdit?: (field: IEntityFieldModel) => void;
 }
 

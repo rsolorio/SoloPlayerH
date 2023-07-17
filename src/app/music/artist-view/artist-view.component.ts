@@ -50,7 +50,8 @@ export class ArtistViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'artist_name',
-              icon: 'mdi-account mdi'
+              icon: 'mdi-account mdi',
+              label: 'Name'
             }
           ]
         },
@@ -59,6 +60,7 @@ export class ArtistViewComponent implements OnInit {
             {
               propertyName: 'artistType',
               icon: 'mdi-account-multiple-outline mdi',
+              label: 'Type',
               onEdit: () => this.editArtistType()
             }
           ]
@@ -68,6 +70,7 @@ export class ArtistViewComponent implements OnInit {
             {
               propertyName: 'country',
               icon: 'mdi-earth mdi',
+              label: 'Country',
               onEdit: () => this.editCountry()
             }
           ]

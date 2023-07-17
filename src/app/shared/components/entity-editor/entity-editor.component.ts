@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IEntityEditorModel } from './entity-editor.interface';
+import { IEntityEditorModel, IEntityFieldModel } from './entity-editor.interface';
 
 @Component({
   selector: 'sp-entity-editor',
@@ -15,6 +15,10 @@ export class EntityEditorComponent implements OnInit {
   };
 
   ngOnInit(): void {
+  }
+
+  public onPrependClick(field: IEntityFieldModel): void {
+    field.labelVisible = !field.labelVisible;
   }
 
 }
