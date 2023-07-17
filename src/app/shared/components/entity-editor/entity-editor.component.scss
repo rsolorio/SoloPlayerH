@@ -59,8 +59,26 @@
   border-bottom-left-radius: 0;
 }
 
+.sp-input-control-editable {
+  padding-right: 35px;
+}
+
 .sp-input-edit {
   position: absolute;
   right: 12px;
   top: 4px;
+}
+
+.sp-input-badge {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  border-radius: 50%;
+  height: 17px;
+  width: 17px;
+  line-height: 17px;
+  text-align: center;
+  // Inverted colors
+  color: $sp-color-background;
+  background-color: $sp-color-on-background;
 }

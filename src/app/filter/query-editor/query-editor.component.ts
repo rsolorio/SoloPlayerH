@@ -276,7 +276,7 @@ export class QueryEditorComponent implements OnInit {
       displayMode: ChipDisplayMode.Block,
       title: 'Criteria Fields',
       values: [],
-      type: ChipSelectorType.Multiple,
+      type: ChipSelectorType.MultipleOk,
       onOk: values => {
         values.forEach(valuePair => {
           const selector = allSelectors.find(s => s.column.name === valuePair.value);

@@ -22,9 +22,16 @@
     </td></tr>
     <tr class="sp-chip-selection-toolbar-row"><td class="sp-chip-selection-toolbar-col">
       <div class="sp-chip-selection-toolbar">
-        <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">Cancel</div>
+        <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">
+          <span *ngIf="model.type !== ChipSelectorType.Multiple">Cancel</span>
+          <span *ngIf="model.type === ChipSelectorType.Multiple">Close</span>
+        </div>
         <!-- Display the Ok button only when the type is not Quick -->
-        <div *ngIf="model.type !== ChipSelectorType.Quick" (click)="onOkClick()" class="sp-chip-item sp-bg-primary sp-clickable">OK</div>
+        <div
+        *ngIf="model.type !== ChipSelectorType.Quick && model.type !== ChipSelectorType.Multiple"
+        (click)="onOkClick()"
+        class="sp-chip-item sp-bg-primary sp-clickable"
+        >OK</div>
       </div>
     </td></tr>
   </table>

@@ -21,7 +21,7 @@ export class ChipSelectionComponent implements OnInit {
   }
 
   onChipValueClick(chipValue: ISelectableValue): void {
-    if (this.model.type === ChipSelectorType.Single ||
+    if (this.model.type === ChipSelectorType.SingleOk ||
       this.model.type === ChipSelectorType.YesNo ||
       this.model.type === ChipSelectorType.Quick) {
       // In this mode, we only allow to select (but not to un-select)
@@ -33,6 +33,9 @@ export class ChipSelectionComponent implements OnInit {
           if (valuePair.value !== chipValue.value) {
             valuePair.selected = false;
           }
+        }
+        if (this.model.onValueSelectionChanged) {
+          this.model.onValueSelectionChanged(chipValue);
         }
         
         // Confirm immediately
@@ -58,6 +61,9 @@ export class ChipSelectionComponent implements OnInit {
       // Fix sequence in selected values
       for (let valueIndex = 0; valueIndex < selectedValues.length; valueIndex++) {
         selectedValues[valueIndex].sequence = valueIndex + 1;
+      }
+      if (this.model.onValueSelectionChanged) {
+        this.model.onValueSelectionChanged(chipValue);
       }
     }
   }

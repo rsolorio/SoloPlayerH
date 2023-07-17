@@ -110,7 +110,7 @@ export class ArtistViewComponent implements OnInit {
     const chipSelectionModel: IChipSelectionModel = {
       title: 'Artist Type',
       displayMode: ChipDisplayMode.Block,
-      type: ChipSelectorType.Single,
+      type: ChipSelectorType.SingleOk,
       values: values,
       onOk: values => {
         const valuePair = values[0];
@@ -142,7 +142,7 @@ export class ArtistViewComponent implements OnInit {
     const chipSelectionModel: IChipSelectionModel = {
       title: 'Country',
       displayMode: ChipDisplayMode.Block,
-      type: ChipSelectorType.Single,
+      type: ChipSelectorType.SingleOk,
       values: values,
       onOk: values => {
         const valuePair = values[0];

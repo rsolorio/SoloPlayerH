@@ -3,7 +3,7 @@
   *ngFor="let menuItem of sidebarMenuModel.items"
   [ngClass]="{ 'sp-bg-primary-variant': menuItem.active, 'disabled': menuItem.disabled }"
   (click)="runMenuAction(menuItem)"
-  class="sp-list-group-item sp-text-large">
+  class="sp-list-group-item sp-text-xlarge">
     <i [ngClass]="menuItem.icon"></i>
     <span>&nbsp;&nbsp;</span><span>{{menuItem.caption}}</span>
     <i *ngIf="menuItem.isNew" class="mdi mdi-vanish-quarter mdi-rotate-90 sp-sidebar-menu-notification"></i>

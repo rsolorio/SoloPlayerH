@@ -10,7 +10,8 @@
     class="sp-input-prepend-label sp-text-large sp-clickable"
     (click)="onPrependClick(field)"
     >{{field.label}}</span>
-    <input type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" readonly>
+    <input type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>
     <span *ngIf="field.onEdit" (click)="field.onEdit(field)" class="sp-input-edit sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
+    <span *ngIf="field.badge" class="sp-input-badge sp-text-small">{{field.badge}}</span>
   </div>
 </div>

@@ -8,6 +8,7 @@ export interface IEntityFieldModel {
   icon: string;
   label: string;
   labelVisible?: boolean;
+  badge?: string;
   onEdit?: (field: IEntityFieldModel) => void;
 }
 

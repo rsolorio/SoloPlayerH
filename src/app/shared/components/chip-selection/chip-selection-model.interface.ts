@@ -6,6 +6,7 @@ export interface IChipSelectionModel {
   type: ChipSelectorType;
   values: ISelectableValue[];
   displayMode: ChipDisplayMode;
+  onValueSelectionChanged?: (valuePair: ISelectableValue) => void;
   onCancel?: () => void;
   onOk: (values: ISelectableValue[]) => void;
 }
@@ -18,12 +19,14 @@ export enum ChipDisplayMode {
 }
 
 export enum ChipSelectorType {
-  /** Allows to select multiple values and then click Ok to confirm. */
+  /** Allows to select multiple values; the change takes effect as soon as the value is selected/unselected.  */
   Multiple,
-  /** Allows to select only one value and then click Ok to confirm. This mode does not allow to unselect. */
-  Single,
-  /** Allows to select only one value between Yes and No and then click Ok to confirm. This mode does not allow to unselect. */
+  /** Allows to select multiple values; the change takes effect when the Ok button is clicked. */
+  MultipleOk,
+  /** Allows to select only one value; the change takes effect when the OK button is clicked. This mode does not allow to unselect. */
+  SingleOk,
+  /** Allows to select only one value between Yes and No; the value takes effect when the Ok button is clicked. This mode does not allow to unselect. */
   YesNo,
-  /** Allows to select only one value without clicking Ok; the panel will close as soon as the value is selected. */
+  /** Allows to select only one value; the change takes effect (and the panel will close) when the value is selected. */
   Quick
 }

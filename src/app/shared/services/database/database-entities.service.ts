@@ -219,7 +219,7 @@ export class DatabaseEntitiesService {
     };
     switch (columnName) {
       case DbColumn.Rating:
-        result.type = ChipSelectorType.Multiple;
+        result.type = ChipSelectorType.MultipleOk;
         result.values = [
           { caption: '0', value: 0 },
           { caption: '1', value: 1 },
@@ -232,11 +232,11 @@ export class DatabaseEntitiesService {
       case DbColumn.Mood:
       case DbColumn.Language:
       case DbColumn.ReleaseDecade:
-        result.type = ChipSelectorType.Multiple;
+        result.type = ChipSelectorType.MultipleOk;
         result.values = await this.getSongValues(columnName);
         break;
       case DbColumn.SortBy:
-        result.type = ChipSelectorType.Multiple;
+        result.type = ChipSelectorType.MultipleOk;
         result.values = [
           { caption: databaseColumns[DbColumn.TrackNumber].caption, value: DbColumn.TrackNumber },
           { caption: databaseColumns[DbColumn.MediaNumber].caption, value: DbColumn.MediaNumber },
@@ -251,7 +251,7 @@ export class DatabaseEntitiesService {
         ];
         break;
       case DbColumn.Limit:
-        result.type = ChipSelectorType.Single;
+        result.type = ChipSelectorType.SingleOk;
         result.defaultValue = 0;
         result.values = [
           { caption: 'None', value: 0 },
@@ -263,7 +263,7 @@ export class DatabaseEntitiesService {
         ];
         break;
       case DbColumn.TransformAlgorithm:
-        result.type = ChipSelectorType.Single;
+        result.type = ChipSelectorType.SingleOk;
         result.defaultValue = CriteriaTransformAlgorithm.None;
         result.values = [
           { caption: 'None', value: CriteriaTransformAlgorithm.None },

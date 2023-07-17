@@ -253,6 +253,7 @@ All standard entities have three main fields:
 - songId
 - classificationId
 - primary
+  - CONCEPT. A flag that identifies this classification as the primary for the given song and classification type. This flag is not currently being used in the app.
 
 ### PlayHistory table
 - songId
