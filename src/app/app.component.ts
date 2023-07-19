@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
 
   public ngOnInit(): void {
     this.utilities.setAppVersion('0.0.1');
-    this.log.setLevel(LogLevel.Verbose);
+    this.log.level = LogLevel.Verbose;
     this.watchRouteChange();
     this.log.info('Feature info initialized.', this.featureService.get());
 

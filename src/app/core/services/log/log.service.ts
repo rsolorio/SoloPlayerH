@@ -10,7 +10,7 @@ export class LogService {
 
   private entries: ILogEntry[] = [];
   private maxEntries: 1000;
-  private logLevel = LogLevel.Info;
+  public level = LogLevel.Info;
   /**
    * This value specifies when the excess of the list should be trim.
    * Setting to 0 will remove excess every time one single item exceeds.
@@ -31,11 +31,6 @@ export class LogService {
     return this.entries;
   }
 
-  /** Sets the log level. */
-  public setLevel(level: LogLevel): void {
-    this.logLevel = level;
-  }
-
   /**
    * Records a debug message with tabular data.
    * @param message The debug message.
@@ -51,14 +46,14 @@ export class LogService {
    */
   public debug(message: string, data?: any, trace?: boolean): void {
     // Debug is only allowed with verbose log
-    if (this.logLevel === LogLevel.Verbose) {
+    if (this.level === LogLevel.Verbose) {
       this.log(message, LogType.Debug, data, trace);
     }
   }
 
   /** Records an info message. */
   public info(message: string, data?: any, trace?: boolean): void {
-    if (this.logLevel === LogLevel.Error || this.logLevel === LogLevel.Warning) {
+    if (this.level === LogLevel.Error || this.level === LogLevel.Warning) {
       return;
     }
     this.log(message, LogType.Info, data, trace);
@@ -68,7 +63,7 @@ export class LogService {
    * Records a warning message.
    */
   public warn(message: string, data?: any, trace?: boolean): void {
-    if (this.logLevel === LogLevel.Error) {
+    if (this.level === LogLevel.Error) {
       return;
     }
     this.log(message, LogType.Warning, data, trace);

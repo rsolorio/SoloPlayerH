@@ -8,7 +8,8 @@ import {
   Repository,
   SelectQueryBuilder,
   DataSourceOptions,
-  EntityMetadata
+  EntityMetadata,
+  WhereExpressionBuilder
 } from 'typeorm';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import {
@@ -51,6 +52,7 @@ import { RelatedImageEntity } from '../../entities/related-image.entity';
 import { HttpClient } from '@angular/common/http';
 import { ComposerViewEntity } from '../../entities/composer-view.entity';
 import { DatabaseLookupService } from './database-lookup.service';
+import { RelativeDateService } from '../relative-date/relative-date.service';
 
 interface IBulkInfo {
   /** Maximum number of parameters allowed on each bulk. */
@@ -89,6 +91,7 @@ export class DatabaseService {
     private log: LogService,
     private lookupService: DatabaseLookupService,
     private transformService: ListTransformService,
+    private relativeDateService: RelativeDateService,
     private http: HttpClient)
   {
     this.setComparisons();
@@ -130,8 +133,9 @@ export class DatabaseService {
       ],
       synchronize: true,
       logging: ['error'],
-      //logging: ['query', 'error', 'warn']
+      //logging: ['query', 'error', 'warn'] // TODO: determine log level based on log service level
     };
+  
     this.dataSource = new DataSource(options);
     await this.dataSource.initialize();
     this.log.info('Data source initialized.');
@@ -409,6 +413,7 @@ export class DatabaseService {
         if (hasWhere) {
           // This operator will be determined by criteria item
           // The auto setting should be AND since most of the times you will need to join expressions with that operator
+          // Is this Auto setting misleading? It always uses And and it never considers the Or operator.
           if (criteriaItem.expressionOperator === CriteriaJoinOperator.Auto || criteriaItem.expressionOperator === CriteriaJoinOperator.And) {
             qb1 = qb1.andWhere(whereBrackets);
           }
@@ -429,28 +434,75 @@ export class DatabaseService {
    * Creates the second level where expression that consists of multiple values from one column joined together.
    */
   private createSecondLevelBrackets(entityName: string, criteriaItem: CriteriaItem): Brackets {
-    let hasWhere = false;
     const brackets = new Brackets(qb2 => {
-      // Typeorm requires unique parameters even if the column is the same
-      let parameterIndex = 0;
-      for (const valuePair of criteriaItem.columnValues) {
-        parameterIndex++;
-        const parameterName = criteriaItem.columnName + parameterIndex.toString();
-        const where = `${entityName}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text} :${parameterName}`;
-        const parameter = {};
-        parameter[parameterName] = valuePair.value;
-        if (hasWhere) {
-          // The OR operator is for conditions using the same column
-          // TODO: when all values are using "NOT EQUALS" the operator should be AND; maybe a valuesOperator property?
-          qb2 = qb2.orWhere(where, parameter);
-        }
-        else {
-          qb2 = qb2.where(where, parameter);
-          hasWhere = true;
-        }
+      if (criteriaItem.relativeDateExpression) {
+        this.buildWhereForRelativeDate(qb2, entityName, criteriaItem);
+      }
+      else {
+        this.buildWhereForColumnValues(qb2, entityName, criteriaItem);
       }
     });
     return brackets;
+  }
+
+  private buildWhereForColumnValues(builder: WhereExpressionBuilder, entityName: string, criteriaItem: CriteriaItem): void {
+    // Typeorm requires unique parameters even if the column is the same
+    let parameterIndex = 0;
+    let hasWhere = false;
+    for (const valuePair of criteriaItem.columnValues) {
+      parameterIndex++;
+      const parameterName = criteriaItem.columnName + parameterIndex.toString();
+      const where = `${entityName}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text} :${parameterName}`;
+      const parameter = {};
+      parameter[parameterName] = valuePair.value;
+      if (hasWhere) {
+        // The OR operator is for conditions using the same column
+        // TODO: when all values are using "NOT EQUALS" the operator should be AND; maybe a valuesOperator property?
+        builder = builder.orWhere(where, parameter);
+      }
+      else {
+        builder = builder.where(where, parameter);
+        hasWhere = true;
+      }
+    }
+  }
+
+  private buildWhereForRelativeDate(builder: WhereExpressionBuilder, entityName: string, criteriaItem: CriteriaItem): void {
+    const expression = this.relativeDateService.createExpression(criteriaItem.relativeDateExpression);
+    if (this.relativeDateService.isValid(expression)) {
+      const dateRange = this.relativeDateService.parse(expression);
+      switch (criteriaItem.comparison) {
+        // This will match the whole period
+        case CriteriaComparison.Equals:
+          builder = builder.where(`${entityName}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
+          builder = builder.andWhere(`${entityName}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
+          break;
+        // This wil match any date outside the period
+        case CriteriaComparison.NotEquals:
+          builder = builder.where(`${entityName}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
+          builder = builder.andWhere(`${entityName}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
+          break;
+        // This will match dates before the start of the period
+        case CriteriaComparison.LessThan:
+          builder = builder.where(`${entityName}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
+          break;
+        // This will match dates from the period and older
+        case CriteriaComparison.LessThanOrEqualTo:
+          builder = builder.where(`${entityName}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
+          break;
+        // This will match dates after the end of the period
+        case CriteriaComparison.GreaterThan:
+          builder = builder.where(`${entityName}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
+          break;
+        // This will match dates from the period and newer
+        case CriteriaComparison.GreaterThanOrEqualTo:
+          builder = builder.where(`${entityName}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
+          break;
+      }
+    }
+    else {
+      this.log.warn('Invalid relative date expression: ' + criteriaItem.relativeDateExpression, expression);
+    }
   }
 
   private buildOrderBy<T>(

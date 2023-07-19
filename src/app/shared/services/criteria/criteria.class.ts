@@ -140,6 +140,8 @@ export class CriteriaItem {
   displayName: string;
   /** A human readable representation of the value associated with this criteria. */
   displayValue: string;
+  /** Special expression that describes a relative date. */
+  relativeDateExpression: string;
 
   constructor(columnName: string, columnValue?: any, comparison?: CriteriaComparison) {
     this.columnName = columnName;
@@ -191,7 +193,7 @@ export class CriteriaItems extends Array<CriteriaItem> {
         // These comparisons do not need a list of values to compare to
         result.push(item);
       }
-      else if (item.columnValues.length) {
+      else if (item.columnValues.length || item.relativeDateExpression) {
         // The rest need a list of values to compare to
         result.push(item);
       }

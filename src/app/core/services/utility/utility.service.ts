@@ -562,6 +562,10 @@ export class UtilityService {
     }
   }
 
+  public throwError(message: string): void {
+    throw new Error(message);
+  }
+
   public googleSearch(searchTerm: string): void {
     const encodedTerm = encodeURI(searchTerm);
     window.open('https://google.com/search?q=' + encodedTerm);
