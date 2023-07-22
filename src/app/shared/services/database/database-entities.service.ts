@@ -9,13 +9,15 @@ import { ChipSelectorType } from '../../components/chip-selection/chip-selection
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
+import { DatabaseService } from './database.service';
+import { Criteria } from '../criteria/criteria.class';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseEntitiesService {
 
-  constructor(private utilities: UtilityService) { }
+  constructor(private utilities: UtilityService, private db: DatabaseService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -191,12 +193,10 @@ export class DatabaseEntitiesService {
       case DbColumn.Lyrics:
         return [{ caption: 'Yes', value: true }, { caption: 'No', value: false }];
     }
-    const results = await SongEntity
-      .getRepository()
-      .createQueryBuilder('song')
-      .select(columnName)
-      .distinct(true)
-      .getRawMany();
+    const criteria = new Criteria();
+    criteria.paging.distinct = true;
+    const results = await this.db.getColumnValues(SongEntity, criteria, columnName);
+    
     const items = results.map(result => {
       const item: ISelectableValue = {
         caption: result[columnName],

@@ -45,9 +45,10 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private utility: UtilityService,
     private navbarService: NavBarStateService,
     private browserService: FileBrowserService,
-    private loadingService: LoadingViewStateService) {
-      super();
-    }
+    private loadingService: LoadingViewStateService)
+  {
+    super();
+  }
 
   ngOnInit(): void {
     this.initialize();
@@ -384,10 +385,6 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     }
   }
 
-  onTest(): void {
-    this.logFileMetadata();
-  }
-
   private async logFileMetadata(): Promise<void> {
     const selectedFiles = this.dialog.openFileDialog();
     if (selectedFiles && selectedFiles.length) {
@@ -410,5 +407,13 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       }
     };
     this.browserService.browse(browserModel);
+  }
+
+  onTest(): void {
+    this.test();
+  }
+
+  private async test(): Promise<void> {
+    this.logFileMetadata();
   }
 }

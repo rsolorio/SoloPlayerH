@@ -53,6 +53,7 @@ import { HttpClient } from '@angular/common/http';
 import { ComposerViewEntity } from '../../entities/composer-view.entity';
 import { DatabaseLookupService } from './database-lookup.service';
 import { RelativeDateService } from '../relative-date/relative-date.service';
+import { ICollection, IKeyValuePair, KeyValues } from 'src/app/core/models/core.interface';
 
 interface IBulkInfo {
   /** Maximum number of parameters allowed on each bulk. */
@@ -67,6 +68,29 @@ interface IBulkInfo {
   bulkCount: number;
   /** Number of rows on each bulk. */
   bulkSize: number;
+}
+
+/**
+ * Exposes properties used to perform a query and get results selecting only one column.
+ */
+interface IColumnQuery {
+  criteria: Criteria;
+  columnName: string;
+}
+
+export interface IResultsIteratorOptions<T extends ObjectLiteral> {
+  /** List of queries used to get a list of values to combine. */
+  queries: IColumnQuery[];
+  /** The total number of results to be retrieved on each result. */
+  pageSize?: number;
+  /** If you are  looking to split the result on smaller chunks you can use this value to specify the number of items for each chunk. */
+  chunkSize?: number;
+  /** The entity that will be used to query and get results. */
+  entity: EntityTarget<T>
+  /** Callback that is fired when a result is resolved. */
+  onResult: (valuesObj: KeyValues, items: T[]) => Promise<void>;
+  /** Callback for overriding the logic that creates the criteria for each combination of values. */
+  onBuildCriteria?: (valuesObj: KeyValues) => Criteria;
 }
 
 /**
@@ -320,7 +344,32 @@ export class DatabaseService {
     const entityTempName = 'getListEntity';
     const repo = this.dataSource.getRepository(entity);
     this.log.debug('getList criteria', criteria);
-    const result = await this.createQueryBuilder(repo, entityTempName, criteria).getMany();
+    const result = await this.createQuery(repo, entityTempName, criteria).getMany();
+    const transformedResult = this.transformService.transform(result, criteria.transformAlgorithm);
+    return transformedResult;
+  }
+
+  public async getColumnValues(entity: EntityTarget<any>, criteria: Criteria, columnName: string): Promise<any[]> {
+    const repo = this.dataSource.getRepository(entity);
+    // Ignore columns
+    let columnNameFound = false;
+    for (const column of repo.metadata.columns) {
+      if (column.databaseName === columnName) {
+        columnNameFound = true;
+        if (criteria.ignoredInSelect(columnName)) {
+          this.utilities.throwError(`The main column '${columnName}' cannot be ignored in the select.`);
+        }
+      } else if (!criteria.ignoredInSelect(column.databaseName)) {
+        const criteriaItem = new CriteriaItem(column.databaseName);
+        criteriaItem.ignoreInSelect = true;
+        criteria.searchCriteria.push(criteriaItem);
+      }
+    }
+    if (!columnNameFound) {
+      this.utilities.throwError(`The column '${columnName}' was not found in the metadata.`);
+    }
+    this.log.debug('getColumnValues criteria', criteria);
+    const result = await this.createQuery(repo, null, criteria).getRawMany();
     const transformedResult = this.transformService.transform(result, criteria.transformAlgorithm);
     return transformedResult;
   }
@@ -329,34 +378,127 @@ export class DatabaseService {
     return this.dataSource.getRepository(entity);
   }
 
-  private createQueryBuilder<T>(
-    repo: Repository<T>, entityName: string, criteria: Criteria
+  /**
+   * Generates a list of values for each specified query;
+   * then combines the values of one list with items of the other lists to generate multiple criteria;
+   * each generated criteria is used to perform a search and return a result through a callback.
+   */
+  public async searchResultsIterator(options: IResultsIteratorOptions<any>): Promise<void> {
+    const queryResultCollection: ICollection<string, any[]> = {
+      items: []
+    };
+
+    // Gather results from all queries
+    for (const query of options.queries) {
+      const objectResults = await this.getColumnValues(options.entity, query.criteria, query.columnName);
+      // Convert objects to raw values
+      const valueResults = objectResults.map(obj => obj[query.columnName]);
+      queryResultCollection.items.push({
+        key: query.columnName,
+        value: valueResults
+      });
+    }
+
+    this.combine({}, queryResultCollection.items, async valuesObj => {
+      let criteria: Criteria;
+      if (options.onBuildCriteria) {
+        criteria = options.onBuildCriteria(valuesObj);
+      }
+      else {
+        // Automatically create criteria
+        criteria = new Criteria();
+        Object.keys(valuesObj).forEach(columnName => {
+          // This is an internal value used to specified the page number
+          if (columnName !== 'pageNumber') {
+            criteria.searchCriteria.push(new CriteriaItem(columnName, valuesObj[columnName]));
+          }
+        });
+      }
+      // The criteria can be null if it comes from the onBuildCriteria;
+      // if that's the case it means we don't want to process it so skip it
+      if (criteria) {
+        if (options.pageSize) {
+          criteria.paging.pageSize = options.pageSize;
+        }
+        const results = await this.getList(options.entity, criteria);
+        if (results.length) {
+          if (options.chunkSize) {
+            let pageNumber = 0;
+            while (results.length) {
+              pageNumber++;
+              const newValuesObj = Object.assign({}, valuesObj);
+              newValuesObj['pageNumber'] = pageNumber;
+              const chunk = results.splice(0, options.chunkSize);
+              await options.onResult(newValuesObj, chunk);
+            }
+          }
+          else {
+            await options.onResult(valuesObj, results);
+          }
+        }
+        else {
+          this.log.info('Combination yielded no results.', valuesObj);
+        }
+      }
+    });
+  }
+
+  /**
+   * Recursive routine that combines results from different queries and fires a callback for each combination.
+   */
+  private async combine(
+    valuesObj: KeyValues,
+    queryResults: IKeyValuePair<string, any[]>[],
+    onCombination: (valuesObj: any) => Promise<void>
+  ): Promise<void> {
+    const first = queryResults[0];
+    const rest = queryResults.slice(1);
+    for (const item of first.value) {
+      // Clone the object, the original needs to be untouched because it will be used for all the iterations
+      const newValuesObj = Object.assign({}, valuesObj);
+      newValuesObj[first.key] = item;
+      if (rest && rest.length) {
+        await this.combine(newValuesObj, rest, onCombination);
+      }
+      else {
+        await onCombination(newValuesObj);
+      }
+    }
+  }
+
+  // SQLite Build Query - START
+
+  private createQuery<T>(
+    repo: Repository<T>, entityAlias: string, criteria: Criteria
   ): SelectQueryBuilder<T> {
-    let queryBuilder = repo.createQueryBuilder(entityName);
+    let queryBuilder = repo.createQueryBuilder(entityAlias);
 
     if (!criteria.hasItems()) {
       return queryBuilder;
     }
 
-    this.buildSelect(queryBuilder, entityName, criteria, repo.metadata.columns);
-    queryBuilder = this.buildWhere(queryBuilder, entityName, criteria);
+    this.buildSelect(queryBuilder, entityAlias, criteria, repo.metadata.columns);
+    queryBuilder = this.buildWhere(queryBuilder, entityAlias, criteria);
     if (criteria.random) {
       queryBuilder = this.buildOrderByRandom(queryBuilder, criteria.paging.pageSize);
     }
     else {
       // Here we only send the sorting criteria, this is how we support this
-      queryBuilder = this.buildOrderBy(queryBuilder, entityName, criteria.sortingCriteria);
+      queryBuilder = this.buildOrderBy(queryBuilder, entityAlias, criteria.sortingCriteria);
     }
     return queryBuilder;
   }
 
   private buildSelect<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: Criteria, columns: ColumnMetadata[]
+    queryBuilder: SelectQueryBuilder<T>, entityAlias: string, criteria: Criteria, columns: ColumnMetadata[]
   ) {
     let hasColumns = false;
     for (const column of columns) {
       if (!criteria.ignoredInSelect(column.databaseName)) {
-        const columnName = `${entityName}.${column.databaseName}`;
+        let columnName = column.databaseName;
+        if (entityAlias) {
+          columnName = `${entityAlias}.${column.databaseName}`;
+        }
         if (hasColumns) {
           queryBuilder.addSelect(columnName);
         }
@@ -368,6 +510,9 @@ export class DatabaseService {
     }
     if (criteria.paging.pageSize) {
       queryBuilder.take(criteria.paging.pageSize);
+    }
+    if (criteria.paging.distinct) {
+      queryBuilder.distinct(criteria.paging.distinct);
     }
   }
 
@@ -396,7 +541,7 @@ export class DatabaseService {
   /**
    * Creates the first level where expression that consists of different criteria columns joined together.
    */
-  private createFirstLevelBrackets(entityName: string, whereCriteria: CriteriaItem[]): Brackets  {
+  private createFirstLevelBrackets(entityAlias: string, whereCriteria: CriteriaItem[]): Brackets  {
     const result = new Brackets(qb1 => {
       let hasWhere = false;
       for (const criteriaItem of whereCriteria) {
@@ -404,11 +549,11 @@ export class DatabaseService {
         if (criteriaItem.comparison === CriteriaComparison.IsNull || criteriaItem.comparison === CriteriaComparison.IsNotNull) {
           // Ignore column values for these operators
           whereBrackets = new Brackets(qb => {
-            qb.where(`${entityName}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text}`);
+            qb.where(`${entityAlias}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text}`);
           });
         }
         else {
-          whereBrackets = this.createSecondLevelBrackets(entityName, criteriaItem);
+          whereBrackets = this.createSecondLevelBrackets(entityAlias, criteriaItem);
         }
         if (hasWhere) {
           // This operator will be determined by criteria item
@@ -467,36 +612,36 @@ export class DatabaseService {
     }
   }
 
-  private buildWhereForRelativeDate(builder: WhereExpressionBuilder, entityName: string, criteriaItem: CriteriaItem): void {
+  private buildWhereForRelativeDate(builder: WhereExpressionBuilder, entityAlias: string, criteriaItem: CriteriaItem): void {
     const expression = this.relativeDateService.createExpression(criteriaItem.relativeDateExpression);
     if (this.relativeDateService.isValid(expression)) {
       const dateRange = this.relativeDateService.parse(expression);
       switch (criteriaItem.comparison) {
         // This will match the whole period
         case CriteriaComparison.Equals:
-          builder = builder.where(`${entityName}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
-          builder = builder.andWhere(`${entityName}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
+          builder = builder.andWhere(`${entityAlias}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
           break;
         // This wil match any date outside the period
         case CriteriaComparison.NotEquals:
-          builder = builder.where(`${entityName}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
-          builder = builder.andWhere(`${entityName}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
+          builder = builder.andWhere(`${entityAlias}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
           break;
         // This will match dates before the start of the period
         case CriteriaComparison.LessThan:
-          builder = builder.where(`${entityName}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
+          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
           break;
         // This will match dates from the period and older
         case CriteriaComparison.LessThanOrEqualTo:
-          builder = builder.where(`${entityName}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
           break;
         // This will match dates after the end of the period
         case CriteriaComparison.GreaterThan:
-          builder = builder.where(`${entityName}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
           break;
         // This will match dates from the period and newer
         case CriteriaComparison.GreaterThanOrEqualTo:
-          builder = builder.where(`${entityName}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
+          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
           break;
       }
     }
@@ -506,13 +651,13 @@ export class DatabaseService {
   }
 
   private buildOrderBy<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteriaItems: CriteriaItems
+    queryBuilder: SelectQueryBuilder<T>, entityAlias: string, criteriaItems: CriteriaItems
   ): SelectQueryBuilder<T> {
     let hasOrderBy = false;
     // This is a safe guard since this should only receive sorting items
     const orderByCriteria = criteriaItems.filter(criteriaItem => criteriaItem.sortSequence > 0);
     this.utilities.sort(orderByCriteria, 'sortSequence').forEach(orderByItem => {
-      const column = `${entityName}.${orderByItem.columnName}`;
+      const column = `${entityAlias}.${orderByItem.columnName}`;
       const order = orderByItem.sortDirection === CriteriaSortDirection.Ascending ? 'ASC' : 'DESC';
       if (hasOrderBy) {
         queryBuilder = queryBuilder.addOrderBy(column, order);
@@ -532,6 +677,8 @@ export class DatabaseService {
     }
     return queryBuilder;
   }
+
+  // SQLite Build Query - END
 
   public comparison(criteriaComparison: CriteriaComparison): IComparison {
     return this.comparisons[criteriaComparison];
@@ -606,7 +753,7 @@ export class DatabaseService {
     };
   }
 
-  public getDefaultData(): Promise<object> {
+  private getDefaultData(): Promise<object> {
     return new Promise<object>(resolve => {
       const fileUrl = 'assets/json/app.data.json';
       this.http.get(fileUrl).subscribe(data => {
