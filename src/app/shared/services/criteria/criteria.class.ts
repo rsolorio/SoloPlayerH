@@ -77,8 +77,11 @@ export class Criteria {
       this.userCriteria.ignoredInSelect(columnName);
   }
 
+  /**
+   * Sets the id and date properties of the object.
+   * Id example: 2023-01-10|11:25:33:990
+   */
   private setId(): void {
-    // Id example: 2023-01-10|11:25:33:990
     const now = new Date();
     const yearText = now.toLocaleString('default', { year: 'numeric'});
     const monthText = now.toLocaleString('default', { month: '2-digit'});
@@ -124,6 +127,8 @@ export class CriteriaItem {
   columnName: string;
   /** The values to compare the column to. */
   columnValues: IValuePair[] = [];
+  /** Determines if the column values are special expressions that describe a relative date. */
+  isRelativeDate: boolean;
   /** The comparison operator between the column and the value. */
   comparison = CriteriaComparison.Equals;
   /** The join operator that will be used to chain all comparisons of the same column with multiple values. */
@@ -140,8 +145,6 @@ export class CriteriaItem {
   displayName: string;
   /** A human readable representation of the value associated with this criteria. */
   displayValue: string;
-  /** Special expression that describes a relative date. */
-  relativeDateExpression: string;
 
   constructor(columnName: string, columnValue?: any, comparison?: CriteriaComparison) {
     this.columnName = columnName;
@@ -193,7 +196,7 @@ export class CriteriaItems extends Array<CriteriaItem> {
         // These comparisons do not need a list of values to compare to
         result.push(item);
       }
-      else if (item.columnValues.length || item.relativeDateExpression) {
+      else if (item.columnValues.length) {
         // The rest need a list of values to compare to
         result.push(item);
       }

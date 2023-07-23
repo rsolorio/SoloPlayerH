@@ -302,7 +302,7 @@ This command runs two other commands, in the following order:
   - `npm-run-all -p` is a command to run tasks in parallel, in this case `ng:serve` and `electron:serve`
     - `ng:serve` is the standard ng serve command
     - `electron:serve` runs three commands, in the following order:
-      - `wait-on http-get://localhost:4200/` uses the `wait-on` command to wait until localhost:4200 is available
+      - `wait-on http-get://localhost:4200/` uses the `wait-on` command to wait until localhost:4200 is available from ng:serve
       - `npm run electron:tsc` transpiles the `main.ts` file
       - `electron ./ --serve` runs the `main.js` file and passes the `--serve` flag which turns on the `electron-reload` package that allows Electron to reload after files are changed
 

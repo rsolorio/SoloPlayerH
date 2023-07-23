@@ -580,7 +580,7 @@ export class DatabaseService {
    */
   private createSecondLevelBrackets(entityName: string, criteriaItem: CriteriaItem): Brackets {
     const brackets = new Brackets(qb2 => {
-      if (criteriaItem.relativeDateExpression) {
+      if (criteriaItem.isRelativeDate) {
         this.buildWhereForRelativeDate(qb2, entityName, criteriaItem);
       }
       else {
@@ -613,7 +613,9 @@ export class DatabaseService {
   }
 
   private buildWhereForRelativeDate(builder: WhereExpressionBuilder, entityAlias: string, criteriaItem: CriteriaItem): void {
-    const expression = this.relativeDateService.createExpression(criteriaItem.relativeDateExpression);
+    // We currently support only one relative date just because I don't see the need to support multiple
+    const expressionText = criteriaItem.columnValues[0].value;
+    const expression = this.relativeDateService.createExpression(expressionText);
     if (this.relativeDateService.isValid(expression)) {
       const dateRange = this.relativeDateService.parse(expression);
       switch (criteriaItem.comparison) {
@@ -646,7 +648,7 @@ export class DatabaseService {
       }
     }
     else {
-      this.log.warn('Invalid relative date expression: ' + criteriaItem.relativeDateExpression, expression);
+      this.log.warn('Invalid relative date expression: ' + expressionText, expression);
     }
   }
 
