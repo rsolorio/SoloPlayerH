@@ -11,8 +11,12 @@ fs.readFile(browserJsPath, 'utf8', function (err, data) {
   }
 
   // This will insert the electronConfig portion as part of the webpack configuration of the browser.js
+
+  // Removes the whole line where the return is with just the text: "return {"
   let result = data.replace(/return {[\s\S]+?$/m, 'return {');
+  // Removes the target: "web" text
   result = result.replace(/target: "web", /g, '');
+  // Adds the electronConfig after the "return {"
   result = result.replace(/return \{/g, 'return {' + electronConfig);
 
   // Update the file with the changes

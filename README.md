@@ -284,7 +284,27 @@ This is a list of NPM package scripts
 
 - npm start
   - Serves and runs the application in electron
-  - Sets the browser js file of the angular dev kit to a webpack configuration that can resolve typeorm.
+
+### npm start
+This script is configured to run the application with Electron. It sets the browser js file of the angular dev kit to a webpack configuration that can resolve typeorm.
+
+This command runs two other commands, in the following order:
+- `postinstall:electron`
+  - Runs `postinstall.js`
+    - Reads the `browser.js` file from the `angular-devkit` package
+    - Removes the `target: web` configuration from the file
+    - Adds the `target: electron` configuration to the file
+    - The configuration is retrieved from the `postinstall.config.js` file
+      - This file creates two configurations: `electron-renderer` and `web`
+      - Configurations are retrieved from the `extra-webpack.config.js` file
+      - The configurations are real module exports but they are converted to text
+- `npm-run-all -p ng:serve electron:serve`
+  - `npm-run-all -p` is a command to run tasks in parallel, in this case `ng:serve` and `electron:serve`
+    - `ng:serve` is the standard ng serve command
+    - `electron:serve` runs three commands, in the following order:
+      - `wait-on http-get://localhost:4200/` uses the `wait-on` command to wait until localhost:4200 is available
+      - `npm run electron:tsc` transpiles the `main.ts` file
+      - `electron ./ --serve` runs the `main.js` file and passes the `--serve` flag which turns on the `electron-reload` package that allows Electron to reload after files are changed
 
 ## Dependencies
 This is a list of key dependencies in the project.
@@ -298,7 +318,7 @@ This is a list of key dependencies in the project.
 - [primeng](https://primeng.org/setup)
   - The component library that provides some special functionality.
     - Context/dropdown menus
-- sqlite3
+- [sqlite3](https://www.npmjs.com/package/sqlite3)
   - SQLite client.
 - [typeorm](https://typeorm.io/)
   - ORM for SQLite.

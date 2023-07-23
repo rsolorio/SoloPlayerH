@@ -10,7 +10,7 @@ module.exports.getConfigs = function () {
   electronConfig = JSON.stringify(extraWebpackConfig).slice(1, -1) + ',';
 
   extraWebpackConfig.target = 'web';
-  // Stringify config, without start and ending brackets, plus a comma
+  // Stringify config, without start and ending brackets,
   // plus a comma since it will be later inserted in the browser.js config
   webConfig = JSON.stringify(extraWebpackConfig).slice(1, -1) + ',';
 
