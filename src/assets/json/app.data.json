@@ -985,6 +985,37 @@
         "disabled": false,
         "system": true
       }
+    ],
+    "filter": [
+      {
+        "name": "Recently added",
+        "description": "Last 300 songs added",
+        "filterCriteriaId": "923ed06a-442c-4ebd-8441-6f698d1e916a",
+        "transformAlgorithm": 0
+      }
+    ],
+    "filterCriteria": [
+      {
+        "id": "923ed06a-442c-4ebd-8441-6f698d1e916a",
+        "distinct": false,
+        "limit": 300,
+        "random": false
+      }
+    ],
+    "filterCriteriaItem": [
+      {
+        "filterCriteriaId": "923ed06a-442c-4ebd-8441-6f698d1e916a",
+        "columnName": "addDate",
+        "comparison": 0,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 1,
+        "sortSequence": 1,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Sort By",
+        "displayValue": "Add Date Desc"
+      }
     ]
   }
 }

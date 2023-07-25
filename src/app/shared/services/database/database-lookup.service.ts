@@ -3,6 +3,7 @@ import * as objectHash from 'object-hash'
 import { AlbumEntity, ArtistEntity, DbEntity, ModuleOptionEntity, PartyRelationEntity, PlaylistEntity, RelatedImageEntity, SongEntity, ValueListEntryEntity } from '../../entities';
 import { PartyRelationType } from '../../models/music.enum';
 import { IImageSource } from 'src/app/core/models/core.interface';
+import { FilterEntity } from '../../entities/filter.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -134,5 +135,14 @@ export class DatabaseLookupService {
   public findImage(imageSource: IImageSource, items: RelatedImageEntity[]): RelatedImageEntity {
     const hash = this.hashImage(imageSource.sourcePath, imageSource.sourceIndex);
     return items.find(i => i.hash === hash);
+  }
+
+  // FILTER
+  public hashFilter(name: string): string {
+    return this.hashValues([name]);
+  }
+
+  public lookupFilter(name: string): Promise<FilterEntity> {
+    return FilterEntity.findOneBy({ name: name });
   }
 }

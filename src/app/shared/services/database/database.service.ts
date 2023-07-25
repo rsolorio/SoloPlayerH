@@ -37,7 +37,10 @@ import {
   ValueListEntryEntity,
   DataSourceEntity,
   DataMappingEntity,
-  PartyRelationEntity
+  PartyRelationEntity,
+  FilterEntity,
+  FilterCriteriaEntity,
+  FilterCriteriaItemEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -153,7 +156,10 @@ export class DatabaseService {
         ValueListEntryEntity,
         RelatedImageEntity,
         DataSourceEntity,
-        DataMappingEntity
+        DataMappingEntity,
+        FilterEntity,
+        FilterCriteriaEntity,
+        FilterCriteriaItemEntity
       ],
       synchronize: true,
       logging: ['error'],

@@ -1,8 +1,8 @@
 # Solo Player
 
-Mp3 player, music manager, tag editor, album art finder, playlist creator, file synchronizer.
+Audio player, music manager, tag editor, album art finder, playlist creator, file synchronizer.
 
-This player is for music stored in your device.
+This is an offline player (for music stored in your device) that currently supports Mp3 files.
 
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.

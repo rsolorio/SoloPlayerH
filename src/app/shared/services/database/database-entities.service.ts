@@ -10,7 +10,9 @@ import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { DatabaseService } from './database.service';
-import { Criteria } from '../criteria/criteria.class';
+import { Criteria, CriteriaItem } from '../criteria/criteria.class';
+import { FilterCriteriaEntity } from '../../entities/filter-criteria.entity';
+import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -271,6 +273,44 @@ export class DatabaseEntitiesService {
           { caption: 'Alternate Language', value: CriteriaTransformAlgorithm.AlternateLanguage }
         ];
         break;
+    }
+    return result;
+  }
+
+  public async getCriteriaFromFilter(filterCriteriaId: string): Promise<Criteria> {
+    const filterCriteria = await FilterCriteriaEntity.findOneBy({ id: filterCriteriaId });
+    const filterCriteriaItems = await FilterCriteriaItemEntity.findBy({ filterCriteriaId: filterCriteriaId });
+    const result = new Criteria();
+    result.paging.distinct = filterCriteria.distinct;
+    result.paging.pageSize = filterCriteria.limit;
+    result.random = filterCriteria.random;
+    for (const filterCriteriaItem of filterCriteriaItems) {
+      const criteriaItem = new CriteriaItem(filterCriteriaItem.columnName);
+      if (filterCriteriaItem.columnValue) {
+        criteriaItem.columnValues.push({ value: filterCriteriaItem.columnValue});
+      }
+      criteriaItem.comparison = filterCriteriaItem.comparison;
+      criteriaItem.valuesOperator = filterCriteriaItem.valuesOperator;
+      criteriaItem.expressionOperator = filterCriteriaItem.expressionOperator;
+      criteriaItem.sortDirection = filterCriteriaItem.sortDirection;
+      criteriaItem.sortSequence = filterCriteriaItem.sortSequence;
+      criteriaItem.ignoreInSelect = filterCriteriaItem.ignoreInSelect;
+      criteriaItem.isRelativeDate = filterCriteriaItem.isRelativeDate;
+      if (filterCriteriaItem.displayName) {
+        criteriaItem.displayName = filterCriteriaItem.displayName;
+      }
+      if (filterCriteriaItem.displayValue) {
+        criteriaItem.displayValue = filterCriteriaItem.displayValue;
+      }
+
+      // We assume search and sorting criteria about the same field come
+      // in different criteria items.
+      if (criteriaItem.sortSequence > 0) {
+        result.sortingCriteria.push(criteriaItem);
+      }
+      else {
+        result.searchCriteria.push(criteriaItem);
+      }
     }
     return result;
   }

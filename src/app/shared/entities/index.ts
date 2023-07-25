@@ -27,3 +27,6 @@ export * from './data-source.entity';
 export * from './data-mapping.entity';
 export * from './party-relation.entity';
 export * from './composer-view.entity';
+export * from './filter.entity';
+export * from './filter-criteria.entity';
+export * from './filter-criteria-item.entity';

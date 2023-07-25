@@ -47,7 +47,6 @@ import { EntityEditorComponent } from './components/entity-editor/entity-editor.
     FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
-    FilterModule,
     RelatedImageModule
   ],
   exports: [
