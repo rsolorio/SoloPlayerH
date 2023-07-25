@@ -57,6 +57,7 @@ import { ComposerViewEntity } from '../../entities/composer-view.entity';
 import { DatabaseLookupService } from './database-lookup.service';
 import { RelativeDateService } from '../relative-date/relative-date.service';
 import { ICollection, IKeyValuePair, KeyValues } from 'src/app/core/models/core.interface';
+import { LogLevel } from 'src/app/core/services/log/log.enum';
 
 interface IBulkInfo {
   /** Maximum number of parameters allowed on each bulk. */
@@ -127,6 +128,23 @@ export class DatabaseService {
   // START - DB INIT //////////////////////////////////////////////////////////////////////////////
   public async initializeDatabase(): Promise<DataSource> {
     this.log.info('Initializing database...');
+
+    let logging: any;
+    switch (this.log.level) {
+      case LogLevel.Verbose:
+        logging = ['query', 'error', 'warn', 'schema', 'info', 'log'];
+        break;
+      case LogLevel.Info:
+        logging = ['error', 'warn', 'info'];
+        break;
+      case LogLevel.Warning:
+        logging = ['error', 'warn'];
+        break;
+      default:
+        logging = ['error'];
+        break;
+    }
+
     const options: DataSourceOptions = {
       type: 'sqlite',
       database: 'solo-player.db',
@@ -162,8 +180,7 @@ export class DatabaseService {
         FilterCriteriaItemEntity
       ],
       synchronize: true,
-      logging: ['error'],
-      //logging: ['query', 'error', 'warn'] // TODO: determine log level based on log service level
+      logging: logging
     };
   
     this.dataSource = new DataSource(options);

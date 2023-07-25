@@ -10,7 +10,6 @@ import { UtilityService } from './core/services/utility/utility.service';
 import { DatabaseService } from './shared/services/database/database.service';
 import { LogService } from './core/services/log/log.service';
 import { FeatureDetectionService } from './core/services/feature-detection/feature-detection.service';
-import { LogLevel } from './core/services/log/log.enum';
 import { NavigationService } from './shared/services/navigation/navigation.service';
 import { IMenuModel } from './core/models/menu-model.interface';
 import { NavBarStateService } from './core/components/nav-bar/nav-bar-state.service';
@@ -46,7 +45,6 @@ export class AppComponent implements OnInit {
 
   public ngOnInit(): void {
     this.utilities.setAppVersion('0.0.1');
-    this.log.level = LogLevel.Verbose;
     this.watchRouteChange();
     this.log.info('Feature info initialized.', this.featureService.get());
 
