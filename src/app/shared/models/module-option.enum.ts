@@ -3,7 +3,8 @@ export enum ModuleOptionName {
   GenreSplitCharacters = 'GenreSplitCharacters',
   ExpandPlayerOnSongPlay = 'ExpandPlayerOnSongPlay',
   ScanMusicFolderPath = 'ScanMusicFolderPath',
-  ScanPlaylistFolderPath = 'ScanPlaylistFolderPath'
+  ScanPlaylistFolderPath = 'ScanPlaylistFolderPath',
+  HideNavbarOnScroll = 'HideNavbarOnScroll'
 }
 
 export enum ModuleOptionEditor {

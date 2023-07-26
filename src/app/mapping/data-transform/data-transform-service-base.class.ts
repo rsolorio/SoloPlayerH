@@ -1,4 +1,4 @@
-import { DataMappingEntity, DataSourceEntity } from "src/app/shared/entities";
+import { DataSourceEntity } from "src/app/shared/entities";
 import { IDataTransform, IDataTransformConfig } from "./data-transform.interface";
 import { IFileInfo } from "src/app/platform/file/file.interface";
 import { UtilityService } from "src/app/core/services/utility/utility.service";
@@ -12,29 +12,21 @@ import { LogService } from "src/app/core/services/log/log.service";
 import { KeyValues } from "src/app/core/models/core.interface";
 
 export abstract class DataTransformServiceBase<T> implements IDataTransform {
-  protected fields: MetaField[];
   protected sources: IDataSourceInfo[];
-  protected mappingsByDestination: { [key: string]: DataMappingEntity[] };
 
   constructor(
     private utilityService: UtilityService,
     private logService: LogService,
     private id3v2SourceService: Id3v2SourceService,
     private fileInfoSourceService: FileInfoSourceService,
-    private pathExpressionSourceService: PathExpressionSourceService
-  ) {
-  }
-
-  protected abstract get profileId(): string;
+    private pathExpressionSourceService: PathExpressionSourceService)
+  { }
 
   public abstract process(fileInfo: IFileInfo): Promise<T>;
 
-  public async init(config?: IDataTransformConfig): Promise<void> {
-    // Exclude fields that are not directly used by the transform tasks
-    this.fields = Object.values(MetaField).filter(f => f !== MetaField.FileMode);
-
+  public async init(config: IDataTransformConfig): Promise<void> {
     this.sources = [];
-    const sourceData = await DataSourceEntity.findBy({ profileId: this.profileId });
+    const sourceData = await DataSourceEntity.findBy({ profileId: config.profileId });
     this.utilityService.sort(sourceData, 'sequence').forEach(sourceRow => {
       if (!sourceRow.disabled) {
         const info = this.getDataSourceInfo(sourceRow, config?.dynamicFields);
@@ -54,7 +46,7 @@ export abstract class DataTransformServiceBase<T> implements IDataTransform {
           // TODO: continueOnError for other data sources
           return context;
         }
-        if (sourceInfo.data.customMapping) {
+        if (sourceInfo.data.customMapping && sourceInfo.mappings && sourceInfo.mappings.length) {
           // TODO: custom mapping and tags
         }
         else {

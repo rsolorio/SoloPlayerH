@@ -9,7 +9,6 @@ import {
   SongEntity,
   PlaylistEntity,
   PlaylistSongEntity,
-  ModuleOptionEntity,
   SongClassificationEntity,
   ValueListEntryEntity,
   RelatedImageEntity,
@@ -29,13 +28,13 @@ import { FileService } from '../../../platform/file/file.service';
 import { MusicImageSourceType, MusicImageType } from '../../../platform/audio-metadata/audio-metadata.enum';
 import { MetadataReaderService } from 'src/app/mapping/data-transform/metadata-reader.service';
 import { IImageSource, KeyValues } from 'src/app/core/models/core.interface';
-import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { DataTransformId, MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { ISyncInfo } from './scan.interface';
 import { PartyRelationType } from '../../models/music.enum';
 import { DatabaseLookupService } from '../database/database-lookup.service';
-import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { EntityId } from '../database/database.seed';
+import { DatabaseOptionsService } from '../database/database-options.service';
 
 export enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -52,6 +51,13 @@ export enum ScanFileMode {
   Skip = 'skip'
 }
 
+/**
+ * It offers three main actions: directory scan, audio file sync, playlist file sync.
+ * This service is the middle point between the metadata reader and the database;
+ * the metadata reader retrieves info from all its data sources into a single object;
+ * this object is used by the service to store the info to the database.
+ * Workflow: data sources > metadata reader > key values > scan service > database
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -60,7 +66,6 @@ export class ScanService {
   private unknownValue = 'Unknown';
   private scanMode: ScanFileMode;
   private songToProcess: SongEntity;
-  private options: ModuleOptionEntity[];
   private genreSplitSymbols: string[] = [];
   private artistSplitSymbols: string[] = [];
 
@@ -82,7 +87,7 @@ export class ScanService {
     private metadataReader: MetadataReaderService,
     private utilities: UtilityService,
     private db: DatabaseService,
-    private entityService: DatabaseEntitiesService,
+    private options: DatabaseOptionsService,
     private lookupService: DatabaseLookupService,
     private events: EventsService,
     private log: LogService) { }
@@ -128,18 +133,12 @@ export class ScanService {
     this.existingPartyRelations = [];
     this.existingSongClassifications = [];
 
-    const genreSplitOption = this.lookupService.findModuleOption(ModuleOptionName.GenreSplitCharacters, this.options);
-    if (genreSplitOption) {
-      this.genreSplitSymbols = this.entityService.getOptionArrayValue(genreSplitOption);
-    }
-    const artistSplitOption = this.lookupService.findModuleOption(ModuleOptionName.ArtistSplitCharacters, this.options);
-    if (artistSplitOption) {
-      this.artistSplitSymbols = this.entityService.getOptionArrayValue(artistSplitOption);
-    }
+    this.genreSplitSymbols = this.options.getArray(ModuleOptionName.GenreSplitCharacters);
+    this.artistSplitSymbols = this.options.getArray(ModuleOptionName.ArtistSplitCharacters);
 
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language
-    await this.metadataReader.init({ dynamicFields: this.existingClassTypes.map(c => c.name) });
+    await this.metadataReader.init({ profileId: DataTransformId.MetadataReader, dynamicFields: this.existingClassTypes.map(c => c.name) });
   }
 
   private async syncChangesToDatabase(syncInfo: ISyncInfo): Promise<void> {
@@ -209,7 +208,6 @@ export class ScanService {
 
   public async syncAudioFiles(
     files: IFileInfo[],
-    moduleOptions: ModuleOptionEntity[],
     beforeFileProcess?: (count: number, fileInfo: IFileInfo) => Promise<void>,
     beforeSyncChanges?: () => Promise<void>,
     beforeCleanup?: () => Promise<void>
@@ -223,7 +221,6 @@ export class ScanService {
       songDeletedRecords: null,
       metadataResults: null
     };
-    this.options = moduleOptions?.length ? moduleOptions : [];
     await this.beforeProcess();
     result.songInitialCount = this.existingSongs.length;
     let fileCount = 0;

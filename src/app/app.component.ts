@@ -7,12 +7,13 @@ import { EventsService } from './core/services/events/events.service';
 import { BreakpointMode } from './core/services/utility/utility.enum';
 import { IWindowSize, IWindowSizeChangedEvent } from './core/services/utility/utility.interface';
 import { UtilityService } from './core/services/utility/utility.service';
-import { DatabaseService } from './shared/services/database/database.service';
 import { LogService } from './core/services/log/log.service';
 import { FeatureDetectionService } from './core/services/feature-detection/feature-detection.service';
 import { NavigationService } from './shared/services/navigation/navigation.service';
 import { IMenuModel } from './core/models/menu-model.interface';
 import { NavBarStateService } from './core/components/nav-bar/nav-bar-state.service';
+import { ModuleOptionName } from './shared/models/module-option.enum';
+import { DatabaseOptionsService } from './shared/services/database/database-options.service';
 
 /**
  * The main app component.
@@ -31,7 +32,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     @Inject(DOCUMENT) private doc: Document,
-    private db: DatabaseService,
+    private options: DatabaseOptionsService,
     private utilities: UtilityService,
     private events: EventsService,
     private log: LogService,
@@ -56,6 +57,10 @@ export class AppComponent implements OnInit {
       this.navigation.back();
       this.navbarService.restoreOuterLeftIcon();
     });
+
+    if (this.options.getBoolean(ModuleOptionName.HideNavbarOnScroll)) {
+      this.navbarService.enableAutoHide();
+    }
   }
 
   @HostListener('window:scroll', ['$event'])

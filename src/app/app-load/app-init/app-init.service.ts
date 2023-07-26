@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 })
 export class AppInitService {
 
-  constructor(private events: EventsService, private log: LogService, private db: DatabaseService) { }
+  constructor(private log: LogService, private db: DatabaseService, private options: DatabaseOptionsService) { }
 
   /**
    * Initializes the application.
@@ -19,5 +19,6 @@ export class AppInitService {
   public async initialize(): Promise<void> {
     this.log.level = LogLevel.Warning;
     await this.db.initializeDatabase();
+    await this.options.init();
   } 
 }

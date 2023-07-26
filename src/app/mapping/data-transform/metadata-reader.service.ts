@@ -30,10 +30,6 @@ export class MetadataReaderService extends DataTransformServiceBase<KeyValues> {
     super(utility, log, id3v2Service, fileInfoService, pathExpressionService);
   }
 
-  protected get profileId(): string {
-    return DataTransformId.MetadataReader;
-  }
-
   public process(fileInfo: IFileInfo): Promise<KeyValues> {
     return this.getContext(fileInfo);
   }

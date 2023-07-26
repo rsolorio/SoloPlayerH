@@ -74,12 +74,17 @@ interface IBulkInfo {
   bulkSize: number;
 }
 
+interface IColumnExpression {
+  expression: string;
+  alias?: string;
+}
+
 /**
  * Exposes properties used to perform a query and get results selecting only one column.
  */
 interface IColumnQuery {
   criteria: Criteria;
-  columnName: string;
+  columnExpression: IColumnExpression;
 }
 
 export interface IResultsIteratorOptions<T extends ObjectLiteral> {
@@ -372,10 +377,12 @@ export class DatabaseService {
     return transformedResult;
   }
 
-  public async getColumnValues(entity: EntityTarget<any>, criteria: Criteria, columnName: string): Promise<any[]> {
+  public async getColumnValues(entity: EntityTarget<any>, criteria: Criteria, columnExpression: IColumnExpression): Promise<any[]> {
     const repo = this.dataSource.getRepository(entity);
-    // Ignore columns
+    const columnName = columnExpression.alias ? columnExpression.alias : columnExpression.expression;
+    // TODO: instead of ignoring all columns, directly create the select statement using the column expression
     let columnNameFound = false;
+    // Ignore columns
     for (const column of repo.metadata.columns) {
       if (column.databaseName === columnName) {
         columnNameFound = true;
@@ -413,11 +420,12 @@ export class DatabaseService {
 
     // Gather results from all queries
     for (const query of options.queries) {
-      const objectResults = await this.getColumnValues(options.entity, query.criteria, query.columnName);
+      const objectResults = await this.getColumnValues(options.entity, query.criteria, query.columnExpression);
+      const columnName = query.columnExpression.alias ? query.columnExpression.alias : query.columnExpression.expression;
       // Convert objects to raw values
-      const valueResults = objectResults.map(obj => obj[query.columnName]);
+      const valueResults = objectResults.map(obj => obj[columnName]);
       queryResultCollection.items.push({
-        key: query.columnName,
+        key: columnName,
         value: valueResults
       });
     }

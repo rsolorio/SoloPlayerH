@@ -29,10 +29,6 @@ export class MetadataWriterService extends DataTransformServiceBase<any> {
     super(utility, log, id3v2Service, fileInfoService, pathExpressionService);
   }
 
-  protected get profileId(): string {
-    return null;
-  }
-
   public process(fileInfo: IFileInfo): Promise<any> {
     // TODO: this should return a log of the file save process
     return this.getContext(fileInfo);

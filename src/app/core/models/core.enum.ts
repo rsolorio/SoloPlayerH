@@ -48,3 +48,14 @@ export enum MimeType {
   Jpg = 'image/jpeg',
   Mp3 = 'audio/mpeg'
 }
+
+export enum Separator {
+  MiddleDot = '·',
+  Bar = '|',
+  Comma = ',',
+  BackSlash = '\\',
+  ForwardSlash = '/',
+  Dash = '-',
+  Colon = ':',
+  SemiColon = ';'
+}

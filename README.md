@@ -24,10 +24,15 @@ The application has the ability to import playlists from these file types:
 - Dark
 
 ### Tag Support
-- Id3v2
-- Multi genres (either with multiple tags or one tag separated by a forward slash)
+- Id3v1 read
+- Id3v2 read/write
+- Multi genres
+  - Multiple tags
+  - One tag separated by a character
+- Multiple artists
+  - Multiple tags
+  - One tag separated by a character
 - Single album artist
-- Multiple artists (multiple tags)
 - Multiple covers
 - Language
 - Mood

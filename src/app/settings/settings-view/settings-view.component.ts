@@ -24,6 +24,7 @@ import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { MimeType } from 'src/app/core/models/core.enum';
 import { ISyncInfo } from 'src/app/shared/services/scan/scan.interface';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 
 @Component({
   selector: 'sp-settings-view',
@@ -32,7 +33,6 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 })
 export class SettingsViewComponent extends CoreComponent implements OnInit {
   public settingsInfo: ISettingCategory[];
-  private options: ModuleOptionEntity[];
   constructor(
     private dialog: DialogService,
     private scanner: ScanService,
@@ -40,6 +40,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     private log: LogService,
     private db: DatabaseService,
     private entityService: DatabaseEntitiesService,
+    private options: DatabaseOptionsService,
     private fileService: FileService,
     private metadataService: AudioMetadataService,
     private utility: UtilityService,
@@ -57,7 +58,6 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   private async initialize(): Promise<void> {
     this.loadingService.show();
     this.initializeNavbar();
-    this.options = await ModuleOptionEntity.find();
     await this.initializeSettings();
     this.loadingService.hide();
   }
@@ -80,10 +80,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   private async initializeSettings(): Promise<void> {
-    const musicPathOption = this.options.find(option => option.name === ModuleOptionName.ScanMusicFolderPath);
-    const musicPaths = await this.entityService.getOptionArrayValue(musicPathOption);
-    const playlistPathOptions = this.options.find(option => option.name === ModuleOptionName.ScanPlaylistFolderPath);
-    const playlistPaths = await this.entityService.getOptionArrayValue(playlistPathOptions);
+    const musicPaths = this.options.getArray(ModuleOptionName.ScanMusicFolderPath);
+    const playlistPaths = this.options.getArray(ModuleOptionName.ScanPlaylistFolderPath);
     const playlistCount = await PlaylistEntity.count();
     const songCount = await SongEntity.count();
     let hours = this.utility.secondsToHours(0);
@@ -320,7 +318,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
   }
 
   private async syncAudioFiles(files: IFileInfo[], setting: ISetting): Promise<ISyncInfo> {
-    const syncInfo = await this.scanner.syncAudioFiles(files, this.options,
+    const syncInfo = await this.scanner.syncAudioFiles(files,
       // Before file process
       async (count, file) => {
         setting.descriptions[1] = `File ${count} of ${files.length}`;
@@ -402,7 +400,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       backRoute: AppRoute.Settings,
       onOk: async values => {
         // save value in DB
-        await this.entityService.saveModuleOptionText(optionToSave, values.map(v => v.fileInfo.path));
+        await this.options.saveText(optionToSave, values.map(v => v.fileInfo.path));
         return true;
       }
     };

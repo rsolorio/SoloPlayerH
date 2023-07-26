@@ -1,4 +1,4 @@
-import { DataSourceEntity } from "src/app/shared/entities";
+import { DataMappingEntity, DataSourceEntity } from "src/app/shared/entities";
 
 export interface IDataSource {
   get(propertyName: string, isDynamic?: boolean): Promise<any[]>;
@@ -8,6 +8,7 @@ export interface IDataSource {
 export interface IDataSourceInfo {
   source: IDataSource;
   data: DataSourceEntity;
+  mappings?: DataMappingEntity[];
   fieldArray: string[];
   dynamicFieldArray?: string[];
 }

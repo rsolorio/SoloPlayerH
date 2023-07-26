@@ -1,8 +1,6 @@
 import { Injectable, ViewContainerRef, ComponentFactoryResolver, Type } from '@angular/core';
 import { INavbarModel, INavBarOuterIcons, NavbarDisplayMode } from './nav-bar-model.interface';
 import { IMenuModel } from '../../models/menu-model.interface';
-import { IIconAction } from '../../models/core.interface';
-import { IIconMenuModel } from '../icon-menu/icon-menu-model.interface';
 import { NavBarComponent } from './nav-bar.component';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
@@ -107,6 +105,17 @@ export class NavBarStateService {
 
   public getComponentInstance<T>(): T {
     return this.componentInstance as T;
+  }
+
+  public enableAutoHide(): void {
+    // Auto hide when scrolling down
+    this.events.onEvent(CoreEvent.WindowScrollDown).subscribe(() => {
+      this.hide();
+    });
+    // Auto show when scrolling up
+    this.events.onEvent(CoreEvent.WindowScrollUp).subscribe(() => {
+      this.show();
+    });
   }
 
   public showToast(message: string): void {

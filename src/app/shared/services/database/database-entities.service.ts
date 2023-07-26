@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ArtistEntity, ModuleOptionEntity, PlayHistoryEntity, PlaylistEntity, RelatedImageEntity, SongEntity } from '../../entities';
+import { ArtistEntity, PlayHistoryEntity, PlaylistEntity, RelatedImageEntity, SongEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
-import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { DbColumn, databaseColumns } from './database.columns';
@@ -13,13 +12,17 @@ import { DatabaseService } from './database.service';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { FilterCriteriaEntity } from '../../entities/filter-criteria.entity';
 import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.entity';
+import { DatabaseLookupService } from './database-lookup.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseEntitiesService {
 
-  constructor(private utilities: UtilityService, private db: DatabaseService) { }
+  constructor(
+    private utilities: UtilityService,
+    private db: DatabaseService,
+    private lookup: DatabaseLookupService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -105,43 +108,6 @@ export class DatabaseEntitiesService {
       .getOne();
   }
 
-  public getOptionArrayValue(moduleOption: ModuleOptionEntity): string[] {
-    if (moduleOption.valueEditorType !== ModuleOptionEditor.Text) {
-      // TODO:
-    }
-    return JSON.parse(moduleOption.values) as string[];
-  }
-
-  public getOptionBooleanValue(moduleOption: ModuleOptionEntity): boolean {
-    if (moduleOption.valueEditorType !== ModuleOptionEditor.YesNo) {
-      // TODO:
-    }
-    return JSON.parse(moduleOption.values) as boolean;
-  }
-
-  public getOptionTextValue(moduleOption: ModuleOptionEntity): string {
-    if (moduleOption.valueEditorType !== ModuleOptionEditor.YesNo) {
-      // TODO:
-    }
-    if (moduleOption.values) {
-      return JSON.parse(moduleOption.values) as string;
-    }
-    return null;
-  }
-
-  public async saveModuleOptionText(name: ModuleOptionName, values: string[]): Promise<void> {
-    const moduleOption = await ModuleOptionEntity.findOneBy({ name: name });
-    if (moduleOption) {
-      if (moduleOption.multipleValues) {
-        moduleOption.values = JSON.stringify(values);
-      }
-      else {
-        moduleOption.values = JSON.stringify(values[0]);
-      }
-      await moduleOption.save();
-    }
-  }
-
   public getArtistDetails(artistId: string): Promise<any> {
     return ArtistEntity
       .getRepository()
@@ -197,7 +163,7 @@ export class DatabaseEntitiesService {
     }
     const criteria = new Criteria();
     criteria.paging.distinct = true;
-    const results = await this.db.getColumnValues(SongEntity, criteria, columnName);
+    const results = await this.db.getColumnValues(SongEntity, criteria, { expression: columnName });
     
     const items = results.map(result => {
       const item: ISelectableValue = {

@@ -6,5 +6,6 @@ export interface IDataTransform {
 }
 
 export interface IDataTransformConfig {
+  profileId: string;
   dynamicFields?: string[];
 }

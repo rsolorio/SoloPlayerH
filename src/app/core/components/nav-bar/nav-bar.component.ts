@@ -3,8 +3,6 @@ import { SideBarStateService } from '../side-bar/side-bar-state.service';
 import { Position } from '../../models/core.enum';
 import { INavbarModel, INavBarOuterIcons, NavbarDisplayMode } from './nav-bar-model.interface';
 import { NavBarStateService } from './nav-bar-state.service';
-import { EventsService } from '../../services/events/events.service';
-import { CoreEvent } from '../../services/events/events.enum';
 import { IIconAction } from '../../models/core.interface';
 
 /**
@@ -22,22 +20,12 @@ export class NavBarComponent implements OnInit {
   public model: INavbarModel;
   public outerIcons: INavBarOuterIcons;
 
-  constructor(private navbarService: NavBarStateService, private sidebarService: SideBarStateService, private events: EventsService) { }
+  constructor(private navbarService: NavBarStateService, private sidebarService: SideBarStateService) { }
 
   public ngOnInit(): void {
     this.navbarService.saveComponentContainer(this.navbarContentViewContainer);
     this.model = this.navbarService.getState();
     this.outerIcons = this.navbarService.getOuterIcons();
-
-    // Auto hide when scrolling down
-    this.events.onEvent(CoreEvent.WindowScrollDown).subscribe(() => {
-      this.navbarService.hide();
-    });
-    // Auto show when scrolling up
-    this.events.onEvent(CoreEvent.WindowScrollUp).subscribe(() => {
-      this.navbarService.show();
-    });
-
     this.navbarService.register(this);
   }
 
