@@ -378,16 +378,22 @@ export class ScanService {
 
     // Replaced?
     let replaced = false;
-    const seconds = this.first(metadata[MetaField.Seconds]);
-    if (seconds && seconds !== this.songToProcess.seconds) {
-      this.songToProcess.seconds = seconds;
-      this.songToProcess.duration = this.utilities.secondsToMinutes(seconds);
-      replaced = true;
+    let seconds = this.first(metadata[MetaField.Seconds]);
+    if (seconds) {
+      seconds = this.utilities.round(seconds, 4);
+      if (seconds !== this.songToProcess.seconds) {
+        this.songToProcess.seconds = seconds;
+        this.songToProcess.duration = this.utilities.secondsToMinutes(seconds);
+        replaced = true;
+      }
     }
-    const bitrate = this.first(metadata[MetaField.Bitrate]);
-    if (bitrate && bitrate !== this.songToProcess.bitrate) {
-      this.songToProcess.bitrate = bitrate;
-      replaced = true;
+    let bitrate = this.first(metadata[MetaField.Bitrate]);
+    if (bitrate) {
+      bitrate = this.utilities.round(bitrate, 4);
+      if (bitrate !== this.songToProcess.bitrate) {
+        this.songToProcess.bitrate = bitrate;
+        replaced = true;
+      }
     }
     const frequency = this.first(metadata[MetaField.Frequency]);
     if (frequency && frequency !== this.songToProcess.frequency) {
@@ -702,13 +708,22 @@ export class ScanService {
       song.performers = performers;
     }
 
-    song.seconds = this.first(metadata[MetaField.Seconds]);
-    if (!song.seconds) {
-      song.seconds = 0;
-      this.log.warn('Duration not found for: ' + song.filePath);
+    song.seconds = 0;
+    let seconds = this.first(metadata[MetaField.Seconds]);
+    if (seconds) {
+      song.seconds = this.utilities.round(seconds, 4);
     }
+    else {
+      this.log.debug('Duration not found for: ' + song.filePath);
+    }
+
+    song.bitrate = 0;
+    let bitrate = this.first(metadata[MetaField.Bitrate]);
+    if (bitrate) {
+      song.bitrate = this.utilities.round(bitrate, 4);
+    }
+
     song.duration = this.utilities.secondsToMinutes(song.seconds);
-    song.bitrate = this.first(metadata[MetaField.Bitrate]);
     song.frequency = this.first(metadata[MetaField.Frequency]);
     song.vbr = this.first(metadata[MetaField.Vbr]);
     song.replayGain = this.first(metadata[MetaField.ReplayGain]);
@@ -801,9 +816,7 @@ export class ScanService {
       if (existingArtist) {
         if (existingArtist.artistSort === existingArtist.name && existingArtist.artistSort !== artistSort) {
           existingArtist.artistSort = artistSort;
-          if (!existingArtist.isNew) {
-            existingArtist.hasChanges = true;
-          }
+          this.setChangesIfNotNew(existingArtist);
         }
         const existingResult = this.lookupService.findArtist(existingArtist.name, result);
         if (!existingResult) {
