@@ -13,7 +13,6 @@ import { FileService } from '../platform/file/file.service';
 import { FileElectronService } from '../platform/file/file-electron.service';
 import { FileCordovaService } from '../platform/file/file-cordova.service';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
-import { FilterModule } from '../filter/filter.module';
 import { ChipSelectionComponent } from './components/chip-selection/chip-selection.component';
 import { ResizeObserverDirective } from './directives/resize-observer/resize-observer.directive';
 import { RatingComponent } from './components/rating/rating.component';

@@ -15,8 +15,8 @@
       {
         "name": "ScanMusicFolderPath",
         "moduleName": "Music",
-        "title": "Directory paths to look for audio files",
-        "description": "",
+        "title": "Music Folder Path",
+        "description": "Directory paths to look for audio files.",
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,
@@ -25,8 +25,8 @@
       {
         "name": "ScanPlaylistFolderPath",
         "moduleName": "Music",
-        "title": "Directory path to look for playlist files",
-        "description": "",
+        "title": "Playlist Folder Path",
+        "description": "Directory path to look for playlist files.",
         "valueEditorType": "Text",
         "multipleValues": true,
         "system": false,

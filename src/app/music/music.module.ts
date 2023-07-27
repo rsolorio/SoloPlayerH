@@ -7,7 +7,6 @@ import { SharedModule } from '../shared/shared.module';
 import { AlbumListComponent } from './album-list/album-list.component';
 import { ClassificationListComponent } from './classification-list/classification-list.component';
 import { SongListComponent } from './song-list/song-list.component';
-import { PlaylistListComponent } from './playlist-list/playlist-list.component';
 import { FileService } from '../platform/file/file.service';
 import { FileElectronService } from '../platform/file/file-electron.service';
 import { ListTransformService } from '../shared/services/list-transform/list-transform.service';
@@ -24,7 +23,6 @@ import { FileCordovaService } from '../platform/file/file-cordova.service';
     AlbumListComponent,
     ClassificationListComponent,
     SongListComponent,
-    PlaylistListComponent,
     ArtistViewComponent,
     SongViewComponent
   ],
