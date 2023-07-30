@@ -29,6 +29,10 @@ export class FilterListBroadcastService extends ListBroadcastServiceBase<IFilter
     return AppEvent.FilterListUpdated;
   }
 
+  protected get isBreadcrumbSupported(): boolean {
+    return false;
+  }
+
   protected buildSearchCriteria(searchTerm: string): CriteriaItems {
     const result = new CriteriaItems();
     if (searchTerm) {

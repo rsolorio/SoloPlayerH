@@ -31,6 +31,7 @@ import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { PlayerListModel } from 'src/app/shared/models/player-list-model.class';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -129,6 +130,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
         };
       }
 
+      // The song list has the responsibility of setting the proper image for each item
+      // in the list
       if (!song.image.src && !song.image.getImage) {
         song.image.getImage = () => this.getSongImage(song);
       }
@@ -150,6 +153,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private navbarService: NavBarStateService,
     private imagePreviewService: ImagePreviewService,
     private imageService: ImageService,
+    private entities: DatabaseEntitiesService,
     private cd: ChangeDetectorRef
   ) {
     super();
@@ -313,12 +317,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private async getSongImage(song: ISongModel): Promise<IImage> {
-    let images = await RelatedImageEntity.findBy({ relatedId: song.id });
-    if (!images || !images.length) {
-      images = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
-    }
-    if (images && images.length) {
-      const relatedImage = images[0];
+    const relatedImage = await this.entities.getRelatedImage([song.id, song.primaryAlbumId]);
+    if (relatedImage) {
       return this.imageService.getImageFromSource(relatedImage);
     }
     return {

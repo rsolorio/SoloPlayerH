@@ -13,6 +13,9 @@ import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
+import { AppRoute } from 'src/app/app-routes';
+import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 
 @Component({
   selector: 'sp-playlist-list',
@@ -29,14 +32,20 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Play',
         icon: 'mdi-play mdi',
-        action: param => {}
-      },
-      {
-        caption: 'Properties...',
-        icon: 'mdi-square-edit-outline mdi',
         action: param => {
           const playlist = param as IPlaylistModel;
           if (playlist) {
+            this.loadPlaylistAndPlay(playlist);
+          }
+        }
+      },
+      {
+        caption: 'Edit...',
+        icon: 'mdi-playlist-edit mdi',
+        action: param => {
+          const playlist = param as IPlaylistModel;
+          if (playlist) {
+            this.navigation.forward(AppRoute.Playlists, { routeParams: [playlist.id] });
           }
         }
       }
@@ -61,8 +70,10 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     private fileService: FileService,
     private metadataService: AudioMetadataService,
     private entityService: DatabaseEntitiesService,
-    private utilities: UtilityService
-  ){
+    private utilities: UtilityService,
+    private navigation: NavigationService,
+    private playerService: HtmlPlayerService)
+  {
     super();
   }
 
@@ -73,11 +84,14 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     this.onPlaylistClick(playlist);
   }
 
-  private onPlaylistClick(playlist: IPlaylistModel): void {}
+  private onPlaylistClick(playlist: IPlaylistModel): void {
+    this.loadPlaylistAndPlay(playlist);
+  }
 
   private async getPlaylistImage(playlist: IPlaylistModel): Promise<IImage> {
     const playlistWithSongs = await this.entityService.getPlaylistWithSongs(playlist.id);
     if (playlistWithSongs.playlistSongs && playlistWithSongs.playlistSongs.length) {
+      // TODO: use entities service (getRelatedImages) instead
       playlistWithSongs.playlistSongs = this.utilities.sort(playlistWithSongs.playlistSongs, 'sequence');
       const track = playlistWithSongs.playlistSongs[0];
       const buffer = await this.fileService.getBuffer(track.song.filePath);
@@ -89,5 +103,19 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       src: RelatedImageSrc.DefaultLarge,
       srcType: ImageSrcType.WebUrl
     };
+  }
+
+  private async loadPlaylistAndPlay(playlist: IPlaylistModel): Promise<void> {
+    const tracks = await this.entityService.getTracks(playlist.id);
+    const sortedTracks = this.utilities.sort(tracks, 'sequence');
+    const success = this.playerService.stop();
+    if (!success) {
+      // Log a problem
+      return;
+    }
+    const playerList = this.playerService.getState().playerList;
+    playerList.clear();
+    playerList.enqueueSongs(sortedTracks);
+    await this.playerService.play();
   }
 }

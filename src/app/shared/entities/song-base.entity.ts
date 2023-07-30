@@ -13,7 +13,7 @@ export class SongBaseEntity extends ListItemEntity {
   primaryArtistName: string;
   primaryArtistStylized: string;
   playCount: number;
-  playerStatus: PlayerSongStatus;
+  playerStatus = PlayerSongStatus.Empty;
   primaryAlbum: IAlbumModel;
 
   public get albumName(): string {

@@ -31,6 +31,11 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
     return AppEvent.ClassificationListUpdated;
   }
 
+  // Classifications/genres do not support any kind of breadcrumbs
+  protected get isBreadcrumbSupported(): boolean {
+    return false;
+  }
+
   protected buildSearchCriteria(searchTerm: string): CriteriaItems {
     const result = new CriteriaItems();
     if (searchTerm) {
@@ -50,16 +55,6 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
   protected addSortingCriteria(criteria: Criteria) {
     criteria.addSorting('classificationType');
     criteria.addSorting('name');
-  }
-
-  protected beforeGetItems(criteria: Criteria): void {
-    this.removeUnsupportedBreadcrumbs();
-    super.beforeGetItems(criteria);
-  }
-
-  private removeUnsupportedBreadcrumbs(): void {
-    // Classifications/genres do not support any kind of breadcrumbs
-    this.breadcrumbs.clear();
   }
 
   protected getItems(criteria: Criteria): Observable<IClassificationModel[]> {

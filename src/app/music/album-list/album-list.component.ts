@@ -18,6 +18,7 @@ import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-mo
 import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-album-list',
@@ -101,7 +102,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private utility: UtilityService,
     private breadcrumbService: BreadcrumbsStateService,
     private db: DatabaseService,
-    private queueService: PromiseQueueService,
+    private entities: DatabaseEntitiesService,
     private navigation: NavigationService,
     private imageService: ImageService
   ) {
@@ -163,9 +164,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private async getAlbumImage(album: IAlbumModel): Promise<IImage> {
-    const images = await RelatedImageEntity.findBy({ relatedId: album.id });
-    if (images && images.length) {
-      const relatedImage = images[0];
+    const relatedImage = await this.entities.getRelatedImage([album.id]);
+    if (relatedImage) {
       return this.imageService.getImageFromSource(relatedImage);
     }
     return {

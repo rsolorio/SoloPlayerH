@@ -7,5 +7,4 @@ export interface IPlaylistSongModel extends IListItemModel {
   songId: string;
   sequence: number;
   song: ISongModel;
-  playlist: IPlaylistModel;
 }

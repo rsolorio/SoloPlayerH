@@ -29,6 +29,10 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
     return AppEvent.PlaylistListUpdated;
   }
 
+  protected get isBreadcrumbSupported(): boolean {
+    return false;
+  }
+
   protected buildSearchCriteria(searchTerm: string): CriteriaItems {
     const result = new CriteriaItems();
     if (searchTerm) {

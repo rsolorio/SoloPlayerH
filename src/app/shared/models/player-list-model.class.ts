@@ -84,8 +84,7 @@ export class PlayerListModel implements IDbModel {
       primaryAlbumId: null,
       primaryArtistId: null,
       classificationId: null
-    },
-    playlist: null
+    }
   };
 
   // IDbModel
@@ -130,12 +129,12 @@ export class PlayerListModel implements IDbModel {
     this.setPlaylistCursor(previous);
   }
 
-  public enqueueSong(track: IPlaylistSongModel, startIndex?: number) {
+  public enqueueSong(track: IPlaylistSongModel, startIndex: number = 0) {
     this.enqueueSongs([track], startIndex);
   }
 
-  public enqueueSongs(tracks: IPlaylistSongModel[], startIndex?: number) {
-    if (!startIndex || startIndex < 0) {
+  public enqueueSongs(tracks: IPlaylistSongModel[], startIndex: number = 0) {
+    if (startIndex < 0) {
       throw new Error('Index cannot be less than 0.');
     }
 
@@ -245,8 +244,7 @@ export class PlayerListModel implements IDbModel {
       },
       canBeRendered: false,
       selected: false,
-      song: song,
-      playlist: null
+      song: song
     };
   }
 
@@ -363,9 +361,16 @@ export class PlayerListModel implements IDbModel {
     }
   }
 
+  private isSameTrack(a: IPlaylistSongModel, b: IPlaylistSongModel): boolean {
+    if (a.id && b.id) {
+      return a.id === b.id;
+    }
+    return a.playlistId === b.playlistId && a.sequence === b.sequence;
+  }
+
   private setPlaylistCursor(currentTrack: IPlaylistSongModel) {
     // Don't do anything if it is the same track
-    if (currentTrack.id === this.current.id) {
+    if (this.isSameTrack(currentTrack, this.current)) {
       return;
     }
     // This means we are removing the old track from being current

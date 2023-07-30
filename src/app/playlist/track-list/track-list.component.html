@@ -1,0 +1,33 @@
+<table *ngIf="model && model.items.length > 0" class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-height sp-full-width">
+  <tr *ngFor="let playlistSong of model.items">
+    <!-- Drag/Play icon -->
+    <td class="sp-td-drag">
+      <span *ngIf="playlistSong.song.playerStatus !== PlayerSongStatus.Playing"><i class="mdi-drag mdi sp-text-xlarge sp-cursor-drag"></i></span>
+      <span *ngIf="playlistSong.song.playerStatus === PlayerSongStatus.Playing"><i class="mdi-play mdi sp-text-xlarge sp-color-playing"></i></span>
+    </td>
+    <!-- Playlist Song info -->
+    <td (click)="onTrackClick(playlistSong)" class="sp-text-overflow-ellipsis">
+      <span
+      [ngClass]="{ 'sp-color-playing': playlistSong.song.playerStatus === PlayerSongStatus.Playing }"
+      class="sp-text-medium sp-no-select"
+      >{{playlistSong.song.name}}</span>
+      <br>
+      <span
+      class="sp-text-small sp-no-select">
+      <i class="mdi-account mdi">&nbsp;</i><span>{{playlistSong.song.artistStylized}}&nbsp;&nbsp;&nbsp;</span>
+      <i class="mdi-album mdi">&nbsp;</i><span>{{playlistSong.song.albumName}}&nbsp;&nbsp;&nbsp;</span>
+      <ng-container *ngIf="playlistSong.song.releaseYear > 0">
+        <i class="mdi-calendar mdi">&nbsp;</i><span>{{playlistSong.song.releaseYear}}&nbsp;&nbsp;&nbsp;</span>
+      </ng-container>
+      </span>
+    </td>
+    <!-- Song Duration -->
+    <td class="sp-td-duration sp-text-center sp-font-family-digital">
+      <span class="sp-text-medium sp-no-select">{{playlistSong.song.duration}}</span>
+    </td>
+    <!-- Menu icon -->
+    <td class="sp-td-context sp-text-center sp-cursor-pointer">
+      <sp-icon-menu [context]="playlistSong"></sp-icon-menu>
+    </td>
+  </tr>
+</table>

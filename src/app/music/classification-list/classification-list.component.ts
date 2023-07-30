@@ -17,6 +17,7 @@ import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { ImageService } from 'src/app/platform/image/image.service';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-classification-list',
@@ -104,7 +105,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private breadcrumbService: BreadcrumbsStateService,
     private navigation: NavigationService,
     private db: DatabaseService,
-    private imageService: ImageService
+    private imageService: ImageService,
+    private entities: DatabaseEntitiesService
   ) {
     super();
     this.isGenreList = this.utility.isRouteActive(AppRoute.Genres);
@@ -166,12 +168,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     const songList = await this.db.getList(SongClassificationViewEntity, criteria);
     if (songList && songList.length) {
       const song = songList[0];
-      let images = await RelatedImageEntity.findBy({ relatedId: song.id });
-      if (!images || !images.length) {
-        images = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
-      }
-      if (images && images.length) {
-        const relatedImage = images[0];
+      const relatedImage = await this.entities.getRelatedImage([song.id, song.primaryAlbumId]);
+      if (relatedImage) {
         return this.imageService.getImageFromSource(relatedImage);
       }
     }

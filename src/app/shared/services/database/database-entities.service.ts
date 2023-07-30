@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ArtistEntity, PlayHistoryEntity, PlaylistEntity, RelatedImageEntity, SongEntity } from '../../entities';
+import { ArtistEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
@@ -12,7 +12,6 @@ import { DatabaseService } from './database.service';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { FilterCriteriaEntity } from '../../entities/filter-criteria.entity';
 import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.entity';
-import { DatabaseLookupService } from './database-lookup.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +20,7 @@ export class DatabaseEntitiesService {
 
   constructor(
     private utilities: UtilityService,
-    private db: DatabaseService,
-    private lookup: DatabaseLookupService) { }
+    private db: DatabaseService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -132,6 +130,18 @@ export class DatabaseEntitiesService {
       .where('song.id = :songId')
       .setParameter('songId', songId)
       .getRawOne();
+  }
+
+  public getTracks(playlistId: string): Promise<PlaylistSongEntity[]> {
+    return PlaylistSongEntity
+      .getRepository()
+      .createQueryBuilder('playlistSong')
+      .innerJoinAndSelect('playlistSong.song', 'song')
+      .innerJoinAndSelect('song.primaryAlbum', 'album')
+      .innerJoinAndSelect('album.primaryArtist', 'artist')
+      .where('playlistSong.playlistId = :playlistId')
+      .setParameter('playlistId', playlistId)
+      .getMany();
   }
 
   public async export(): Promise<any> {
@@ -276,6 +286,18 @@ export class DatabaseEntitiesService {
       }
       else {
         result.searchCriteria.push(criteriaItem);
+      }
+    }
+    return result;
+  }
+
+  public async getRelatedImage(relatedIds: string[]): Promise<RelatedImageEntity> {
+    let result: RelatedImageEntity;
+    for (const relatedId of relatedIds) {
+      const images = await RelatedImageEntity.findBy({ relatedId: relatedId });
+      if (images && images.length) {
+        result = images[0];
+        break;
       }
     }
     return result;

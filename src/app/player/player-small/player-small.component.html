@@ -4,7 +4,7 @@
       <!-- Image and PB -->
       <td class="sp-player-td-image">
         <div class="sp-player-small-progress" [style.width.%]="model.elapsedPercentage"></div>
-        <img [src]="song.image.src ? song.image.src : model.playerList.current.image.src" class="sp-table-loading-image sp-full-height sp-full-width">
+        <img [src]="song.image.src ? song.image.src : song.image.defaultSrc" class="sp-table-loading-image sp-full-height sp-full-width">
       </td>
       <!-- Info -->
       <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">

@@ -3,21 +3,27 @@ import { CommonModule } from '@angular/common';
 import { PlaylistListComponent } from './playlist-list/playlist-list.component';
 import { PlaylistSongListComponent } from './playlist-song-list/playlist-song-list.component';
 import { CoreModule } from '../core/core.module';
-import { FormsModule } from '@angular/forms';
-import { ValueListModule } from '../value-list/value-list.module';
 import { SharedModule } from '../shared/shared.module';
+import { TrackListComponent } from './track-list/track-list.component';
+import { RouterModule } from '@angular/router';
 
 
 
 @NgModule({
   declarations: [
     PlaylistListComponent,
-    PlaylistSongListComponent
+    PlaylistSongListComponent,
+    TrackListComponent
   ],
   imports: [
     CommonModule,
     CoreModule,
-    SharedModule
+    SharedModule,
+    RouterModule.forChild([
+      {
+        path: 'playlists/:id', component: PlaylistSongListComponent
+      }
+    ])
   ]
 })
 export class PlaylistModule { }

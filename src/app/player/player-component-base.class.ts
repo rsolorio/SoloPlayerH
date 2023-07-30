@@ -118,6 +118,9 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       await this.setupContributors(song.id);
       await this.setupImages(song);
     }
+    else if (this.playerOverlayServiceBase.getState().mode === PlayerOverlayMode.Small) {
+      // TODO: setup image for the current song
+    }
   }
 
   protected async setupContributors(songId: string): Promise<void> {
@@ -139,7 +142,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     await this.setSrc(songImages);
     const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
     await this.setSrc(albumImages);
-    const artistImages = await RelatedImageEntity.findBy({ relatedId: song.primaryArtistId });
+    const artistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
+    const artistImages = await RelatedImageEntity.findBy({ relatedId: artistId });
     await this.setSrc(artistImages);
     this.images = [...songImages, ...albumImages, ...artistImages];
     if (!this.images.length) {

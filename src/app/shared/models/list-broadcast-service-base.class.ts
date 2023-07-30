@@ -25,6 +25,10 @@ implements IListBroadcastService {
 
   protected minSearchTermLength = 2;
 
+  protected get isBreadcrumbSupported(): boolean {
+    return true;
+  }
+
   constructor(
     private eventsService: EventsService,
     private utilityService: UtilityService,
@@ -93,6 +97,9 @@ implements IListBroadcastService {
    * It can be overridden in order to update the criteria object before getting the items.
    */
   protected beforeGetItems(criteria: Criteria): void {
+    if (!this.isBreadcrumbSupported) {
+      this.breadcrumbService.clear();
+    }
     // This service will honor what the breadcrumb service has as criteria
     criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
   }

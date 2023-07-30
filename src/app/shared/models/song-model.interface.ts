@@ -49,6 +49,7 @@ export interface ISongModel extends IListItemModel {
   primaryAlbum: IAlbumModel;
   playerStatus: PlayerSongStatus;
   primaryAlbumId: string;
+  /** This is the value that comes from the artist table on entity views. */
   primaryArtistId: string;
   classificationId: string;
   recentPlayIcon?: IIcon;

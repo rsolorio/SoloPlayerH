@@ -30,6 +30,7 @@ import { BreadcrumbsStateService } from '../breadcrumbs/breadcrumbs-state.servic
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
 import { TimeAgo } from 'src/app/core/models/core.enum';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 @Component({
   selector: 'sp-list-base',
@@ -68,6 +69,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService,
     private route: ActivatedRoute,
     private utilities: UtilityService,
+    private log: LogService,
     private cd: ChangeDetectorRef
   ) {
     super();
@@ -106,6 +108,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         // and allow the ng init to load the data
         const firstNavigation = this.navigation.first();
         if (!firstNavigation || !firstNavigation.options || !firstNavigation.options.queryParams || p.queryId !== firstNavigation.options.queryParams.queryId) {
+          this.log.debug('Query param changed, loading list base data.');
           this.loadData();
         }
       }
@@ -119,6 +122,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
     this.initializeNavbar();
     this.afterInit.emit(this.model);
+    this.log.debug('Loading list base data for the first time.');
     this.loadData();
   }
 
