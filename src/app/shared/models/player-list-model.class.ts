@@ -129,11 +129,17 @@ export class PlayerListModel implements IDbModel {
     this.setPlaylistCursor(previous);
   }
 
-  public enqueueSong(track: IPlaylistSongModel, startIndex: number = 0) {
-    this.enqueueSongs([track], startIndex);
+  /**
+   * Adds one track to the list.
+   */
+  public enqueueOne(track: IPlaylistSongModel, startIndex: number = 0) {
+    this.enqueue([track], startIndex);
   }
 
-  public enqueueSongs(tracks: IPlaylistSongModel[], startIndex: number = 0) {
+  /**
+   * Adds multiple tracks to the list.
+   */
+  public enqueue(tracks: IPlaylistSongModel[], startIndex: number = 0) {
     if (startIndex < 0) {
       throw new Error('Index cannot be less than 0.');
     }
@@ -163,6 +169,31 @@ export class PlayerListModel implements IDbModel {
         // This will refresh available tracks after reordering the track list
         this.setPlaylistCursorAuto();
     }
+  }
+
+  /**
+   * Loads a playlist and clears the current track.
+   */
+  public load(playlistId: string, playlistName: string, tracks: IPlaylistSongModel[]): void {
+    this.id = playlistId;
+    this.name = playlistName;
+    this.items = tracks;
+    // This will the current track
+    this.setPlaylistCursor(this.emptyTrack);
+    this.forceReloadPlayModeItems();
+  }
+
+  /**
+   * Loads a playlist from a song list and clears the current track.
+   */
+  public loadSongs(playlistId: string, playlistName: string, songs: ISongModel[]): void {
+    const tracks: IPlaylistSongModel[] = [];
+    let sequence = 0;
+    for (const song of songs) {
+      sequence++;
+      tracks.push(this.toTrack(song, sequence));
+    }
+    this.load(playlistId, playlistName, tracks);
   }
 
   /**
@@ -214,6 +245,9 @@ export class PlayerListModel implements IDbModel {
     this.playModeItems = [];
   }
 
+  /**
+   * Converts a list of songs into tracks and then loads them as a new list.
+   */
   public loadList(songList: ISongModel[], id?: string, name?: string): void {
     if (songList) {
       this.id = id;
@@ -248,6 +282,9 @@ export class PlayerListModel implements IDbModel {
     };
   }
 
+  /**
+   * Reorders the list of items based on the play mode.
+   */
   private reloadPlayModeItems() {
     if (!this.playModeItemsRefreshRequired) {
         return;
@@ -400,6 +437,10 @@ export class PlayerListModel implements IDbModel {
     this.events.broadcast(AppEvent.PlaylistCurrentTrackChanged, args);
   }
 
+  /**
+   * If no current track, it will load the first track in the list;
+   * otherwise it will load the current track into the player.
+   */
   private setPlaylistCursorAuto() {
     if (!this.hasTrack() && this.playModeItems.length) {
       this.setPlaylistCursor(this.playModeItems[0]);
@@ -409,6 +450,9 @@ export class PlayerListModel implements IDbModel {
     }
   }
 
+  /**
+   * Forces to reorder the items based on the play mode.
+   */
   private forceReloadPlayModeItems() {
     this.playModeItemsRefreshRequired = true;
     this.reloadPlayModeItems();

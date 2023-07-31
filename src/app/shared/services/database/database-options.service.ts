@@ -41,6 +41,17 @@ export class DatabaseOptionsService {
     return null;
   }
 
+  public getNumber(moduleOptionName: string): number {
+    const moduleOption = this.lookup.findModuleOption(moduleOptionName, this.options);
+    if (moduleOption.values) {
+      const numericValue = JSON.parse(moduleOption.values) as number;
+      if (!Number.isNaN(numericValue) && numericValue > 0) {
+        return numericValue;
+      }
+    }
+    return 0;
+  }
+
   public async saveText(name: ModuleOptionName, values: string[]): Promise<void> {
     const moduleOption = this.lookup.findModuleOption(name, this.options);
     if (moduleOption) {

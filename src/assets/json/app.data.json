@@ -82,6 +82,26 @@
         "multipleValues": false,
         "system": true,
         "values": "\"ef4c2f46-8803-4dc8-b937-2c8ffb150a62\""
+      },
+      {
+        "name": "PlayerReplayTime",
+        "moduleName": "Player",
+        "title": "Player replay time",
+        "description": "Amount of time in seconds to go back when replaying a track.",
+        "valueEditorType": "Number",
+        "multipleValues": false,
+        "system": false,
+        "values": 10
+      },
+      {
+        "name": "PlayerForwardTime",
+        "moduleName": "Player",
+        "title": "Player forward time",
+        "description": "Amount of time in seconds to go forward when playing a track.",
+        "valueEditorType": "Number",
+        "multipleValues": false,
+        "system": false,
+        "values": 30
       }
     ],
     "relatedImage": [

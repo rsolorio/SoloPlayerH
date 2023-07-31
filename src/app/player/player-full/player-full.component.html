@@ -81,7 +81,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
         *ngIf="model.playerList.isVisible"
         [style.height.px]="imageSize.height"
         class="sp-playlist-container sp-scrollbar-hidden">
-          <sp-track-list [items]="model.playerList.items"></sp-track-list>
+          <sp-track-list [items]="model.playerList.items" (trackClick)="onTrackClick($event)"></sp-track-list>
         </div>
       </div>
     </td>
@@ -213,7 +213,9 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
         <!-- Time Slider -->
         <tr class="sp-tr-time-slider"><td colspan="3"><table class="sp-table"><tr>
           <!-- Elapsed -->
-          <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
+          <td
+          (click)="adjustTimeDown()"
+          class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital sp-clickable">
             <span [ngClass]="{ 'sp-fade-in-out': model.status === PlayerStatus.Paused }" class="sp-time-text">{{ model.elapsedSeconds | duration }}</span>
           </td>
           <!-- Progress Bar -->
@@ -223,7 +225,9 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
             </div>
           </td>
           <!-- Remaining -->
-          <td class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital">
+          <td
+          (click)="adjustTimeUp()"
+          class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital sp-clickable">
               <span class="sp-time-text">{{ song.seconds - model.elapsedSeconds | duration }}</span>
           </td>
         </tr></table></td></tr>

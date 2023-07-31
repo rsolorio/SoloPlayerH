@@ -265,13 +265,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
       // 3. Load this track
       this.playerService.stop().then(success => {
         if (success) {
-          const trackList = this.spListBaseComponent.model.criteriaResult.items as ISongModel[];
+          const songList = this.spListBaseComponent.model.criteriaResult.items as ISongModel[];
           // For now, we are using this component only for search results,
           // but we should have an input property to specify the title of the play list
-          playerList.loadList(
-            trackList,
+          playerList.loadSongs(
             this.spListBaseComponent.model.criteriaResult.criteria.id,
-            this.spListBaseComponent.model.criteriaResult.criteria.name);
+            this.spListBaseComponent.model.criteriaResult.criteria.name,
+            songList);
           const track = playerList.getTrack(song);
           this.playerService.setCurrentTrack(track, play).then(() => {
             if (expand) {

@@ -159,6 +159,9 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     return Promise.resolve(false);
   }
 
+  /**
+   * Plays the first track of the list.
+   */
   public playFirst(): Promise<boolean> {
     const firstTrack = this.state.playerList.getFirstTrack();
     if (firstTrack) {
@@ -233,7 +236,19 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
         await this.playAudio();
       }
     }
-  }  
+  }
+
+  public adjustTime(seconds: number): void {
+    this.htmlAudio.currentTime = seconds;
+  }
+
+  public adjustTimeUp(seconds: number): void {
+    this.htmlAudio.currentTime += seconds;
+  }
+
+  public adjustTimeDown(seconds: number): void {
+    this.htmlAudio.currentTime -= seconds;
+  }
 
   // MEDIA SESSION ********************************************************************************
 

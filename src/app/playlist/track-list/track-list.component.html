@@ -1,5 +1,5 @@
 <table
-*ngIf="model && model.items.length > 0"
+*ngIf="model && model.items && model.items.length > 0"
 spIntersectionObserver
 class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-height sp-full-width">
   <tr class="sp-table-row-placeholder">
@@ -9,7 +9,7 @@ class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-he
     <td class="sp-td-context"></td>
   </tr>
   <tr
-  *ngFor="let playlistSong of model.items; let i = index"
+  *ngFor="let playlistSong of model.items"
   spIntersectionObserverTarget
   (intersectionChange)="onIntersectionChange($event, playlistSong)">
     <!-- Real content -->
@@ -21,7 +21,7 @@ class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-he
         </ng-container>
         <ng-container *ngIf="!model.editEnabled">
           <span *ngIf="playlistSong.song.playerStatus === PlayerSongStatus.Playing" class="sp-text-medium"><i class="mdi-play mdi sp-text-big sp-color-playing"></i></span>
-          <span *ngIf="playlistSong.song.playerStatus !== PlayerSongStatus.Playing" class="sp-text-medium">{{i + 1}}</span>
+          <span *ngIf="playlistSong.song.playerStatus !== PlayerSongStatus.Playing" class="sp-text-medium">{{playlistSong.sequence}}</span>
         </ng-container>
       </td>
       <!-- Playlist Song info -->
@@ -47,8 +47,8 @@ class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-he
         <span class="sp-text-large sp-no-select">{{playlistSong.song.duration}}</span>
       </td>
       <!-- Menu icon -->
-      <td class="sp-td-context sp-text-center sp-cursor-pointer">
-        <sp-icon-menu [context]="playlistSong"></sp-icon-menu>
+      <td class="sp-td-context sp-text-center sp-text-xlarge sp-cursor-pointer">
+        <sp-icon-menu [context]="playlistSong" [items]="model.itemMenuList" [iconClass]="'mdi-dots-horizontal mdi'"></sp-icon-menu>
       </td>
     </ng-container>
     <!-- Fake row, the less content we have here the better, since this is how rows not visible in the view port are rendered. -->

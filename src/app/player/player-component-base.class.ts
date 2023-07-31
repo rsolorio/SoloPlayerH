@@ -25,6 +25,8 @@ import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../share
 import { ChipSelectionService } from '../shared/components/chip-selection/chip-selection.service';
 import { PartyRelationType } from '../shared/models/music.enum';
 import { In } from 'typeorm';
+import { DatabaseOptionsService } from '../shared/services/database/database-options.service';
+import { ModuleOptionName } from '../shared/models/module-option.enum';
 
 /**
  * Base component for any implementation of the player modes.
@@ -52,7 +54,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private utilityService: UtilityService,
     private imagePreviewService: ImagePreviewService,
     private chipSelectionService: ChipSelectionService,
-    private imageSvc: ImageService)
+    private imageSvc: ImageService,
+    private optionsService: DatabaseOptionsService)
   {
     super();
   }
@@ -280,5 +283,19 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   public getFileInfo(): string {
     return `${this.getExtension()} · ${this.getBitrate()} · ${this.getFrequency()}`;
+  }
+
+  public adjustTimeDown(): void {
+    const seconds = this.optionsService.getNumber(ModuleOptionName.PlayerReplayTime);
+    if (seconds) {
+      this.playerServiceBase.adjustTimeDown(seconds);
+    }
+  }
+
+  public adjustTimeUp(): void {
+    const seconds = this.optionsService.getNumber(ModuleOptionName.PlayerForwardTime);
+    if (seconds) {
+      this.playerServiceBase.adjustTimeUp(seconds);
+    }
   }
 }

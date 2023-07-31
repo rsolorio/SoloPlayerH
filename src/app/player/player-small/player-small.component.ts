@@ -13,6 +13,7 @@ import { ImagePreviewService } from 'src/app/related-image/image-preview/image-p
 import { ImageService } from 'src/app/platform/image/image.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -34,9 +35,10 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private dialog: DialogService,
     private imagePreview: ImagePreviewService,
     private chipSelection: ChipSelectionService,
-    private imageService: ImageService)
+    private imageService: ImageService,
+    private options: DatabaseOptionsService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, imagePreview, chipSelection, imageService);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, imagePreview, chipSelection, imageService, options);
   }
 
   public ngOnInit() {

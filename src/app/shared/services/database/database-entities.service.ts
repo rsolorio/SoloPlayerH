@@ -141,6 +141,7 @@ export class DatabaseEntitiesService {
       .innerJoinAndSelect('album.primaryArtist', 'artist')
       .where('playlistSong.playlistId = :playlistId')
       .setParameter('playlistId', playlistId)
+      .orderBy('playlistSong.sequence')
       .getMany();
   }
 

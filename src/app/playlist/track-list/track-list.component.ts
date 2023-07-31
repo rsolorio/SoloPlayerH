@@ -12,7 +12,8 @@ import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 export class TrackListComponent extends CoreComponent implements OnInit {
   public PlayerSongStatus = PlayerSongStatus;
   public model: ITrackListModel = {
-    items: []
+    items: [],
+    itemMenuList: []
   };
   @Output() public trackClick: EventEmitter<IPlaylistSongModel> = new EventEmitter();
   constructor() {
@@ -34,6 +35,40 @@ export class TrackListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.model.itemMenuList.push({
+      caption: 'Go To Artist',
+      icon: 'mdi-account-badge mdi'
+    });
+    this.model.itemMenuList.push({
+      caption: 'Go To Album',
+      icon: 'mdi-album mdi'
+    });
+    this.model.itemMenuList.push({
+      isSeparator: true,
+      caption: ''
+    });
+    if (this.model.editEnabled) {
+      this.model.itemMenuList.push({
+        caption: 'Move Up',
+        icon: 'mdi-arrow-up mdi'
+      });
+      this.model.itemMenuList.push({
+        caption: 'Move Down',
+        icon: 'mdi-arrow-down mdi'
+      });
+      this.model.itemMenuList.push({
+        caption: 'Move To Top',
+        icon: 'mdi-arrow-collapse-up mdi'
+      });
+      this.model.itemMenuList.push({
+        caption: 'Move To Bottom',
+        icon: 'mdi-arrow-collapse-down mdi'
+      });
+    }
+    this.model.itemMenuList.push({
+      caption: 'Remove',
+      icon: 'mdi-delete-outline mdi'
+    });
   }
 
   public onTrackClick(track: IPlaylistSongModel) {

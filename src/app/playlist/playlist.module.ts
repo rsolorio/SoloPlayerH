@@ -6,6 +6,7 @@ import { CoreModule } from '../core/core.module';
 import { SharedModule } from '../shared/shared.module';
 import { TrackListComponent } from './track-list/track-list.component';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -18,6 +19,7 @@ import { RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     CoreModule,
+    FormsModule,
     SharedModule,
     RouterModule.forChild([
       {

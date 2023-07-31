@@ -114,8 +114,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       return;
     }
     const playerList = this.playerService.getState().playerList;
-    playerList.clear();
-    playerList.enqueueSongs(sortedTracks);
-    await this.playerService.play();
+    playerList.load(playlist.id, playlist.name, sortedTracks);
+    await this.playerService.playFirst();
   }
 }

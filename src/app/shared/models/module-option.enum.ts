@@ -4,10 +4,13 @@ export enum ModuleOptionName {
   ExpandPlayerOnSongPlay = 'ExpandPlayerOnSongPlay',
   ScanMusicFolderPath = 'ScanMusicFolderPath',
   ScanPlaylistFolderPath = 'ScanPlaylistFolderPath',
-  HideNavbarOnScroll = 'HideNavbarOnScroll'
+  HideNavbarOnScroll = 'HideNavbarOnScroll',
+  PlayerReplayTime = 'PlayerReplayTime',
+  PlayerForwardTime = 'PlayerForwardTime'
 }
 
 export enum ModuleOptionEditor {
   Text = 'Text',
-  YesNo = 'YesNo'
+  YesNo = 'YesNo',
+  Number = 'Number'
 }

@@ -25,6 +25,7 @@ import { EyeDropperDirective } from 'src/app/shared/directives/eye-dropper/eye-d
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 import { EntityId } from 'src/app/shared/services/database/database.seed';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 
 @Component({
   selector: 'sp-player-full',
@@ -60,9 +61,10 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private dialog: DialogService,
     private utility: UtilityService,
     private imagePreview: ImagePreviewService,
-    private chipSelection: ChipSelectionService)
+    private chipSelection: ChipSelectionService,
+    private options: DatabaseOptionsService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, imagePreview, chipSelection, imageService);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, imagePreview, chipSelection, imageService, options);
   }
 
   public onInit(): void {
@@ -328,5 +330,9 @@ export class PlayerFullComponent extends PlayerComponentBase {
       this.imageControlsEnabled = false;
       this.model.playerList.isVisible = true;
     }
+  }
+
+  public onTrackClick(track: IPlaylistSongModel): void {
+    this.playerService.playByTrack(track);
   }
 }

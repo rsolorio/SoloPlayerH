@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ITrackListModel } from '../track-list/track-list.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ActivatedRoute } from '@angular/router';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
@@ -7,6 +6,8 @@ import { PlaylistEntity, PlaylistSongEntity } from 'src/app/shared/entities';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { AppRoute, appRoutes } from 'src/app/app-routes';
+import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
+import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 
 @Component({
   selector: 'sp-playlist-song-list',
@@ -14,13 +15,15 @@ import { AppRoute, appRoutes } from 'src/app/app-routes';
   styleUrls: ['./playlist-song-list.component.scss']
 })
 export class PlaylistSongListComponent implements OnInit {
-  public trackListModel: ITrackListModel;
   public tracks: PlaylistSongEntity[];
+  private currentPlaylist: PlaylistEntity;
   constructor(
     private route: ActivatedRoute,
     private utility: UtilityService,
     private entities: DatabaseEntitiesService,
-    private navbarService: NavBarStateService) { }
+    private navbarService: NavBarStateService,
+    private playerService: HtmlPlayerService,
+    private entityService: DatabaseEntitiesService) { }
 
   ngOnInit(): void {
     this.initialize();
@@ -37,7 +40,7 @@ export class PlaylistSongListComponent implements OnInit {
   }
 
   private async initializeNavbar(playlistId: string): Promise<void> {
-    const playlist = await PlaylistEntity.findOneBy({ id: playlistId});
+    this.currentPlaylist = await PlaylistEntity.findOneBy({ id: playlistId});
     const routeInfo = appRoutes[AppRoute.Playlists];
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
@@ -47,11 +50,28 @@ export class PlaylistSongListComponent implements OnInit {
           caption: 'Show All'
         }
       ],
-      title: playlist.name,
+      title: this.currentPlaylist.name,
       leftIcon: {
         icon: routeInfo.icon
       }
     });
   }
 
+  public onTrackClick(track: IPlaylistSongModel): void {
+    this.loadPlaylistAndPlay(track);
+  }
+
+  private async loadPlaylistAndPlay(track: IPlaylistSongModel): Promise<void> {
+    const playerList = this.playerService.getState().playerList;
+    if (playerList.id === track.playlistId) {
+      // Same playlist, just load the track
+      await this.playerService.playByTrack(track);
+    }
+    else {
+      const tracks = await this.entityService.getTracks(track.playlistId);
+      const sortedTracks = this.utility.sort(tracks, 'sequence');
+      playerList.load(this.currentPlaylist.id, this.currentPlaylist.name, sortedTracks);
+      await this.playerService.playByTrack(track);
+    }
+  }
 }
