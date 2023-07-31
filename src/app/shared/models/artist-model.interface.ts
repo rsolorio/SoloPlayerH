@@ -6,6 +6,7 @@ export interface IArtistModel extends IListItemModel {
   favorite: boolean;
   artistSort: string;
   artistStylized: string;
+  country: string;
   albumCount: number;
   songCount: number;
   songAddDateMax: Date;

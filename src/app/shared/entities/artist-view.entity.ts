@@ -4,7 +4,7 @@ import { ListItemEntity } from './base.entity';
 
 /**
  * Retrieves all the records from the artist table with associated songs as primary or featuring artist.
- * Fields: id, name, hash, artistSort, artistStylized, songCount
+ * Fields: id, name, hash, artistSort, artistStylized, songCount, songAddDateMax
  */
 @ViewEntity({
   name: 'artistView',
@@ -17,7 +17,7 @@ import { ListItemEntity } from './base.entity';
       WHERE partyRelation.relationTypeId = 'Artist-Song-Primary' OR partyRelation.relationTypeId = 'Artist-Song-Featuring'
     ) AS partyRelation
     ON artist.id = partyRelation.relatedId
-    GROUP BY artist.id
+    GROUP BY artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized
   `
 })
 export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
@@ -32,12 +32,13 @@ export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
   @ViewColumn()
   artistSort: string;
   @ViewColumn()
-  artistStylized: string;
+  artistStylized: string;  
   @ViewColumn()
   songAddDateMax: Date;
 
   artistTypeId: string;
   countryId: string;
+  country: string;
   favorite: boolean;
   albumCount: number;
 }

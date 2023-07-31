@@ -11,8 +11,17 @@
           <span class="sp-main-text sp-text-medium sp-no-select">{{item.artistStylized}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-            <ng-container *ngIf="isAlbumArtist"><i class="mdi-album mdi">&nbsp;</i>{{item.albumCount}}&nbsp;&nbsp;</ng-container>
-            <i class="mdi-music-note mdi">&nbsp;</i><span>{{item.songCount}}</span>
+            <ng-container *ngIf="isAlbumArtist">
+              <i class="mdi-album mdi">&nbsp;</i>
+              <span>{{item.albumCount}}&nbsp;&nbsp;</span>
+            </ng-container>
+            <i class="mdi-music-note mdi">&nbsp;</i>
+            <span>{{item.songCount}}</span>
+            <ng-container *ngIf="isAlbumArtist && item.country !== 'Unknown'">
+              <span>&nbsp;&nbsp;</span>
+              <i class="mdi-earth mdi">&nbsp;</i>
+              <span>{{item.country}}</span>
+            </ng-container>
           </span>
         </td>
         <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onShowSongsClick(item)">

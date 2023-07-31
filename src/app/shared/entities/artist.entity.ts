@@ -19,7 +19,9 @@ export class ArtistEntity extends ListItemEntity implements IArtistModel {
   @OneToMany(() => AlbumEntity, album => album.primaryArtist)
   albums: Relation<AlbumEntity[]>;
 
+  country: string;
   albumCount: number;
   songCount: number;
   songAddDateMax: Date;
+
 }

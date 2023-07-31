@@ -4,16 +4,20 @@ import { ListItemEntity } from './base.entity';
 
 /**
  * This view combines the artist entity with the classification entity.
+ * It will return album artists associated with a classification.
  * It is intended to be used by filtering using the classificationId column;
  * if that's not the case, the view will return duplicate artist records.
  * If using more than one classificationId values, you will need to use a DISTINCT clause.
- * Fields: id, name, hash, artistSort, artistStylized, classificationId, albumCount, songCount
+ * Fields: id, name, hash, artistSort, artistStylized, country, classificationId, albumCount, songCount
  */
  @ViewEntity({
   name: 'artistClassificationView',
   expression: `
-  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount, MAX(albumClassification.songAddDateMax) AS songAddDateMax
-  FROM artist INNER JOIN (
+  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, valueListEntry.name AS country, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount, MAX(albumClassification.songAddDateMax) AS songAddDateMax
+  FROM artist
+  INNER JOIN valueListEntry
+  ON artist.countryId = valueListEntry.id
+  INNER JOIN (
     SELECT album.id, album.primaryArtistId, album.name, songClass.classificationId, COUNT(songClass.id) AS songCount, MAX(songClass.addDate) AS songAddDateMax
     FROM album INNER JOIN (
       SELECT song.id, song.primaryAlbumId, song.addDate, songClassification.classificationId
@@ -24,7 +28,7 @@ import { ListItemEntity } from './base.entity';
     GROUP BY album.id, album.primaryArtistId, album.name, songClass.classificationId
   ) AS albumClassification
   ON artist.id = albumClassification.primaryArtistId
-  GROUP BY artist.id, artist.name, artist.artistSort, artist.artistStylized, albumClassification.classificationId
+  GROUP BY artist.id, artist.name, artist.artistSort, artist.artistStylized, valueListEntry.name, albumClassification.classificationId
 `
 })
 export class ArtistClassificationViewEntity extends ListItemEntity implements IArtistModel {
@@ -40,6 +44,8 @@ export class ArtistClassificationViewEntity extends ListItemEntity implements IA
   artistSort: string;
   @ViewColumn()
   artistStylized: string;
+  @ViewColumn()
+  country: string;
   @ViewColumn()
   classificationId: string;
   @ViewColumn()

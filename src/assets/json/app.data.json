@@ -102,6 +102,16 @@
         "multipleValues": false,
         "system": false,
         "values": 30
+      },
+      {
+        "name": "ShortPlayAlbumThreshold",
+        "moduleName": "Music",
+        "title": "Short play album threshold",
+        "description": "The maximum number of tracks an album can have to be considered a short play album.",
+        "valueEditorType": "Number",
+        "multipleValues": false,
+        "system": false,
+        "values": 4
       }
     ],
     "relatedImage": [
