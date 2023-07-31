@@ -5,13 +5,19 @@
     <div
     [innerText]="model.text"
     [ngStyle]="{ color: model.palette.primary.rgbFormula }"
-    class="sp-text sp-full-width sp-text-large">
+    [ngClass]="{ 'sp-text-xlarge': model.bigTextEnabled, 'sp-text-large': !model.bigTextEnabled }"
+    class="sp-text sp-full-width">
     </div>
   </div>
   <div
   class="sp-text-gradient sp-full-width"
   [attr.style]="getColorVars()">
   </div>
+  <i
+  class="mdi sp-text-size sp-cursor-pointer sp-text-xlarge"
+  (click)="toggleTextSize()"
+  [ngStyle]="{ color: model.palette.secondary.rgbFormula }"
+  [ngClass]="{ 'mdi-format-font-size-decrease': model.bigTextEnabled, 'mdi-format-font-size-increase': !model.bigTextEnabled }"></i>
   <i
   *ngIf="!model.closeHidden"
   [ngStyle]="{ color: model.palette.secondary.rgbFormula }"

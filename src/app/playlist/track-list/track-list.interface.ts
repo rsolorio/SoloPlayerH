@@ -2,4 +2,5 @@ import { IPlaylistSongModel } from "src/app/shared/models/playlist-song-model.in
 
 export interface ITrackListModel {
   items: IPlaylistSongModel[];
+  editEnabled?: boolean;
 }

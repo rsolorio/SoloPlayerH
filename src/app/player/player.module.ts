@@ -6,6 +6,7 @@ import { PlayerFullComponent } from './player-full/player-full.component';
 import { CoreModule } from '../core/core.module';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
+import { PlaylistModule } from '../playlist/playlist.module';
 
 
 
@@ -19,7 +20,8 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     CoreModule,
     FormsModule,
-    SharedModule
+    SharedModule,
+    PlaylistModule
   ],
   exports: [ PlayerOverlayComponent ]
 })

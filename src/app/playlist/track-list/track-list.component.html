@@ -1,33 +1,62 @@
-<table *ngIf="model && model.items.length > 0" class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-height sp-full-width">
-  <tr *ngFor="let playlistSong of model.items">
-    <!-- Drag/Play icon -->
-    <td class="sp-td-drag">
-      <span *ngIf="playlistSong.song.playerStatus !== PlayerSongStatus.Playing"><i class="mdi-drag mdi sp-text-xlarge sp-cursor-drag"></i></span>
-      <span *ngIf="playlistSong.song.playerStatus === PlayerSongStatus.Playing"><i class="mdi-play mdi sp-text-xlarge sp-color-playing"></i></span>
-    </td>
-    <!-- Playlist Song info -->
-    <td (click)="onTrackClick(playlistSong)" class="sp-text-overflow-ellipsis">
-      <span
-      [ngClass]="{ 'sp-color-playing': playlistSong.song.playerStatus === PlayerSongStatus.Playing }"
-      class="sp-text-medium sp-no-select"
-      >{{playlistSong.song.name}}</span>
-      <br>
-      <span
-      class="sp-text-small sp-no-select">
-      <i class="mdi-account mdi">&nbsp;</i><span>{{playlistSong.song.artistStylized}}&nbsp;&nbsp;&nbsp;</span>
-      <i class="mdi-album mdi">&nbsp;</i><span>{{playlistSong.song.albumName}}&nbsp;&nbsp;&nbsp;</span>
-      <ng-container *ngIf="playlistSong.song.releaseYear > 0">
-        <i class="mdi-calendar mdi">&nbsp;</i><span>{{playlistSong.song.releaseYear}}&nbsp;&nbsp;&nbsp;</span>
-      </ng-container>
-      </span>
-    </td>
-    <!-- Song Duration -->
-    <td class="sp-td-duration sp-text-center sp-font-family-digital">
-      <span class="sp-text-medium sp-no-select">{{playlistSong.song.duration}}</span>
-    </td>
-    <!-- Menu icon -->
-    <td class="sp-td-context sp-text-center sp-cursor-pointer">
-      <sp-icon-menu [context]="playlistSong"></sp-icon-menu>
-    </td>
+<table
+*ngIf="model && model.items.length > 0"
+spIntersectionObserver
+class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-height sp-full-width">
+  <tr class="sp-table-row-placeholder">
+    <td class="sp-td-drag"></td>
+    <td class="sp-text-overflow-ellipsis"></td>
+    <td class="sp-td-duration"></td>
+    <td class="sp-td-context"></td>
+  </tr>
+  <tr
+  *ngFor="let playlistSong of model.items; let i = index"
+  spIntersectionObserverTarget
+  (intersectionChange)="onIntersectionChange($event, playlistSong)">
+    <!-- Real content -->
+    <ng-container *ngIf="playlistSong.canBeRendered">
+      <!-- Drag/Play icon -->
+      <td class="sp-td-drag">
+        <ng-container *ngIf="model.editEnabled">
+          <span><i class="mdi-drag mdi sp-text-big sp-cursor-drag"></i></span>
+        </ng-container>
+        <ng-container *ngIf="!model.editEnabled">
+          <span *ngIf="playlistSong.song.playerStatus === PlayerSongStatus.Playing" class="sp-text-medium"><i class="mdi-play mdi sp-text-big sp-color-playing"></i></span>
+          <span *ngIf="playlistSong.song.playerStatus !== PlayerSongStatus.Playing" class="sp-text-medium">{{i + 1}}</span>
+        </ng-container>
+      </td>
+      <!-- Playlist Song info -->
+      <td (click)="onTrackClick(playlistSong)" class="sp-text-overflow-ellipsis">
+        <span
+        class="sp-text-medium sp-no-select"
+        [ngClass]="{ 'sp-color-playing': playlistSong.song.playerStatus === PlayerSongStatus.Playing }"
+        >{{playlistSong.song.name}}</span>
+        <br>
+        <span class="sp-text-small sp-no-select">
+          <i class="mdi-account mdi">&nbsp;</i>
+          <span>{{playlistSong.song.artistStylized}}&nbsp;&nbsp;&nbsp;</span>
+          <i class="mdi-album mdi">&nbsp;</i>
+          <span>{{playlistSong.song.albumName}}&nbsp;&nbsp;&nbsp;</span>
+          <ng-container *ngIf="playlistSong.song.releaseYear > 0">
+            <i class="mdi-calendar mdi">&nbsp;</i>
+            <span>{{playlistSong.song.releaseYear}}&nbsp;&nbsp;&nbsp;</span>
+          </ng-container>
+        </span>
+      </td>
+      <!-- Song Duration -->
+      <td class="sp-td-duration sp-text-center sp-font-family-digital">
+        <span class="sp-text-large sp-no-select">{{playlistSong.song.duration}}</span>
+      </td>
+      <!-- Menu icon -->
+      <td class="sp-td-context sp-text-center sp-cursor-pointer">
+        <sp-icon-menu [context]="playlistSong"></sp-icon-menu>
+      </td>
+    </ng-container>
+    <!-- Fake row, the less content we have here the better, since this is how rows not visible in the view port are rendered. -->
+    <ng-container *ngIf="!playlistSong.canBeRendered">
+      <!-- Forcing the row to have the same height as a real row to make the scrollbar be the right proportion size. -->
+      <td colspan="4" class="sp-table-row-fake">
+        <span class="sp-text-medium">Loading item...</span>
+      </td>
+    </ng-container>
   </tr>
 </table>

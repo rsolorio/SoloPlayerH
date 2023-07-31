@@ -24,6 +24,7 @@ import { RouterModule } from '@angular/router';
         path: 'playlists/:id', component: PlaylistSongListComponent
       }
     ])
-  ]
+  ],
+  exports: [ TrackListComponent ]
 })
 export class PlaylistModule { }

@@ -22,9 +22,15 @@ export class TrackListComponent extends CoreComponent implements OnInit {
   get items(): IPlaylistSongModel[] {
     return this.model.items;
   }
-
   @Input() set items(val: IPlaylistSongModel[]) {
     this.model.items = val;
+  }
+
+  get editEnabled(): boolean {
+    return this.model.editEnabled;
+  }
+  @Input() set editEnabled(val: boolean) {
+    this.model.editEnabled = val;
   }
 
   ngOnInit(): void {
@@ -32,5 +38,11 @@ export class TrackListComponent extends CoreComponent implements OnInit {
 
   public onTrackClick(track: IPlaylistSongModel) {
     this.trackClick.emit(track);
+  }
+
+  public onIntersectionChange(isIntersecting: boolean, item: IPlaylistSongModel): void {
+    if (item.canBeRendered !== isIntersecting) {
+      item.canBeRendered = isIntersecting;
+    }
   }
 }

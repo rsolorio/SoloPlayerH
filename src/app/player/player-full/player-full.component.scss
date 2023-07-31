@@ -41,6 +41,13 @@
   filter: blur(3px);
 }
 
+.sp-playlist-container {
+  position: absolute;
+  overflow-y: scroll;
+  color: $sp-color-on-background;
+  background-color: $sp-dim-black-mid;
+}
+
 .sp-tr-footer {
   height: 180px; // song-toolbar: 50px + time-slider: 30px + play-controls: 100px;
 }

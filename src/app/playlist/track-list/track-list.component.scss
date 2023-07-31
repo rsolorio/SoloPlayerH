@@ -1,7 +1,11 @@
 @import "../../../styles-variables";
 
+.sp-table-row-placeholder {
+    visibility: collapse;
+}
+
 .sp-td-drag {
-    width: 30px;
+    width: 40px;
     vertical-align: middle;
     text-align: center;
 }
@@ -12,4 +16,8 @@
 
 .sp-td-duration {
     width: 55px;
+}
+
+.sp-table-row-fake {
+    height: 59px; // Determine proper height, do we really need a height? Only if we need to show the scrollbar
 }

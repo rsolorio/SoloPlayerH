@@ -56,4 +56,8 @@ export class TextScrollerComponent implements OnInit {
     return `--fromColor: ${this.model.palette.background.toRgbaFormula(0)}; --toColor: ${this.model.palette.background.toRgbaFormula(1)};`;
   }
 
+  public toggleTextSize(): void {
+    this.model.bigTextEnabled = !this.model.bigTextEnabled;
+  }
+
 }

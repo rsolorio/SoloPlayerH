@@ -119,6 +119,11 @@ export class PlayerFullComponent extends PlayerComponentBase {
       // Generate the new dimensions for the element
       this.imageSize = this.imageService.getResizeDimensions(imageNaturalSize, containerSize);
     }
+    // If the image does not exist set the image size anyways because
+    // other child elements could use it
+    else {
+      this.imageSize = containerSize;
+    }
   }
 
   /**
@@ -312,5 +317,16 @@ export class PlayerFullComponent extends PlayerComponentBase {
     this.imageControlsEnabled = false;
     this.lyricsOverlayEnabled = false;
     super.onTrackChanged(eventArgs);
+  }
+
+  public togglePlaylist(): void {
+    if (this.model.playerList.isVisible) {
+      this.model.playerList.isVisible = false;
+    }
+    else {
+      this.lyricsOverlayEnabled = false;
+      this.imageControlsEnabled = false;
+      this.model.playerList.isVisible = true;
+    }
   }
 }

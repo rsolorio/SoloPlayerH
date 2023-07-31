@@ -1,4 +1,6 @@
-<table *ngIf="model && model.playerList && model.playerList.current" class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-support-overflow-ellipsis">
+<table
+*ngIf="model && model.playerList && model.playerList.current"
+class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-support-overflow-ellipsis">
   <!-- Navbar -->
   <tr class="sp-tr-navbar">
     <!-- Collapse button -->
@@ -13,7 +15,9 @@
         <!-- Playlist name -->
         <td class="sp-text-overflow-ellipsis">
           <i
-          class="mdi-playlist-music-outline mdi sp-text-xlarge-fixed sp-cursor-pointer"
+          (click)="togglePlaylist()"
+          class="mdi sp-text-xlarge-fixed sp-cursor-pointer"
+          [ngClass]="{ 'mdi-playlist-music-outline': !model.playerList.isVisible, 'mdi-image-outline': model.playerList.isVisible }"
           style="line-height: 40px;"
           [ngStyle]="palette.secondary.cssColor"></i>
           <span
@@ -38,7 +42,7 @@
         <!-- Image -->
         <img
         #picture
-        *ngIf="image"
+        *ngIf="image && !model.playerList.isVisible"
         [ngClass]="{ 'sp-invisible': imageControlsEnabled }"
         (click)="onImageClick($event)"
         (load)="onImageLoad()"
@@ -49,7 +53,7 @@
         <!-- Canvas (for image controls) -->
         <!-- Note that we set the canvas size as well as the element size -->
         <canvas
-        *ngIf="image"
+        *ngIf="image && !model.playerList.isVisible"
         spEyeDropper
         [eyeDropperTableId]="'tableEyeDropper'"
         [eyeDropperHoverId]="'divHoverColor'"
@@ -62,8 +66,7 @@
         [style.height.px]="imageSize.height"></canvas>
         <!-- Lyrics overlay (hack: one more pixel that solves the blurry text and aligns with the image) -->
         <div
-        *ngIf="lyricsOverlayEnabled"
-        (click)="toggleLyrics()"
+        *ngIf="lyricsOverlayEnabled && !model.playerList.isVisible"
         class="sp-img sp-bg-dim-black-mid"
         [style.width.%]="100"
         [style.height.px]="imageSize.height + 1">
@@ -72,6 +75,13 @@
           [text]="song.lyrics"
           [palette]="palette">
           </sp-text-scroller>
+        </div>
+        <!-- Playlist -->
+        <div
+        *ngIf="model.playerList.isVisible"
+        [style.height.px]="imageSize.height"
+        class="sp-playlist-container sp-scrollbar-hidden">
+          <sp-track-list [items]="model.playerList.items"></sp-track-list>
         </div>
       </div>
     </td>
