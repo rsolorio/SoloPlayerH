@@ -195,6 +195,11 @@
         "id": "02d80294-90fa-472b-a2c5-459030b48e36",
         "name": "DataMappingProfile",
         "system": true
+      },
+      {
+        "id": "f8ce02a9-a951-4142-a66c-acc81a040053",
+        "name": "PlaylistGroup",
+        "system": true
       }
     ],
     "valueListEntry": [
@@ -906,6 +911,14 @@
         "name": "Default Metadata Writer",
         "isClassification": false,
         "sequence": 2
+      },
+      {
+        "//": "Playlist Group",
+        "id": "042901e6-66da-4d4e-89ea-ae40ab98f7ab",
+        "valueListTypeId": "f8ce02a9-a951-4142-a66c-acc81a040053",
+        "name": "Default",
+        "isClassification": false,
+        "sequence": 1
       }
     ],
     "dataSource": [

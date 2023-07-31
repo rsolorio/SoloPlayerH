@@ -15,6 +15,12 @@ export class ValueLists {
       Genre: '79907d9f-1e09-4dad-a497-dfd92398bac0'
     }
   };
+  static PlaylistGroup = {
+    id: 'f8ce02a9-a951-4142-a66c-acc81a040053',
+    entries: {
+      Default: '042901e6-66da-4d4e-89ea-ae40ab98f7ab'
+    }
+  };
   static AlbumType = {
     id: '6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f',
     entries: {

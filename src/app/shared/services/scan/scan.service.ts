@@ -1105,6 +1105,7 @@ export class ScanService {
     playlist.name = name;
     playlist.favorite = false;
     playlist.imported = true;
+    playlist.groupId = ValueLists.PlaylistGroup.entries.Default;
     playlist.changeDate = new Date();
     playlist.hash = this.lookupService.hashPlaylist(playlist.name);
     await playlist.save();

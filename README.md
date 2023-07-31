@@ -243,6 +243,8 @@ All standard entities have three main fields:
 - name
 - description
 - favorite
+- groupId
+- changeDate
 
 ### PlaylistSong table
 - playlistId
