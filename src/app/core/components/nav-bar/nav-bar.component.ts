@@ -35,7 +35,7 @@ export class NavBarComponent implements OnInit {
 
   public onIconClick(iconAction: IIconAction): void {
     if (iconAction.action) {
-      iconAction.action();
+      iconAction.action(iconAction);
     }
   }
 

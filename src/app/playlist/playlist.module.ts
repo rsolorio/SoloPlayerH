@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module';
 import { TrackListComponent } from './track-list/track-list.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AddToPlaylistComponent } from './add-to-playlist/add-to-playlist.component';
 
 
 
@@ -14,7 +15,8 @@ import { FormsModule } from '@angular/forms';
   declarations: [
     PlaylistListComponent,
     PlaylistSongListComponent,
-    TrackListComponent
+    TrackListComponent,
+    AddToPlaylistComponent
   ],
   imports: [
     CommonModule,

@@ -71,10 +71,18 @@ export class DatabaseEntitiesService {
     return song;
   }
 
-  public async setFavoriteSong(songId: string, favorite: boolean): Promise<void> {
+  public async setFavoriteSong(songId: string, favorite: boolean): Promise<boolean> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.favorite = favorite;
     await song.save();
+    return favorite;
+  }
+
+  public async setFavoriteArtist(artistId: string, favorite: boolean): Promise<boolean> {
+    const artist = await ArtistEntity.findOneBy({ id: artistId });
+    artist.favorite = favorite;
+    await artist.save();
+    return favorite;
   }
 
   public async setRating(songId: string, rating: number): Promise<void> {

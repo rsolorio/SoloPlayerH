@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
-import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { IIconAction, ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
@@ -19,6 +19,7 @@ import { ValueLists } from 'src/app/shared/services/database/database.lists';
 })
 export class ArtistViewComponent implements OnInit {
   public entityEditorModel: IEntityEditorModel;
+  private artistId: string;
   constructor(
     private route: ActivatedRoute,
     private utility: UtilityService,
@@ -30,19 +31,19 @@ export class ArtistViewComponent implements OnInit {
   { }
 
   public ngOnInit(): void {
-    const artistId = this.utility.getRouteParam('id', this.route);
-    this.initialize(artistId);
+    this.artistId = this.utility.getRouteParam('id', this.route);
+    this.initialize();
   }
 
-  private async initialize(artistId: string): Promise<void> {
+  private async initialize(): Promise<void> {
     this.loadingService.show();
-    await this.loadModel(artistId);
+    await this.loadModel();
     this.initializeNavbar();
     this.loadingService.hide();
   }
 
-  private async loadModel(artistId: string): Promise<void> {
-    const data = await this.entityService.getArtistDetails(artistId);
+  private async loadModel(): Promise<void> {
+    const data = await this.entityService.getArtistDetails(this.artistId);
     this.entityEditorModel = {
       data: data,
       groups: [
@@ -80,6 +81,7 @@ export class ArtistViewComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
+    const favorite = this.entityEditorModel.data['artist_favorite'] as number;
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
@@ -91,6 +93,16 @@ export class ArtistViewComponent implements OnInit {
       title: 'Artist',
       leftIcon: {
         icon:  'mdi-account-music mdi'
+      },
+      rightIcon: {
+        icon: favorite ? 'mdi-heart mdi' : 'mdi-heart-outline mdi',
+        action: param => {
+          const iconAction = param as IIconAction;
+          const isFavorite = iconAction.icon === 'mdi-heart mdi';
+          this.entityService.setFavoriteArtist(this.artistId, !isFavorite).then(response => {
+            iconAction.icon = response ? 'mdi-heart mdi' : 'mdi-heart-outline mdi'
+          });
+        }
       }
     });
   }

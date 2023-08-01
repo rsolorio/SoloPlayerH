@@ -4,6 +4,9 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ValueListEntryEntity } from 'src/app/shared/entities';
 import { IValueListSelectorModel, ValueListSelectMode } from './value-list-selector-model.interface';
 
+/**
+ * OBSOLETE. This component became obsolete when the chip-selection component was implemented.
+ */
 @Component({
   selector: 'sp-value-list-selector',
   templateUrl: './value-list-selector.component.html',

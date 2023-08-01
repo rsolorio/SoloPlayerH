@@ -6,6 +6,9 @@ import { ValueListEntryEntity } from 'src/app/shared/entities';
 import { IValueListSelectorModel } from './value-list-selector-model.interface';
 import { ValueListSelectorComponent } from './value-list-selector.component';
 
+/**
+ * OBSOLETE. Same as the value-list-selector component.
+ */
 @Injectable({
   providedIn: 'root'
 })
