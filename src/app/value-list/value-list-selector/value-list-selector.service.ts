@@ -48,7 +48,7 @@ export class ValueListSelectorService {
         }
       }
     }
-    this.sidebarHostService.loadComponent(ValueListSelectorComponent, model);
+    //this.sidebarHostService.loadComponent(ValueListSelectorComponent, model);
     this.sidebarService.toggleRight();
   }
 }

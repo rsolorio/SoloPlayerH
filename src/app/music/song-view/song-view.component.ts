@@ -3,10 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
-import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
+import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { IEntityEditorModel, IEntityFieldModel } from 'src/app/shared/components/entity-editor/entity-editor.interface';
 import { SongClassificationEntity, ValueListEntryEntity } from 'src/app/shared/entities';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
@@ -27,8 +28,8 @@ export class SongViewComponent implements OnInit {
     private loadingService: LoadingViewStateService,
     private entityService: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
-    private chipSelectionService: ChipSelectionService
-  ) { }
+    private sidebarHostService: SideBarHostStateService)
+  { }
 
   ngOnInit(): void {
     const songId = this.utility.getRouteParam('id', this.route);
@@ -225,6 +226,7 @@ export class SongViewComponent implements OnInit {
       return valuePair;
     });
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       title: classificationTypeName,
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.Multiple,
@@ -251,10 +253,9 @@ export class SongViewComponent implements OnInit {
           this.entityEditorModel.data[classificationTypeId] = [];
           field.badge = null;
         }
-      },
-      onOk: () => { }
+      }
     };
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   private async onClassificationSelected(valuePair: ISelectableValue): Promise<void> {

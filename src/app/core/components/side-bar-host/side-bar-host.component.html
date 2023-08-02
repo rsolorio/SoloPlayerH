@@ -1,3 +1,25 @@
-<div class="sp-full-height">
-  <ng-template #spSidebarContentHost></ng-template>
+<div class="sp-full-height sp-full-width sp-side-bar-host-container">
+  <table class="sp-full-height sp-full-width">
+    <tr class="sp-side-bar-title-row"><td class="sp-side-bar-title-col">
+      <div class="sp-side-bar-title">
+        <span *ngIf="model.title" class="sp-text-xlarge">{{model.title}}</span>
+        <ng-container *ngIf="model.subTitle">
+          <br>
+          <span class="sp-text-large">{{model.subTitle}}</span>
+        </ng-container>
+      </div>
+    </td></tr>
+    <tr><td class="sp-side-bar-content-col"><ng-template #spSidebarContentHost></ng-template></td></tr>
+    <tr class="sp-side-bar-toolbar-row"><td class="sp-side-bar-toolbar-col">
+      <div class="sp-side-bar-toolbar">
+        <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">
+          <span *ngIf="model.onOk">Cancel</span>
+          <span *ngIf="!model.onOk">Close</span>
+        </div>
+        <div *ngIf="model.onOk && !model.okHidden" (click)="onOkClick()" class="sp-chip-item sp-clickable sp-bg-primary">
+          <span>OK</span>
+        </div>
+      </div>
+    </td></tr>
+  </table>
 </div>

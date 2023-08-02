@@ -1,0 +1,38 @@
+@import "../../../../styles-variables";
+
+.sp-side-bar-host-container {
+  position: absolute;
+}
+
+.sp-side-bar-title-row {
+  height: 60px;
+}
+
+.sp-side-bar-title-col {
+  border-bottom: 1px solid $sp-color-on-background-separator;
+}
+
+.sp-side-bar-title {
+  padding: 5px;
+}
+
+.sp-side-bar-content-col {
+  display: block;
+}
+
+.sp-side-bar-title-col {
+  border-bottom: 1px solid $sp-color-on-background-separator;
+}
+
+.sp-side-bar-toolbar-row {
+  height: 40px;
+}
+
+.sp-side-bar-toolbar-col {
+  border-top: 1px solid $sp-color-on-background-low;
+}
+
+.sp-side-bar-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}

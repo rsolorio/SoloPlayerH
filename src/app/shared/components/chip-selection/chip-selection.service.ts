@@ -4,6 +4,9 @@ import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-s
 import { IChipSelectionModel } from './chip-selection-model.interface';
 import { ChipSelectionComponent } from './chip-selection.component';
 
+/**
+ * OBSOLETE.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +15,7 @@ export class ChipSelectionService {
   constructor(private sidebarHostService: SideBarHostStateService, private sidebarService: SideBarStateService) { }
 
   public showInPanel(model: IChipSelectionModel): void {
-    this.sidebarHostService.loadComponent(ChipSelectionComponent, model);
+    //this.sidebarHostService.loadComponent(ChipSelectionComponent, model);
     this.sidebarService.toggleRight();
   }
 }

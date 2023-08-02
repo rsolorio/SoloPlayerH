@@ -3,12 +3,13 @@ import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { IValuePair } from 'src/app/core/models/core.interface';
 import { CoreEvent } from 'src/app/core/services/events/events.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
-import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
+import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison, CriteriaDataType, CriteriaSortDirection, CriteriaTransformAlgorithm } from 'src/app/shared/services/criteria/criteria.enum';
 import { ICriteriaValueSelector } from 'src/app/shared/services/criteria/criteria.interface';
@@ -35,7 +36,7 @@ export class QueryEditorComponent implements OnInit {
     private utilities: UtilityService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
-    private chipSelectionService: ChipSelectionService,
+    private sidebarHostService: SideBarHostStateService,
     private loadingService: LoadingViewStateService,
     private events: EventsService
   ) { }
@@ -223,11 +224,14 @@ export class QueryEditorComponent implements OnInit {
   private async openChipSelectionPanel(selector: ICriteriaValueSelector): Promise<void> {
     await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       title: selector.column.caption,
       displayMode: ChipDisplayMode.Flex,
       type: selector.type,
       values: selector.values,
-      onOk: values => {
+      okHidden: selector.type === ChipSelectorType.Quick || selector.type === ChipSelectorType.Multiple,
+      onOk: model => {
+        const selectedValues = model.values.filter(value => value.selected);
         let criteriaItem = this.model.userCriteria.find(item => item.columnName === selector.column.name);
         if (!criteriaItem) {
           criteriaItem = new CriteriaItem(selector.column.name);
@@ -237,12 +241,12 @@ export class QueryEditorComponent implements OnInit {
         if (criteriaItem.comparison === CriteriaComparison.None) {
           criteriaItem.comparison = CriteriaComparison.Equals;
         }
-        criteriaItem.columnValues = values;
+        criteriaItem.columnValues = selectedValues;
         this.doAfterCriteriaValuesUpdated(selector, criteriaItem);
       }
     };
 
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   private doAfterCriteriaValuesUpdated(selector: ICriteriaValueSelector, criteriaItem: CriteriaItem): void {
@@ -272,12 +276,14 @@ export class QueryEditorComponent implements OnInit {
     const allSelectors = [...this.supportedSelectors, this.sortBySelector, this.limitSelector, this.transformSelector];
     // Prepare the model
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       displayMode: ChipDisplayMode.Block,
       title: 'Criteria Fields',
       values: [],
       type: ChipSelectorType.MultipleOk,
-      onOk: values => {
-        values.forEach(valuePair => {
+      onOk: model => {
+        const selectedValues = model.values.filter(value => value.selected);
+        selectedValues.forEach(valuePair => {
           const selector = allSelectors.find(s => s.column.name === valuePair.value);
           if (selector) {
             selector.hidden = false;
@@ -289,7 +295,7 @@ export class QueryEditorComponent implements OnInit {
     allSelectors.filter(s => s.hidden).forEach(selector => {
       chipSelectionModel.values.push({ value: selector.column.name, caption: selector.column.caption });
     });
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   public onSortByAddClick(): void {
@@ -299,20 +305,23 @@ export class QueryEditorComponent implements OnInit {
   private async openSortBySelectionPanel(): Promise<void> {
     await this.updateSelectedValues(this.model);
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       title: this.sortBySelector.column.caption,
       displayMode: ChipDisplayMode.Flex,
       type: this.sortBySelector.type,
       values: this.sortBySelector.values,
-      onOk: values => {
+      okHidden: this.sortBySelector.type === ChipSelectorType.Quick || this.sortBySelector.type === ChipSelectorType.Multiple,
+      onOk: model => {
+        const selectedValues = model.values.filter(value => value.selected);
         // Each value corresponds to a field, so each value needs its own criteria item
         this.model.sortingCriteria = new CriteriaItems();
-        const sortedValues = this.utilities.sort(values, 'sequence');
+        const sortedValues = this.utilities.sort(selectedValues, 'sequence');
         for (const valuePair of sortedValues) {
           this.model.sortingCriteria.addSorting(valuePair.value);
         }
       }
     };
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   public getSortingCriteria(): CriteriaItem[] {
@@ -346,16 +355,19 @@ export class QueryEditorComponent implements OnInit {
 
   public onLimitEditClick(): void {
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       displayMode: ChipDisplayMode.Flex,
       type: this.limitSelector.type,
       values: this.limitSelector.values,
-      onOk: values => {
+      okHidden: this.limitSelector.type === ChipSelectorType.Quick || this.limitSelector.type === ChipSelectorType.Multiple,
+      onOk: model => {
+        const selectedValues = model.values.filter(value => value.selected);
         // Only one value should be selected
-        const selectedValuePair = values[0];
+        const selectedValuePair = selectedValues[0];
         this.model.paging.pageSize = selectedValuePair.value;
       }
     };
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   public limitCaption(limit: number): string {
@@ -368,17 +380,20 @@ export class QueryEditorComponent implements OnInit {
 
   public onAlgorithmEditClick(): void {
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       title: this.transformSelector.column.caption,
       displayMode: ChipDisplayMode.Flex,
       type: this.transformSelector.type,
       values: this.transformSelector.values,
-      onOk: values => {
+      okHidden: this.transformSelector.type === ChipSelectorType.Quick || this.transformSelector.type === ChipSelectorType.Multiple,
+      onOk: model => {
+        const selectedValues = model.values.filter(value => value.selected);
         // Only one value should be selected
-        const selectedValuePair = values[0];
+        const selectedValuePair = selectedValues[0];
         this.model.transformAlgorithm = selectedValuePair.value;
       }
     };
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   public algorithmCaption(algorithm: CriteriaTransformAlgorithm): string {

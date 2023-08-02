@@ -1,14 +1,12 @@
+import { ISideBarHostModel } from "src/app/core/components/side-bar-host/side-bar-host-model.interface";
 import { ISelectableValue } from "src/app/core/models/core.interface";
 
-export interface IChipSelectionModel {
-  title?: string;
-  subTitle?: string;
+export interface IChipSelectionModel extends ISideBarHostModel {
   type: ChipSelectorType;
   values: ISelectableValue[];
   displayMode: ChipDisplayMode;
   onValueSelectionChanged?: (valuePair: ISelectableValue) => void;
-  onCancel?: () => void;
-  onOk: (values: ISelectableValue[]) => void;
+  onOk?: (okResult: IChipSelectionModel) => void;
 }
 
 export enum ChipDisplayMode {

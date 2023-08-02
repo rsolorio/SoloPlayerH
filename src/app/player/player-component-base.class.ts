@@ -15,18 +15,20 @@ import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../platform/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
 import { ValueLists } from '../shared/services/database/database.lists';
-import { ImagePreviewService } from '../related-image/image-preview/image-preview.service';
 import { ArtistEntity, PartyRelationEntity, RelatedImageEntity, ValueListEntryEntity } from '../shared/entities';
 import { RelatedImageId } from '../shared/services/database/database.seed';
 import { ImageService } from '../platform/image/image.service';
 import { PlayerOverlayMode } from './player-overlay/player-overlay.enum';
 import { DatabaseEntitiesService } from '../shared/services/database/database-entities.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../shared/components/chip-selection/chip-selection-model.interface';
-import { ChipSelectionService } from '../shared/components/chip-selection/chip-selection.service';
 import { PartyRelationType } from '../shared/models/music.enum';
 import { In } from 'typeorm';
 import { DatabaseOptionsService } from '../shared/services/database/database-options.service';
 import { ModuleOptionName } from '../shared/models/module-option.enum';
+import { IImagePreviewModel } from '../related-image/image-preview/image-preview-model.interface';
+import { ImagePreviewComponent } from '../related-image/image-preview/image-preview.component';
+import { SideBarHostStateService } from '../core/components/side-bar-host/side-bar-host-state.service';
+import { ChipSelectionComponent } from '../shared/components/chip-selection/chip-selection.component';
 
 /**
  * Base component for any implementation of the player modes.
@@ -52,8 +54,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private databaseEntityService: DatabaseEntitiesService,
     private dialogService: DialogService,
     private utilityService: UtilityService,
-    private imagePreviewService: ImagePreviewService,
-    private chipSelectionService: ChipSelectionService,
+    private sidebarHostStateService: SideBarHostStateService,
     private imageSvc: ImageService,
     private optionsService: DatabaseOptionsService)
   {
@@ -233,12 +234,15 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
         return valuePair;
       });
       const selectionModel: IChipSelectionModel = {
+        componentType: ChipSelectionComponent,
         title: 'Mood',
         subTitle: song.name,
         type: ChipSelectorType.Quick,
         displayMode: ChipDisplayMode.Block,
         values: values,
-        onOk: selectedValues => {
+        okHidden: true,
+        onOk: model => {
+          const selectedValues = model.values.filter(value => value.selected);
           if (selectedValues && selectedValues.length) {
             const newMood = selectedValues[0].caption;
             this.databaseEntityService.setMood(song.id, newMood).then(() => {
@@ -247,7 +251,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
           }
         }
       };
-      this.chipSelectionService.showInPanel(selectionModel);
+      this.sidebarHostStateService.loadContent(selectionModel);
     });
   }
 
@@ -273,11 +277,13 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   public takeScreenshot(): void {
     this.imageSvc.getScreenshot().then(result => {
-      this.imagePreviewService.show({
+      const imagePreviewModel: IImagePreviewModel = {
         title: 'Screenshot',
         subTitle: 'Now Playing',
-        src: result
-      });
+        src: result,
+        componentType: ImagePreviewComponent
+      };
+      this.sidebarHostStateService.loadContent(imagePreviewModel);
     });
   }
 

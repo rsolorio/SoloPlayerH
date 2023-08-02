@@ -1,8 +1,3 @@
-<div class="sp-image-header">
-  <span class="sp-text-xlarge">{{model.title}}</span>
-  <br>
-  <span *ngIf="model.subTitle" class="sp-text-medium">{{model.subTitle}}</span>
-</div>
 <div class="sp-img-container">
   <img class="sp-img-preview" [src]="model.src" />
 </div>
@@ -12,8 +7,5 @@
   </div>
   <div *ngIf="!model.downloadDisabled" (click)="onDownloadClick()" class="sp-chip-item sp-bg-primary-variant sp-clickable">
     <i class="mdi-download-outline mdi"></i>&nbsp;&nbsp;<span>Download</span>
-  </div>
-  <div (click)="onCloseClick()" class="sp-chip-item sp-bg-09 sp-clickable">
-    <i class="mdi-close mdi"></i>&nbsp;&nbsp;<span>Close</span>
   </div>
 </div>

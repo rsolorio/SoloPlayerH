@@ -40,7 +40,10 @@ export class ChipSelectionComponent implements OnInit {
         
         // Confirm immediately
         if (this.model.type === ChipSelectorType.Quick) {
-          this.onOkClick();
+          if (this.model.onOk) {
+            this.model.onOk(this.model);
+          }
+          this.sidebarService.hideRight();
         }
       }
     }
@@ -66,21 +69,5 @@ export class ChipSelectionComponent implements OnInit {
         this.model.onValueSelectionChanged(chipValue);
       }
     }
-  }
-
-  onCancelClick(): void {
-    if (this.model.onCancel) {
-      this.model.onCancel();
-    }
-    this.sidebarService.hideRight();
-  }
-
-  onOkClick(): void {
-    if (this.model.onOk) {
-      // Send selected values
-      const selectedValues = this.model.values.filter(value => value.selected);
-      this.model.onOk(selectedValues);
-    }
-    this.sidebarService.hideRight();
   }
 }

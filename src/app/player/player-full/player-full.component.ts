@@ -6,7 +6,6 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
-import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
@@ -23,9 +22,9 @@ import { ResizeObserverDirective } from 'src/app/shared/directives/resize-observ
 import { BucketPalette } from 'src/app/shared/services/color-utility/color-utility.class';
 import { EyeDropperDirective } from 'src/app/shared/directives/eye-dropper/eye-dropper.directive';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 import { EntityId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
 @Component({
   selector: 'sp-player-full',
@@ -60,11 +59,10 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private events: EventsService,
     private dialog: DialogService,
     private utility: UtilityService,
-    private imagePreview: ImagePreviewService,
-    private chipSelection: ChipSelectionService,
+    private sidebarHostService: SideBarHostStateService,
     private options: DatabaseOptionsService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, imagePreview, chipSelection, imageService, options);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, sidebarHostService, imageService, options);
   }
 
   public onInit(): void {

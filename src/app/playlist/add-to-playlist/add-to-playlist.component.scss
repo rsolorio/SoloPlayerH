@@ -1,0 +1,18 @@
+@import "../../../styles-variables";
+
+.sp-chip-selection-container {
+  position: absolute;
+}
+
+.sp-chip-selection-toolbar-row {
+  height: 40px;
+}
+
+.sp-chip-selection-toolbar-col {
+  border-top: 1px solid $sp-color-on-background-low;
+}
+
+.sp-chip-selection-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}

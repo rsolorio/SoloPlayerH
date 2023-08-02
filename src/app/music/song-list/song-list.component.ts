@@ -11,7 +11,7 @@ import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { SongListBroadcastService } from './song-list-broadcast.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { RelatedImageEntity, SongArtistViewEntity } from 'src/app/shared/entities';
+import { SongArtistViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
@@ -22,7 +22,6 @@ import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.en
 import { SongBadge } from 'src/app/shared/models/music.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
-import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { IImage } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -32,6 +31,9 @@ import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed'
 import { PlayerListModel } from 'src/app/shared/models/player-list-model.class';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { IImagePreviewModel } from 'src/app/related-image/image-preview/image-preview-model.interface';
+import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image-preview.component';
 
 @Component({
   selector: 'sp-song-list',
@@ -151,9 +153,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private options: DatabaseOptionsService,
     private navigation: NavigationService,
     private navbarService: NavBarStateService,
-    private imagePreviewService: ImagePreviewService,
     private imageService: ImageService,
     private entities: DatabaseEntitiesService,
+    private sidebarHostService: SideBarHostStateService,
     private cd: ChangeDetectorRef
   ) {
     super();
@@ -291,11 +293,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-image-outline mdi',
       action: () => {
         this.imageService.getScreenshot().then(result => {
-          this.imagePreviewService.show({
+          const imagePreviewModel: IImagePreviewModel = {
             title: 'Screenshot',
             subTitle: 'Song List',
-            src: result
-          });
+            src: result,
+            componentType: ImagePreviewComponent
+          };
+          this.sidebarHostService.loadContent(imagePreviewModel);
         });
       },
       actionTimeout: 300

@@ -3,10 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { IIconAction, ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
-import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
+import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { IEntityEditorModel } from 'src/app/shared/components/entity-editor/entity-editor.interface';
 import { ArtistEntity, ValueListEntryEntity } from 'src/app/shared/entities';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
@@ -26,7 +27,7 @@ export class ArtistViewComponent implements OnInit {
     private loadingService: LoadingViewStateService,
     private entityService: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
-    private chipSelectionService: ChipSelectionService
+    private sidebarHostService: SideBarHostStateService
   )
   { }
 
@@ -120,12 +121,14 @@ export class ArtistViewComponent implements OnInit {
       return valuePair;
     });
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       title: 'Artist Type',
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.SingleOk,
       values: values,
-      onOk: values => {
-        const valuePair = values[0];
+      onOk: model => {
+        const selectedValues = model.values.filter(value => value.selected);
+        const valuePair = selectedValues[0];
         if (valuePair.value !== this.entityEditorModel.data['artist_artistTypeId']) {
           this.entityEditorModel.data['artist_artistTypeId'] = valuePair.value;
           this.entityEditorModel.data['artistType'] = valuePair.caption;
@@ -136,7 +139,7 @@ export class ArtistViewComponent implements OnInit {
         }
       }
     };
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   private async editCountry(): Promise<void> {
@@ -152,12 +155,14 @@ export class ArtistViewComponent implements OnInit {
       return valuePair;
     });
     const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
       title: 'Country',
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.SingleOk,
       values: values,
-      onOk: values => {
-        const valuePair = values[0];
+      onOk: model => {
+        const selectedValues = model.values.filter(value => value.selected);
+        const valuePair = selectedValues[0];
         if (valuePair.value !== this.entityEditorModel.data['artist_countryId']) {
           this.entityEditorModel.data['artist_countryId'] = valuePair.value;
           this.entityEditorModel.data['country'] = valuePair.caption;
@@ -168,7 +173,7 @@ export class ArtistViewComponent implements OnInit {
         }
       }
     };
-    this.chipSelectionService.showInPanel(chipSelectionModel);
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
 }

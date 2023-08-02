@@ -171,6 +171,22 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
                 setting.warningText = 'Unable to start sync. Please select the audio directory first.';
               }
             }
+          },
+          {
+            name: 'Multiple Artists',
+            icon: 'mdi-account-multiple mdi',
+            dataType: 'text',
+            descriptions: [
+              'This feature will take artist tags and split every value by using separators. Click here to specify separators. Leave empty to disable the feature.'
+            ]
+          },
+          {
+            name: 'Multiple Genres',
+            icon: 'mdi-tag-multiple mdi',
+            dataType: 'text',
+            descriptions: [
+              'This feature will take genre tags and split every value by using separators. Click here to specify separators. Leave empty to disable the feature.'
+            ]
           }
         ]
       },

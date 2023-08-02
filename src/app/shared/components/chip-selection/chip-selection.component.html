@@ -1,38 +1,9 @@
-<div class="sp-full-height sp-full-width sp-chip-selection-container" *ngIf="model">
-  <table class="sp-full-height sp-full-width">
-    <tr class="sp-chip-selection-title-row"><td class="sp-chip-selection-title-col">
-      <div class="sp-chip-selection-title">
-        <span *ngIf="model.title" class="sp-text-xlarge">{{model.title}}</span>
-        <ng-container *ngIf="model.subTitle">
-          <br>
-          <span class="sp-text-large">{{model.subTitle}}</span>
-        </ng-container>
-      </div>
-    </td></tr>
-    <tr><td>
-      <div class="sp-chip-selection-body sp-full-height" [ngClass]="{ 'sp-chip-container': model.displayMode === ChipDisplayMode.Flex }">
-        <div
-        (click)="onChipValueClick(chipValue)"
-        *ngFor="let chipValue of model.values"
-        class="sp-chip-item sp-clickable"
-        [ngClass]="{ 'sp-bg-primary-variant': chipValue.selected, 'sp-bg-09': !chipValue.selected }">
-          <span class="sp-chip-text sp-text-large">{{chipValue.caption}}</span>
-        </div>
-      </div>
-    </td></tr>
-    <tr class="sp-chip-selection-toolbar-row"><td class="sp-chip-selection-toolbar-col">
-      <div class="sp-chip-selection-toolbar">
-        <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">
-          <span *ngIf="model.type !== ChipSelectorType.Multiple">Cancel</span>
-          <span *ngIf="model.type === ChipSelectorType.Multiple">Close</span>
-        </div>
-        <!-- Display the Ok button only when the type is not Quick -->
-        <div
-        *ngIf="model.type !== ChipSelectorType.Quick && model.type !== ChipSelectorType.Multiple"
-        (click)="onOkClick()"
-        class="sp-chip-item sp-bg-primary sp-clickable"
-        >OK</div>
-      </div>
-    </td></tr>
-  </table>
+<div class="sp-chip-selection-body sp-full-height" [ngClass]="{ 'sp-chip-container': model.displayMode === ChipDisplayMode.Flex }">
+  <div
+  (click)="onChipValueClick(chipValue)"
+  *ngFor="let chipValue of model.values"
+  class="sp-chip-item sp-clickable"
+  [ngClass]="{ 'sp-bg-primary-variant': chipValue.selected, 'sp-bg-09': !chipValue.selected }">
+    <span class="sp-chip-text sp-text-large">{{chipValue.caption}}</span>
+  </div>
 </div>

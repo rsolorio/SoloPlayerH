@@ -1,5 +1,10 @@
 import { Type } from "@angular/core";
 
 export interface ISideBarHostModel {
-  componentType?: Type<any>;
+  componentType: Type<any>;
+  title?: string;
+  subTitle?: string;
+  okHidden?: boolean;
+  onCancel?: () => void;
+  onOk?: (okResult: ISideBarHostModel) => void;
 }

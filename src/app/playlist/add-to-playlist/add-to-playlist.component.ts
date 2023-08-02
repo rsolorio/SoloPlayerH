@@ -11,5 +11,4 @@ export class AddToPlaylistComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

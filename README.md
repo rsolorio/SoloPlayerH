@@ -55,6 +55,7 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - Artist/Song associations
   - Featuring artists
   - Contributors
+- Share 'Now Playing' screenshot
 
 ## Menu
 - Home

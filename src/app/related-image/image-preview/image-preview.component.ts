@@ -23,8 +23,4 @@ export class ImagePreviewComponent {
     this.utility.downloadUrl(this.model.src);
     this.sidebarService.hideRight();
   }
-
-  public onCloseClick(): void {
-    this.sidebarService.hideRight();
-  }
 }

@@ -9,11 +9,10 @@ import { PlayerComponentBase } from '../player-component-base.class';
 import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
-import { ImagePreviewService } from 'src/app/related-image/image-preview/image-preview.service';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { ChipSelectionService } from 'src/app/shared/components/chip-selection/chip-selection.service';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -33,12 +32,11 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private menuService: MenuService,
     private entityService: DatabaseEntitiesService,
     private dialog: DialogService,
-    private imagePreview: ImagePreviewService,
-    private chipSelection: ChipSelectionService,
+    private sidebarHostService: SideBarHostStateService,
     private imageService: ImageService,
     private options: DatabaseOptionsService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, imagePreview, chipSelection, imageService, options);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, sidebarHostService, imageService, options);
   }
 
   public ngOnInit() {
