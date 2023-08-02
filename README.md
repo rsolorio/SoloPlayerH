@@ -214,8 +214,6 @@ All standard entities have three main fields:
 
 
 ### Album table
-- id
-- name
 - primaryArtistId
 - releaseYear
 - releaseDecade
@@ -224,8 +222,6 @@ All standard entities have three main fields:
 - albumType
 
 ### Artist table
-- id
-- name
 - artistType
 - country
 - favorite
@@ -240,8 +236,6 @@ All standard entities have three main fields:
 - relationTypeId
 
 ### Playlist table
-- id
-- name
 - description
 - favorite
 - groupId
@@ -251,11 +245,6 @@ All standard entities have three main fields:
 - playlistId
 - songId
 - sequence
-
-### Classification table
-- id
-- name
-- classificationType
 
 ### SongClassification table
 - songId
@@ -268,8 +257,6 @@ All standard entities have three main fields:
 - playDate
 
 ### RelatedImage table
-- id
-- name
 - relatedId
   - Id of the associated entity
 - sourcePath
@@ -286,6 +273,20 @@ All standard entities have three main fields:
   - An array of colors selected for this image
 - colorPalette
   - An array of colors associated with the image
+
+### ValueListType table
+This table stores list definitions.
+- description
+- icon
+- system
+
+### ValueListEntry table
+This table stores the list of values of each list definition.
+- valueListTypeId
+- description
+- icons
+- sequence
+- isClassification
 
 ## Scripts
 This is a list of NPM package scripts
