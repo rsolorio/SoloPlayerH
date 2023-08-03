@@ -42,7 +42,7 @@ appRoutes[AppRoute.Genres] = { route: AppRoute.Genres,
   icon: 'mdi-tag-outline mdi',
   name: 'Genres' };
 appRoutes[AppRoute.Classifications] = { route: AppRoute.Classifications,
-  icon: 'mdi-family-tree mdi',
+  icon: 'mdi-sitemap-outline mdi',
   name: 'Classifications' };
 appRoutes[AppRoute.Songs] = { route: AppRoute.Songs,
   icon: 'mdi-music-note mdi',
