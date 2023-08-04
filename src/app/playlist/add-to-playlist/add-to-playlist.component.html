@@ -1,4 +1,4 @@
-<div class="sp-add-to-playlist-buttons">
+<div class="sp-add-to-playlist-buttons sp-text-medium-fixed">
   <div
   (click)="onRecentsClick()"
   class="sp-playlist-button sp-chip-item sp-clickable sp-bg-09"
@@ -15,19 +15,19 @@
 <div class="sp-add-to-playlist-inputs">
   <ng-container *ngIf="displayAll">
     <input [(ngModel)]="searchPlaylistName" type="search" class="sp-playlist-search-input" placeholder="Search playlist">
-    <i (click)="onSearchPlaylist()" class="mdi-magnify mdi sp-icon sp-text-xlarge sp-clickable"></i>
+    <i (click)="onSearchPlaylist()" class="mdi-magnify mdi sp-icon sp-text-xlarge-fixed sp-clickable"></i>
     <i
     (click)="onSortAllClick()"
     [ngClass]="{ 'mdi-sort-alphabetical-ascending': !sortAllDescending, 'mdi-sort-alphabetical-descending': sortAllDescending }"
-    class="mdi sp-icon sp-text-xlarge sp-clickable"></i>
+    class="mdi sp-icon sp-text-xlarge-fixed sp-clickable"></i>
   </ng-container>
   <ng-container *ngIf="!displayAll">
     <input [(ngModel)]="newPlaylistName" type="search" class="sp-playlist-search-input" placeholder="New playlist">
-    <i (click)="onAddPlaylist()" class="mdi-plus mdi sp-icon sp-text-xlarge sp-clickable"></i>
+    <i (click)="onAddPlaylist()" class="mdi-plus mdi sp-icon sp-text-xlarge-fixed sp-clickable"></i>
     <i
     (click)="onSortRecentClick()"
     [ngClass]="{ 'mdi-sort-clock-ascending-outline': !sortRecentsAscending, 'mdi-sort-clock-descending-outline': sortRecentsAscending }"
-    class="mdi sp-icon sp-text-xlarge sp-clickable"></i>
+    class="mdi sp-icon sp-text-xlarge-fixed sp-clickable"></i>
   </ng-container>
 </div>
 <div class="sp-playlist-list">

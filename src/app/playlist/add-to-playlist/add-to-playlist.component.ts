@@ -10,6 +10,8 @@ import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { DatabaseLookupService } from 'src/app/shared/services/database/database-lookup.service';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-state.service';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 
 @Component({
   selector: 'sp-add-to-playlist',
@@ -33,7 +35,9 @@ export class AddToPlaylistComponent implements OnInit {
     private db: DatabaseService,
     private utility: UtilityService,
     private lookup: DatabaseLookupService,
-    private sidebarService: SideBarStateService) { }
+    private sidebarService: SideBarStateService,
+    private options: DatabaseOptionsService)
+  { }
 
   ngOnInit(): void {
     this.loadData();
@@ -130,11 +134,14 @@ export class AddToPlaylistComponent implements OnInit {
   private async addSongsToPlaylist(songs: ISongModel[], playlistId: string): Promise<void> {
     let trackAdded = false;
     let sequence = await PlaylistEntity.countBy({ id: playlistId});
+    const allowDuplicates = this.options.getBoolean(ModuleOptionName.AllowDupsInPlaylists);
     for (const song of songs) {
-      const existingPlaylistSong = await PlaylistSongEntity.findOneBy({ playlistId: playlistId, songId: song.id });
-      if (existingPlaylistSong) {
-        // Send some notification?
-        // Depends on option to add or reject the song?
+      let existingPlaylistSong: PlaylistSongEntity;
+      if (!allowDuplicates) {
+        existingPlaylistSong = await PlaylistSongEntity.findOneBy({ playlistId: playlistId, songId: song.id });
+      }
+      if (!allowDuplicates && existingPlaylistSong) {
+        // TODO: send some notification
       }
       else {
         sequence++;

@@ -6,7 +6,8 @@ export enum ModuleOptionName {
   ScanPlaylistFolderPath = 'ScanPlaylistFolderPath',
   HideNavbarOnScroll = 'HideNavbarOnScroll',
   PlayerReplayTime = 'PlayerReplayTime',
-  PlayerForwardTime = 'PlayerForwardTime'
+  PlayerForwardTime = 'PlayerForwardTime',
+  AllowDupsInPlaylists = 'AllowDupsInPlaylists'
 }
 
 export enum ModuleOptionEditor {

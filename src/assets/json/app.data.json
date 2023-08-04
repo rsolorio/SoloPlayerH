@@ -112,6 +112,15 @@
         "multipleValues": false,
         "system": false,
         "values": 4
+      },
+      {
+        "name": "AllowDupsInPlaylists",
+        "moduleName": "Playlist",
+        "title": "Allow dups in playlists",
+        "description": "Allow to add a song that was already added to that playlist.",
+        "multipleValues": false,
+        "system": false,
+        "values": false
       }
     ],
     "relatedImage": [
