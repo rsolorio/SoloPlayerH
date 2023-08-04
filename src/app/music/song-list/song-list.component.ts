@@ -34,6 +34,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { IImagePreviewModel } from 'src/app/related-image/image-preview/image-preview-model.interface';
 import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image-preview.component';
+import { AddToPlaylistService } from 'src/app/playlist/add-to-playlist/add-to-playlist.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -53,11 +54,13 @@ export class SongListComponent extends CoreComponent implements OnInit {
     listUpdatedEvent: AppEvent.SongListUpdated,
     itemMenuList: [
       {
-        caption: 'Search...',
-        icon: 'mdi-web mdi',
+        caption: 'Add to playlist',
+        icon: 'mdi-playlist-plus mdi',
         action: param => {
           const song = param as ISongModel;
-          this.utility.googleSearch(`${song.artistName} ${song.name}`);
+          if (song) {
+            this.addToPlaylistService.showPanel([song]);
+          }
         }
       },
       {
@@ -68,6 +71,18 @@ export class SongListComponent extends CoreComponent implements OnInit {
           if (song) {
             this.navigation.forward(AppRoute.Songs, { routeParams: [song.id] });
           }
+        }
+      },
+      {
+        caption: '',
+        isSeparator: true
+      },
+      {
+        caption: 'Search...',
+        icon: 'mdi-web mdi',
+        action: param => {
+          const song = param as ISongModel;
+          this.utility.googleSearch(`${song.artistName} ${song.name}`);
         }
       },
       {
@@ -156,6 +171,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private imageService: ImageService,
     private entities: DatabaseEntitiesService,
     private sidebarHostService: SideBarHostStateService,
+    private addToPlaylistService: AddToPlaylistService,
     private cd: ChangeDetectorRef
   ) {
     super();

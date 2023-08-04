@@ -12,24 +12,35 @@
   border-bottom: 1px solid $sp-color-on-background-separator;
 }
 
-.sp-side-bar-title {
+.sp-side-bar-titles {
   padding: 5px;
+}
+
+.sp-side-bar-title {
+  display: flex;
 }
 
 .sp-side-bar-content-col {
   display: block;
+  position: absolute;
+  overflow-y: auto;
+  
 }
 
-.sp-side-bar-title-col {
-  border-bottom: 1px solid $sp-color-on-background-separator;
+.sp-side-bar-content-col-height-with-subTitle {
+  height: calc(100% - 122px); // title: 60px + toolbar: 44px
+}
+
+.sp-side-bar-content-col-height-without-subTitle {
+  height: calc(100% - 104px); // title: 60px + toolbar: 44px
 }
 
 .sp-side-bar-toolbar-row {
-  height: 40px;
+  height: 44px;
 }
 
 .sp-side-bar-toolbar-col {
-  border-top: 1px solid $sp-color-on-background-low;
+  border-top: 1px solid $sp-color-on-background-separator;
 }
 
 .sp-side-bar-toolbar {

@@ -1,4 +1,4 @@
-<div class="sp-chip-selection-body sp-full-height" [ngClass]="{ 'sp-chip-container': model.displayMode === ChipDisplayMode.Flex }">
+<div class="sp-full-height" [ngClass]="{ 'sp-chip-container': model.displayMode === ChipDisplayMode.Flex }">
   <div
   (click)="onChipValueClick(chipValue)"
   *ngFor="let chipValue of model.values"

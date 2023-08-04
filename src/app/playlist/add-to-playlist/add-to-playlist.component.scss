@@ -1,18 +1,38 @@
 @import "../../../styles-variables";
 
-.sp-chip-selection-container {
-  position: absolute;
-}
-
-.sp-chip-selection-toolbar-row {
-  height: 40px;
-}
-
-.sp-chip-selection-toolbar-col {
-  border-top: 1px solid $sp-color-on-background-low;
-}
-
-.sp-chip-selection-toolbar {
+.sp-add-to-playlist-buttons {
   display: flex;
-  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+.sp-playlist-button {
+  flex-grow: 1;
+  flex-basis: 0;
+  text-align: center;
+}
+
+.sp-add-to-playlist-inputs {
+  display: flex;
+  padding-left: 4px;
+  padding-right: 4px;
+  margin-top: 5px;
+}
+
+.sp-icon {
+  height: 34px;
+  width: 40px;
+  text-align: center;
+}
+
+.sp-playlist-search-input {
+  height: 34px;
+  border-radius: 0.25rem;
+  border: 1px solid $sp-color-on-background-low;
+  padding-left: 10px;
+  padding-right: 10px;
+  outline: none;
+}
+
+.sp-playlist-list {
+  margin-top: 5px;
 }

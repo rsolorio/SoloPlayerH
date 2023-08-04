@@ -39,6 +39,8 @@ export class SideBarHostStateService implements IStateService<ISideBarHostModel>
     this.model.componentType = content.componentType;
     this.model.title = content.title;
     this.model.subTitle = content.subTitle;
+    this.model.titleIcon = content.titleIcon;
+    this.model.subTitleIcon = content.subTitleIcon;
     this.model.onOk = content.onOk;
     this.model.onCancel = content.onCancel;
     if (this.model.componentType) {

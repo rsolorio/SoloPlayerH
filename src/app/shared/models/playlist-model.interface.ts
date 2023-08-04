@@ -5,4 +5,5 @@ export interface IPlaylistModel extends IListItemModel {
   songCount: number;
   seconds: number;
   favorite: boolean;
+  changeDate: Date;
 }
