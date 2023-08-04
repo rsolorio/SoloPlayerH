@@ -1,4 +1,4 @@
-import { ComponentFactoryResolver, Injectable, Type, ViewContainerRef } from '@angular/core';
+import { ComponentFactoryResolver, Injectable, ViewContainerRef } from '@angular/core';
 import { IStateService } from '../../models/core.interface';
 import { ISideBarHostModel } from './side-bar-host-model.interface';
 import { SideBarStateService } from '../side-bar/side-bar-state.service';
@@ -29,13 +29,17 @@ export class SideBarHostStateService implements IStateService<ISideBarHostModel>
    * Saves the container that hosts the component to display.
    * @param viewContainer The ViewContainerRef that hosts the component to display in the side bar.
    */
-   public saveComponentContainer(viewContainer: ViewContainerRef): void {
+  public saveComponentContainer(viewContainer: ViewContainerRef): void {
     this.componentContainer = viewContainer;
   }
 
-  public loadContent(content: ISideBarHostModel): void {
+  public clearContent(): void {
     this.componentContainer.clear();
     this.componentInstance = undefined;
+  }
+
+  public loadContent(content: ISideBarHostModel): void {
+    this.clearContent();
     this.model.componentType = content.componentType;
     this.model.title = content.title;
     this.model.subTitle = content.subTitle;

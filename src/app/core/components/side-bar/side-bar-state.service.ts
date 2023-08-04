@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Position } from '../../models/core.enum';
 import { ISideBarModel } from './side-bar-model.interface';
 import { LoadingViewStateService } from '../loading-view/loading-view-state.service';
+import { EventsService } from '../../services/events/events.service';
+import { CoreEvent } from '../../services/events/events.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,7 @@ export class SideBarStateService {
 
   private stateList: { [position: string]: ISideBarModel; } = { };
 
-  constructor(private loadingViewService: LoadingViewStateService) { }
+  constructor(private loadingViewService: LoadingViewStateService, private events: EventsService) { }
 
   public getState(position: Position): ISideBarModel {
     let sidebarState = this.stateList[position];
@@ -50,7 +52,7 @@ export class SideBarStateService {
 
   public setShowProperty(show: boolean, position: Position): void {
     const sidebarState = this.stateList[position];
-    if (sidebarState) {
+    if (sidebarState && sidebarState.show !== show) {
       sidebarState.show = show;
       if (sidebarState.show) {
         // Passing as an arrow function will allow to pass the proper context
@@ -66,6 +68,7 @@ export class SideBarStateService {
       else {
         this.loadingViewService.hide();
       }
+      this.events.broadcast(CoreEvent.SidebarShow, sidebarState);
     }
   }
 }

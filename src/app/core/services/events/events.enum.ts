@@ -10,5 +10,6 @@ export enum CoreEvent {
   RouteChanging = 'ROUTE_CHANGING',
   RouteChanged = 'ROUTE_CHANGED',
   SidebarMenuAction = 'SIDEBAR_MENU_ACTION',
+  SidebarShow = 'SIDEBAR_SHOW',
   NavbarBackRequested = 'NAVBAR_BACK_REQUESTED'
 }
