@@ -118,6 +118,7 @@
         "moduleName": "Playlist",
         "title": "Allow dups in playlists",
         "description": "Allow to add a song that was already added to that playlist.",
+        "valueEditorType": "YesNo",
         "multipleValues": false,
         "system": false,
         "values": false

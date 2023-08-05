@@ -152,7 +152,9 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     }
   }
 
-  public onShowSongsClick(artist: IArtistModel): void {
+  public onShowSongsClick(e: Event, artist: IArtistModel): void {
+    // If we don't stop, the onItemContentClick will be fired
+    e.stopImmediatePropagation();    
     const songRoute = appRoutes[AppRoute.Songs];
     this.showEntity(songRoute, artist);
   }

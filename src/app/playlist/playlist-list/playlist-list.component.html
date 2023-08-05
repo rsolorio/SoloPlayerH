@@ -3,15 +3,24 @@
 [infoTemplate]="infoTemplate"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
-    <span class="sp-text-medium sp-no-select">{{item.name}}</span>
-    <br>
-    <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-      <i class="mdi-music-note mdi">&nbsp;</i><span>{{item.songCount}}&nbsp;&nbsp;</span>
-      <i class="mdi-timer-outline mdi">&nbsp;</i><span>{{item.seconds | duration}}</span>
-      <ng-container *ngIf="item.description">
-        <span>&nbsp;&nbsp;</span>
-        <i class="mdi-note-text-outline mdi">&nbsp;</i><span>{{item.description}}</span>
-      </ng-container>
-    </span>
+    <table class="sp-table sp-table-no-padding sp-full-height sp-full-width">
+      <tr>
+        <td>
+          <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
+          <br>
+          <span class="sp-color-on-bg-low sp-text-small sp-no-select">
+            <i class="mdi-music-note mdi">&nbsp;</i><span>{{item.songCount}}&nbsp;&nbsp;</span>
+            <i class="mdi-timer-outline mdi">&nbsp;</i><span>{{item.seconds | duration}}</span>
+            <ng-container *ngIf="item.description">
+              <span>&nbsp;&nbsp;</span>
+              <i class="mdi-note-text-outline mdi">&nbsp;</i><span>{{item.description}}</span>
+            </ng-container>
+          </span>
+        </td>
+        <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onPlayClick($event, item)">
+          <i class="mdi-play-box-outline mdi sp-text-xlarge"></i>
+        </td>
+      </tr>
+    </table>
   </ng-template>
 </sp-list-base>

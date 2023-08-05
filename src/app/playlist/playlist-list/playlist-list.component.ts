@@ -45,7 +45,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
         action: param => {
           const playlist = param as IPlaylistModel;
           if (playlist) {
-            this.navigation.forward(AppRoute.Playlists, { routeParams: [playlist.id] });
+            this.editPlaylist(playlist.id);
           }
         }
       }
@@ -81,16 +81,18 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemContentClick(playlist: IPlaylistModel): void {
-    this.onPlaylistClick(playlist);
+    this.editPlaylist(playlist.id);
   }
 
-  private onPlaylistClick(playlist: IPlaylistModel): void {
+  public onPlayClick(e: Event, playlist: IPlaylistModel): void {
+    // If we don't stop, the onItemContentClick will be fired
+    e.stopImmediatePropagation();
     this.loadPlaylistAndPlay(playlist);
   }
 
   private async getPlaylistImage(playlist: IPlaylistModel): Promise<IImage> {
     const playlistWithSongs = await this.entityService.getPlaylistWithSongs(playlist.id);
-    if (playlistWithSongs.playlistSongs && playlistWithSongs.playlistSongs.length) {
+    if (playlistWithSongs?.playlistSongs?.length) {
       // TODO: use entities service (getRelatedImages) instead
       playlistWithSongs.playlistSongs = this.utilities.sort(playlistWithSongs.playlistSongs, 'sequence');
       const track = playlistWithSongs.playlistSongs[0];
@@ -116,5 +118,9 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     const playerList = this.playerService.getState().playerList;
     playerList.load(playlist.id, playlist.name, sortedTracks);
     await this.playerService.playFirst();
+  }
+
+  private editPlaylist(playlistId: string): void {
+    this.navigation.forward(AppRoute.Playlists, { routeParams: [playlistId] });
   }
 }

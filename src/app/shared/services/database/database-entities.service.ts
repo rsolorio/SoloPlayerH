@@ -103,6 +103,10 @@ export class DatabaseEntitiesService {
     await song.save();
   }
 
+  /**
+   * Gets a playlist with its associated song entities.
+   * If the playlist doesn't have associated songs, it will return null.
+   */
   public getPlaylistWithSongs(playlistId: string): Promise<PlaylistEntity> {
     return PlaylistEntity
       .getRepository()

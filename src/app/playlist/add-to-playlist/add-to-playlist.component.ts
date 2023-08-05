@@ -76,6 +76,8 @@ export class AddToPlaylistComponent implements OnInit {
   }
 
   public onPlaylistClick(playlist: IPlaylistModel): void {
+    // select the list just to quickly highlight the selected item
+    playlist.selected = true;
     this.addSongsToPlaylist(this.model.songs, playlist.id).then(() => {
       // TODO: if the song or songs are not added do not close the panel
       this.sidebarService.hideRight();
@@ -133,7 +135,7 @@ export class AddToPlaylistComponent implements OnInit {
 
   private async addSongsToPlaylist(songs: ISongModel[], playlistId: string): Promise<void> {
     let trackAdded = false;
-    let sequence = await PlaylistEntity.countBy({ id: playlistId});
+    let sequence = await PlaylistSongEntity.countBy({ playlistId: playlistId });
     const allowDuplicates = this.options.getBoolean(ModuleOptionName.AllowDupsInPlaylists);
     for (const song of songs) {
       let existingPlaylistSong: PlaylistSongEntity;

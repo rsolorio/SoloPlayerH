@@ -34,7 +34,8 @@
   <div
   *ngFor="let playlist of playlists"
   (click)="onPlaylistClick(playlist)"
-  class="sp-chip-item sp-bg-09 sp-clickable">
+  class="sp-chip-item sp-bg-09 sp-clickable"
+  [ngClass]="{ 'sp-bg-primary': playlist.selected }">
     <span class="sp-text-medium">{{playlist.name}}</span>
     <br>
     <i class="mdi-music-note mdi sp-text-small sp-color-on-bg-low">&nbsp;</i>

@@ -402,6 +402,7 @@ export class PlayerListModel implements IDbModel {
     if (a.id && b.id) {
       return a.id === b.id;
     }
+    // In theory there should not be two different tracks with the same sequence
     return a.playlistId === b.playlistId && a.sequence === b.sequence;
   }
 
