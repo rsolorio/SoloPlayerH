@@ -5,7 +5,9 @@ import { ISideBarMenuModel } from './side-bar-menu-model.interface';
 import { UtilityService } from '../../services/utility/utility.service';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
-import { appRoutes } from 'src/app/app-routes';
+import { AppRoute, appRoutes } from 'src/app/app-routes';
+import { LogService } from '../../services/log/log.service';
+import { LogLevel } from '../../services/log/log.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,7 @@ export class SideBarMenuStateService {
     loginMenuLoaded: false
   };
 
-  constructor(private events: EventsService, private utility: UtilityService) {
+  constructor(private events: EventsService, private utility: UtilityService, private log: LogService) {
   }
 
   public getState(): ISideBarMenuModel {
@@ -83,6 +85,10 @@ export class SideBarMenuStateService {
 
       for (const key of Object.keys(appRoutes)) {
         const routeInfo = appRoutes[key];
+        // Show the Log menu only on Verbose
+        if (key === AppRoute.Log && this.log.level === LogLevel.Verbose) {
+         routeInfo.menuHidden = false; 
+        }
         if (!routeInfo.menuHidden) {
           this.state.items.push(this.createMenuItem(routeInfo.name, routeInfo.icon, false, null, routeInfo.route));
         }

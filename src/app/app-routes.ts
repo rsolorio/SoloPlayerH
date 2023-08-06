@@ -58,7 +58,8 @@ appRoutes[AppRoute.Settings] = { route: AppRoute.Settings,
   name: 'Settings' };
 appRoutes[AppRoute.Log] = { route: AppRoute.Log,
   icon: 'mdi-file-document-edit-outline mdi',
-  name: 'Event Log' };
+  name: 'Event Log',
+  menuHidden: true };
 appRoutes[AppRoute.Queries] = { route: AppRoute.Queries,
   icon: 'mdi-filter-outline mdi',
   name: 'Queries',
