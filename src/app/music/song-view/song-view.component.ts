@@ -89,7 +89,7 @@ export class SongViewComponent implements OnInit {
             },
             {
               propertyName: 'song_duration',
-              icon: 'mdi-clock-outline mdi',
+              icon: 'mdi-timer-outline mdi',
               label: 'Duration'
             }
           ]

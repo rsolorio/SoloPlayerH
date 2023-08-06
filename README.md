@@ -4,9 +4,6 @@ Audio player, music manager, tag editor, album art finder, playlist creator, fil
 
 This is an offline player (for music stored in your device) that currently supports Mp3 files.
 
-## Technologies
-This is a hybrid app built with Electron/Angular/Sqlite.
-
 ## Features
 
 ### Breadcrumbs
@@ -88,6 +85,9 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - Log
 
 ## Icons
+
+## Technologies
+This is a hybrid app built with Electron/Angular/Sqlite.
 
 ## Database schema
 All standard entities have three main fields:

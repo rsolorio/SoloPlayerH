@@ -104,14 +104,34 @@
         "values": 30
       },
       {
-        "name": "ShortPlayAlbumThreshold",
+        "name": "ShortPlayArtistThreshold",
         "moduleName": "Music",
-        "title": "Short play album threshold",
-        "description": "The maximum number of tracks an album can have to be considered a short play album.",
+        "title": "Short play artist threshold",
+        "description": "The maximum number of tracks associated to an album artist to be considered a short play artist.",
         "valueEditorType": "Number",
         "multipleValues": false,
         "system": false,
         "values": 4
+      },
+      {
+        "name": "ShortPlayAlbumThreshold",
+        "moduleName": "Music",
+        "title": "Short play album threshold",
+        "description": "The maximum number of tracks in an album to be considered a short play album.",
+        "valueEditorType": "Number",
+        "multipleValues": false,
+        "system": false,
+        "values": 4
+      },
+      {
+        "name": "ShortPlaySongThreshold",
+        "moduleName": "Music",
+        "title": "Short play song threshold",
+        "description": "The maximum duration, in seconds, for a song to be considered a short play song.",
+        "valueEditorType": "Number",
+        "multipleValues": false,
+        "system": false,
+        "values": 90
       },
       {
         "name": "AllowDupsInPlaylists",
