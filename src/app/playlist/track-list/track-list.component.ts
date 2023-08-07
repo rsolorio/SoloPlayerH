@@ -44,8 +44,7 @@ export class TrackListComponent extends CoreComponent implements OnInit {
       icon: 'mdi-album mdi'
     });
     this.model.itemMenuList.push({
-      isSeparator: true,
-      caption: ''
+      isSeparator: true
     });
     if (this.model.editEnabled) {
       this.model.itemMenuList.push({

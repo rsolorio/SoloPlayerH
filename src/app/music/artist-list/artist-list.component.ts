@@ -63,8 +63,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         }
       },
       {
-        isSeparator: true,
-        caption: null
+        isSeparator: true
       }
     ],
     criteriaResult: {

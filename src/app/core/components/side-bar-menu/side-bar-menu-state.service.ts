@@ -33,7 +33,6 @@ export class SideBarMenuStateService {
       active,
       badge,
       route,
-      isSeparator: false,
       action: menuItem => {
         if (route) {
           this.events.broadcast(CoreEvent.SidebarMenuAction, menuItem);

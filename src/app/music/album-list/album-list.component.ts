@@ -64,8 +64,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         }
       },
       {
-        isSeparator: true,
-        caption: null
+        isSeparator: true
       },
       {
         caption: appRoutes[AppRoute.Songs].name,

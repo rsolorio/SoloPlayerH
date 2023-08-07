@@ -74,7 +74,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
         }
       },
       {
-        caption: '',
         isSeparator: true
       },
       {

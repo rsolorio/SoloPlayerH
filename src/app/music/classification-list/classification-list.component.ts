@@ -49,8 +49,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
         }
       },
       {
-        isSeparator: true,
-        caption: null
+        isSeparator: true
       },
       {
         caption: this.albumArtistRoute.name,

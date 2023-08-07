@@ -7,7 +7,11 @@
     <table class="sp-table sp-table-no-padding sp-full-height sp-full-width">
       <tr>
         <td>
-          <i *ngIf="item.recentIcon" class="mdi-vanish-quarter mdi sp-new-item-icon" [ngClass]="item.recentIcon.styleClass"  [title]="item.recentIcon.tooltip"></i>
+          <i
+          *ngIf="item.recentIcon && !item.recentIcon.hidden"
+          class="sp-new-item-icon"
+          [ngClass]="[item.recentIcon.icon, item.recentIcon.styleClass]"
+          [title]="item.recentIcon.tooltip"></i>
           <span class="sp-main-text sp-text-medium sp-no-select">{{item.artistStylized}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">

@@ -115,6 +115,8 @@ export interface IIcon {
   styleClass?: string;
   /** Html element title. */
   tooltip?: string;
+  /** If the icon should be hidden. */
+  hidden?: boolean;
 }
 
 export interface IIconActionGeneric<TParam> extends IIcon {

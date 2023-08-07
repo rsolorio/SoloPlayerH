@@ -1,7 +1,6 @@
 import { Type } from '@angular/core';
 import { IMenuModel } from '../../models/menu-model.interface';
 import { IIconAction } from '../../models/core.interface';
-import { IIconMenuModel } from '../icon-menu/icon-menu-model.interface';
 
 /** Interface that defines the behavior of the top nav bar of the application. */
 export interface INavbarModel {
