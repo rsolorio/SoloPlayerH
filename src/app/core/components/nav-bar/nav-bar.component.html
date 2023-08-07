@@ -11,7 +11,7 @@
       <td class="sp-td-center">
           <table class="sp-full-width sp-nav-bar-height"><tr>
               <!-- Inner left icon -->
-              <td *ngIf="model.leftIcon && !model.leftIconMenu" [ngClass]="{ 'sp-clickable' : model.leftIcon.action }" class="sp-td-inner-icon">
+              <td *ngIf="model.leftIcon" [ngClass]="{ 'sp-clickable' : model.leftIcon.action }" class="sp-td-inner-icon">
                   <i
                   [ngClass]="model.leftIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.leftIcon)"></i>
@@ -20,10 +20,6 @@
                   *ngIf="model.leftSubIcon"
                   [ngClass]="model.leftSubIcon"
                   class="sp-left-sub-icon sp-text-small-fixed"></i>
-              </td>
-              <!-- Inner left icon menu -->
-              <td *ngIf="model.leftIconMenu" class="sp-td-inner-icon">
-                  <sp-icon-menu [items]="model.leftIconMenu.items" [icon]="model.leftIconMenu.icon" class="sp-text-xlarge-fixed"></sp-icon-menu>
               </td>
               <!-- Dynamic content -->
               <td>
@@ -44,15 +40,11 @@
                   </div>
               </td>
               <!-- Inner right icon -->
-              <td *ngIf="model.rightIcon && !model.rightIconMenu" [ngClass]="{ 'sp-clickable' : model.rightIcon.action }" class="sp-td-inner-icon">
+              <td *ngIf="model.rightIcon" [ngClass]="{ 'sp-clickable' : model.rightIcon.action }" class="sp-td-inner-icon">
                   <i
                   *ngIf="model.rightIcon"
                   [ngClass]="model.rightIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.rightIcon)"></i>
-              </td>
-              <!-- Inner right icon menu -->
-              <td *ngIf="model.rightIconMenu" class="sp-td-inner-icon">
-                  <sp-icon-menu [items]="model.rightIconMenu.items" [icon]="model.rightIconMenu.icon" class="sp-text-xlarge-fixed"></sp-icon-menu>
               </td>
           </tr></table>
       </td>

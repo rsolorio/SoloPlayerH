@@ -17,12 +17,8 @@ export interface INavbarModel {
     leftIcon?: IIconAction;
     /** Mini icon displayed on the right bottom corner of the left icon */
     leftSubIcon?: string;
-    /** IconMenu for the inner left side of the nav bar. This will replace the 'leftIcon' property. */
-    leftIconMenu?: IIconMenuModel;
     /** IconAction for the inner right side of the nav bar. */
     rightIcon?: IIconAction;
-    /** IconMenu for the inner right side of the nav bar. This will replace the 'rightIcon' property. */
-    rightIconMenu?: IIconMenuModel;
     /** The message that will be displayed by the tiny toast notification below the nav bar. */
     toastMessage?: string;
     /** Show/hide the tiny toast below the nav bar. */
