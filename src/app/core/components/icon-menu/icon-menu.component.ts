@@ -16,19 +16,19 @@ export class IconMenuComponent implements OnInit {
   @ViewChild('menu') private menu: SlideMenu;
 
   public model: IIconMenuModel = {
-    iconClass: 'mdi mdi-dots-vertical',
+    icon: 'mdi-dots-vertical mdi',
     items: [],
     context: null
   };
 
   constructor(private menuService: MenuService, private events: EventsService, private cdr: ChangeDetectorRef) { }
 
-  get iconClass(): string {
-    return this.model.iconClass;
+  get icon(): string {
+    return this.model.icon;
   }
 
-  @Input() set iconClass(val: string) {
-    this.model.iconClass = val;
+  @Input() set icon(val: string) {
+    this.model.icon = val;
   }
 
   get items(): IMenuModel[] {

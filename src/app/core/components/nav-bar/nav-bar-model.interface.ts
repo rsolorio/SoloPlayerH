@@ -13,15 +13,15 @@ export interface INavbarModel {
     title?: string;
     /** Component to load inside the nav bar. */
     componentType?: Type<any>;
-    /** Icon for the inner left side of the nav bar. */
+    /** IconAction for the inner left side of the nav bar. */
     leftIcon?: IIconAction;
     /** Mini icon displayed on the right bottom corner of the left icon */
     leftSubIcon?: string;
-    /** Icon menu for the inner left side of the nav bar. This will replace the 'leftIcon' property. */
+    /** IconMenu for the inner left side of the nav bar. This will replace the 'leftIcon' property. */
     leftIconMenu?: IIconMenuModel;
-    /** Icon for the inner right side of the nav bar. */
+    /** IconAction for the inner right side of the nav bar. */
     rightIcon?: IIconAction;
-    /** Icon menu for the inner right side of the nav bar. This will replace the 'rightIcon' property. */
+    /** IconMenu for the inner right side of the nav bar. This will replace the 'rightIcon' property. */
     rightIconMenu?: IIconMenuModel;
     /** The message that will be displayed by the tiny toast notification below the nav bar. */
     toastMessage?: string;
