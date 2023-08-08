@@ -126,6 +126,15 @@ export class SongListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
+    rightIcons: [
+      {
+        icon: 'mdi-sort-variant mdi'
+      },
+      {
+        icon: 'mdi-filter-outline mdi'
+      }
+    ],
+    searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
     prepareItemRender: item => {

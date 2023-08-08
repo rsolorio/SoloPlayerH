@@ -109,6 +109,8 @@ export interface IArea extends ISize {
 }
 
 export interface IIcon {
+  /** Unique identifier of the icon. */
+  id?: string;
   /** Icon css class. */
   icon?: string;
   /** Extra css class. */

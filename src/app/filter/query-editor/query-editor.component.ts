@@ -171,12 +171,12 @@ export class QueryEditorComponent implements OnInit {
       leftIcon: {
         icon: 'mdi-filter-outline mdi'
       },
-      rightIcon: {
+      rightIcons: [{
         icon: 'mdi-plus mdi',
         action: () => {          
           this.openFieldSelectionPanel();
         }
-      }
+      }]
     });
   }
 

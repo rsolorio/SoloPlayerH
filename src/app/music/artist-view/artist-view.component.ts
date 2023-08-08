@@ -95,15 +95,21 @@ export class ArtistViewComponent implements OnInit {
       leftIcon: {
         icon:  'mdi-account-music mdi'
       },
-      rightIcon: {
-        icon: favorite ? 'mdi-heart mdi' : 'mdi-heart-outline mdi',
+      rightIcons: [{
+        icon: 'mdi-heart mdi',
         action: iconAction => {
-          const isFavorite = iconAction.icon === 'mdi-heart mdi';
-          this.entityService.setFavoriteArtist(this.artistId, !isFavorite).then(response => {
-            iconAction.icon = response ? 'mdi-heart mdi' : 'mdi-heart-outline mdi'
+          this.entityService.setFavoriteArtist(this.artistId, false).then(response => {
+            iconAction.off = true;
           });
-        }
-      }
+        },
+        offIcon: 'mdi-heart-outline mdi',
+        offAction: iconAction => {
+          this.entityService.setFavoriteArtist(this.artistId, true).then(response => {
+            iconAction.off = false;
+          });
+        },
+        off: !favorite
+      }]
     });
   }
 

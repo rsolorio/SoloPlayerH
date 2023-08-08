@@ -70,6 +70,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
+    searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
     prepareItemRender: item => {

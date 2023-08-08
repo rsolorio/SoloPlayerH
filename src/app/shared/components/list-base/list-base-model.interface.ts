@@ -15,8 +15,10 @@ export interface IListBaseModel {
   title?: string;
   /** Icon for the inner left side of the nav bar. */
   leftIcon?: IIconAction;
-  /** Icon for the inner right side of the nav bar. */
-  rightIcon?: IIconAction;
+  /** List of icons for the inner right side of the nav bar. */
+  rightIcons?: IIconAction[];
+  /** Determines if a search icon should be automatically added to the list of icons for the inner right side of the nav bar. */
+  searchIconEnabled?: boolean;
   /** If true, the nav bar will display the breadcrumb component. */
   breadcrumbsEnabled: boolean;
   /** The service used to search and load data. */

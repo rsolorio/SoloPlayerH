@@ -17,7 +17,7 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { IIcon } from 'src/app/core/models/core.interface';
+import { IIcon, IIconAction } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IListItemModel } from '../../models/base-model.interface';
@@ -178,7 +178,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   private initializeNavbar(): void {
     const routeInfo = this.utilities.getCurrentRouteInfo();
-    // All list base components should have a search feature
     const navbar = this.navbarService.getState();
     navbar.show = true;
     // Title
@@ -198,17 +197,17 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         icon: routeInfo.icon
       };
     }
-    
-    if (this.model.rightIcon) {
-      navbar.rightIcon = this.model.rightIcon;
-    }
-    else {
-      // Search icon by default
-      navbar.rightIcon = {
+
+    navbar.rightIcons = this.model.rightIcons ? this.model.rightIcons : [];
+
+    if (this.model.searchIconEnabled) {
+      const searchIcon: IIconAction = {
+        id: 'searchIcon',
         icon: 'mdi-magnify-remove-outline mdi',
         action: iconAction => {
           // This will turn OFF the search
           iconAction.off = true;
+          navbar.rightIcons.forEach(icon => icon.hidden = false);
           navbar.searchTerm = '';
           if (navbar.onSearch) {
             navbar.onSearch(navbar.searchTerm);
@@ -220,6 +219,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         offAction: iconAction => {
           // This will turn ON the search
           iconAction.off = false;
+          // Hide all icons except for the search
+          navbar.rightIcons.filter(icon => icon.id !== 'searchIcon').forEach(icon => icon.hidden = true);
           this.lastNavbarDisplayMode = navbar.mode;
           navbar.searchTerm = '';
           navbar.mode = NavbarDisplayMode.Search;
@@ -229,6 +230,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
           });
         }
       };
+      navbar.rightIcons.push(searchIcon);
     }
 
     // Search

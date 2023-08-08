@@ -45,14 +45,14 @@ export class LogViewComponent implements OnInit {
       leftIcon: {
         icon: routeInfo.icon
       },
-      rightIcon: {
+      rightIcons: [{
         icon: 'mdi mdi-eraser',
         action: () => {
           this.log.clear();
           this.reloadLogEntries();
           this.navbarService.showToast('Log entries deleted.');
         }
-      }
+      }]
     });
   }
 

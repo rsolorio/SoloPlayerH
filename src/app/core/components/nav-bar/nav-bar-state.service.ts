@@ -97,7 +97,7 @@ export class NavBarStateService {
 
   public setIcons(navbarModel: INavbarModel): void {
     this.navbarState.leftIcon = navbarModel.leftIcon;
-    this.navbarState.rightIcon = navbarModel.rightIcon;
+    this.navbarState.rightIcons = navbarModel.rightIcons;
     this.navbarState.leftSubIcon = navbarModel.leftSubIcon;
   }
 

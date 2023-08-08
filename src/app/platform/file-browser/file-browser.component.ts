@@ -45,7 +45,7 @@ export class FileBrowserComponent implements OnInit {
     },
     breadcrumbsEnabled: false,
     broadcastService: this.broadcastService,
-    rightIcon: {
+    rightIcons: [{
       icon: 'mdi-arrow-up-right-bold mdi',
       action: async () => {
         const queryParams = this.getQueryParams();
@@ -56,7 +56,7 @@ export class FileBrowserComponent implements OnInit {
           }
         }
       }
-    },
+    }],
     getDisplayInfo: model => {
       let itemsText = `${model.criteriaResult.items.length} item`;
       itemsText += model.criteriaResult.items.length === 1 ? '' : 's';

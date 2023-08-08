@@ -40,12 +40,13 @@
                   </div>
               </td>
               <!-- Inner right icon -->
-              <td *ngIf="model.rightIcon" [ngClass]="{ 'sp-clickable' : model.rightIcon.action }" class="sp-td-inner-icon">
+              <ng-container *ngIf="model.rightIcons"><ng-container *ngFor="let rightIcon of model.rightIcons">
+                <td *ngIf="!rightIcon.hidden" [ngClass]="{ 'sp-clickable' : rightIcon.action }" class="sp-td-inner-icon">
                   <i
-                  *ngIf="model.rightIcon"
-                  [ngClass]="model.rightIcon.off ? model.rightIcon.offIcon : model.rightIcon.icon"
-                  class="sp-text-xlarge-fixed" (click)="onIconClick(model.rightIcon)"></i>
-              </td>
+                  [ngClass]="rightIcon.off ? rightIcon.offIcon : rightIcon.icon"
+                  class="sp-text-xlarge-fixed" (click)="onIconClick(rightIcon)"></i>
+                </td>
+              </ng-container></ng-container>
           </tr></table>
       </td>
       <!-- Outer Right -->
