@@ -35,19 +35,19 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Play',
         icon: 'mdi-play mdi',
-        action: param => {}
+        action: () => {}
       },
       {
         caption: 'Toggle Selection',
         icon: 'mdi-select mdi',
-        action: param => {
+        action: (menuItem, param) => {
           this.spListBaseComponent.toggleSelection(param);
         }
       },
       {
         caption: 'Search...',
         icon: 'mdi-web mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const artistModel = param as IArtistModel;
           this.utility.googleSearch(artistModel.name);
         }
@@ -55,7 +55,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Properties...',
         icon: 'mdi-square-edit-outline mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const artist = param as IArtistModel;
           if (artist) {
             this.navigation.forward(AppRoute.Artists, { routeParams: [artist.id] });
@@ -105,7 +105,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       this.listModel.itemMenuList.push({
         caption: albumRoute.name,
         icon: albumRoute.icon,
-        action: param => {
+        action: (menuItem, param) => {
           const artist = param as IArtistModel;
           if (artist) {
             this.showEntity(albumRoute, artist);
@@ -118,7 +118,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     this.listModel.itemMenuList.push({
       caption: 'Artist Songs',
       icon: 'mdi-music-box-outline mdi',
-      action: param => {
+      action: (menuItem, param) => {
         const artist = param as IArtistModel;
           if (artist) {
             this.showEntity(songRoute, artist);
@@ -129,7 +129,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     this.listModel.itemMenuList.push({
       caption: 'Associated Songs',
       icon: 'mdi-music-box-multiple-outline mdi',
-      action: param => {
+      action: (menuItem, param) => {
         const artist = param as IArtistModel;
           if (artist) {
             this.showAssociatedSongs(songRoute, artist);

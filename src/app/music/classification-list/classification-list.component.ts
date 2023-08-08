@@ -39,12 +39,12 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       {
         caption: 'Play',
         icon: 'mdi-play mdi',
-        action: param => {}
+        action: () => {}
       },
       {
         caption: 'Toggle Selection',
         icon: 'mdi-select mdi',
-        action: param => {
+        action: (menuItem, param) => {
           this.spListBaseComponent.toggleSelection(param);
         }
       },
@@ -54,7 +54,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       {
         caption: this.albumArtistRoute.name,
         icon: this.albumArtistRoute.icon,
-        action: param => {
+        action: (menuItem, param) => {
           const classification = param as IClassificationModel;
           if (classification) {
             this.showEntity(this.albumArtistRoute, classification);
@@ -64,7 +64,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       {
         caption: this.albumRoute.name,
         icon: this.albumRoute.icon,
-        action: param => {
+        action: (menuItem, param) => {
           const classification = param as IClassificationModel;
           if (classification) {
             this.showEntity(this.albumRoute, classification);
@@ -74,7 +74,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       {
         caption: this.songRoute.name,
         icon: this.songRoute.icon,
-        action: param => {
+        action: (menuItem, param) => {
           const classification = param as IClassificationModel;
           if (classification) {
             this.showEntity(this.songRoute, classification);

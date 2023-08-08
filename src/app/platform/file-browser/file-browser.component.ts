@@ -31,7 +31,7 @@ export class FileBrowserComponent implements OnInit {
       {
         caption: 'Select',
         icon: 'mdi-select mdi mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const fileItem = param as IFileBrowserItem;
           if (fileItem) {
             this.itemAvatarClick(fileItem);

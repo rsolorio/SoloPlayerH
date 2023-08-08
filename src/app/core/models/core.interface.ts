@@ -123,7 +123,7 @@ export interface IIconActionGeneric<TParam> extends IIcon {
   /** Timeout in milliseconds before the action is performed. */
   actionTimeout?: number;
   /** Action to be fired by the icon. */
-  action?(param?: TParam): void;
+  action?(iconAction: IIconActionGeneric<any>, param?: TParam): void;
 }
 
 export interface IIconAction extends IIconActionGeneric<any> {

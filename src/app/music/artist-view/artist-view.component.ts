@@ -97,8 +97,7 @@ export class ArtistViewComponent implements OnInit {
       },
       rightIcon: {
         icon: favorite ? 'mdi-heart mdi' : 'mdi-heart-outline mdi',
-        action: param => {
-          const iconAction = param as IIconAction;
+        action: iconAction => {
           const isFavorite = iconAction.icon === 'mdi-heart mdi';
           this.entityService.setFavoriteArtist(this.artistId, !isFavorite).then(response => {
             iconAction.icon = response ? 'mdi-heart mdi' : 'mdi-heart-outline mdi'

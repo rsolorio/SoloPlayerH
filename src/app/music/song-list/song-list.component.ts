@@ -56,7 +56,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Add to playlist',
         icon: 'mdi-playlist-plus mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const song = param as ISongModel;
           if (song) {
             this.addToPlaylistService.showPanel([song]);
@@ -66,7 +66,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Properties...',
         icon: 'mdi-square-edit-outline mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const song = param as ISongModel;
           if (song) {
             this.navigation.forward(AppRoute.Songs, { routeParams: [song.id] });
@@ -79,7 +79,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Search...',
         icon: 'mdi-web mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const song = param as ISongModel;
           this.utility.googleSearch(`${song.artistName} ${song.name}`);
         }
@@ -87,7 +87,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Album Artist Songs',
         icon: 'mdi-account-badge mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumArtistSongs(song);
           // Since we are staying in the same route, use the same query info, just update the breadcrumbs
@@ -99,7 +99,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Feat. Artists Songs',
         icon: 'mdi-account-music mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForFeatArtistSongs(song).then(hasFeatArtists => {
             if (hasFeatArtists) {
@@ -113,7 +113,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Album Songs',
         icon: 'mdi-album mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumSongs(song);
           const criteriaClone = this.spListBaseComponent.model.criteriaResult.criteria.clone();

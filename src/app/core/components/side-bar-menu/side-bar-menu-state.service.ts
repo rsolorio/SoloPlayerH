@@ -33,9 +33,9 @@ export class SideBarMenuStateService {
       active,
       badge,
       route,
-      action: menuItem => {
+      action: menuModel => {
         if (route) {
-          this.events.broadcast(CoreEvent.SidebarMenuAction, menuItem);
+          this.events.broadcast(CoreEvent.SidebarMenuAction, menuModel);
         }
       }
     };

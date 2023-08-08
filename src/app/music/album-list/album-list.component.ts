@@ -36,19 +36,19 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Play',
         icon: 'mdi-play mdi',
-        action: param => {}
+        action: () => {}
       },
       {
         caption: 'Toggle Selection',
         icon: 'mdi-select mdi',
-        action: param => {
+        action: (menuItem, param) => {
           this.spListBaseComponent.toggleSelection(param);
         }
       },
       {
         caption: 'Search...',
         icon: 'mdi-web mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const albumModel = param as IAlbumModel;
           this.utility.googleSearch(`${albumModel.artistName} ${albumModel.name}`);
         }
@@ -56,7 +56,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Properties...',
         icon: 'mdi-square-edit-outline mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const album = param as IAlbumModel;
           if (album) {
             this.navigation.forward(AppRoute.Albums, { queryParams: [album.id] });
@@ -69,7 +69,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       {
         caption: appRoutes[AppRoute.Songs].name,
         icon: appRoutes[AppRoute.Songs].icon,
-        action: param => {
+        action: (menuItem, param) => {
           const album = param as IAlbumModel;
             if (album) {
               this.showEntity(appRoutes[AppRoute.Songs], album);

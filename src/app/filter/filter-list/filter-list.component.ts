@@ -26,7 +26,7 @@ export class FilterListComponent extends CoreComponent implements OnInit {
         {
           caption: 'Properties...',
           icon: 'mdi-square-edit-outline mdi',
-          action: param => {
+          action: (menuItem, param) => {
             const filter = param as IFilterModel;
             if (filter) {
               this.navigation.forward(AppRoute.Filters, { routeParams: [filter.id] });

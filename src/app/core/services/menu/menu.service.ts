@@ -119,7 +119,7 @@ export class MenuService {
             // to load more facets.
             setTimeout(() => {
               if (item.action) {
-                item.action(actionParam);
+                item.action(item, actionParam);
               }
             }, timeoutMs);
           }

@@ -32,7 +32,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Play',
         icon: 'mdi-play mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const playlist = param as IPlaylistModel;
           if (playlist) {
             this.loadPlaylistAndPlay(playlist);
@@ -42,7 +42,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       {
         caption: 'Edit...',
         icon: 'mdi-playlist-edit mdi',
-        action: param => {
+        action: (menuItem, param) => {
           const playlist = param as IPlaylistModel;
           if (playlist) {
             this.editPlaylist(playlist.id);
