@@ -34,8 +34,15 @@ export class NavBarComponent implements OnInit {
   }
 
   public onIconClick(iconAction: IIconAction): void {
-    if (iconAction.action) {
-      iconAction.action(iconAction);
+    if (iconAction.off) {
+      if (iconAction.offAction) {
+        iconAction.offAction(iconAction);
+      }
+    }
+    else {
+      if (iconAction.action) {
+        iconAction.action(iconAction);
+      }
     }
   }
 

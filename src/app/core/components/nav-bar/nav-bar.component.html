@@ -43,7 +43,7 @@
               <td *ngIf="model.rightIcon" [ngClass]="{ 'sp-clickable' : model.rightIcon.action }" class="sp-td-inner-icon">
                   <i
                   *ngIf="model.rightIcon"
-                  [ngClass]="model.rightIcon.icon"
+                  [ngClass]="model.rightIcon.off ? model.rightIcon.offIcon : model.rightIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.rightIcon)"></i>
               </td>
           </tr></table>

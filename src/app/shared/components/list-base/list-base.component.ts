@@ -14,10 +14,10 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
-import { INavbarModel, NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { IIcon, IIconAction } from 'src/app/core/models/core.interface';
+import { IIcon } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IListItemModel } from '../../models/base-model.interface';
@@ -41,7 +41,6 @@ import { LogService } from 'src/app/core/services/log/log.service';
 export class ListBaseComponent extends CoreComponent implements OnInit {
   @ViewChild('spModalHost', { read: ViewContainerRef, static: false }) public modalHostViewContainer: ViewContainerRef;
   private lastNavbarDisplayMode = NavbarDisplayMode.None;
-  private lastNavbarRightIcon: IIconAction;
 
   @Output() public itemRender: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemAvatarClick: EventEmitter<IListItemModel> = new EventEmitter();
@@ -206,9 +205,28 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     else {
       // Search icon by default
       navbar.rightIcon = {
-        icon: 'mdi-magnify mdi',
-        action: () => {
-          this.toggleSearch(navbar);
+        icon: 'mdi-magnify-remove-outline mdi',
+        action: iconAction => {
+          // This will turn OFF the search
+          iconAction.off = true;
+          navbar.searchTerm = '';
+          if (navbar.onSearch) {
+            navbar.onSearch(navbar.searchTerm);
+          }
+          navbar.mode = this.lastNavbarDisplayMode;
+        },
+        off: true, // Search turned off by default
+        offIcon: 'mdi-magnify mdi',
+        offAction: iconAction => {
+          // This will turn ON the search
+          iconAction.off = false;
+          this.lastNavbarDisplayMode = navbar.mode;
+          navbar.searchTerm = '';
+          navbar.mode = NavbarDisplayMode.Search;
+          // Give the search box time to render before setting focus
+          setTimeout(() => {
+            this.navbarService.searchBoxFocus();
+          });
         }
       };
     }
@@ -275,36 +293,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   public getSelectedItems():IListItemModel[] {
     return this.model.criteriaResult.items.filter(item => item.selected);
-  }
-
-  private toggleSearch(navbar: INavbarModel): void {
-    if (navbar.mode === NavbarDisplayMode.Search) {
-      // Clear previous search value by performing an empty search
-      navbar.searchTerm = '';
-      if (navbar.onSearch) {
-        navbar.onSearch(navbar.searchTerm);
-      }
-      navbar.mode = this.lastNavbarDisplayMode;
-      navbar.rightIcon = this.lastNavbarRightIcon;
-    }
-    else {
-      this.lastNavbarDisplayMode = navbar.mode;
-      this.lastNavbarRightIcon = navbar.rightIcon;
-      // Starting over so clear the search
-      navbar.searchTerm = '';
-      navbar.mode = NavbarDisplayMode.Search;
-      // Notice we replace the whole right icon object with a new one
-      navbar.rightIcon = {
-        icon: 'mdi-magnify-remove-outline mdi',
-        action: () => {
-          this.toggleSearch(navbar);
-        }
-      };
-      // Give the search box time to render before setting focus
-      setTimeout(() => {
-        this.navbarService.searchBoxFocus();
-      });
-    }
   }
 
   /**

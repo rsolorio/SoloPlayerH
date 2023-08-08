@@ -115,6 +115,14 @@ export interface IIcon {
   styleClass?: string;
   /** Html element title. */
   tooltip?: string;
+  /** Determines if the icon is in OFF state. */
+  off?: boolean;
+  /** Icon css class for the OFF state. */
+  offIcon?: string;
+  /** Extra css class for the OFF state. */
+  offStyleClass?: string;
+  /** Html element title for the OFF state. */
+  offToolTip?: string;
   /** If the icon should be hidden. */
   hidden?: boolean;
 }
@@ -124,6 +132,8 @@ export interface IIconActionGeneric<TParam> extends IIcon {
   actionTimeout?: number;
   /** Action to be fired by the icon. */
   action?(iconAction: IIconActionGeneric<any>, param?: TParam): void;
+  /** Action to be fired by the OFF icon. */
+  offAction?(iconAction: IIconActionGeneric<any>, param?: TParam): void;
 }
 
 export interface IIconAction extends IIconActionGeneric<any> {
