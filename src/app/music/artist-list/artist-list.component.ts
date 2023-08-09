@@ -16,6 +16,8 @@ import { ArtistListBroadcastService } from './artist-list-broadcast.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { ArtistEntity, PartyRelationEntity } from 'src/app/shared/entities';
 import { PartyRelationType } from 'src/app/shared/models/music.enum';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 @Component({
   selector: 'sp-artist-list',
@@ -28,7 +30,6 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   public isAlbumArtist = false;
 
   // START - LIST MODEL
-
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.ArtistListUpdated,
     itemMenuList: [
@@ -70,6 +71,23 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
+    rightIcons: [
+      {
+        icon: 'mdi-sort-variant mdi'
+      },
+      {
+        icon: 'mdi-filter-outline mdi'
+      },
+      {
+        id: 'showAllSongsIcon',
+        icon: 'mdi-music-box-multiple-outline mdi',
+        action: () => {
+          // No specific criteria, breadcrumbs will be automatically taken by the new entity
+          const criteria = new Criteria('Search Results');
+          this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+        }
+      }
+    ],
     searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
@@ -79,9 +97,27 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         const days = this.utility.daysFromNow(new Date(artist.songAddDateMax));
         artist.recentIcon = this.spListBaseComponent.getRecentIcon(days);
       }
+    },
+    afterNavbarModeChange: navbar => {
+      switch(navbar.mode) {
+        case NavbarDisplayMode.Component:
+          if (this.isAlbumArtist) {
+            navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = false;
+          }
+          break;
+        case NavbarDisplayMode.Title:
+          if (this.isAlbumArtist) {
+            // Hide Show All Songs
+            navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = true;
+          }
+          else {
+            // Only show Search
+            navbar.rightIcons.filter(i => i.id !== 'searchIcon').forEach(i => i.hidden = true);
+          }
+          break;
+      }
     }
   };
-
   // END - LIST MODEL
 
   constructor(
@@ -89,7 +125,8 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private utility: UtilityService,
     private breadcrumbService: BreadcrumbsStateService,
     private db: DatabaseService,
-    private navigation: NavigationService
+    private navigation: NavigationService,
+    private entities: DatabaseEntitiesService
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoute.AlbumArtists);
@@ -143,6 +180,12 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     this.onArtistClick(artist);
   }
 
+  public onItemImageClick(artist: IArtistModel): void {
+    if (this.isAlbumArtist) {
+      this.navigation.forward(AppRoute.Artists, { routeParams: [artist.id] });
+    }
+  }
+
   private onArtistClick(artist: IArtistModel): void {
     if (this.isAlbumArtist) {
       this.showEntity(appRoutes[AppRoute.Albums], artist);
@@ -152,11 +195,13 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     }
   }
 
-  public onShowSongsClick(e: Event, artist: IArtistModel): void {
+  public onFavoriteClick(e: Event, artist: IArtistModel): void {
     // If we don't stop, the onItemContentClick will be fired
-    e.stopImmediatePropagation();    
-    const songRoute = appRoutes[AppRoute.Songs];
-    this.showEntity(songRoute, artist);
+    e.stopImmediatePropagation();
+    // Setting the favorite before updating the db since the promise
+    // will break the change detection cycle and the change will not be reflected in the UI
+    artist.favorite = !artist.favorite;
+    this.entities.setFavoriteArtist(artist.id, artist.favorite);
   }
 
   private showEntity(routeInfo: IAppRouteInfo, artist: IArtistModel): void {

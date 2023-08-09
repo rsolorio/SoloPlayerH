@@ -90,10 +90,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
         action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumArtistSongs(song);
-          // Since we are staying in the same route, use the same query info, just update the breadcrumbs
-          const criteriaClone = this.spListBaseComponent.model.criteriaResult.criteria.clone();
-          criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
-          this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
         }
       },
       {
@@ -101,13 +97,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         icon: 'mdi-account-music mdi',
         action: (menuItem, param) => {
           const song = param as ISongModel;
-          this.setBreadcrumbsForFeatArtistSongs(song).then(hasFeatArtists => {
-            if (hasFeatArtists) {
-              const criteriaClone = this.spListBaseComponent.model.criteriaResult.criteria.clone();
-              criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
-              this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
-            }
-          });
+          this.setBreadcrumbsForFeatArtistSongs(song);
         }
       },
       {
@@ -116,9 +106,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
         action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumSongs(song);
-          const criteriaClone = this.spListBaseComponent.model.criteriaResult.criteria.clone();
-          criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
-          this.navigation.forward(AppRoute.Songs, { criteria: criteriaClone });
         }
       }
     ],
@@ -202,7 +189,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.breadcrumbService.set([{
       criteriaItem: criteriaItem,
       origin: BreadcrumbSource.AlbumArtist
-    }], { suppressEvents: true });
+    }], { forceReload: true});
   }
 
   private async setBreadcrumbsForFeatArtistSongs(song: ISongModel): Promise<boolean> {
@@ -226,7 +213,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       this.breadcrumbService.set([{
         criteriaItem: criteriaItem,
         origin: BreadcrumbSource.Artist
-      }], { suppressEvents: true });
+      }], { forceReload: true });
       return true;
     }
     return false;
@@ -252,7 +239,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       origin: BreadcrumbSource.Album
     };
     // Breadcrumbs
-    this.breadcrumbService.set([ artistBreadcrumb, albumBreadcrumb ], { suppressEvents: true });
+    this.breadcrumbService.set([ artistBreadcrumb, albumBreadcrumb ], { forceReload: true });
   }
 
   public onItemContentClick(song: ISongModel): void {

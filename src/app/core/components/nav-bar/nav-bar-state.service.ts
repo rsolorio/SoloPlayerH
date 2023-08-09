@@ -73,7 +73,6 @@ export class NavBarStateService {
       if (model) {
         this.componentInstance.model = model;
       }
-      // this.navbarState.componentType = componentType;
     }
   }
 

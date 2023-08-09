@@ -8,12 +8,12 @@ import { ListItemEntity } from './base.entity';
  * It is intended to be used by filtering using the classificationId column;
  * if that's not the case, the view will return duplicate artist records.
  * If using more than one classificationId values, you will need to use a DISTINCT clause.
- * Fields: id, name, hash, artistSort, artistStylized, country, classificationId, albumCount, songCount
+ * Fields: id, name, hash, artistSort, artistStylized, favorite, country, classificationId, albumCount, songCount
  */
  @ViewEntity({
   name: 'artistClassificationView',
   expression: `
-  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, valueListEntry.name AS country, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount, MAX(albumClassification.songAddDateMax) AS songAddDateMax
+  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite, valueListEntry.name AS country, albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount, MAX(albumClassification.songAddDateMax) AS songAddDateMax
   FROM artist
   INNER JOIN valueListEntry
   ON artist.countryId = valueListEntry.id
@@ -45,6 +45,8 @@ export class ArtistClassificationViewEntity extends ListItemEntity implements IA
   @ViewColumn()
   artistStylized: string;
   @ViewColumn()
+  favorite: boolean;
+  @ViewColumn()
   country: string;
   @ViewColumn()
   classificationId: string;
@@ -55,5 +57,4 @@ export class ArtistClassificationViewEntity extends ListItemEntity implements IA
 
   artistTypeId: string;
   countryId: string;
-  favorite: boolean;
 }

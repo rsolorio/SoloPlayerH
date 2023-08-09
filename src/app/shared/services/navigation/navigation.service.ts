@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { INavigationInfo, INavigationOptions } from './navigation.interface';
-import { EventsService } from 'src/app/core/services/events/events.service';
-import { CoreEvent } from 'src/app/core/services/events/events.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +12,7 @@ export class NavigationService {
   private history: INavigationInfo[] = [];
   private maxRecords = 20;
 
-  constructor(private utilities: UtilityService, private events: EventsService) { }
+  constructor(private utilities: UtilityService) { }
 
   public init(route: string, options?: INavigationOptions): void {
     this.history = [{

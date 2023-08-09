@@ -52,6 +52,7 @@ export class BreadcrumbsComponent extends CoreComponent implements OnInit {
     }
   }
 
+  /** Refreshes the component with the latest version of the model. */
   public reload(): void {
     this.model = this.breadcrumbService.getState();
   }

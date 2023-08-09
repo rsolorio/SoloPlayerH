@@ -4,12 +4,12 @@ import { ListItemEntity } from './base.entity';
 
 /**
  * Retrieves all the records from the artist table with associated songs as primary or featuring artist.
- * Fields: id, name, hash, artistSort, artistStylized, songCount, songAddDateMax
+ * Fields: id, name, hash, artistSort, artistStylized, favorite, songCount, songAddDateMax
  */
 @ViewEntity({
   name: 'artistView',
   expression: `
-    SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, COUNT(partyRelation.songId) AS songCount, NULL AS songAddDateMax
+    SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite, COUNT(partyRelation.songId) AS songCount, NULL AS songAddDateMax
     FROM artist
     LEFT JOIN (
       SELECT relatedId, songId
@@ -32,13 +32,14 @@ export class ArtistViewEntity extends ListItemEntity implements IArtistModel {
   @ViewColumn()
   artistSort: string;
   @ViewColumn()
-  artistStylized: string;  
+  artistStylized: string;
+  @ViewColumn()
+  favorite: boolean;
   @ViewColumn()
   songAddDateMax: Date;
 
   artistTypeId: string;
   countryId: string;
   country: string;
-  favorite: boolean;
   albumCount: number;
 }

@@ -7,7 +7,6 @@ import {
   OnInit,
   Output,
   TemplateRef,
-  Type,
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
@@ -40,7 +39,6 @@ import { LogService } from 'src/app/core/services/log/log.service';
 })
 export class ListBaseComponent extends CoreComponent implements OnInit {
   @ViewChild('spModalHost', { read: ViewContainerRef, static: false }) public modalHostViewContainer: ViewContainerRef;
-  private lastNavbarDisplayMode = NavbarDisplayMode.None;
 
   @Output() public itemRender: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemAvatarClick: EventEmitter<IListItemModel> = new EventEmitter();
@@ -58,7 +56,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     },
     breadcrumbsEnabled: false
   };
-
 
   constructor(
     private events: EventsService,
@@ -84,15 +81,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
     // Breadcrumbs
     if (this.model.breadcrumbsEnabled) {
-      this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(response => {
-        if (response === BreadcrumbEventType.Remove) {
-          // Create a brand new criteria but with the same info by cloning the existing one
-          const criteriaClone = this.model.criteriaResult.criteria.clone();
-          // Since there was a breadcrumb update, set the new value also with a copy
-          criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
-          // Navigate to the same route but with the new object
-          this.navigation.forward(this.navigation.current().route, { criteria: criteriaClone });
-        }
+      this.subs.sink = this.events.onEvent<BreadcrumbEventType>(AppEvent.BreadcrumbUpdated).subscribe(() => {
+        // Reload breadcrumbs automatically
+        // If you don't want the component react to its own breadcrumb changes, set suppressEvents = true
+        this.reloadFromBreadcrumbs();
       });
     }
 
@@ -199,38 +191,39 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
 
     navbar.rightIcons = this.model.rightIcons ? this.model.rightIcons : [];
-
-    if (this.model.searchIconEnabled) {
-      const searchIcon: IIconAction = {
-        id: 'searchIcon',
-        icon: 'mdi-magnify-remove-outline mdi',
-        action: iconAction => {
-          // This will turn OFF the search
-          iconAction.off = true;
-          navbar.rightIcons.forEach(icon => icon.hidden = false);
-          navbar.searchTerm = '';
-          if (navbar.onSearch) {
-            navbar.onSearch(navbar.searchTerm);
-          }
-          navbar.mode = this.lastNavbarDisplayMode;
-        },
-        off: true, // Search turned off by default
-        offIcon: 'mdi-magnify mdi',
-        offAction: iconAction => {
-          // This will turn ON the search
-          iconAction.off = false;
-          // Hide all icons except for the search
-          navbar.rightIcons.filter(icon => icon.id !== 'searchIcon').forEach(icon => icon.hidden = true);
-          this.lastNavbarDisplayMode = navbar.mode;
-          navbar.searchTerm = '';
-          navbar.mode = NavbarDisplayMode.Search;
-          // Give the search box time to render before setting focus
-          setTimeout(() => {
-            this.navbarService.searchBoxFocus();
-          });
+    // Search icon
+    const searchIcon: IIconAction = {
+      id: 'searchIcon',
+      icon: 'mdi-magnify-remove-outline mdi',
+      action: iconAction => {
+        // This will turn OFF the search
+        iconAction.off = true;
+        navbar.searchTerm = '';
+        if (navbar.onSearch) {
+          navbar.onSearch(navbar.searchTerm);
         }
-      };
-      navbar.rightIcons.push(searchIcon);
+        // The only way to get to the search mode if from the Title mode,
+        // so for now go back to title mode from search mode
+        this.setNavbarMode(NavbarDisplayMode.Title);
+      },
+      off: true, // Search turned off by default
+      offIcon: 'mdi-magnify mdi',
+      offAction: iconAction => {
+        // This will turn ON the search
+        iconAction.off = false;
+        navbar.searchTerm = '';
+        this.setNavbarMode(NavbarDisplayMode.Search);
+        // Give the search box time to render before setting focus
+        setTimeout(() => {
+          this.navbarService.searchBoxFocus();
+        });
+      }
+    };
+    navbar.rightIcons.push(searchIcon);
+    if (this.breadcrumbService.hasBreadcrumbs()) {
+      // Hide search
+      // How to determine which other icons to hide?
+      // Show/hide state for every navbar mode?
     }
 
     // Search
@@ -241,15 +234,12 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       }
     };
 
-    // Determine component
-    if (this.model.breadcrumbsEnabled) {
-      navbar.componentType = this.breadcrumbService.hasBreadcrumbs() ? BreadcrumbsComponent : null;
-      this.showComponent(navbar.componentType);
-    }
-    else {
-      navbar.componentType = null;
-      navbar.mode = NavbarDisplayMode.Title;
-    }
+    // Setup navbar breadcrumbs if supported
+    navbar.componentType = this.model.breadcrumbsEnabled ? BreadcrumbsComponent : null;
+    // Make sure the component is loaded (or discarded), even if it is not visible
+    this.navbarService.loadComponent(navbar.componentType);
+
+    this.setDefaultNavbarMode();
 
     // Menu list
     navbar.menuList = [
@@ -278,29 +268,16 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.navbarService.showToast(`Found: ${this.model.criteriaResult.items.length} item` + (this.model.criteriaResult.items.length !== 1 ? 's' : ''));
   }
 
-  /**
-   * Reloads the breadcrumbs component in order to show the latest data.
-   */
-  public showBreadcrumbs(): void {
-    const navbar = this.navbarService.getState();
-    if (navbar.componentType !== BreadcrumbsComponent || navbar.mode !== NavbarDisplayMode.Component) {
-      this.showComponent(BreadcrumbsComponent);
-    }
-  }
-
-  public showComponent(componentType: Type<any>): void {
-    this.navbarService.loadComponent(componentType);
-    this.navbarService.getState().mode = NavbarDisplayMode.Component;
-  }
-
   public getSelectedItems():IListItemModel[] {
     return this.model.criteriaResult.items.filter(item => item.selected);
   }
 
   /**
-   * Prepares the query data in order to retrieve the results and send them via broadcast
+   * Loads the data via broadcast.
+   * The data is retrieved using the criteria associated with the current route;
+   * if the route doesn't have any criteria, it will use the last criteria from the last result.
    */
-  public loadData(): void {
+  private loadData(): void {
     // Show the animation here, it will be hidden by the broadcast service
     this.loadingService.show();
     // Use a copy of the last query in case the current navigation doesn't have a query
@@ -311,10 +288,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
 
     this.model.broadcastService.send(navInfo.options.criteria).subscribe(() => {
-      // Enable title if no breadcrumbs
-      if (!this.model.breadcrumbsEnabled || !this.breadcrumbService.hasBreadcrumbs()) {
-        this.navbarService.getState().mode = NavbarDisplayMode.Title;
-      }
+      this.setDefaultNavbarMode();
     });
   }
 
@@ -349,5 +323,82 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         break;
     }
     return icon;
+  }
+
+  private discardSearch(): void {
+    const navbar = this.navbarService.getState();
+    navbar.searchTerm = '';
+    const searchIcon = this.model.rightIcons.find(i => i.id === 'searchIcon');
+    if (searchIcon) {
+      searchIcon.off = true;
+    }
+  }
+
+  /**
+   * Reloads the route with the existing breadcrumb data
+   */
+  private reloadFromBreadcrumbs(): void {
+    // Since we are staying in the same route, use the same query info, just update the breadcrumbs
+    const criteriaClone = this.model.criteriaResult.criteria.clone();
+    // Since there was a breadcrumb update, set the new value also with a copy
+    criteriaClone.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+    // Clear search criteria since this is only using breadcrumbs
+    this.discardSearch();
+    criteriaClone.searchCriteria.clear();
+    // Set nav bar mode
+    this.setDefaultNavbarMode();
+    // Navigate to the same route but with the new object
+    this.navigation.forward(this.navigation.current().route, { criteria: criteriaClone });
+  }
+
+  /**
+   * Sets the breadcrumb mode if supported and data is available, otherwise it will set the Title mode.
+   */
+  private setDefaultNavbarMode(): void {
+    if (this.model.breadcrumbsEnabled && this.breadcrumbService.hasBreadcrumbs()) {
+      this.setNavbarMode(NavbarDisplayMode.Component);
+    }
+    else {
+      this.setNavbarMode(NavbarDisplayMode.Title);
+    }
+  }
+
+  /**
+   * Sets the navbar mode, handles the right icons visibility
+   * and fires the navbarModeChange event.
+   */
+  private setNavbarMode(mode: NavbarDisplayMode): void {
+    const navbar = this.navbarService.getState();
+    // We should not validate if the navbar already has the same mode
+    // since the same mode applies to all entities and the same mode
+    // can have different icons on different views
+    navbar.mode = mode;
+
+    // Handle icon visibility
+    switch (mode) {
+      case NavbarDisplayMode.Component:
+        // Hide all the icons
+        navbar.rightIcons.forEach(icon => icon.hidden = true);
+        break;
+      case NavbarDisplayMode.Title:
+        // Show all icons
+        navbar.rightIcons.forEach(icon => icon.hidden = false);
+        break;
+      case NavbarDisplayMode.Search:
+        // Show search, hide the rest of the icons
+        navbar.rightIcons.forEach(icon => {
+          if (icon.id === 'searchIcon') {
+            icon.hidden = false;
+          }
+          else {
+            icon.hidden = true;
+          }
+        });
+        break;
+    }
+    // Fire this event that will allow customize the behavior above
+    if (this.model.afterNavbarModeChange) {
+      this.model.afterNavbarModeChange(navbar);
+    }
   }
 }

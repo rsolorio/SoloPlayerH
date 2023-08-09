@@ -2,36 +2,38 @@
 #spListBaseComponent
 [model]="listModel"
 [infoTemplate]="infoTemplate"
+(itemAvatarClick)="onItemImageClick($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
-    <table class="sp-table sp-table-no-padding sp-full-height sp-full-width">
-      <tr>
-        <td>
-          <i
-          *ngIf="item.recentIcon && !item.recentIcon.hidden"
-          class="sp-new-item-icon"
-          [ngClass]="[item.recentIcon.icon, item.recentIcon.styleClass]"
-          [title]="item.recentIcon.tooltip"></i>
-          <span class="sp-main-text sp-text-medium sp-no-select">{{item.artistStylized}}</span>
-          <br>
-          <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-            <ng-container *ngIf="isAlbumArtist">
-              <i class="mdi-album mdi">&nbsp;</i>
-              <span>{{item.albumCount}}&nbsp;&nbsp;</span>
-            </ng-container>
-            <i class="mdi-music-note mdi">&nbsp;</i>
-            <span>{{item.songCount}}</span>
-            <ng-container *ngIf="isAlbumArtist && item.country !== 'Unknown'">
-              <span>&nbsp;&nbsp;</span>
-              <i class="mdi-earth mdi">&nbsp;</i>
-              <span>{{item.country}}</span>
-            </ng-container>
-          </span>
-        </td>
-        <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onShowSongsClick($event, item)">
-          <i class="mdi-music-box-outline mdi sp-text-xlarge"></i>
-        </td>
-      </tr>
-    </table>
+    <table class="sp-table sp-table-no-padding sp-full-height sp-full-width"><tr>
+      <!-- Artist Info -->
+      <td>
+        <i
+        *ngIf="item.recentIcon && !item.recentIcon.hidden"
+        class="sp-new-item-icon"
+        [ngClass]="[item.recentIcon.icon, item.recentIcon.styleClass]"
+        [title]="item.recentIcon.tooltip"></i>
+        <span class="sp-main-text sp-text-medium sp-no-select">{{item.artistStylized}}</span>
+        <br>
+        <span class="sp-color-on-bg-low sp-text-small sp-no-select">
+          <ng-container *ngIf="isAlbumArtist">
+            <i class="mdi-album mdi">&nbsp;</i>
+            <span>{{item.albumCount}}&nbsp;&nbsp;</span>
+          </ng-container>
+          <i class="mdi-music-note mdi">&nbsp;</i>
+          <span>{{item.songCount}}</span>
+          <ng-container *ngIf="isAlbumArtist && item.country !== 'Unknown'">
+            <span>&nbsp;&nbsp;</span>
+            <i class="mdi-earth mdi">&nbsp;</i>
+            <span>{{item.country}}</span>
+          </ng-container>
+        </span>
+      </td>
+      <!-- Favorite Icon -->
+      <td *ngIf="isAlbumArtist" style="width: 40px;text-align: center;" class="sp-clickable" (click)="onFavoriteClick($event, item)">
+        <i *ngIf="item.favorite" class="mdi-heart mdi sp-text-xlarge"></i>
+        <i *ngIf="!item.favorite" class="mdi-heart-outline mdi sp-text-xlarge"></i>
+      </td>
+    </tr></table>
   </ng-template>
 </sp-list-base>

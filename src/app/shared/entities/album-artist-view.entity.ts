@@ -3,12 +3,12 @@ import { IArtistModel } from '../models/artist-model.interface';
 import { ListItemEntity } from './base.entity';
 
 /**
- * Fields: id, name, hash, artistSort, artistStylized, country, albumCount, songCount
+ * Fields: id, name, hash, artistSort, artistStylized, favorite, country, albumCount, songCount
  */
 @ViewEntity({
   name: 'albumArtistView',
   expression: `
-  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, valueListEntry.name AS country, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount, MAX(album.songAddDateMax) AS songAddDateMax
+  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite, valueListEntry.name AS country, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount, MAX(album.songAddDateMax) AS songAddDateMax
   FROM artist
   INNER JOIN valueListEntry
   ON artist.countryId = valueListEntry.id
@@ -36,11 +36,12 @@ export class AlbumArtistViewEntity extends ListItemEntity implements IArtistMode
   @ViewColumn()
   artistStylized: string;
   @ViewColumn()
+  favorite: boolean;
+  @ViewColumn()
   country: string;
   @ViewColumn()
   songAddDateMax: Date;
 
   artistTypeId: string;
   countryId: string;
-  favorite: boolean;
 }

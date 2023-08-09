@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { PromiseQueueService } from 'src/app/core/services/promise-queue/promise-queue.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
-import { AlbumViewEntity, RelatedImageEntity } from 'src/app/shared/entities';
+import { AlbumViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { AppEvent } from 'src/app/shared/models/events.enum';
@@ -19,6 +18,7 @@ import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 
 @Component({
   selector: 'sp-album-list',
@@ -59,7 +59,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         action: (menuItem, param) => {
           const album = param as IAlbumModel;
           if (album) {
-            this.navigation.forward(AppRoute.Albums, { queryParams: [album.id] });
+            this.navigation.forward(AppRoute.Albums, { routeParams: [album.id] });
           }
         }
       },
@@ -81,6 +81,23 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
+    rightIcons: [
+      {
+        icon: 'mdi-sort-variant mdi'
+      },
+      {
+        icon: 'mdi-filter-outline mdi'
+      },
+      {
+        id: 'showAllSongsIcon',
+        icon: 'mdi-music-box-multiple-outline mdi',
+        action: () => {
+          // No specific criteria, breadcrumbs will be automatically taken by the new entity
+          const criteria = new Criteria('Search Results');
+          this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+        }
+      }
+    ],
     searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
@@ -92,6 +109,16 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       }
       if (!album.image.src && !album.image.getImage) {
         album.image.getImage = () => this.getAlbumImage(album);
+      }
+    },
+    afterNavbarModeChange: navbar => {
+      switch(navbar.mode) {
+        case NavbarDisplayMode.Component:
+          navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = false;
+          break;
+        case NavbarDisplayMode.Title:
+          navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = true;
+          break;
       }
     }
   };
@@ -116,8 +143,21 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     this.onAlbumClick(album);
   }
 
+  public onItemImageClick(album: IAlbumModel): void {
+    this.navigation.forward(AppRoute.Albums, { routeParams: [album.id] });
+  }
+
   private onAlbumClick(album: IAlbumModel): void {
     this.showEntity(appRoutes[AppRoute.Songs], album);
+  }
+
+  public onFavoriteClick(e: Event, album: IAlbumModel): void {
+    // If we don't stop, the onItemContentClick will be fired
+    e.stopImmediatePropagation();
+    // Setting the favorite before updating the db since the promise
+    // will break the change detection cycle and the change will not be reflected in the UI
+    album.favorite = !album.favorite;
+    this.entities.setFavoriteAlbum(album.id, album.favorite);
   }
 
   private addBreadcrumb(album: IAlbumModel): void {

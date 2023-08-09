@@ -3,13 +3,16 @@ import { IListItemModel } from '../../models/base-model.interface';
 import { IListBroadcastService } from '../../models/list-broadcast-service-base.class';
 import { ICriteriaResult } from '../../services/criteria/criteria.interface';
 import { IIconAction } from 'src/app/core/models/core.interface';
+import { INavbarModel } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 
 export interface IListBaseModel {
   /** The event to subscribe to in order to determine when the data needs to be loaded. */
   listUpdatedEvent: string;
   /** The list of menu options for each item. */
   itemMenuList: IMenuModel[];
+  /** This property is populated with the response of the event. */
   criteriaResult: ICriteriaResult<IListItemModel>;
+  /** Whether or not the modal dialog should be displayed. */
   showModal?: boolean;
   /** Title text for the nav bar. */
   title?: string;
@@ -27,4 +30,6 @@ export interface IListBaseModel {
   getDisplayInfo?: (model: IListBaseModel) => string;
   /** Helper method that can be used to apply any logic to the item before it is marked for rendering. */
   prepareItemRender?: (item: IListItemModel) => void;
+  /** Helper method that runs after the navbar mode has changed by this component. Useful to customize visible icons in the navbar. */
+  afterNavbarModeChange?: (navbar: INavbarModel) => void;
 }
