@@ -17,7 +17,7 @@ import { ListItemEntity } from './base.entity';
       WHERE partyRelation.relationTypeId = 'Artist-Song-Primary' OR partyRelation.relationTypeId = 'Artist-Song-Featuring'
     ) AS partyRelation
     ON artist.id = partyRelation.relatedId
-    GROUP BY artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized
+    GROUP BY artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite
   `
 })
 export class ArtistViewEntity extends ListItemEntity implements IArtistModel {

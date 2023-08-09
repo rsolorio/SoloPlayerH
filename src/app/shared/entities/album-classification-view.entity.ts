@@ -21,7 +21,7 @@ import { ListItemEntity } from './base.entity';
     ON song.id = songClassification.songId
   ) AS songClass
   ON album.id = songClass.primaryAlbumId
-  GROUP BY album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, album.releaseDecade, artist.name, artist.artistStylized, songClass.classificationId
+  GROUP BY album.id, album.primaryArtistId, album.name, album.albumSort, album.releaseYear, album.releaseDecade, album.favorite, artist.name, artist.artistStylized, songClass.classificationId
 `
 })
 export class AlbumClassificationViewEntity extends ListItemEntity implements IAlbumModel {

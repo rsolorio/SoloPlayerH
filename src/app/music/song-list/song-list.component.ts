@@ -35,6 +35,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { IImagePreviewModel } from 'src/app/related-image/image-preview/image-preview-model.interface';
 import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image-preview.component';
 import { AddToPlaylistService } from 'src/app/playlist/add-to-playlist/add-to-playlist.service';
+import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 
 @Component({
   selector: 'sp-song-list',
@@ -119,6 +120,17 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         icon: 'mdi-filter-outline mdi'
+      },
+      {
+        id: 'filterRemoveIcon',
+        icon: 'mdi-filter-variant-remove mdi',
+        action: iconAction => {
+          // Since this icon is displayed in Title mode, all icons should be displayed in this mode
+          this.navbarService.getState().rightIcons.forEach(i => i.hidden = false);
+          // Except for this one
+          iconAction.hidden = true;
+          this.spListBaseComponent.search(new Criteria());
+        }
       }
     ],
     searchIconEnabled: true,
@@ -146,6 +158,21 @@ export class SongListComponent extends CoreComponent implements OnInit {
       // in the list
       if (!song.image.src && !song.image.getImage) {
         song.image.getImage = () => this.getSongImage(song);
+      }
+    },
+    afterNavbarModeChange: navbar => {
+      switch (navbar.mode) {
+        case NavbarDisplayMode.Title:
+          // Title by default displays all the icons so here we hide what we really need
+          const current = this.navigation.current();
+          if (current.options?.criteria?.filterId) {
+            // Only show the filter remove icon
+            navbar.rightIcons.filter(i => i.id !== 'filterRemoveIcon').forEach(i => i.hidden = true);
+          }
+          else {
+            navbar.rightIcons.find(i => i.id === 'filterRemoveIcon').hidden = true;
+          }
+          break;
       }
     }
   };

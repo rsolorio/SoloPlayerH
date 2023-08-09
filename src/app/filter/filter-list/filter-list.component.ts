@@ -38,6 +38,10 @@ export class FilterListComponent extends CoreComponent implements OnInit {
         criteria: new Criteria('Search Results'),
         items: []
       },
+      rightIcons: [{
+        icon: 'mdi-filter-variant-plus mdi',
+        action: () => { }
+      }],
       searchIconEnabled: true,
       breadcrumbsEnabled: true,
       broadcastService: this.broadcastService
@@ -59,8 +63,7 @@ export class FilterListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemContentClick(filter: IFilterModel): void {
-    this.entities.getCriteriaFromFilter(filter.filterCriteriaId).then(criteria => {
-      criteria.name = filter.name;
+    this.entities.getCriteriaFromFilter(filter).then(criteria => {
       this.navigation.forward(AppRoute.Songs, { criteria: criteria });
     });
   }

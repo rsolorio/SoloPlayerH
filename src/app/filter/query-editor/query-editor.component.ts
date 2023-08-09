@@ -18,6 +18,12 @@ import { DbColumn } from 'src/app/shared/services/database/database.columns';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
+/**
+ * OBSOLETE.
+ * Component created to edit the criteria of the previous route.
+ * It was being used to add/edit criteria that refines the song list search.
+ * It also displays a go back icon that takes the user to the previous route after saving the changes.
+ */
 @Component({
   selector: 'sp-query-editor',
   templateUrl: './query-editor.component.html',

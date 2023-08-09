@@ -11,7 +11,6 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -144,7 +143,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   private afterListUpdated(): void {
-    this.updateFilterIcon();
     this.loadingService.hide();
     this.showInfo();
   }
@@ -152,20 +150,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   public showInfo(): void {
     const message = this.model.getDisplayInfo(this.model);
     this.navbarService.showToast(message);
-  }
-
-  private updateFilterIcon(): void {
-    const navbar = this.navbarService.getState();
-    if (this.model.criteriaResult.criteria.hasComparison(true)) {
-      navbar.leftSubIcon = 'mdi-filter mdi sp-color-primary sp-text-shadow-dark';
-      navbar.leftIcon.action = () => {
-        this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
-      };
-    }
-    else {
-      navbar.leftSubIcon = null;
-      navbar.leftIcon.action = null;
-    }
   }
 
   private initializeNavbar(): void {
@@ -228,10 +212,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
     // Search
     navbar.onSearch = searchTerm => {
-      if (this.model.broadcastService) {
-        this.loadingService.show();
-        this.model.broadcastService.search(this.model.criteriaResult.criteria.clone(), searchTerm).subscribe();
-      }
+      this.search(this.model.criteriaResult.criteria.clone(), searchTerm);
     };
 
     // Setup navbar breadcrumbs if supported
@@ -243,13 +224,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
     // Menu list
     navbar.menuList = [
-      {
-        caption: 'Filter',
-        icon: 'mdi-filter-outline mdi',
-        action: () => {
-          this.navigation.forward(AppRoute.Queries, { routeParams: [this.model.criteriaResult.criteria.id] });
-        }
-      },
       {
         caption: 'Show Count',
         icon: 'mdi-counter mdi',
@@ -270,6 +244,13 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
 
   public getSelectedItems():IListItemModel[] {
     return this.model.criteriaResult.items.filter(item => item.selected);
+  }
+
+  public search(criteria: Criteria, searchTerm?: string): void {
+    if (this.model.broadcastService) {
+      this.loadingService.show();
+      this.model.broadcastService.search(criteria, searchTerm).subscribe();
+    }
   }
 
   /**

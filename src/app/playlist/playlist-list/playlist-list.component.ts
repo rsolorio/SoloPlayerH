@@ -54,6 +54,9 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
+    rightIcons: [{
+      icon: 'mdi-playlist-plus mdi'
+    }],
     searchIconEnabled: true,
     breadcrumbsEnabled: false,
     broadcastService: this.broadcastService,

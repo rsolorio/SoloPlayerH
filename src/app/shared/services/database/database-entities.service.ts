@@ -12,6 +12,7 @@ import { DatabaseService } from './database.service';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { FilterCriteriaEntity } from '../../entities/filter-criteria.entity';
 import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.entity';
+import { IFilterModel } from '../../models/filter-model.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -273,10 +274,13 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public async getCriteriaFromFilter(filterCriteriaId: string): Promise<Criteria> {
-    const filterCriteria = await FilterCriteriaEntity.findOneBy({ id: filterCriteriaId });
-    const filterCriteriaItems = await FilterCriteriaItemEntity.findBy({ filterCriteriaId: filterCriteriaId });
+  public async getCriteriaFromFilter(filter: IFilterModel): Promise<Criteria> {
+    const filterCriteria = await FilterCriteriaEntity.findOneBy({ id: filter.filterCriteriaId });
+    const filterCriteriaItems = await FilterCriteriaItemEntity.findBy({ filterCriteriaId: filter.filterCriteriaId });
     const result = new Criteria();
+    result.id = filterCriteria.id;
+    result.name = filter.name;
+    result.filterId = filter.id;
     result.paging.distinct = filterCriteria.distinct;
     result.paging.pageSize = filterCriteria.limit;
     result.random = filterCriteria.random;

@@ -26,6 +26,8 @@ export class Criteria {
   name: string;
   /** Determines if the results should be returned in random order. If this flag is on, sorting criteria will be ignored. */
   random = false;
+  /** Unique identifier of the filter associated with this object. */
+  filterId: string;
 
   constructor(name?: string) {
     this.name = name;
