@@ -40,10 +40,10 @@ export class ChipSelectionComponent implements OnInit {
         
         // Confirm immediately
         if (this.model.type === ChipSelectorType.Quick) {
+          this.sidebarService.hideRight();
           if (this.model.onOk) {
             this.model.onOk(this.model);
           }
-          this.sidebarService.hideRight();
         }
       }
     }

@@ -24,9 +24,14 @@
     <!-- Toolbar -->
     <tr class="sp-side-bar-toolbar-row"><td class="sp-side-bar-toolbar-col">
       <div class="sp-side-bar-toolbar">
+        <ng-container *ngIf="model.actions">
+          <div *ngFor="let iconAction of model.actions" (click)="onActionClick(iconAction)" class="sp-chip-item sp-clickable sp-bg-09">
+            <span><i *ngIf="iconAction.icon" [ngClass]="iconAction.icon">&nbsp;</i>{{iconAction.caption}}</span>
+          </div>
+        </ng-container>
         <div (click)="onCancelClick()" class="sp-chip-item sp-clickable sp-bg-09">
-          <span *ngIf="model.onOk">Cancel</span>
-          <span *ngIf="!model.onOk">Close</span>
+          <span *ngIf="model.onOk && !model.okHidden">Cancel</span>
+          <span *ngIf="!model.onOk || model.okHidden">Close</span>
         </div>
         <div *ngIf="model.onOk && !model.okHidden" (click)="onOkClick()" class="sp-chip-item sp-clickable sp-bg-primary">
           <span>OK</span>

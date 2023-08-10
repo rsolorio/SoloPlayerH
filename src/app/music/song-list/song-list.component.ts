@@ -119,7 +119,16 @@ export class SongListComponent extends CoreComponent implements OnInit {
         icon: 'mdi-sort-variant mdi'
       },
       {
-        icon: 'mdi-filter-outline mdi'
+        id: 'quickFilterIcon',
+        icon: 'mdi-filter-check-outline mdi',
+        action: () => {
+          this.openQuickFilterPanel();
+        },
+        off: true,
+        offIcon: 'mdi-filter-outline mdi',
+        offAction: () => {
+          this.openQuickFilterPanel();
+        }
       },
       {
         id: 'filterRemoveIcon',
@@ -129,7 +138,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           this.navbarService.getState().rightIcons.forEach(i => i.hidden = false);
           // Except for this one
           iconAction.hidden = true;
-          this.spListBaseComponent.search(new Criteria());
+          this.spListBaseComponent.send(new Criteria());
         }
       }
     ],
@@ -367,5 +376,22 @@ export class SongListComponent extends CoreComponent implements OnInit {
       src: RelatedImageSrc.DefaultLarge,
       srcType: ImageSrcType.WebUrl
     };
+  }
+
+  private openQuickFilterPanel(): void {
+    const model = this.entities.getSongQuickFilterPanelModel(this.spListBaseComponent.model.criteriaResult.criteria);
+    model.onOk = okResult => {
+      const criteria = new Criteria();
+      for (const valuePair of okResult.values) {
+        if (valuePair.selected) {
+          const criteriaItem = valuePair.value as CriteriaItem;
+          criteria.searchCriteria.push(criteriaItem);
+        }
+      }
+      const iconOff = !criteria.searchCriteria.hasComparison();
+      this.navbarService.getState().rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);    
   }
 }

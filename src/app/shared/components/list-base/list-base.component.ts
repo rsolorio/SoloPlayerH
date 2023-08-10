@@ -253,6 +253,13 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
   }
 
+  public send(criteria: Criteria): void {
+    if (this.model.broadcastService) {
+      this.loadingService.show();
+      this.model.broadcastService.send(criteria).subscribe();
+    }
+  }
+
   /**
    * Loads the data via broadcast.
    * The data is retrieved using the criteria associated with the current route;

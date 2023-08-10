@@ -7,6 +7,7 @@ import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
 import { ISideBarModel } from '../side-bar/side-bar-model.interface';
 import { Position } from '../../models/core.enum';
+import { IIconAction } from '../../models/core.interface';
 
 /**
  * Component that hosts dynamic content for the side bar.
@@ -42,13 +43,18 @@ export class SideBarHostComponent extends CoreComponent implements OnInit {
   }
 
   public onCancelClick(): void {
+    // Before doing anything close the panel so the backdrop is immediately
+    // removed and the hide animation starts
+    this.sidebarService.hideRight();
     if (this.model.onCancel) {
       this.model.onCancel();
     }
-    this.sidebarService.hideRight();
   }
 
   public onOkClick(): void {
+    // Before doing anything close the panel so the backdrop is immediately
+    // removed and the hide animation starts
+    this.sidebarService.hideRight();
     if (this.model.onOk) {
       const instanceModel = this.sidebarHostService.getInstanceModel();
       if (instanceModel) {
@@ -58,6 +64,11 @@ export class SideBarHostComponent extends CoreComponent implements OnInit {
         this.model.onOk(this.model);
       }
     }
-    this.sidebarService.hideRight();
+  }
+
+  public onActionClick(iconAction: IIconAction): void {
+    if (iconAction.action) {
+      iconAction.action(iconAction, this.sidebarHostService.getInstanceModel());
+    }
   }
 }

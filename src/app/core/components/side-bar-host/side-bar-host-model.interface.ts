@@ -1,4 +1,5 @@
 import { Type } from "@angular/core";
+import { IIconAction } from "../../models/core.interface";
 
 export interface ISideBarHostModel {
   componentType: Type<any>;
@@ -7,6 +8,7 @@ export interface ISideBarHostModel {
   titleIcon?: string;
   subTitleIcon?: string;
   okHidden?: boolean;
+  actions?: IIconAction[];
   onCancel?: () => void;
   onOk?: (okResult: ISideBarHostModel) => void;
 }

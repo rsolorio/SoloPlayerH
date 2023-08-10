@@ -125,6 +125,8 @@ export class CriteriaPaging {
  * CriteriaItem object.
  */
 export class CriteriaItem {
+  /** Unique identifier of this object. */
+  id: string;
   /** The name of the column. */
   columnName: string;
   /** The values to compare the column to. */

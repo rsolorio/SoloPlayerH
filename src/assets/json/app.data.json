@@ -142,6 +142,16 @@
         "multipleValues": false,
         "system": false,
         "values": false
+      },
+      {
+        "name": "AllowMultipleQuickFilters",
+        "moduleName": "Filter",
+        "title": "Allow multiple quick filters",
+        "description": "Allow the user to apply multiple quick filters instead of just one. This feature implies an extra click for the user.",
+        "valueEditorType": "YesNo",
+        "multipleValues": false,
+        "system": false,
+        "values": false
       }
     ],
     "relatedImage": [

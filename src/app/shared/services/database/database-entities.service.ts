@@ -4,15 +4,19 @@ import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { DbColumn, databaseColumns } from './database.columns';
-import { ChipSelectorType } from '../../components/chip-selection/chip-selection-model.interface';
+import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../../components/chip-selection/chip-selection-model.interface';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { DatabaseService } from './database.service';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { FilterCriteriaEntity } from '../../entities/filter-criteria.entity';
 import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.entity';
 import { IFilterModel } from '../../models/filter-model.interface';
+import { ChipSelectionComponent } from '../../components/chip-selection/chip-selection.component';
+import { DatabaseOptionsService } from './database-options.service';
+import { ModuleOptionName } from '../../models/module-option.enum';
+import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +25,9 @@ export class DatabaseEntitiesService {
 
   constructor(
     private utilities: UtilityService,
-    private db: DatabaseService) { }
+    private db: DatabaseService,
+    private options: DatabaseOptionsService,
+    private sidebarService: SideBarStateService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -286,6 +292,7 @@ export class DatabaseEntitiesService {
     result.random = filterCriteria.random;
     for (const filterCriteriaItem of filterCriteriaItems) {
       const criteriaItem = new CriteriaItem(filterCriteriaItem.columnName);
+      criteriaItem.id = filterCriteriaItem.id;
       if (filterCriteriaItem.columnValue) {
         criteriaItem.columnValues.push({ value: filterCriteriaItem.columnValue});
       }
@@ -324,6 +331,127 @@ export class DatabaseEntitiesService {
         break;
       }
     }
+    return result;
+  }
+
+  public getSongQuickFilterPanelModel(existingCriteria: Criteria): IChipSelectionModel {
+    const multipleEnabled = this.options.getBoolean(ModuleOptionName.AllowMultipleQuickFilters);
+    const result: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Quick Filters',
+      titleIcon: 'mdi-filter mdi',
+      subTitle: 'Songs',
+      subTitleIcon: 'mdi-music-note mdi',
+      displayMode: ChipDisplayMode.Block,
+      type: multipleEnabled ? ChipSelectorType.MultipleOk : ChipSelectorType.Quick,
+      values: this.getQuickFilterCriteriaForSongs(existingCriteria),
+      okHidden: !multipleEnabled,
+      actions: [{
+        caption: 'Clear',
+        action: (iconAction, result) => {
+          const model = result as IChipSelectionModel;
+          model.values.forEach(v => v.selected = false);
+          if (!multipleEnabled) {
+            this.sidebarService.hideRight();
+            if (model.onOk) {
+              model.onOk(model);
+            }
+          }
+        }
+      }]
+    };
+    return result;
+  }
+
+  private getQuickFilterCriteriaForSongs(existingCriteria: Criteria): ISelectableValue[] {
+    const result: ISelectableValue[] = [];
+
+    let criteriaItem = new CriteriaItem('favorite', true);
+    criteriaItem.id = 'quickFilter-favorite';
+    criteriaItem.displayName = 'Favorite';
+    criteriaItem.displayValue = 'Yes';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    result.push({
+      sequence: 1,
+      icon: 'mdi-heart mdi',
+      caption: 'Favorite',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-favorite') });
+
+    criteriaItem = new CriteriaItem('playCount', 0);
+    criteriaItem.id = 'quickFilter-playCount';
+    criteriaItem.displayName = 'Play Count';
+    criteriaItem.displayValue = '0';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    result.push({
+      sequence: 2,
+      icon: 'mdi-play mdi',
+      caption: 'Not Played',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-playCount') });
+
+    criteriaItem = new CriteriaItem('lyrics');
+    criteriaItem.id = 'quickFilter-lyrics';
+    criteriaItem.comparison = CriteriaComparison.IsNotNull;
+    criteriaItem.displayName = 'Has Lyrics';
+    criteriaItem.displayValue = 'Yes';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    result.push({
+      sequence: 3,
+      icon: 'mdi-script-text mdi',
+      caption: 'Has Lyrics',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-lyrics') });
+
+    criteriaItem = new CriteriaItem('rating', 5);
+    criteriaItem.id = 'quickFilter-rating';
+    criteriaItem.displayName = 'Rating';
+    criteriaItem.displayValue = '5';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    result.push({
+      sequence: 4,
+      icon: 'mdi-star mdi',
+      caption: 'Top Rated',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-rating') });
+
+    criteriaItem = new CriteriaItem('live', true);
+    criteriaItem.id = 'quickFilter-live';
+    criteriaItem.displayName = 'Live';
+    criteriaItem.displayValue = 'Yes';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    result.push({
+      sequence: 5,
+      icon: 'mdi-broadcast mdi',
+      caption: 'Live',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-live') });
+
+    criteriaItem = new CriteriaItem('explicit', true);
+    criteriaItem.id = 'quickFilter-explicit';
+    criteriaItem.displayName = 'Explicit';
+    criteriaItem.displayValue = 'Yes';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    result.push({
+      sequence: 6,
+      icon: 'mdi-alpha-e-box-outline mdi',
+      caption: 'Explicit',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-explicit') });
+
+    criteriaItem = new CriteriaItem('performers', 1);
+    criteriaItem.id = 'quickFilter-performers';
+    criteriaItem.comparison = CriteriaComparison.GreaterThan;
+    criteriaItem.displayName = 'Performers';
+    criteriaItem.displayValue = 'More Than 1';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    result.push({
+      sequence: 7,
+      icon: 'mdi-account-multiple mdi',
+      caption: 'Multi Artist',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-performers') });
+
     return result;
   }
 }

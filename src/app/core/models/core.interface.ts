@@ -132,6 +132,10 @@ export interface IIcon {
 export interface IIconActionGeneric<TParam> extends IIcon {
   /** Timeout in milliseconds before the action is performed. */
   actionTimeout?: number;
+  /** Caption associated with the default action. */
+  caption?: string;
+  /** Caption associated with the off action. */
+  offCaption?: string;
   /** Action to be fired by the icon. */
   action?(iconAction: IIconActionGeneric<any>, param?: TParam): void;
   /** Action to be fired by the OFF icon. */

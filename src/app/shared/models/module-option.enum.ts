@@ -7,11 +7,13 @@ export enum ModuleOptionName {
   HideNavbarOnScroll = 'HideNavbarOnScroll',
   PlayerReplayTime = 'PlayerReplayTime',
   PlayerForwardTime = 'PlayerForwardTime',
-  AllowDupsInPlaylists = 'AllowDupsInPlaylists'
+  AllowDupsInPlaylists = 'AllowDupsInPlaylists',
+  AllowMultipleQuickFilters = 'AllowMultipleQuickFilters'
 }
 
 export enum ModuleOptionEditor {
   Text = 'Text',
   YesNo = 'YesNo',
-  Number = 'Number'
+  Number = 'Number',
+  ValueList = 'ValueList'
 }
