@@ -47,7 +47,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { databaseColumns } from './database.columns';
 import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
-import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { IComparison } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
 import { AppEvent } from '../../models/events.enum';
@@ -373,7 +373,16 @@ export class DatabaseService {
     const repo = this.dataSource.getRepository(entity);
     this.log.debug('getList criteria', criteria);
     const result = await this.createQuery(repo, entityTempName, criteria).getMany();
-    const transformedResult = this.transformService.transform(result, criteria.transformAlgorithm);
+    let transformedResult = this.transformService.transform(result, criteria.transformAlgorithm);
+    // Individual alternate transforms
+    const transformCriteriaItems = criteria.sortingCriteria.filter(criteriaItem =>
+      criteriaItem.sortSequence > 0 &&
+      criteriaItem.sortDirection === CriteriaSortDirection.Alternate);
+    if (transformCriteriaItems.length) {
+      const propertyNames = this.utilities.sort(transformCriteriaItems, 'sequence').map(i => i.columnName);
+      transformedResult = this.transformService.transform(
+        transformedResult, CriteriaTransformAlgorithm.AlternateProperties, propertyNames);
+    }
     return transformedResult;
   }
 
@@ -688,7 +697,9 @@ export class DatabaseService {
   ): SelectQueryBuilder<T> {
     let hasOrderBy = false;
     // This is a safe guard since this should only receive sorting items
-    const orderByCriteria = criteriaItems.filter(criteriaItem => criteriaItem.sortSequence > 0);
+    const orderByCriteria = criteriaItems.filter(criteriaItem =>
+      criteriaItem.sortSequence > 0 &&
+      criteriaItem.sortDirection !== CriteriaSortDirection.Alternate);
     this.utilities.sort(orderByCriteria, 'sortSequence').forEach(orderByItem => {
       const column = `${entityAlias}.${orderByItem.columnName}`;
       const order = orderByItem.sortDirection === CriteriaSortDirection.Ascending ? 'ASC' : 'DESC';

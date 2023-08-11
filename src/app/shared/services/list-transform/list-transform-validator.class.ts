@@ -16,9 +16,9 @@ export abstract class ListTransformValidatorBase<T> implements IListTransformVal
   /** Item currently being validated. */
   protected currentItem: T;
 
-  public validate(item: T): boolean {
+  public validate(item: T, properties?: string[]): boolean {
     this.currentItem = item;
-    const result = this.innerValidate(item);
+    const result = this.innerValidate(item, properties);
     this.currentItem = null;
     if (result) {
       this._count++;
@@ -33,7 +33,7 @@ export abstract class ListTransformValidatorBase<T> implements IListTransformVal
     }
   }
 
-  protected abstract innerValidate(item: T): boolean;
+  protected abstract innerValidate(item: T, properties?: string[]): boolean;
 
   protected innerReset(): void {}
 }

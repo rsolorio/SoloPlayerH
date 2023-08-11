@@ -18,7 +18,7 @@ export class ListTransformService {
     this.factories.push(factory);
   }
 
-  public transform<T>(items: T[], algorithm: CriteriaTransformAlgorithm): T[] {
+  public transform<T>(items: T[], algorithm: CriteriaTransformAlgorithm, properties?: string[]): T[] {
     const validatorInfo = this.findValidator(algorithm);
     if (!validatorInfo) {
       // If nothing found return the same input
@@ -27,18 +27,18 @@ export class ListTransformService {
 
     const includedItems: T[] = [];
     const excludedItems = [...items];
-    let validItem = this.lookupItem(excludedItems, validatorInfo.validator);
+    let validItem = this.lookupItem(excludedItems, validatorInfo.validator, properties);
 
     while (validItem) {
       excludedItems.splice(excludedItems.indexOf(validItem), 1);
       includedItems.push(validItem);
-      validItem = this.lookupItem(excludedItems, validatorInfo.validator);
+      validItem = this.lookupItem(excludedItems, validatorInfo.validator, properties);
 
       if (!validItem) {
         // Try to reset the validator
         validatorInfo.validator.reset();
         // Try to see if we get a new item after the reset
-        validItem = this.lookupItem(excludedItems, validatorInfo.validator);
+        validItem = this.lookupItem(excludedItems, validatorInfo.validator, properties);
       }
     }
 
@@ -58,9 +58,9 @@ export class ListTransformService {
     return null;
   }
 
-  private lookupItem<T>(items: T[], validator: IListTransformValidator): T {
+  private lookupItem<T>(items: T[], validator: IListTransformValidator, properties?: string[]): T {
     for (const item of items) {
-      if (validator.validate(item)) {
+      if (validator.validate(item, properties)) {
         return item;
       }
     }

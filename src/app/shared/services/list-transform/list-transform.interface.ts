@@ -2,7 +2,7 @@ import { CriteriaTransformAlgorithm } from "../criteria/criteria.enum";
 
 export interface IListTransformValidator {
   reset: () => void;
-  validate: (item: any) => boolean;
+  validate: (item: any, properties?: string[]) => boolean;
 }
 
 export interface IValidatorInfo {

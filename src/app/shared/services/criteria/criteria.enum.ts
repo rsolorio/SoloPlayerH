@@ -22,7 +22,8 @@ export enum CriteriaJoinOperator {
 
 export enum CriteriaSortDirection {
   Ascending,
-  Descending
+  Descending,
+  Alternate
 }
 
 export enum CriteriaTransformAlgorithm {
@@ -35,6 +36,8 @@ export enum CriteriaTransformAlgorithm {
   ShuffleDecadeGenre,
   /** Alternates languages in a list. */
   ShuffleLanguage,
+  /** Alternates the combination of one or more properties in a list. */
+  AlternateProperties,
   LimitDuration,
   LimitFileSize,
   LimitSongsPerArtist

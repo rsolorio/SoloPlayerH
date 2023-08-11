@@ -554,18 +554,29 @@ export class DatabaseEntitiesService {
       okHidden: true,
       okDelay: 300,
       onChipClick: (selectionChanged, chipItem, model) => {
-        if (selectionChanged) {
-          // Remove all secondary icons
-          model.items.forEach(i => i.secondaryIcon = null);
-          // Set default icon
-          chipItem.secondaryIcon = 'mdi-sort-ascending mdi';
-          // Make sure the sorting matches the icon
-          const criteriaItems = chipItem.value as CriteriaItems;
-          criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
+        const criteriaItems = chipItem.value as CriteriaItems;
+        if (selectionChanged) {          
+          // All criteria items must use the same sort direction
+          if (criteriaItems && criteriaItems.length) {
+            // Use the first item to determine the general sort direction
+            const firstItem = criteriaItems[0];
+            // Don't set secondary icon for alternate sorting
+            if (firstItem.sortDirection !== CriteriaSortDirection.Alternate) {
+              // Remove all secondary icons
+              model.items.forEach(i => i.secondaryIcon = null);
+              // Set default icon
+              chipItem.secondaryIcon = 'mdi-sort-ascending mdi';
+              // Make sure the sorting matches the icon          
+              criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
+            }
+          }
           // The Ok action will be called automatically
         }
         else {
-          const criteriaItems = chipItem.value as CriteriaItems;
+          if (criteriaItems && criteriaItems[0] && criteriaItems[0].sortDirection === CriteriaSortDirection.Alternate) {
+            // Don't do anything if the user is clicking a selected alternate sorting
+            return;
+          }
           // A selected chip was clicked so swap the sort direction
           if (chipItem.secondaryIcon === 'mdi-sort-ascending mdi') {
             chipItem.secondaryIcon = 'mdi-sort-descending mdi-flip-v mdi';
@@ -647,6 +658,29 @@ export class DatabaseEntitiesService {
       selected: existingCriteria.sortingCriteria.id === criteriaItems.id
     });
 
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'alternate-artist';
+    criteriaItems.addSorting('primaryArtistName', CriteriaSortDirection.Alternate);
+    result.push({
+      sequence: 5,
+      icon: 'mdi-account-badge mdi',
+      caption: 'Alternate Artists',
+      secondaryIcon: 'mdi-arrow-decision-outline mdi',
+      value: criteriaItems,
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'alternate-language';
+    criteriaItems.addSorting('language', CriteriaSortDirection.Alternate);
+    result.push({
+      sequence: 6,
+      icon: 'mdi-translate mdi',
+      caption: 'Alternate Languages',
+      secondaryIcon: 'mdi-arrow-decision-outline mdi',
+      value: criteriaItems,
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
     
     return result;
   }
