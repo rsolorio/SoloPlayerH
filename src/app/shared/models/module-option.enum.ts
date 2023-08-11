@@ -8,7 +8,10 @@ export enum ModuleOptionName {
   PlayerReplayTime = 'PlayerReplayTime',
   PlayerForwardTime = 'PlayerForwardTime',
   AllowDupsInPlaylists = 'AllowDupsInPlaylists',
-  AllowMultipleQuickFilters = 'AllowMultipleQuickFilters'
+  AllowMultipleQuickFilters = 'AllowMultipleQuickFilters',
+  LongPlayArtistThreshold = 'LongPlayArtistThreshold',
+  LongPlayAlbumThreshold = 'LongPlayAlbumThreshold',
+  LongPlaySongThreshold = 'LongPlaySongThreshold'
 }
 
 export enum ModuleOptionEditor {

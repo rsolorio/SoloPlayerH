@@ -379,9 +379,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const model = this.entities.getSongQuickFilterPanelModel(this.spListBaseComponent.model.criteriaResult.criteria);
+    const values = this.entities.getQuickFilterCriteriaForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getQuickFilterPanelModel(values, 'Songs', 'mdi-music-note mdi');
     model.onOk = okResult => {
-      const criteria = new Criteria();
+      const criteria = new Criteria(model.title);
       for (const valuePair of okResult.values) {
         if (valuePair.selected) {
           const criteriaItem = valuePair.value as CriteriaItem;

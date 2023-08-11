@@ -3,17 +3,17 @@ import { IArtistModel } from '../models/artist-model.interface';
 import { ListItemEntity } from './base.entity';
 
 /**
- * Fields: id, name, hash, artistSort, artistStylized, favorite, country, albumCount, songCount
+ * Fields: id, name, hash, artistSort, artistStylized, favorite, country, albumCount, songCount, playCount, songAddDateMax
  */
 @ViewEntity({
   name: 'albumArtistView',
   expression: `
-  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite, valueListEntry.name AS country, COUNT(album.id) AS albumCount, SUM(album.songCount) as songCount, MAX(album.songAddDateMax) AS songAddDateMax
+  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite, valueListEntry.name AS country, COUNT(album.id) AS albumCount, SUM(album.songCount) AS songCount, SUM(album.playCount) AS playCount, MAX(album.songAddDateMax) AS songAddDateMax
   FROM artist
   INNER JOIN valueListEntry
   ON artist.countryId = valueListEntry.id
   INNER JOIN (
-    SELECT album.id, album.primaryArtistId, album.name, COUNT(song.id) AS songCount, MAX(song.addDate) AS songAddDateMax
+    SELECT album.id, album.primaryArtistId, album.name, COUNT(song.id) AS songCount, SUM(song.playCount) AS playCount, MAX(song.addDate) AS songAddDateMax
     FROM album INNER JOIN song ON album.id = song.primaryAlbumId
     GROUP BY album.id, album.primaryArtistId, album.name
   ) AS album ON artist.id = album.primaryArtistId
@@ -31,6 +31,8 @@ export class AlbumArtistViewEntity extends ListItemEntity implements IArtistMode
   albumCount: number;
   @ViewColumn()
   songCount: number;
+  @ViewColumn()
+  playCount: number;
   @ViewColumn()
   artistSort: string;
   @ViewColumn()

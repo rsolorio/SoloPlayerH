@@ -13,6 +13,8 @@ export interface IAlbumModel extends IListItemModel {
   artistStylized: string;
   /** Number of songs associated with the album. Unavailable in AlbumEntity. */
   songCount: number;
+  /** Sum of the play count of all songs associated with the album. Unavailable in AlbumEntity. */
+  playCount: number;
   /** The album artist associated with the album. Only available in AlbumEntity. */
   primaryArtist: IArtistModel;
   /** Duration in seconds of all associated songs. Unavailable in AlbumEntity. */

@@ -18,6 +18,8 @@ import { ArtistEntity, PartyRelationEntity } from 'src/app/shared/entities';
 import { PartyRelationType } from 'src/app/shared/models/music.enum';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
 @Component({
   selector: 'sp-artist-list',
@@ -76,7 +78,16 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         icon: 'mdi-sort-variant mdi'
       },
       {
-        icon: 'mdi-filter-outline mdi'
+        id: 'quickFilterIcon',
+        icon: 'mdi-filter-check-outline mdi',
+        action: () => {
+          this.openQuickFilterPanel();
+        },
+        off: true,
+        offIcon: 'mdi-filter-outline mdi',
+        offAction: () => {
+          this.openQuickFilterPanel();
+        }
       },
       {
         id: 'showAllSongsIcon',
@@ -126,7 +137,9 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private breadcrumbService: BreadcrumbsStateService,
     private db: DatabaseService,
     private navigation: NavigationService,
-    private entities: DatabaseEntitiesService
+    private entities: DatabaseEntitiesService,
+    private navbarService: NavBarStateService,
+    private sidebarHostService: SideBarHostStateService
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoute.AlbumArtists);
@@ -262,5 +275,23 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     // these breadcrumbs are for another list that hasn't been loaded yet
     this.breadcrumbService.addOne(breadcrumb, { suppressEvents: true });
     return breadcrumb;
+  }
+
+  private openQuickFilterPanel(): void {
+    const values = this.entities.getQuickFilterCriteriaForArtists(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getQuickFilterPanelModel(values, 'Album Artists', 'mdi-account-badge mdi');
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      for (const valuePair of okResult.values) {
+        if (valuePair.selected) {
+          const criteriaItem = valuePair.value as CriteriaItem;
+          criteria.searchCriteria.push(criteriaItem);
+        }
+      }
+      const iconOff = !criteria.searchCriteria.hasComparison();
+      this.navbarService.getState().rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);    
   }
 }

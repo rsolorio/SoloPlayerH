@@ -22,6 +22,7 @@ export class ArtistEntity extends ListItemEntity implements IArtistModel {
   country: string;
   albumCount: number;
   songCount: number;
+  playCount: number;
   songAddDateMax: Date;
 
 }

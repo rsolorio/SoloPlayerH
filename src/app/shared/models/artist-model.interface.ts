@@ -9,5 +9,6 @@ export interface IArtistModel extends IListItemModel {
   country: string;
   albumCount: number;
   songCount: number;
+  playCount: number;
   songAddDateMax: Date;
 }

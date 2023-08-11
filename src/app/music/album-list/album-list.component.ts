@@ -19,6 +19,8 @@ import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed'
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
 @Component({
   selector: 'sp-album-list',
@@ -86,7 +88,16 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         icon: 'mdi-sort-variant mdi'
       },
       {
-        icon: 'mdi-filter-outline mdi'
+        id: 'quickFilterIcon',
+        icon: 'mdi-filter-check-outline mdi',
+        action: () => {
+          this.openQuickFilterPanel();
+        },
+        off: true,
+        offIcon: 'mdi-filter-outline mdi',
+        offAction: () => {
+          this.openQuickFilterPanel();
+        }
       },
       {
         id: 'showAllSongsIcon',
@@ -131,7 +142,9 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private db: DatabaseService,
     private entities: DatabaseEntitiesService,
     private navigation: NavigationService,
-    private imageService: ImageService
+    private imageService: ImageService,
+    private navbarService: NavBarStateService,
+    private sidebarHostService: SideBarHostStateService
   ) {
     super();
   }
@@ -212,5 +225,23 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       src: RelatedImageSrc.DefaultLarge,
       srcType: ImageSrcType.WebUrl
     };
+  }
+
+  private openQuickFilterPanel(): void {
+    const values = this.entities.getQuickFilterCriteriaForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getQuickFilterPanelModel(values, 'Albums', 'mdi-album mdi');
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      for (const valuePair of okResult.values) {
+        if (valuePair.selected) {
+          const criteriaItem = valuePair.value as CriteriaItem;
+          criteria.searchCriteria.push(criteriaItem);
+        }
+      }
+      const iconOff = !criteria.searchCriteria.hasComparison();
+      this.navbarService.getState().rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);    
   }
 }

@@ -334,17 +334,17 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public getSongQuickFilterPanelModel(existingCriteria: Criteria): IChipSelectionModel {
+  public getQuickFilterPanelModel(values: ISelectableValue[], subTitle: string, subTitleIcon: string): IChipSelectionModel {
     const multipleEnabled = this.options.getBoolean(ModuleOptionName.AllowMultipleQuickFilters);
     const result: IChipSelectionModel = {
       componentType: ChipSelectionComponent,
       title: 'Quick Filters',
       titleIcon: 'mdi-filter mdi',
-      subTitle: 'Songs',
-      subTitleIcon: 'mdi-music-note mdi',
+      subTitle: subTitle,
+      subTitleIcon: subTitleIcon,
       displayMode: ChipDisplayMode.Block,
       type: multipleEnabled ? ChipSelectorType.MultipleOk : ChipSelectorType.Quick,
-      values: this.getQuickFilterCriteriaForSongs(existingCriteria),
+      values: values,
       okHidden: !multipleEnabled,
       actions: [{
         caption: 'Clear',
@@ -363,14 +363,14 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  private getQuickFilterCriteriaForSongs(existingCriteria: Criteria): ISelectableValue[] {
+  public getQuickFilterCriteriaForSongs(existingCriteria: Criteria): ISelectableValue[] {
     const result: ISelectableValue[] = [];
 
     let criteriaItem = new CriteriaItem('favorite', true);
     criteriaItem.id = 'quickFilter-favorite';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Favorite';
     criteriaItem.displayValue = 'Yes';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     result.push({
       sequence: 1,
       icon: 'mdi-heart mdi',
@@ -380,9 +380,9 @@ export class DatabaseEntitiesService {
 
     criteriaItem = new CriteriaItem('playCount', 0);
     criteriaItem.id = 'quickFilter-playCount';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Play Count';
     criteriaItem.displayValue = '0';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     result.push({
       sequence: 2,
       icon: 'mdi-play mdi',
@@ -393,9 +393,9 @@ export class DatabaseEntitiesService {
     criteriaItem = new CriteriaItem('lyrics');
     criteriaItem.id = 'quickFilter-lyrics';
     criteriaItem.comparison = CriteriaComparison.IsNotNull;
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Has Lyrics';
     criteriaItem.displayValue = 'Yes';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     result.push({
       sequence: 3,
       icon: 'mdi-script-text mdi',
@@ -405,9 +405,9 @@ export class DatabaseEntitiesService {
 
     criteriaItem = new CriteriaItem('rating', 5);
     criteriaItem.id = 'quickFilter-rating';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Rating';
     criteriaItem.displayValue = '5';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     result.push({
       sequence: 4,
       icon: 'mdi-star mdi',
@@ -417,9 +417,9 @@ export class DatabaseEntitiesService {
 
     criteriaItem = new CriteriaItem('live', true);
     criteriaItem.id = 'quickFilter-live';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Live';
     criteriaItem.displayValue = 'Yes';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     result.push({
       sequence: 5,
       icon: 'mdi-broadcast mdi',
@@ -429,9 +429,9 @@ export class DatabaseEntitiesService {
 
     criteriaItem = new CriteriaItem('explicit', true);
     criteriaItem.id = 'quickFilter-explicit';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Explicit';
     criteriaItem.displayValue = 'Yes';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     result.push({
       sequence: 6,
       icon: 'mdi-alpha-e-box-outline mdi',
@@ -442,15 +442,103 @@ export class DatabaseEntitiesService {
     criteriaItem = new CriteriaItem('performers', 1);
     criteriaItem.id = 'quickFilter-performers';
     criteriaItem.comparison = CriteriaComparison.GreaterThan;
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Performers';
     criteriaItem.displayValue = 'More Than 1';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     result.push({
       sequence: 7,
       icon: 'mdi-account-multiple mdi',
       caption: 'Multi Artist',
       value: criteriaItem,
       selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-performers') });
+
+    return result;
+  }
+
+  public getQuickFilterCriteriaForArtists(existingCriteria: Criteria): ISelectableValue[] {
+    const result: ISelectableValue[] = [];
+
+    let criteriaItem = new CriteriaItem('favorite', true);
+    criteriaItem.id = 'quickFilter-favorite';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItem.displayName = 'Favorite';
+    criteriaItem.displayValue = 'Yes';
+    result.push({
+      sequence: 1,
+      icon: 'mdi-heart mdi',
+      caption: 'Favorite',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-favorite') });
+
+    criteriaItem = new CriteriaItem('playCount', 0);
+    criteriaItem.id = 'quickFilter-playCount';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItem.displayName = 'Play Count';
+    criteriaItem.displayValue = '0';
+    result.push({
+      sequence: 2,
+      icon: 'mdi-play mdi',
+      caption: 'Not Played',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-playCount') });
+
+    const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayArtistThreshold);
+    criteriaItem = new CriteriaItem('songCount', longPlaySongCount);
+    criteriaItem.id = 'quickFilter-songCount';
+    criteriaItem.comparison = CriteriaComparison.GreaterThanOrEqualTo;
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItem.displayName = 'Song Count';
+    criteriaItem.displayValue = 'Greater than or equal to ' + longPlaySongCount;
+    result.push({
+      sequence: 3,
+      icon: 'mdi-music-box-multiple-outline mdi',
+      caption: 'Long Play',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-songCount') });
+
+    return result;
+  }
+
+  public getQuickFilterCriteriaForAlbums(existingCriteria: Criteria): ISelectableValue[] {
+    const result: ISelectableValue[] = [];
+
+    let criteriaItem = new CriteriaItem('favorite', true);
+    criteriaItem.id = 'quickFilter-favorite';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItem.displayName = 'Favorite';
+    criteriaItem.displayValue = 'Yes';
+    result.push({
+      sequence: 1,
+      icon: 'mdi-heart mdi',
+      caption: 'Favorite',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-favorite') });
+
+    criteriaItem = new CriteriaItem('playCount', 0);
+    criteriaItem.id = 'quickFilter-playCount';
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItem.displayName = 'Play Count';
+    criteriaItem.displayValue = '0';
+    result.push({
+      sequence: 2,
+      icon: 'mdi-play mdi',
+      caption: 'Not Played',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-playCount') });
+
+    const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayAlbumThreshold);
+    criteriaItem = new CriteriaItem('songCount', longPlaySongCount);
+    criteriaItem.id = 'quickFilter-songCount';
+    criteriaItem.comparison = CriteriaComparison.GreaterThanOrEqualTo;
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItem.displayName = 'Song Count';
+    criteriaItem.displayValue = 'Greater than or equal to ' + longPlaySongCount;
+    result.push({
+      sequence: 3,
+      icon: 'mdi-music-box-multiple-outline mdi',
+      caption: 'Long Play',
+      value: criteriaItem,
+      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-songCount') });
 
     return result;
   }
