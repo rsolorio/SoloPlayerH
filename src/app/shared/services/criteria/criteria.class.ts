@@ -173,7 +173,8 @@ export class CriteriaItem {
  * CriteriaItems object.
  */
 export class CriteriaItems extends Array<CriteriaItem> {
-
+  /** Uniquely identifies a list of criteria items. */
+  id: string;
   public clone(): CriteriaItems {
     const itemsText = JSON.stringify(this);
     const result = new CriteriaItems();

@@ -77,11 +77,6 @@ export class SideBarMenuStateService {
 
   private populateAppMenu(): void {
     if (!this.state.appMenuLoaded) {
-      if (this.state.loginMenuLoaded) {
-        this.clear();
-        this.state.loginMenuLoaded = false;
-      }
-
       for (const key of Object.keys(appRoutes)) {
         const routeInfo = appRoutes[key];
         // Show the Log menu only on Verbose

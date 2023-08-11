@@ -230,9 +230,9 @@ export class SongViewComponent implements OnInit {
       title: classificationTypeName,
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.Multiple,
-      values: valuePairs,
-      onValueSelectionChanged: valuePair => {
-        this.onClassificationSelected(valuePair);
+      items: valuePairs,
+      onChipClick: (selectionChanged, chipItem) => {
+        this.onClassificationSelected(chipItem);
       },
       // In this case this is the Close action
       onCancel: () => {

@@ -228,11 +228,11 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const values = this.entities.getQuickFilterCriteriaForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
+    const values = this.entities.getQuickFiltersForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
     const model = this.entities.getQuickFilterPanelModel(values, 'Albums', 'mdi-album mdi');
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
-      for (const valuePair of okResult.values) {
+      for (const valuePair of okResult.items) {
         if (valuePair.selected) {
           const criteriaItem = valuePair.value as CriteriaItem;
           criteria.searchCriteria.push(criteriaItem);

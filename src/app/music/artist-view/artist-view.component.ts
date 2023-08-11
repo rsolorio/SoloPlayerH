@@ -130,9 +130,9 @@ export class ArtistViewComponent implements OnInit {
       title: 'Artist Type',
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.SingleOk,
-      values: values,
+      items: values,
       onOk: model => {
-        const selectedValues = model.values.filter(value => value.selected);
+        const selectedValues = model.items.filter(value => value.selected);
         const valuePair = selectedValues[0];
         if (valuePair.value !== this.entityEditorModel.data['artist_artistTypeId']) {
           this.entityEditorModel.data['artist_artistTypeId'] = valuePair.value;
@@ -164,9 +164,9 @@ export class ArtistViewComponent implements OnInit {
       title: 'Country',
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.SingleOk,
-      values: values,
+      items: values,
       onOk: model => {
-        const selectedValues = model.values.filter(value => value.selected);
+        const selectedValues = model.items.filter(value => value.selected);
         const valuePair = selectedValues[0];
         if (valuePair.value !== this.entityEditorModel.data['artist_countryId']) {
           this.entityEditorModel.data['artist_countryId'] = valuePair.value;

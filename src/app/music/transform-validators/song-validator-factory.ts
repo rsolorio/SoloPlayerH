@@ -6,12 +6,12 @@ import { ValidatorAlternateLanguage } from "./validator-alternate-language";
 export class SongValidatorFactory implements ITransformValidatorFactory {
   public get(algorithm: CriteriaTransformAlgorithm): IValidatorInfo {
     switch (algorithm) {
-      case CriteriaTransformAlgorithm.AlternateArtist:
+      case CriteriaTransformAlgorithm.ShuffleArtist:
         return {
           validator: new ValidatorAlternateArtist(),
           algorithm: algorithm
         };
-      case CriteriaTransformAlgorithm.AlternateLanguage:
+      case CriteriaTransformAlgorithm.ShuffleLanguage:
         return {
           validator: new ValidatorAlternateLanguage(),
           algorithm: algorithm

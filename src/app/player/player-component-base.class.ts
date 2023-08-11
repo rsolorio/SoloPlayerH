@@ -239,10 +239,10 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
         subTitle: song.name,
         type: ChipSelectorType.Quick,
         displayMode: ChipDisplayMode.Block,
-        values: values,
+        items: values,
         okHidden: true,
         onOk: model => {
-          const selectedValues = model.values.filter(value => value.selected);
+          const selectedValues = model.items.filter(value => value.selected);
           if (selectedValues && selectedValues.length) {
             const newMood = selectedValues[0].caption;
             this.databaseEntityService.setMood(song.id, newMood).then(() => {

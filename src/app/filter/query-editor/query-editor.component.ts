@@ -234,10 +234,10 @@ export class QueryEditorComponent implements OnInit {
       title: selector.column.caption,
       displayMode: ChipDisplayMode.Flex,
       type: selector.type,
-      values: selector.values,
+      items: selector.values,
       okHidden: selector.type === ChipSelectorType.Quick || selector.type === ChipSelectorType.Multiple,
       onOk: model => {
-        const selectedValues = model.values.filter(value => value.selected);
+        const selectedValues = model.items.filter(value => value.selected);
         let criteriaItem = this.model.userCriteria.find(item => item.columnName === selector.column.name);
         if (!criteriaItem) {
           criteriaItem = new CriteriaItem(selector.column.name);
@@ -285,10 +285,10 @@ export class QueryEditorComponent implements OnInit {
       componentType: ChipSelectionComponent,
       displayMode: ChipDisplayMode.Block,
       title: 'Criteria Fields',
-      values: [],
+      items: [],
       type: ChipSelectorType.MultipleOk,
       onOk: model => {
-        const selectedValues = model.values.filter(value => value.selected);
+        const selectedValues = model.items.filter(value => value.selected);
         selectedValues.forEach(valuePair => {
           const selector = allSelectors.find(s => s.column.name === valuePair.value);
           if (selector) {
@@ -299,7 +299,7 @@ export class QueryEditorComponent implements OnInit {
     };
     // Send hidden selectors as available values
     allSelectors.filter(s => s.hidden).forEach(selector => {
-      chipSelectionModel.values.push({ value: selector.column.name, caption: selector.column.caption });
+      chipSelectionModel.items.push({ value: selector.column.name, caption: selector.column.caption });
     });
     this.sidebarHostService.loadContent(chipSelectionModel);
   }
@@ -315,10 +315,10 @@ export class QueryEditorComponent implements OnInit {
       title: this.sortBySelector.column.caption,
       displayMode: ChipDisplayMode.Flex,
       type: this.sortBySelector.type,
-      values: this.sortBySelector.values,
+      items: this.sortBySelector.values,
       okHidden: this.sortBySelector.type === ChipSelectorType.Quick || this.sortBySelector.type === ChipSelectorType.Multiple,
       onOk: model => {
-        const selectedValues = model.values.filter(value => value.selected);
+        const selectedValues = model.items.filter(value => value.selected);
         // Each value corresponds to a field, so each value needs its own criteria item
         this.model.sortingCriteria = new CriteriaItems();
         const sortedValues = this.utilities.sort(selectedValues, 'sequence');
@@ -364,10 +364,10 @@ export class QueryEditorComponent implements OnInit {
       componentType: ChipSelectionComponent,
       displayMode: ChipDisplayMode.Flex,
       type: this.limitSelector.type,
-      values: this.limitSelector.values,
+      items: this.limitSelector.values,
       okHidden: this.limitSelector.type === ChipSelectorType.Quick || this.limitSelector.type === ChipSelectorType.Multiple,
       onOk: model => {
-        const selectedValues = model.values.filter(value => value.selected);
+        const selectedValues = model.items.filter(value => value.selected);
         // Only one value should be selected
         const selectedValuePair = selectedValues[0];
         this.model.paging.pageSize = selectedValuePair.value;
@@ -390,10 +390,10 @@ export class QueryEditorComponent implements OnInit {
       title: this.transformSelector.column.caption,
       displayMode: ChipDisplayMode.Flex,
       type: this.transformSelector.type,
-      values: this.transformSelector.values,
+      items: this.transformSelector.values,
       okHidden: this.transformSelector.type === ChipSelectorType.Quick || this.transformSelector.type === ChipSelectorType.Multiple,
       onOk: model => {
-        const selectedValues = model.values.filter(value => value.selected);
+        const selectedValues = model.items.filter(value => value.selected);
         // Only one value should be selected
         const selectedValuePair = selectedValues[0];
         this.model.transformAlgorithm = selectedValuePair.value;

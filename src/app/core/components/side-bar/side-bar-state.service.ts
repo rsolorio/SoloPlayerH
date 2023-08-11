@@ -27,6 +27,7 @@ export class SideBarStateService {
     return sidebarState;
   }
 
+  /** Toggles the specified sidebar. */
   public toggle(position: Position): void {
     const sidebarState = this.stateList[position];
     if (sidebarState) {
@@ -34,22 +35,27 @@ export class SideBarStateService {
     }
   }
 
+  /** Toggles the left sidebar. */
   public toggleLeft(): void {
     this.toggle(Position.Left);
   }
 
+  /** Hides the left sidebar. */
   public hideLeft(): void {
     this.setShowProperty(false, Position.Left);
   }
 
+  /** Hides the right sidebar. */
   public hideRight(): void {
     this.setShowProperty(false, Position.Right);
   }
 
+  /** Toggles the right sidebar. */
   public toggleRight(): void {
     this.toggle(Position.Right);
   }
 
+  /** Sets the show property of the specified sidebar. */
   public setShowProperty(show: boolean, position: Position): void {
     const sidebarState = this.stateList[position];
     if (sidebarState && sidebarState.show !== show) {

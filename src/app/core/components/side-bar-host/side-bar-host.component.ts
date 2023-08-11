@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SideBarHostStateService } from './side-bar-host-state.service';
 import { ISideBarHostModel } from './side-bar-host-model.interface';
-import { SideBarStateService } from '../side-bar/side-bar-state.service';
 import { CoreComponent } from '../../models/core-component.class';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
@@ -21,7 +20,6 @@ export class SideBarHostComponent extends CoreComponent implements OnInit {
   @ViewChild('spSidebarContentHost', { read: ViewContainerRef, static: true }) private sidebarContentViewContainer: ViewContainerRef;
   public model: ISideBarHostModel;
   constructor(
-    private sidebarService: SideBarStateService,
     private sidebarHostService: SideBarHostStateService,
     private events: EventsService) {
     super();
@@ -43,27 +41,11 @@ export class SideBarHostComponent extends CoreComponent implements OnInit {
   }
 
   public onCancelClick(): void {
-    // Before doing anything close the panel so the backdrop is immediately
-    // removed and the hide animation starts
-    this.sidebarService.hideRight();
-    if (this.model.onCancel) {
-      this.model.onCancel();
-    }
+    this.sidebarHostService.closeCancel();
   }
 
   public onOkClick(): void {
-    // Before doing anything close the panel so the backdrop is immediately
-    // removed and the hide animation starts
-    this.sidebarService.hideRight();
-    if (this.model.onOk) {
-      const instanceModel = this.sidebarHostService.getInstanceModel();
-      if (instanceModel) {
-        this.model.onOk(instanceModel);
-      }
-      else {
-        this.model.onOk(this.model);
-      }
-    }
+    this.sidebarHostService.closeOk();
   }
 
   public onActionClick(iconAction: IIconAction): void {

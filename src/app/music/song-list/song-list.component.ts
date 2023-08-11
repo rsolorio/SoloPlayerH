@@ -17,7 +17,7 @@ import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcru
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
-import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -116,7 +116,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
     },
     rightIcons: [
       {
-        icon: 'mdi-sort-variant mdi'
+        icon: 'mdi-sort-variant mdi',
+        action: () => {
+          this.openSortingPanel();
+        }
       },
       {
         id: 'quickFilterIcon',
@@ -379,11 +382,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const values = this.entities.getQuickFilterCriteriaForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
+    const values = this.entities.getQuickFiltersForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
     const model = this.entities.getQuickFilterPanelModel(values, 'Songs', 'mdi-music-note mdi');
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
-      for (const valuePair of okResult.values) {
+      // Keep sorting criteria
+      criteria.sortingCriteria = this.spListBaseComponent.model.criteriaResult.criteria.sortingCriteria;
+      // Add search criteria
+      for (const valuePair of okResult.items) {
         if (valuePair.selected) {
           const criteriaItem = valuePair.value as CriteriaItem;
           criteria.searchCriteria.push(criteriaItem);
@@ -393,6 +399,27 @@ export class SongListComponent extends CoreComponent implements OnInit {
       this.navbarService.getState().rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
       this.spListBaseComponent.send(criteria);
     };
-    this.sidebarHostService.loadContent(model);    
+    this.sidebarHostService.loadContent(model);
+  }
+
+  private openSortingPanel(): void {
+    const values = this.entities.getSortingForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getSortingPanelModel(values, 'Songs', 'mdi-music-note mdi');
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      // Keep search criteria
+      criteria.searchCriteria = this.spListBaseComponent.model.criteriaResult.criteria.searchCriteria;
+      // Add sorting criteria, we only support one item
+      const chipItem = okResult.items.find(i => i.selected);
+      if (chipItem) {
+        const criteriaItems = chipItem.value as CriteriaItems;
+        criteria.sortingCriteria = criteriaItems;
+      }
+      else {
+        criteria.sortingCriteria = new CriteriaItems();
+      }
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);
   }
 }

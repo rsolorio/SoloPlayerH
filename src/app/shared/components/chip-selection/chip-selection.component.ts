@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-state.service';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
-import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from './chip-selection-model.interface';
+import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } from './chip-selection-model.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
 @Component({
   selector: 'sp-chip-selection',
@@ -15,58 +15,66 @@ export class ChipSelectionComponent implements OnInit {
   /** Model of the component. It will be set by the service. */
   public model: IChipSelectionModel;
 
-  constructor(private sidebarService: SideBarStateService, private utility: UtilityService) { }
+  constructor(
+    private utility: UtilityService,
+    private sidebarHostService: SideBarHostStateService) { }
 
   ngOnInit(): void {
   }
 
-  onChipValueClick(chipValue: ISelectableValue): void {
+  onChipItemClick(chipItem: IChipItem): void {
+    this.chipClick(chipItem);
+  }
+
+  private chipClick(chipItem: IChipItem): void {
     if (this.model.type === ChipSelectorType.SingleOk ||
       this.model.type === ChipSelectorType.YesNo ||
       this.model.type === ChipSelectorType.Quick) {
       // In this mode, we only allow to select (but not to un-select)
-      if (!chipValue.selected) {
+      if (chipItem.selected) {
+        if (this.model.onChipClick) {
+          this.model.onChipClick(false, chipItem, this.model);
+        }
+      }
+      else {
         // Select item
-        chipValue.selected = true;
+        chipItem.selected = true;
         // Un select everything else
-        for (const valuePair of this.model.values) {
-          if (valuePair.value !== chipValue.value) {
+        for (const valuePair of this.model.items) {
+          if (valuePair.value !== chipItem.value) {
             valuePair.selected = false;
           }
         }
-        if (this.model.onValueSelectionChanged) {
-          this.model.onValueSelectionChanged(chipValue);
+        if (this.model.onChipClick) {
+          this.model.onChipClick(true, chipItem, this.model);
         }
         
         // Confirm immediately
         if (this.model.type === ChipSelectorType.Quick) {
-          this.sidebarService.hideRight();
-          if (this.model.onOk) {
-            this.model.onOk(this.model);
-          }
+          this.sidebarHostService.closeOk();
         }
       }
     }
     else {
       let selectedValues: ISelectableValue[];
-      if (chipValue.selected) {
-        chipValue.selected = false;
-        chipValue.sequence = 0;
-        selectedValues = this.model.values.filter(v => v.selected);
+      if (chipItem.selected) {
+        chipItem.selected = false;
+        chipItem.sequence = 0;
+        selectedValues = this.model.items.filter(v => v.selected);
         selectedValues = this.utility.sort(selectedValues, 'sequence');
       }
       else {
-        selectedValues = this.model.values.filter(v => v.selected);
+        selectedValues = this.model.items.filter(v => v.selected);
         selectedValues = this.utility.sort(selectedValues, 'sequence');
-        chipValue.selected = true;
-        selectedValues.push(chipValue);
+        chipItem.selected = true;
+        selectedValues.push(chipItem);
       }
       // Fix sequence in selected values
       for (let valueIndex = 0; valueIndex < selectedValues.length; valueIndex++) {
         selectedValues[valueIndex].sequence = valueIndex + 1;
       }
-      if (this.model.onValueSelectionChanged) {
-        this.model.onValueSelectionChanged(chipValue);
+      if (this.model.onChipClick) {
+        this.model.onChipClick(true, chipItem, this.model);
       }
     }
   }

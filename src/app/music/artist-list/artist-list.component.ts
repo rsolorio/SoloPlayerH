@@ -278,11 +278,11 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const values = this.entities.getQuickFilterCriteriaForArtists(this.spListBaseComponent.model.criteriaResult.criteria);
+    const values = this.entities.getQuickFiltersForArtists(this.spListBaseComponent.model.criteriaResult.criteria);
     const model = this.entities.getQuickFilterPanelModel(values, 'Album Artists', 'mdi-account-badge mdi');
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
-      for (const valuePair of okResult.values) {
+      for (const valuePair of okResult.items) {
         if (valuePair.selected) {
           const criteriaItem = valuePair.value as CriteriaItem;
           criteria.searchCriteria.push(criteriaItem);

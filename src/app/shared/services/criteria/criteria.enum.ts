@@ -27,10 +27,14 @@ export enum CriteriaSortDirection {
 
 export enum CriteriaTransformAlgorithm {
   None,
-  AlternateArtist,
-  AlternateLanguageArtist,
-  AlternateDecadeGenre,
-  AlternateLanguage,
+  /** Alternates artists in a list. */
+  ShuffleArtist,
+  /** Alternates the combination of language/artist in a list. */
+  ShuffleLanguageArtist,
+  /** Alternates the combination of decade/genre in a list. */
+  ShuffleDecadeGenre,
+  /** Alternates languages in a list. */
+  ShuffleLanguage,
   LimitDuration,
   LimitFileSize,
   LimitSongsPerArtist

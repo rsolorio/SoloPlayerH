@@ -47,6 +47,7 @@ export class SideBarHostStateService implements IStateService<ISideBarHostModel>
     this.model.subTitleIcon = content.subTitleIcon;
     this.model.actions = content.actions;
     this.model.okHidden = content.okHidden;
+    this.model.okDelay = content.okDelay;
     this.model.onOk = content.onOk;
     this.model.onCancel = content.onCancel;
     if (this.model.componentType) {
@@ -55,6 +56,41 @@ export class SideBarHostStateService implements IStateService<ISideBarHostModel>
       this.componentInstance = component.instance;
       this.componentInstance.model = content;
       this.sidebarService.toggleRight();
+    }
+  }
+
+  public closeOk(): void {
+    if (this.model.okDelay) {
+      setTimeout(() => {
+        this.closeAndOk();
+      }, this.model.okDelay);
+    }
+    else {
+      this.closeAndOk();
+    }
+  }
+
+  public closeCancel(): void {
+    // Before doing anything close the panel so the backdrop is immediately
+    // removed and the hide animation starts
+    this.sidebarService.hideRight();
+    if (this.model.onCancel) {
+      this.model.onCancel();
+    }
+  }
+
+  private closeAndOk(): void {
+    // Before doing anything close the panel so the backdrop is immediately
+    // removed and the hide animation starts
+    this.sidebarService.hideRight();
+    if (this.model.onOk) {
+      const instanceModel = this.getInstanceModel();
+      if (instanceModel) {
+        this.model.onOk(instanceModel);
+      }
+      else {
+        this.model.onOk(this.model);
+      }
     }
   }
 }

@@ -9,6 +9,8 @@ export interface ISideBarHostModel {
   subTitleIcon?: string;
   okHidden?: boolean;
   actions?: IIconAction[];
+  /** Number of milliseconds to delay the ok action. */
+  okDelay?: number;
   onCancel?: () => void;
   onOk?: (okResult: ISideBarHostModel) => void;
 }

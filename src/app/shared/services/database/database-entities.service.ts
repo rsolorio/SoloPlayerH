@@ -4,19 +4,19 @@ import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { DbColumn, databaseColumns } from './database.columns';
-import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../../components/chip-selection/chip-selection-model.interface';
+import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } from '../../components/chip-selection/chip-selection-model.interface';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { CriteriaComparison, CriteriaJoinOperator, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { DatabaseService } from './database.service';
-import { Criteria, CriteriaItem } from '../criteria/criteria.class';
+import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
 import { FilterCriteriaEntity } from '../../entities/filter-criteria.entity';
 import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.entity';
 import { IFilterModel } from '../../models/filter-model.interface';
 import { ChipSelectionComponent } from '../../components/chip-selection/chip-selection.component';
 import { DatabaseOptionsService } from './database-options.service';
 import { ModuleOptionName } from '../../models/module-option.enum';
-import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-state.service';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class DatabaseEntitiesService {
     private utilities: UtilityService,
     private db: DatabaseService,
     private options: DatabaseOptionsService,
-    private sidebarService: SideBarStateService) { }
+    private sidebarHostService: SideBarHostStateService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -272,8 +272,8 @@ export class DatabaseEntitiesService {
         result.defaultValue = CriteriaTransformAlgorithm.None;
         result.values = [
           { caption: 'None', value: CriteriaTransformAlgorithm.None },
-          { caption: 'Alternate Artist', value: CriteriaTransformAlgorithm.AlternateArtist },
-          { caption: 'Alternate Language', value: CriteriaTransformAlgorithm.AlternateLanguage }
+          { caption: 'Shuffle Artist', value: CriteriaTransformAlgorithm.ShuffleArtist },
+          { caption: 'Shuffle Language', value: CriteriaTransformAlgorithm.ShuffleLanguage }
         ];
         break;
     }
@@ -334,7 +334,7 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public getQuickFilterPanelModel(values: ISelectableValue[], subTitle: string, subTitleIcon: string): IChipSelectionModel {
+  public getQuickFilterPanelModel(chips: IChipItem[], subTitle: string, subTitleIcon: string): IChipSelectionModel {
     const multipleEnabled = this.options.getBoolean(ModuleOptionName.AllowMultipleQuickFilters);
     const result: IChipSelectionModel = {
       componentType: ChipSelectionComponent,
@@ -344,18 +344,16 @@ export class DatabaseEntitiesService {
       subTitleIcon: subTitleIcon,
       displayMode: ChipDisplayMode.Block,
       type: multipleEnabled ? ChipSelectorType.MultipleOk : ChipSelectorType.Quick,
-      values: values,
+      okDelay: multipleEnabled ? 0 : 300,
+      items: chips,
       okHidden: !multipleEnabled,
       actions: [{
         caption: 'Clear',
         action: (iconAction, result) => {
           const model = result as IChipSelectionModel;
-          model.values.forEach(v => v.selected = false);
+          model.items.forEach(v => v.selected = false);
           if (!multipleEnabled) {
-            this.sidebarService.hideRight();
-            if (model.onOk) {
-              model.onOk(model);
-            }
+            this.sidebarHostService.closeOk();
           }
         }
       }]
@@ -363,8 +361,8 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public getQuickFilterCriteriaForSongs(existingCriteria: Criteria): ISelectableValue[] {
-    const result: ISelectableValue[] = [];
+  public getQuickFiltersForSongs(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
 
     let criteriaItem = new CriteriaItem('favorite', true);
     criteriaItem.id = 'quickFilter-favorite';
@@ -455,8 +453,8 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public getQuickFilterCriteriaForArtists(existingCriteria: Criteria): ISelectableValue[] {
-    const result: ISelectableValue[] = [];
+  public getQuickFiltersForArtists(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
 
     let criteriaItem = new CriteriaItem('favorite', true);
     criteriaItem.id = 'quickFilter-favorite';
@@ -499,8 +497,8 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public getQuickFilterCriteriaForAlbums(existingCriteria: Criteria): ISelectableValue[] {
-    const result: ISelectableValue[] = [];
+  public getQuickFiltersForAlbums(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
 
     let criteriaItem = new CriteriaItem('favorite', true);
     criteriaItem.id = 'quickFilter-favorite';
@@ -541,5 +539,126 @@ export class DatabaseEntitiesService {
       selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-songCount') });
 
     return result;
+  }
+
+  public getSortingPanelModel(chips: IChipItem[], subTitle: string, subTitleIcon: string): IChipSelectionModel {
+    const result: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Sort',
+      titleIcon: 'mdi-sort mdi',
+      subTitle: subTitle,
+      subTitleIcon: subTitleIcon,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.Quick,
+      items: chips,
+      okHidden: true,
+      okDelay: 300,
+      onChipClick: (selectionChanged, chipItem, model) => {
+        if (selectionChanged) {
+          // Remove all secondary icons
+          model.items.forEach(i => i.secondaryIcon = null);
+          // Set default icon
+          chipItem.secondaryIcon = 'mdi-sort-ascending mdi';
+          // Make sure the sorting matches the icon
+          const criteriaItems = chipItem.value as CriteriaItems;
+          criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
+          // The Ok action will be called automatically
+        }
+        else {
+          const criteriaItems = chipItem.value as CriteriaItems;
+          // A selected chip was clicked so swap the sort direction
+          if (chipItem.secondaryIcon === 'mdi-sort-ascending mdi') {
+            chipItem.secondaryIcon = 'mdi-sort-descending mdi-flip-v mdi';
+            criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Descending);
+          }
+          else {
+            chipItem.secondaryIcon = 'mdi-sort-ascending mdi';
+            criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
+          }
+          // Fire only in this case since it will automatically close if the selection changed
+          this.sidebarHostService.closeOk();
+        }
+      }
+    };
+    return result;
+  }
+
+  public getSortingForSongs(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+
+    let criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-artistName';
+    criteriaItems.addSorting('primaryArtistName', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('trackNumber', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 1,
+      icon: 'mdi-account-badge mdi',
+      caption: 'Artist Name',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-albumName';
+    criteriaItems.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('trackNumber', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 2,
+      icon: 'mdi-album mdi',
+      caption: 'Album Name',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-releaseYear';
+    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('trackNumber', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 3,
+      icon: 'mdi-calendar-blank mdi',
+      caption: 'Release Year',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-playCount';
+    criteriaItems.addSorting('playCount', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 4,
+      icon: 'mdi-play mdi',
+      caption: 'Play Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    
+    return result;
+  }
+
+  private getSortingIcon(id: string, criteriaItems: CriteriaItems): string {
+    if (criteriaItems.id === id) {
+      const firstItem = criteriaItems[0];
+      if (firstItem.sortDirection === CriteriaSortDirection.Ascending) {
+        return 'mdi-sort-ascending mdi';
+      }
+      return 'mdi-sort-descending mdi-flip-v mdi';
+    }
+    return null;
   }
 }
