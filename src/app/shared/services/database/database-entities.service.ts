@@ -665,7 +665,7 @@ export class DatabaseEntitiesService {
       sequence: 5,
       icon: 'mdi-account-badge mdi',
       caption: 'Alternate Artists',
-      secondaryIcon: 'mdi-arrow-decision-outline mdi',
+      secondaryIcon: 'mdi-shuffle-variant mdi',
       value: criteriaItems,
       selected: existingCriteria.sortingCriteria.id === criteriaItems.id
     });
@@ -677,7 +677,7 @@ export class DatabaseEntitiesService {
       sequence: 6,
       icon: 'mdi-translate mdi',
       caption: 'Alternate Languages',
-      secondaryIcon: 'mdi-arrow-decision-outline mdi',
+      secondaryIcon: 'mdi-shuffle-variant mdi',
       value: criteriaItems,
       selected: existingCriteria.sortingCriteria.id === criteriaItems.id
     });

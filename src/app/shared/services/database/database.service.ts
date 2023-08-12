@@ -373,17 +373,7 @@ export class DatabaseService {
     const repo = this.dataSource.getRepository(entity);
     this.log.debug('getList criteria', criteria);
     const result = await this.createQuery(repo, entityTempName, criteria).getMany();
-    let transformedResult = this.transformService.transform(result, criteria.transformAlgorithm);
-    // Individual alternate transforms
-    const transformCriteriaItems = criteria.sortingCriteria.filter(criteriaItem =>
-      criteriaItem.sortSequence > 0 &&
-      criteriaItem.sortDirection === CriteriaSortDirection.Alternate);
-    if (transformCriteriaItems.length) {
-      const propertyNames = this.utilities.sort(transformCriteriaItems, 'sequence').map(i => i.columnName);
-      transformedResult = this.transformService.transform(
-        transformedResult, CriteriaTransformAlgorithm.AlternateProperties, propertyNames);
-    }
-    return transformedResult;
+    return this.transform(result, criteria);
   }
 
   public async getColumnValues(entity: EntityTarget<any>, criteria: Criteria, columnExpression: IColumnExpression): Promise<any[]> {
@@ -409,8 +399,7 @@ export class DatabaseService {
     }
     this.log.debug('getColumnValues criteria', criteria);
     const result = await this.createQuery(repo, null, criteria).getRawMany();
-    const transformedResult = this.transformService.transform(result, criteria.transformAlgorithm);
-    return transformedResult;
+    return this.transform(result, criteria);
   }
 
   public getRepo<T extends ObjectLiteral>(entity: EntityTarget<T>): Repository<T> {
@@ -720,6 +709,20 @@ export class DatabaseService {
       queryBuilder.take(limit);
     }
     return queryBuilder;
+  }
+
+  private transform<T>(items: T[], criteria: Criteria): T[] {
+    let transformedResult = this.transformService.transform(items, criteria.transformAlgorithm);
+    // Individual alternate transforms
+    const transformCriteriaItems = criteria.sortingCriteria.filter(criteriaItem =>
+      criteriaItem.sortSequence > 0 &&
+      criteriaItem.sortDirection === CriteriaSortDirection.Alternate);
+    if (transformCriteriaItems.length) {
+      const propertyNames = this.utilities.sort(transformCriteriaItems, 'sequence').map(i => i.columnName);
+      transformedResult = this.transformService.transform(
+        transformedResult, CriteriaTransformAlgorithm.AlternateProperties, propertyNames);
+    }
+    return transformedResult;
   }
 
   // SQLite Build Query - END
