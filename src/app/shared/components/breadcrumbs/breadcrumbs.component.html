@@ -6,12 +6,13 @@
   <div *ngFor="let breadcrumb of model;let isLast = last;" (click)="onClick(breadcrumb)" class="sp-breadcrumb">
     <div class="sp-breadcrumb-content sp-bg-09 sp-clickable" [title]="breadcrumb.tooltip">
       <!-- Icon -->
-      <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon"></i>
+      <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon">&nbsp;</i>
       <!-- Caption -->
-      <span *ngIf="breadcrumb.caption" class="sp-text-large">{{breadcrumb.caption}}</span>
-      <span *ngIf="!breadcrumb.caption" class="sp-text-large">{{breadcrumb.criteriaItem.columnValues[0].caption}}</span>
+      <span *ngIf="breadcrumb.caption && !breadcrumb.hideCaption" class="sp-text-large">{{breadcrumb.caption}}</span>
+      <span *ngIf="!breadcrumb.caption && !breadcrumb.hideCaption" class="sp-text-large">{{breadcrumb.criteriaItem.columnValues[0].caption}}</span>
       <!-- Multiple info -->
-      <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaItem.columnValues.length - 1}}</span>
+      <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && breadcrumb.hideCaption" class="sp-text-small sp-text-super-v">&nbsp;{{breadcrumb.criteriaItem.columnValues.length}}</span>
+      <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && !breadcrumb.hideCaption" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaItem.columnValues.length - 1}}</span>
       <!-- Close icon -->
       <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>
       <i *ngIf="isLast" class="mdi-close mdi sp-color-on-bg-low sp-text-medium"></i>

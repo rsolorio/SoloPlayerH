@@ -8,6 +8,7 @@ export interface IBreadcrumbModel {
   tooltip?: string;
   icon?: string;
   last?: boolean;
+  hideCaption?: boolean;
   criteriaItem: CriteriaItem;
   action?: () => void;
 }

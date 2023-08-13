@@ -6,13 +6,13 @@ import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, Criter
  */
 export class Criteria {
   paging = new CriteriaPaging();
-  /** Read only criteria needed by the system to properly retrieve the expected results. */
+  /** Read only criteria needed by the system to properly retrieve the expected results. For Filter entities and for default criteria on broadcast services. */
   systemCriteria = new CriteriaItems();
   /** Criteria that comes from breadcrumbs. */
   breadcrumbCriteria = new CriteriaItems();
   /** Any generic criteria to perform a search usually trough a search box. */
   searchCriteria = new CriteriaItems();
-  /** Extra criteria specified by the user. */
+  /** Extra criteria specified by the user; also used to specify generic filters picked by the user. */
   userCriteria = new CriteriaItems();
   /** Criteria for quick filters. */
   quickCriteria = new CriteriaItems();
