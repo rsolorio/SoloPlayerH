@@ -10,10 +10,12 @@ export class Criteria {
   systemCriteria = new CriteriaItems();
   /** Criteria that comes from breadcrumbs. */
   breadcrumbCriteria = new CriteriaItems();
-  /** Any generic criteria to perform a search. */
+  /** Any generic criteria to perform a search usually trough a search box. */
   searchCriteria = new CriteriaItems();
   /** Extra criteria specified by the user. */
   userCriteria = new CriteriaItems();
+  /** Criteria for quick filters. */
+  quickCriteria = new CriteriaItems();
   /** Criteria for specifying sorting to the final filter. */
   sortingCriteria = new CriteriaItems();
   /** Algorithm to perform a special sort in the list of items. */
@@ -41,6 +43,7 @@ export class Criteria {
     result.breadcrumbCriteria = this.breadcrumbCriteria.clone();
     result.searchCriteria = this.searchCriteria.clone();
     result.userCriteria = this.userCriteria.clone();
+    result.quickCriteria = this.quickCriteria.clone();
     result.sortingCriteria = this.sortingCriteria.clone();
     result.transformAlgorithm = this.transformAlgorithm;
     result.random = this.random;
@@ -52,12 +55,13 @@ export class Criteria {
       this.breadcrumbCriteria.length > 0 ||
       this.searchCriteria.length > 0 ||
       this.userCriteria.length > 0 ||
+      this.quickCriteria.length > 0 ||
       this.sortingCriteria.length > 0;
   }
 
   public hasComparison(ignoreSystem?: boolean, columnName?: string) {
     let result =
-      this.breadcrumbCriteria.hasComparison(columnName) || this.searchCriteria.hasComparison(columnName) || this.userCriteria.hasComparison(columnName);
+      this.breadcrumbCriteria.hasComparison(columnName) || this.searchCriteria.hasComparison(columnName) || this.userCriteria.hasComparison(columnName) || this.quickCriteria.hasComparison(columnName);
     if (!ignoreSystem) {
       result = result || this.systemCriteria.hasComparison(columnName);
     }
@@ -76,7 +80,8 @@ export class Criteria {
     return this.systemCriteria.ignoredInSelect(columnName) ||
       this.breadcrumbCriteria.ignoredInSelect(columnName) ||
       this.searchCriteria.ignoredInSelect(columnName) ||
-      this.userCriteria.ignoredInSelect(columnName);
+      this.userCriteria.ignoredInSelect(columnName) ||
+      this.quickCriteria.ignoredInSelect(columnName);
   }
 
   /**

@@ -17,6 +17,8 @@ import { ChipSelectionComponent } from '../../components/chip-selection/chip-sel
 import { DatabaseOptionsService } from './database-options.service';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { ValueLists } from './database.lists';
+import { AppIcons } from 'src/app/app-icons';
 
 @Injectable({
   providedIn: 'root'
@@ -694,5 +696,71 @@ export class DatabaseEntitiesService {
       return 'mdi-sort-descending mdi-flip-v mdi';
     }
     return null;
+  }
+
+  public getQuickFiltersForClassifications(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+
+    let criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);
+    criteriaItem.id = 'quickFilter-genre';
+    criteriaItem.displayName = 'Genre';
+    criteriaItem.displayValue = 'Yes';
+    result.push({
+      sequence: 1,
+      icon: AppIcons.GenreEntity,
+      caption: 'Genres',
+      value: criteriaItem,
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-genre')
+    });
+
+    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Subgenre.id);
+    criteriaItem.id = 'quickFilter-subgenre';
+    criteriaItem.displayName = 'Subgenre';
+    criteriaItem.displayValue = 'Yes';
+    result.push({
+      sequence: 2,
+      icon: AppIcons.SubgenreEntity,
+      caption: 'Subgenres',
+      value: criteriaItem,
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-subgenre')
+    });
+
+    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Occasion.id);
+    criteriaItem.id = 'quickFilter-occasion';
+    criteriaItem.displayName = 'Occasion';
+    criteriaItem.displayValue = 'Yes';
+    result.push({
+      sequence: 3,
+      icon: AppIcons.OccasionEntity,
+      caption: 'Occasions',
+      value: criteriaItem,
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-occasion')
+    });
+
+    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Instrument.id);
+    criteriaItem.id = 'quickFilter-instrument';
+    criteriaItem.displayName = 'Instrument';
+    criteriaItem.displayValue = 'Yes';
+    result.push({
+      sequence: 4,
+      icon: AppIcons.InstrumentEntity,
+      caption: 'Instruments',
+      value: criteriaItem,
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-instrument')
+    });
+
+    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Category.id);
+    criteriaItem.id = 'quickFilter-category';
+    criteriaItem.displayName = 'Category';
+    criteriaItem.displayValue = 'Yes';
+    result.push({
+      sequence: 5,
+      icon: AppIcons.CategoryEntity,
+      caption: 'Categories',
+      value: criteriaItem,
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-category')
+    });
+
+    return result;
   }
 }

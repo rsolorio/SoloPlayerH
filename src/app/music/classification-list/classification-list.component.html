@@ -2,16 +2,19 @@
 #spListBaseComponent
 [model]="listModel"
 [infoTemplate]="infoTemplate"
+(listUpdated)="onListUpdated($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
     <table class="sp-table sp-table-no-padding sp-full-height sp-full-width">
       <tr>
         <td>
-          <span *ngIf="isGenreList" class="sp-text-medium sp-no-select">{{item.name}}</span>
-          <span *ngIf="!isGenreList" class="sp-text-medium sp-no-select">{{item.classificationType}}: {{item.name}}</span>
+          <span class="sp-text-medium sp-no-select">{{item.name}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-            <i class="mdi-music-note mdi">&nbsp;</i>{{item.songCount}}
+            <i class="mdi-format-list-bulleted-type mdi">&nbsp;</i>
+            <span>{{item.classificationType}}&nbsp;&nbsp;</span>
+            <i class="mdi-music-note mdi">&nbsp;</i>
+            <span>{{item.songCount}}</span>
           </span>
         </td>
         <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onShowSongsClick(item)">

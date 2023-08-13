@@ -43,6 +43,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @Output() public itemAvatarClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public afterInit: EventEmitter<IListBaseModel> = new EventEmitter();
+  @Output() public listUpdated: EventEmitter<IListBaseModel> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
   @Input() imageOverlayTemplate: TemplateRef<any>;
@@ -145,6 +146,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private afterListUpdated(): void {
     this.loadingService.hide();
     this.showInfo();
+    this.listUpdated.emit(this.model);
   }
 
   public showInfo(): void {

@@ -4,7 +4,7 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
-import { RelatedImageEntity, SongClassificationViewEntity } from 'src/app/shared/entities';
+import { SongClassificationViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
@@ -18,6 +18,10 @@ import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed'
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { AppIcons } from 'src/app/app-icons';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { ValueLists } from 'src/app/shared/services/database/database.lists';
 
 @Component({
   selector: 'sp-classification-list',
@@ -27,12 +31,11 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 })
 export class ClassificationListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
-  public isGenreList = false;
-
-  // START - LIST MODEL
   private albumArtistRoute = appRoutes[AppRoute.AlbumArtists];
   private albumRoute = appRoutes[AppRoute.Albums];
   private songRoute = appRoutes[AppRoute.Songs];
+
+  // START - LIST MODEL
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.ClassificationListUpdated,
     itemMenuList: [
@@ -82,6 +85,20 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
         }
       }
     ],
+    rightIcons: [
+      {
+        id: 'quickFilterIcon',
+        icon: AppIcons.Filter + ' sp-color-primary',
+        action: () => {
+          this.openQuickFilterPanel();
+        },
+        off: true,
+        offIcon: AppIcons.Filter,
+        offAction: () => {
+          this.openQuickFilterPanel();
+        }
+      }
+    ],
     criteriaResult: {
       criteria: new Criteria('Search Results'),
       items: []
@@ -96,7 +113,6 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       }
     }
   };
-
   // END - LIST MODEL
 
   constructor(
@@ -106,11 +122,19 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private navigation: NavigationService,
     private db: DatabaseService,
     private imageService: ImageService,
-    private entities: DatabaseEntitiesService
+    private entities: DatabaseEntitiesService,
+    private navbarService: NavBarStateService,
+    private sidebarHostService: SideBarHostStateService,
   ) {
     super();
-    this.isGenreList = this.utility.isRouteActive(AppRoute.Genres);
-    this.broadcastService.isGenreList = this.isGenreList;
+    const isGenreList = this.utility.isRouteActive(AppRoute.Genres);
+    if (isGenreList) {
+      const criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);
+      criteriaItem.id = 'quickFilter-genre';
+      criteriaItem.displayName = 'Genre';
+      criteriaItem.displayValue = 'Yes';
+      this.listModel.criteriaResult.criteria.quickCriteria.push(criteriaItem);
+    }
   }
 
   ngOnInit(): void {
@@ -177,5 +201,50 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       src: RelatedImageSrc.DefaultLarge,
       srcType: ImageSrcType.WebUrl
     };
+  }
+
+  public openQuickFilterPanel(): void {
+    const chips = this.entities.getQuickFiltersForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getQuickFilterPanelModel(chips, 'Classifications', AppIcons.ClassificationEntity);
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      // Keep sorting criteria
+      criteria.sortingCriteria = this.spListBaseComponent.model.criteriaResult.criteria.sortingCriteria;
+      // Add search criteria
+      for (const valuePair of okResult.items) {
+        if (valuePair.selected) {
+          const criteriaItem = valuePair.value as CriteriaItem;
+          criteria.quickCriteria.push(criteriaItem);
+        }
+      }
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);
+  }
+
+  public onListUpdated(model: IListBaseModel): void {
+    const navbarState = this.navbarService.getState();
+    const iconOff = !model.criteriaResult.criteria.quickCriteria.hasComparison();
+    navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
+
+    // Update the title accordingly    
+    if (model.criteriaResult.criteria.quickCriteria.length === 1) {
+      // get the info from the chips
+      const chips = this.entities.getQuickFiltersForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
+      // Whatever type is selected
+      for (const chip of chips) {
+        const criteriaItem = chip.value as CriteriaItem;
+        if (criteriaItem.id === model.criteriaResult.criteria.quickCriteria[0].id) {
+          navbarState.title = chip.caption;
+          navbarState.leftIcon.icon = chip.icon;
+        }
+      }
+    }
+    else {
+      // Classifications
+      const route = appRoutes[AppRoute.Classifications];
+      navbarState.title = route.name;
+      navbarState.leftIcon.icon = route.icon;
+    }
   }
 }

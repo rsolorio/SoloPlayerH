@@ -117,6 +117,8 @@ export class DatabaseService {
    * Just an internal constant to do the limit calculations
    */
   private SQLITE_MAX_VARIABLE_NUMBER = 32766;
+  /** Global parameter index to be used when building the where clause. */
+  private parameterIndex = 0;
 
   constructor(
     private utilities: UtilityService,
@@ -548,8 +550,10 @@ export class DatabaseService {
   private buildWhere<T>(
     queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: Criteria
   ): SelectQueryBuilder<T> {
-    const allCriteria = [criteria.systemCriteria, criteria.breadcrumbCriteria, criteria.userCriteria, criteria.searchCriteria];
+    const allCriteria = [criteria.systemCriteria, criteria.breadcrumbCriteria, criteria.userCriteria, criteria.searchCriteria, criteria.quickCriteria];
     let hasWhere = false;
+    // The where clause is about to start, reset the index that will be used to create parameter names
+    this.parameterIndex = 0;
     for (const criteria of allCriteria) {
       // This is safe guard since criteria should not have none comparisons
       const whereCriteria = criteria.getComparisons();
@@ -621,11 +625,10 @@ export class DatabaseService {
 
   private buildWhereForColumnValues(builder: WhereExpressionBuilder, entityName: string, criteriaItem: CriteriaItem): void {
     // Typeorm requires unique parameters even if the column is the same
-    let parameterIndex = 0;
     let hasWhere = false;
     for (const valuePair of criteriaItem.columnValues) {
-      parameterIndex++;
-      const parameterName = criteriaItem.columnName + parameterIndex.toString();
+      this.parameterIndex++;
+      const parameterName = criteriaItem.columnName + this.parameterIndex.toString();
       const where = `${entityName}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text} :${parameterName}`;
       const parameter = {};
       parameter[parameterName] = valuePair.value;
@@ -643,6 +646,7 @@ export class DatabaseService {
 
   private buildWhereForRelativeDate(builder: WhereExpressionBuilder, entityAlias: string, criteriaItem: CriteriaItem): void {
     // We currently support only one relative date just because I don't see the need to support multiple
+    // If we need to support multiple values, we need to, at least, assign unique indexes to the parameters
     const expressionText = criteriaItem.columnValues[0].value;
     const expression = this.relativeDateService.createExpression(expressionText);
     if (this.relativeDateService.isValid(expression)) {

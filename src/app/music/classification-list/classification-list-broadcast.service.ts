@@ -9,15 +9,12 @@ import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
-import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClassificationListBroadcastService extends ListBroadcastServiceBase<IClassificationModel> {
-
-  public isGenreList = false;
   constructor(
     private events: EventsService,
     private utilities: UtilityService,
@@ -44,12 +41,6 @@ export class ClassificationListBroadcastService extends ListBroadcastServiceBase
       result.push(criteriaItem);
     }
     return result;
-  }
-
-  protected buildSystemCriteria(): CriteriaItems {
-    const criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);
-    criteriaItem.comparison = this.isGenreList ? CriteriaComparison.Equals : CriteriaComparison.NotEquals;
-    return new CriteriaItems(criteriaItem);
   }
 
   protected addSortingCriteria(criteria: Criteria) {
