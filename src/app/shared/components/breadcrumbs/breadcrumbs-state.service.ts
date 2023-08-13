@@ -161,6 +161,14 @@ export class BreadcrumbsStateService {
     }
   }
 
+  public hideCaptions(): void {
+    this.state.forEach(crumb => crumb.hideCaption = true);
+  }
+
+  public showCaptions(): void {
+    this.state.forEach(crumb => crumb.hideCaption = false);
+  }
+
   /** Broadcasts the ReloadRequest event which is consumed by the breadcrumb component. */
   private reload() {
     this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.ReloadRequested);
