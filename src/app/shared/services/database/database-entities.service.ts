@@ -376,7 +376,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-heart mdi',
       caption: 'Favorite',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-favorite') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-favorite') });
 
     criteriaItem = new CriteriaItem('playCount', 0);
     criteriaItem.id = 'quickFilter-playCount';
@@ -388,7 +388,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-play mdi',
       caption: 'Not Played',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-playCount') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-playCount') });
 
     criteriaItem = new CriteriaItem('lyrics');
     criteriaItem.id = 'quickFilter-lyrics';
@@ -401,7 +401,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-script-text mdi',
       caption: 'Has Lyrics',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-lyrics') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-lyrics') });
 
     criteriaItem = new CriteriaItem('rating', 5);
     criteriaItem.id = 'quickFilter-rating';
@@ -413,7 +413,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-star mdi',
       caption: 'Top Rated',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-rating') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-rating') });
 
     criteriaItem = new CriteriaItem('live', true);
     criteriaItem.id = 'quickFilter-live';
@@ -425,7 +425,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-broadcast mdi',
       caption: 'Live',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-live') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-live') });
 
     criteriaItem = new CriteriaItem('explicit', true);
     criteriaItem.id = 'quickFilter-explicit';
@@ -437,7 +437,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-alpha-e-box-outline mdi',
       caption: 'Explicit',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-explicit') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-explicit') });
 
     criteriaItem = new CriteriaItem('performers', 1);
     criteriaItem.id = 'quickFilter-performers';
@@ -450,7 +450,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-account-multiple mdi',
       caption: 'Multi Artist',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-performers') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-performers') });
 
     return result;
   }
@@ -468,7 +468,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-heart mdi',
       caption: 'Favorite',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-favorite') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-favorite') });
 
     criteriaItem = new CriteriaItem('playCount', 0);
     criteriaItem.id = 'quickFilter-playCount';
@@ -480,7 +480,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-play mdi',
       caption: 'Not Played',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-playCount') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-playCount') });
 
     const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayArtistThreshold);
     criteriaItem = new CriteriaItem('songCount', longPlaySongCount);
@@ -494,7 +494,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-music-box-multiple-outline mdi',
       caption: 'Long Play',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-songCount') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-songCount') });
 
     return result;
   }
@@ -512,7 +512,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-heart mdi',
       caption: 'Favorite',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-favorite') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-favorite') });
 
     criteriaItem = new CriteriaItem('playCount', 0);
     criteriaItem.id = 'quickFilter-playCount';
@@ -524,7 +524,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-play mdi',
       caption: 'Not Played',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-playCount') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-playCount') });
 
     const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayAlbumThreshold);
     criteriaItem = new CriteriaItem('songCount', longPlaySongCount);
@@ -538,7 +538,7 @@ export class DatabaseEntitiesService {
       icon: 'mdi-music-box-multiple-outline mdi',
       caption: 'Long Play',
       value: criteriaItem,
-      selected: !!existingCriteria.searchCriteria.find(c => c.id === 'quickFilter-songCount') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-songCount') });
 
     return result;
   }

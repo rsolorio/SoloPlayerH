@@ -36,6 +36,7 @@ import { IImagePreviewModel } from 'src/app/related-image/image-preview/image-pr
 import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image-preview.component';
 import { AddToPlaylistService } from 'src/app/playlist/add-to-playlist/add-to-playlist.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
+import { AppIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-song-list',
@@ -123,12 +124,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'quickFilterIcon',
-        icon: 'mdi-filter-check-outline mdi',
+        icon: AppIcons.Filter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: 'mdi-filter-outline mdi',
+        offIcon: AppIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
         }
@@ -382,8 +383,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const values = this.entities.getQuickFiltersForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(values, 'Songs', 'mdi-music-note mdi');
+    const chips = this.entities.getQuickFiltersForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getQuickFilterPanelModel(chips, 'Songs', AppIcons.SongEntity);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep sorting criteria
@@ -392,10 +393,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
       for (const valuePair of okResult.items) {
         if (valuePair.selected) {
           const criteriaItem = valuePair.value as CriteriaItem;
-          criteria.searchCriteria.push(criteriaItem);
+          criteria.quickCriteria.push(criteriaItem);
         }
       }
-      const iconOff = !criteria.searchCriteria.hasComparison();
+      const iconOff = !criteria.quickCriteria.hasComparison();
       this.navbarService.getState().rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
       this.spListBaseComponent.send(criteria);
     };
@@ -403,12 +404,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private openSortingPanel(): void {
-    const values = this.entities.getSortingForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getSortingPanelModel(values, 'Songs', 'mdi-music-note mdi');
+    const chips = this.entities.getSortingForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getSortingPanelModel(chips, 'Songs', AppIcons.SongEntity);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
-      // Keep search criteria
-      criteria.searchCriteria = this.spListBaseComponent.model.criteriaResult.criteria.searchCriteria;
+      // Keep quick criteria
+      criteria.quickCriteria = this.spListBaseComponent.model.criteriaResult.criteria.quickCriteria;
       // Add sorting criteria, we only support one item
       const chipItem = okResult.items.find(i => i.selected);
       if (chipItem) {

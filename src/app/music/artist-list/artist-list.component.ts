@@ -20,6 +20,7 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { AppIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-artist-list',
@@ -79,12 +80,12 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'quickFilterIcon',
-        icon: 'mdi-filter-check-outline mdi',
+        icon: AppIcons.Filter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: 'mdi-filter-outline mdi',
+        offIcon: AppIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
         }
@@ -278,17 +279,17 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const values = this.entities.getQuickFiltersForArtists(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(values, 'Album Artists', 'mdi-account-badge mdi');
+    const chips = this.entities.getQuickFiltersForArtists(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getQuickFilterPanelModel(chips, 'Album Artists', 'mdi-account-badge mdi');
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       for (const valuePair of okResult.items) {
         if (valuePair.selected) {
           const criteriaItem = valuePair.value as CriteriaItem;
-          criteria.searchCriteria.push(criteriaItem);
+          criteria.quickCriteria.push(criteriaItem);
         }
       }
-      const iconOff = !criteria.searchCriteria.hasComparison();
+      const iconOff = !criteria.quickCriteria.hasComparison();
       this.navbarService.getState().rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
       this.spListBaseComponent.send(criteria);
     };
