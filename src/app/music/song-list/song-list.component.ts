@@ -36,7 +36,7 @@ import { IImagePreviewModel } from 'src/app/related-image/image-preview/image-pr
 import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image-preview.component';
 import { AddToPlaylistService } from 'src/app/playlist/add-to-playlist/add-to-playlist.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
-import { AppIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-song-list',
@@ -124,12 +124,12 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'quickFilterIcon',
-        icon: AppIcons.Filter + ' sp-color-primary',
+        icon: AppActionIcons.Filter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: AppIcons.Filter,
+        offIcon: AppActionIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
         }
@@ -384,7 +384,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private openQuickFilterPanel(): void {
     const chips = this.entities.getQuickFiltersForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(chips, 'Songs', AppIcons.SongEntity);
+    const model = this.entities.getQuickFilterPanelModel(chips, 'Songs', AppEntityIcons.Song);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep sorting criteria
@@ -405,7 +405,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private openSortingPanel(): void {
     const chips = this.entities.getSortingForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getSortingPanelModel(chips, 'Songs', AppIcons.SongEntity);
+    const model = this.entities.getSortingPanelModel(chips, 'Songs', AppEntityIcons.Song);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep quick criteria

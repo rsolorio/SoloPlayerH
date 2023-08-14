@@ -21,7 +21,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { AppIcons } from 'src/app/app-icons';
+import { AppActionIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-album-list',
@@ -90,12 +90,12 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'quickFilterIcon',
-        icon: AppIcons.Filter + ' sp-color-primary',
+        icon: AppActionIcons.Filter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: AppIcons.Filter,
+        offIcon: AppActionIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
         }

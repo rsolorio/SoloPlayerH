@@ -18,7 +18,7 @@ import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed'
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
@@ -88,12 +88,12 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     rightIcons: [
       {
         id: 'quickFilterIcon',
-        icon: AppIcons.Filter + ' sp-color-primary',
+        icon: AppActionIcons.Filter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: AppIcons.Filter,
+        offIcon: AppActionIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
         }
@@ -205,7 +205,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   public openQuickFilterPanel(): void {
     const chips = this.entities.getQuickFiltersForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(chips, 'Classifications', AppIcons.ClassificationEntity);
+    const model = this.entities.getQuickFilterPanelModel(chips, 'Classifications', AppEntityIcons.Classification);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep sorting criteria

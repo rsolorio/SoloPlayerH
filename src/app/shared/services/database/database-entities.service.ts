@@ -18,7 +18,7 @@ import { DatabaseOptionsService } from './database-options.service';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ValueLists } from './database.lists';
-import { AppIcons } from 'src/app/app-icons';
+import { AppEntityIcons } from 'src/app/app-icons';
 
 @Injectable({
   providedIn: 'root'
@@ -707,7 +707,7 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = 'Yes';
     result.push({
       sequence: 1,
-      icon: AppIcons.GenreEntity,
+      icon: AppEntityIcons.Genre,
       caption: 'Genres',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-genre')
@@ -719,7 +719,7 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = 'Yes';
     result.push({
       sequence: 2,
-      icon: AppIcons.SubgenreEntity,
+      icon: AppEntityIcons.Subgenre,
       caption: 'Subgenres',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-subgenre')
@@ -731,7 +731,7 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = 'Yes';
     result.push({
       sequence: 3,
-      icon: AppIcons.OccasionEntity,
+      icon: AppEntityIcons.Occasion,
       caption: 'Occasions',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-occasion')
@@ -743,7 +743,7 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = 'Yes';
     result.push({
       sequence: 4,
-      icon: AppIcons.InstrumentEntity,
+      icon: AppEntityIcons.Instrument,
       caption: 'Instruments',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-instrument')
@@ -755,7 +755,7 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = 'Yes';
     result.push({
       sequence: 5,
-      icon: AppIcons.CategoryEntity,
+      icon: AppEntityIcons.Category,
       caption: 'Categories',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-category')
