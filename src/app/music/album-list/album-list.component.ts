@@ -90,19 +90,19 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'quickFilterIcon',
-        icon: AppActionIcons.Filter + ' sp-color-primary',
+        icon: AppActionIcons.QuickFilter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: AppActionIcons.Filter,
+        offIcon: AppActionIcons.QuickFilter,
         offAction: () => {
           this.openQuickFilterPanel();
         }
       },
       {
         id: 'showAllSongsIcon',
-        icon: 'mdi-music-box-multiple-outline mdi',
+        icon: AppActionIcons.ShowSongs,
         action: () => {
           // No specific criteria, breadcrumbs will be automatically taken by the new entity
           const criteria = new Criteria('Search Results');

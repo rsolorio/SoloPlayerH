@@ -117,19 +117,19 @@ export class SongListComponent extends CoreComponent implements OnInit {
     },
     rightIcons: [
       {
-        icon: 'mdi-sort-variant mdi',
+        icon: AppActionIcons.Sort,
         action: () => {
           this.openSortingPanel();
         }
       },
       {
         id: 'quickFilterIcon',
-        icon: AppActionIcons.Filter + ' sp-color-primary',
+        icon: AppActionIcons.QuickFilter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: AppActionIcons.Filter,
+        offIcon: AppActionIcons.QuickFilter,
         offAction: () => {
           this.openQuickFilterPanel();
         }

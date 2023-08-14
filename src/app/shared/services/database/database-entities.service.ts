@@ -341,7 +341,7 @@ export class DatabaseEntitiesService {
     const result: IChipSelectionModel = {
       componentType: ChipSelectionComponent,
       title: 'Quick Filters',
-      titleIcon: 'mdi-filter mdi',
+      titleIcon: AppActionIcons.QuickFilter,
       subTitle: subTitle,
       subTitleIcon: subTitleIcon,
       displayMode: ChipDisplayMode.Block,
