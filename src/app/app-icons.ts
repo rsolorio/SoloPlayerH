@@ -34,6 +34,8 @@ export enum AppActionIcons {
   Search = 'mdi-magnify mdi',
   SearchClose = 'mdi-magnify-close mdi',
   Sort = 'mdi-sort-variant mdi',
+  SortAscending = 'mdi-sort-ascending mdi',
+  SortDescending = 'mdi-sort-descending mdi-flip-v mdi',
   Filter = 'mdi-filter-outline mdi'
 }
 

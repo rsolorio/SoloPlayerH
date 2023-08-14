@@ -18,7 +18,7 @@ import { DatabaseOptionsService } from './database-options.service';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ValueLists } from './database.lists';
-import { AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
 
 @Injectable({
   providedIn: 'root'
@@ -567,7 +567,7 @@ export class DatabaseEntitiesService {
               // Remove all secondary icons
               model.items.forEach(i => i.secondaryIcon = null);
               // Set default icon
-              chipItem.secondaryIcon = 'mdi-sort-ascending mdi';
+              chipItem.secondaryIcon = AppActionIcons.SortAscending;
               // Make sure the sorting matches the icon          
               criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
             }
@@ -580,12 +580,12 @@ export class DatabaseEntitiesService {
             return;
           }
           // A selected chip was clicked so swap the sort direction
-          if (chipItem.secondaryIcon === 'mdi-sort-ascending mdi') {
-            chipItem.secondaryIcon = 'mdi-sort-descending mdi-flip-v mdi';
+          if (chipItem.secondaryIcon === AppActionIcons.SortAscending) {
+            chipItem.secondaryIcon = AppActionIcons.SortDescending;
             criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Descending);
           }
           else {
-            chipItem.secondaryIcon = 'mdi-sort-ascending mdi';
+            chipItem.secondaryIcon = AppActionIcons.SortAscending;
             criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
           }
           // Fire only in this case since it will automatically close if the selection changed
