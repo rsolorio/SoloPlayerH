@@ -388,7 +388,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
     // Fire this event that will allow customize the behavior above
     if (this.model.afterNavbarModeChange) {
-      this.model.afterNavbarModeChange(navbar);
+      this.model.afterNavbarModeChange(this.model, navbar);
     }
   }
 }

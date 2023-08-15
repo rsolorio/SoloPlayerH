@@ -60,7 +60,7 @@ export class ArtistListBroadcastService extends ListBroadcastServiceBase<IArtist
     if (!this.breadcrumbs.hasBreadcrumbs()) {
       return;
     }
-    const allBreadcrumbs = this.breadcrumbs.getState();
+    const allBreadcrumbs = this.breadcrumbs.getState().items;
     if (this.isAlbumArtist) {
       // Album Artists support Genre and Classification breadcrumbs
       let unsupportedBreadcrumbs = allBreadcrumbs.filter(breadcrumb =>

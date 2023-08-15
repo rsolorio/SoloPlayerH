@@ -14,9 +14,9 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { SongArtistViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
-import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
+import { BreadcrumbDisplayMode, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
-import { AppRoute } from 'src/app/app-routes';
+import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
@@ -36,7 +36,7 @@ import { IImagePreviewModel } from 'src/app/related-image/image-preview/image-pr
 import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image-preview.component';
 import { AddToPlaylistService } from 'src/app/playlist/add-to-playlist/add-to-playlist.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
-import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-song-list',
@@ -115,13 +115,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
+    // Hide all icons by default and manage visibility on list updated
     rightIcons: [
-      {
-        icon: AppActionIcons.Sort,
-        action: () => {
-          this.openSortingPanel();
-        }
-      },
       {
         id: 'quickFilterIcon',
         icon: AppActionIcons.QuickFilter + ' sp-color-primary',
@@ -132,7 +127,50 @@ export class SongListComponent extends CoreComponent implements OnInit {
         offIcon: AppActionIcons.QuickFilter,
         offAction: () => {
           this.openQuickFilterPanel();
-        }
+        },
+        //parentStyleClass: 'sp-bg-09',
+        hidden: true
+      },
+      {
+        id: 'decadeFilterIcon',
+        icon: AppAttributeIcons.Decade,
+        //parentStyleClass: 'sp-bg-09',
+        hidden: true
+      },
+      {
+        id: 'languageFilterIcon',
+        icon: AppAttributeIcons.Language,
+        //parentStyleClass: 'sp-bg-09',
+        hidden: true
+      },
+      {
+        id: 'moodFilterIcon',
+        icon: AppAttributeIcons.Mood,
+        //parentStyleClass: 'sp-bg-09',
+        hidden: true
+      },
+      {
+        id: 'filterToolbarIcon',
+        icon: AppActionIcons.FilterClose,
+        action: iconAction => {
+          iconAction.off = true;
+          this.manageRightIconsVisibility(this.spListBaseComponent.model);
+        },
+        off: true,
+        offIcon: AppActionIcons.Filter,
+        offAction: iconAction => {
+          iconAction.off = false;
+          this.manageRightIconsVisibility(this.spListBaseComponent.model);
+        },
+        hidden: true
+      },
+      {
+        id: 'sortIcon',
+        icon: AppActionIcons.Sort,
+        action: () => {
+          this.openSortingPanel();
+        },
+        hidden: true
       },
       {
         id: 'filterRemoveIcon',
@@ -143,7 +181,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
           // Except for this one
           iconAction.hidden = true;
           this.spListBaseComponent.send(new Criteria());
-        }
+        },
+        hidden: true
       }
     ],
     searchIconEnabled: true,
@@ -173,20 +212,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
         song.image.getImage = () => this.getSongImage(song);
       }
     },
-    afterNavbarModeChange: navbar => {
-      switch (navbar.mode) {
-        case NavbarDisplayMode.Title:
-          // Title by default displays all the icons so here we hide what we really need
-          const current = this.navigation.current();
-          if (current.options?.criteria?.filterId) {
-            // Only show the filter remove icon
-            navbar.rightIcons.filter(i => i.id !== 'filterRemoveIcon').forEach(i => i.hidden = true);
-          }
-          else {
-            navbar.rightIcons.find(i => i.id === 'filterRemoveIcon').hidden = true;
-          }
-          break;
-      }
+    afterNavbarModeChange: model => {
+      this.manageRightIconsVisibility(model);
     }
   };
   // END - LIST MODEL
@@ -396,8 +423,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
           criteria.quickCriteria.push(criteriaItem);
         }
       }
-      const iconOff = !criteria.quickCriteria.hasComparison();
-      this.navbarService.getState().rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
       this.spListBaseComponent.send(criteria);
     };
     this.sidebarHostService.loadContent(model);
@@ -422,5 +447,68 @@ export class SongListComponent extends CoreComponent implements OnInit {
       this.spListBaseComponent.send(criteria);
     };
     this.sidebarHostService.loadContent(model);
+  }
+
+  public onListUpdated(model: IListBaseModel): void {
+    this.manageRightIconsVisibility(model);
+  }
+
+  private manageRightIconsVisibility(model: IListBaseModel): void {
+    // Icons from right to left
+    // BREADCRUMBS, FILTER OFF: filter on
+    // BREADCRUMBS, FILTER ON: sort, quick filter, other filters, filter off
+    // TITLE, FILTER OFF, SEARCH OFF: sort, filter on, search
+    // TITLE, FILTER ON, SEARCH OFF: sort, quick filter, other filters, filter off, search
+    // TITLE, FILTER OFF, SEARCH ON: search off
+    // TITLE, FILTER ENTITY ON: filter remove
+    const navbarState = this.navbarService.getState();
+
+    switch (navbarState.mode) {
+      case NavbarDisplayMode.Title:
+        navbarState.title = appRoutes[AppRoute.Songs].name;
+        // First hide all icons
+        model.rightIcons.forEach(i => i.hidden = true);
+        const current = this.navigation.current();
+        // Determine if current criteria comes from a filter entity
+        if (current.options?.criteria?.filterId) {
+          navbarState.rightIcons.find(i => i.id === 'filterRemoveIcon').hidden = false;
+        }
+        else {
+          const filterToolbarIcon = navbarState.rightIcons.find(i => i.id === 'filterToolbarIcon');
+          filterToolbarIcon.hidden = false;
+          if (!filterToolbarIcon.off) {
+            navbarState.title = '';
+          }
+          navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').hidden = filterToolbarIcon.off;
+          navbarState.rightIcons.find(i => i.id === 'languageFilterIcon').hidden = filterToolbarIcon.off;
+          navbarState.rightIcons.find(i => i.id === 'decadeFilterIcon').hidden = filterToolbarIcon.off;
+          navbarState.rightIcons.find(i => i.id === 'moodFilterIcon').hidden = filterToolbarIcon.off;
+          navbarState.rightIcons.find(i => i.id === 'searchIcon').hidden = false;
+          navbarState.rightIcons.find(i => i.id === 'sortIcon').hidden = false;
+        }
+        break;
+      // Breadcrumbs
+      case NavbarDisplayMode.Component:
+        // First hide all icons
+        model.rightIcons.forEach(i => i.hidden = true);
+        const filterToolbarIcon = navbarState.rightIcons.find(i => i.id === 'filterToolbarIcon');
+        filterToolbarIcon.hidden = false;
+        if (filterToolbarIcon.off) {
+          this.breadcrumbService.restoreDisplayMode();
+        }
+        else {
+          this.breadcrumbService.getState().displayMode = BreadcrumbDisplayMode.None;
+        }
+        navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').hidden = filterToolbarIcon.off;
+        navbarState.rightIcons.find(i => i.id === 'languageFilterIcon').hidden = filterToolbarIcon.off;
+        navbarState.rightIcons.find(i => i.id === 'decadeFilterIcon').hidden = filterToolbarIcon.off;
+        navbarState.rightIcons.find(i => i.id === 'moodFilterIcon').hidden = filterToolbarIcon.off;
+        navbarState.rightIcons.find(i => i.id === 'sortIcon').hidden = false;
+        break;
+    }
+
+
+    const iconOff = !model.criteriaResult.criteria.quickCriteria.hasComparison();
+    navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
   }
 }

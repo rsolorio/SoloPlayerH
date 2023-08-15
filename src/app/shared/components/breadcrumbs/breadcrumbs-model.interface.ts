@@ -1,16 +1,17 @@
-import { BreadcrumbSource } from "../../models/breadcrumbs.enum";
+import { IIconAction } from "src/app/core/models/core.interface";
+import { BreadcrumbDisplayMode, BreadcrumbSource } from "../../models/breadcrumbs.enum";
 import { CriteriaItem } from "../../services/criteria/criteria.class";
 
-export interface IBreadcrumbModel {
+export interface IBreadcrumbModel extends IIconAction {
   origin: BreadcrumbSource;
   sequence?: number;
-  caption?: string;
-  tooltip?: string;
-  icon?: string;
   last?: boolean;
-  hideCaption?: boolean;
   criteriaItem: CriteriaItem;
-  action?: () => void;
+}
+
+export interface IBreadcrumbsModel {
+  displayMode: BreadcrumbDisplayMode;
+  items: IBreadcrumbModel[];
 }
 
 export interface IBreadcrumbOptions {

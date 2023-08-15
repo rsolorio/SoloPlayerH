@@ -170,6 +170,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     // Suppress event so this component doesn't react to this change;
     // these breadcrumbs are for another list that hasn't been loaded yet
     this.breadcrumbService.addOne({
+      icon: AppEntityIcons.Classification,
       criteriaItem: criteriaItem,
       origin: BreadcrumbSource.Classification
     }, { suppressEvents: true });

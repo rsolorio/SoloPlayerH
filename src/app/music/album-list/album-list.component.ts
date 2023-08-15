@@ -21,7 +21,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { AppActionIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-album-list',
@@ -123,7 +123,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         album.image.getImage = () => this.getAlbumImage(album);
       }
     },
-    afterNavbarModeChange: navbar => {
+    afterNavbarModeChange: (model, navbar) => {
       switch(navbar.mode) {
         case NavbarDisplayMode.Component:
           navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = false;
@@ -177,7 +177,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   private addBreadcrumb(album: IAlbumModel): void {
     // Automatically add the Album Artist breadcrumb if it does not exist
     let hasAlbumArtist = false;
-    const breadcrumbs = this.breadcrumbService.getState();
+    const breadcrumbs = this.breadcrumbService.getState().items;
     for (const breadcrumb of breadcrumbs) {
       if (breadcrumb.criteriaItem.columnName === 'primaryArtistId') {
         hasAlbumArtist = true;
@@ -192,6 +192,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         // Suppress event so this component doesn't react to this change;
         // these breadcrumbs are for another list that hasn't been loaded yet
         this.breadcrumbService.addOne({
+          icon: AppEntityIcons.AlbumArtist,
           criteriaItem: criteriaItem,
           origin: BreadcrumbSource.AlbumArtist
         }, { suppressEvents: true });
@@ -205,6 +206,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     // Suppress event so this component doesn't react to this change;
     // these breadcrumbs are for another list that hasn't been loaded yet
     this.breadcrumbService.addOne({
+      icon: AppEntityIcons.Album,
       criteriaItem: criteriaItem,
       origin: BreadcrumbSource.Album
     }, { suppressEvents: true });

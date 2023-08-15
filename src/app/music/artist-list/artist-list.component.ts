@@ -20,7 +20,7 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { AppActionIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-artist-list',
@@ -110,7 +110,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         artist.recentIcon = this.spListBaseComponent.getRecentIcon(days);
       }
     },
-    afterNavbarModeChange: navbar => {
+    afterNavbarModeChange: (model, navbar) => {
       switch(navbar.mode) {
         case NavbarDisplayMode.Component:
           if (this.isAlbumArtist) {
@@ -262,6 +262,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       }
     }
     return {
+      icon: this.isAlbumArtist ? AppEntityIcons.AlbumArtist : AppEntityIcons.Artist,
       criteriaItem: criteriaItem,
       origin: this.isAlbumArtist ? BreadcrumbSource.AlbumArtist : BreadcrumbSource.Artist
     };

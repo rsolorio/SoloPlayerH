@@ -31,5 +31,5 @@ export interface IListBaseModel {
   /** Helper method that can be used to apply any logic to the item before it is marked for rendering. */
   prepareItemRender?: (item: IListItemModel) => void;
   /** Helper method that runs after the navbar mode has changed by this component. Useful to customize visible icons in the navbar. */
-  afterNavbarModeChange?: (navbar: INavbarModel) => void;
+  afterNavbarModeChange?: (model: IListBaseModel, navbar: INavbarModel) => void;
 }

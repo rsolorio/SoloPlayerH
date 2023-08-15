@@ -1,27 +1,29 @@
 <i
-  [ngClass]="{ 'sp-no-display': !leftScrollIndicatorVisible }"
-  class="mdi-arrow-left-circle mdi sp-scroll-icon sp-scroll-icon-left sp-clickable"
+  [ngClass]="{ 'sp-no-display': !leftScrollIndicatorVisible || !breadcrumbsVisible }"
+  class="mdi-arrow-left mdi sp-scroll-icon sp-scroll-icon-left sp-clickable"
   (click)="onScrollLeftClick()"></i>
 <div #breadcrumbsContainer class="sp-breadcrumbs sp-scrollbar-hidden" [ngClass]="containerClass" (scroll)="onContainerScroll()" (wheel)="onContainerWheel($event)">
-  <div *ngFor="let breadcrumb of model;let isLast = last;" (click)="onClick(breadcrumb)" class="sp-breadcrumb">
-    <div class="sp-breadcrumb-content sp-bg-09 sp-clickable" [title]="breadcrumb.tooltip">
-      <!-- Icon -->
-      <i *ngIf="breadcrumb.icon" [ngClass]="breadcrumb.icon">&nbsp;</i>
-      <!-- Caption -->
-      <span *ngIf="breadcrumb.caption && !breadcrumb.hideCaption" class="sp-text-large">{{breadcrumb.caption}}</span>
-      <span *ngIf="!breadcrumb.caption && !breadcrumb.hideCaption" class="sp-text-large">{{breadcrumb.criteriaItem.columnValues[0].caption}}</span>
-      <!-- Multiple info -->
-      <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && breadcrumb.hideCaption" class="sp-text-small sp-text-super-v">&nbsp;{{breadcrumb.criteriaItem.columnValues.length}}</span>
-      <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && !breadcrumb.hideCaption" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaItem.columnValues.length - 1}}</span>
-      <!-- Close icon -->
-      <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>
-      <i *ngIf="isLast" class="mdi-close mdi sp-color-on-bg-low sp-text-medium"></i>
+  <ng-container *ngIf="breadcrumbsVisible">
+    <div *ngFor="let breadcrumb of model.items; let isLast = last;" (click)="onClick(breadcrumb)" class="sp-breadcrumb">
+      <div class="sp-breadcrumb-content sp-bg-09 sp-clickable" [title]="breadcrumb.tooltip">
+        <!-- Icon -->
+        <i *ngIf="breadcrumb.icon && iconVisible" [ngClass]="breadcrumb.icon">&nbsp;</i>
+        <!-- Caption -->
+        <span *ngIf="breadcrumb.caption && captionVisible" class="sp-text-large">{{breadcrumb.caption}}</span>
+        <span *ngIf="!breadcrumb.caption && captionVisible" class="sp-text-large">{{breadcrumb.criteriaItem.columnValues[0].caption}}</span>
+        <!-- Multiple info -->
+        <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && !captionVisible" class="sp-text-small sp-text-super-v">&nbsp;{{breadcrumb.criteriaItem.columnValues.length}}</span>
+        <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && captionVisible" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaItem.columnValues.length - 1}}</span>
+        <!-- Close icon -->
+        <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>
+        <i *ngIf="isLast" class="mdi-close mdi sp-color-on-bg-low sp-text-medium"></i>
+      </div>
+      <!-- Separator -->
+      <i *ngIf="!isLast">&nbsp;</i>
     </div>
-    <!-- Caret -->
-    <i *ngIf="!isLast" class="mdi-chevron-right mdi"></i>
-  </div>
+  </ng-container>
 </div>
 <i
-[ngClass]="{ 'sp-no-display': !rightScrollIndicatorVisible }"
-class="mdi-arrow-right-circle mdi sp-scroll-icon sp-scroll-icon-right sp-clickable"
+[ngClass]="{ 'sp-no-display': !rightScrollIndicatorVisible || !breadcrumbsVisible }"
+class="mdi-arrow-right mdi sp-scroll-icon sp-scroll-icon-right sp-clickable"
 (click)="onScrollRightClick()"></i>

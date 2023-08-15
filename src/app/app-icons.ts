@@ -14,7 +14,7 @@ export enum AppEntityIcons {
 }
 
 export enum AppFeatureIcons {
-  MultipleArtists = 'mdi-account-multiple',
+  MultipleArtists = 'mdi-account-multiple mdi',
   MultipleGenres = 'mdi-tag-multiple mdi',
   Statistics = 'mdi-chart-bar mdi',
   AudioDirectory = 'mdi-folder-music-outline mdi',
@@ -29,12 +29,12 @@ export enum AppAttributeIcons {
   FileInfo = 'mdi-file-music mdi',
   ClassificationType = 'mdi-shape mdi',
   Language = 'mdi-translate mdi',
-  Mood = 'mdi-emoticon mdi',
+  Mood = 'mdi-emoticon-outline mdi',
   Year = 'mdi-calendar-month mdi',
-  Decade = 'mdi-calendar-blank',
+  Decade = 'mdi-calendar-blank mdi',
   Rating = 'mdi-star mdi',
   FavoriteOn = 'mdi-heart mdi',
-  FavoriteOff = 'mdi-heart-outline',
+  FavoriteOff = 'mdi-heart-outline mdi',
   LiveOn = 'mdi-broadcast mdi',
   LiveOff = 'mdi-broadcast-off mdi',
   LyricsOn = 'mdi-script-text-outline mdi',
@@ -71,7 +71,7 @@ export enum AppPlayerIcons {
   RepeatAll = 'mdi-repeat mdi',
   RepeatOff = 'mdi-repeat-off mdi',
   RepeatOne = 'mdi-repeat-once mdi',
-  TrackList = 'mdi-playlist-music-outline mdi',
+  Queue = 'mdi-playlist-music-outline mdi',
   AlbumArt = 'mdi-image-outline mdi',
   BackgroundColor = 'mdi-alpha-b-box-outline mdi',
   PrimaryColor = 'mdi-numeric-1-box-outline mdi',
@@ -84,5 +84,6 @@ export enum AppPlayerIcons {
 export enum AppViewIcons {
   Home = 'mdi-home mdi',
   Settings = 'mdi-cogs mdi',
-  About = 'mdi-owl mdi'
+  About = 'mdi-owl mdi',
+  Accent = 'mdi-vanish-quarter mdi'
 }

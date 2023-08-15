@@ -1,25 +1,41 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
+import { BreadcrumbDisplayMode, BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
 import { CriteriaItems } from '../../services/criteria/criteria.class';
-import { IBreadcrumbModel, IBreadcrumbOptions } from './breadcrumbs-model.interface';
+import { IBreadcrumbModel, IBreadcrumbOptions, IBreadcrumbsModel } from './breadcrumbs-model.interface';
+import { IWindowSizeChangedEvent } from 'src/app/core/services/utility/utility.interface';
+import { CoreEvent } from 'src/app/core/services/events/events.enum';
+import { BreakpointMode } from 'src/app/core/services/utility/utility.enum';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BreadcrumbsStateService {
 
-  private state: IBreadcrumbModel[] = [];
+  private state: IBreadcrumbsModel = {
+    displayMode: BreadcrumbDisplayMode.All,
+    items: []
+  };
 
-  constructor(private events: EventsService) { }
+  constructor(private events: EventsService, private utility: UtilityService) {
+    this.restoreDisplayMode();
+    events.onEvent<IWindowSizeChangedEvent>(CoreEvent.WindowSizeChanged).subscribe(eventData => {
+      this.setDisplayMode(eventData.new.mode);
+    });
+  }
 
-  public getState(): IBreadcrumbModel[] {
+  public getState(): IBreadcrumbsModel {
     return this.state;
   }
 
   public clear(): void {
-    this.state = [];
+    this.state.items = [];
+  }
+
+  public restoreDisplayMode(): void {
+    this.setDisplayMode(this.utility.getCurrentWindowSize().mode);
   }
 
   // ADD //////////////////////////////////////////////////////////////////////////////////////////
@@ -51,15 +67,15 @@ export class BreadcrumbsStateService {
   private innerAdd(newBreadcrumb: IBreadcrumbModel): void {
     this.setupTooltip(newBreadcrumb);
     // First make sure all current breadcrumbs will not be marked as last
-    for (const breadcrumb of this.state) {
+    for (const breadcrumb of this.state.items) {
       breadcrumb.last = false;
     }
 
     // Mark current breadcrumb as last and add it
     newBreadcrumb.last = true;
-    this.state.push(newBreadcrumb);
+    this.state.items.push(newBreadcrumb);
     // Auto increment the id
-    newBreadcrumb.sequence = this.state.length;
+    newBreadcrumb.sequence = this.state.items.length;
   }
 
   // REMOVE ///////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +110,7 @@ export class BreadcrumbsStateService {
   }
 
   private innerRemoveLast(): IBreadcrumbModel {
-    const result = this.state.pop();
+    const result = this.state.items.pop();
     // Now turn on the last flag on the last item
     const lastItem = this.getLast();
     if (lastItem) {
@@ -127,19 +143,19 @@ export class BreadcrumbsStateService {
   // MISC /////////////////////////////////////////////////////////////////////////////////////////
 
   public getLast(): IBreadcrumbModel {
-    if (this.state.length) {
-      return this.state[this.state.length - 1];
+    if (this.state.items.length) {
+      return this.state.items[this.state.items.length - 1];
     }
     return null;
   }
 
   public hasBreadcrumbs(): boolean {
-    return this.state.length > 0;
+    return this.state.items.length > 0;
   }
 
   public getCriteria(): CriteriaItems {
     const result = new CriteriaItems();
-    for (const breadcrumb of this.state) {
+    for (const breadcrumb of this.state.items) {
       result.push(breadcrumb.criteriaItem);
     }
     return result;
@@ -161,16 +177,17 @@ export class BreadcrumbsStateService {
     }
   }
 
-  public hideCaptions(): void {
-    this.state.forEach(crumb => crumb.hideCaption = true);
-  }
-
-  public showCaptions(): void {
-    this.state.forEach(crumb => crumb.hideCaption = false);
-  }
-
   /** Broadcasts the ReloadRequest event which is consumed by the breadcrumb component. */
   private reload() {
     this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.ReloadRequested);
+  }
+
+  private setDisplayMode(breakpointMode: BreakpointMode): void {
+    if (breakpointMode === BreakpointMode.Large) {
+      this.state.displayMode = BreadcrumbDisplayMode.All;
+    }
+    else {
+      this.state.displayMode = BreadcrumbDisplayMode.Caption;
+    }
   }
 }

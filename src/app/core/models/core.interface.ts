@@ -127,6 +127,8 @@ export interface IIcon {
   offToolTip?: string;
   /** If the icon should be hidden. */
   hidden?: boolean;
+  /** Css class that can be applied to the parent element. */
+  parentStyleClass?: string;
 }
 
 export interface IIconActionGeneric<TParam> extends IIcon {

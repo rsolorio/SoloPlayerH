@@ -65,7 +65,7 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
     if (!this.breadcrumbs.hasBreadcrumbs()) {
       return;
     }
-    const allBreadcrumbs = this.breadcrumbs.getState();
+    const allBreadcrumbs = this.breadcrumbs.getState().items;
     const unsupportedBreadcrumbs = allBreadcrumbs.filter(breadcrumb =>
       breadcrumb.origin !== BreadcrumbSource.Classification &&
       breadcrumb.origin !== BreadcrumbSource.Genre &&

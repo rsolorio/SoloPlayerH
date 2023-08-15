@@ -9,9 +9,11 @@
       </td>
       <!-- Middle content -->
       <td class="sp-td-center">
-          <table class="sp-full-width sp-nav-bar-height"><tr>
+          <table class="sp-table sp-full-width sp-nav-bar-height"><tr>
               <!-- Inner left icon -->
-              <td *ngIf="model.leftIcon" [ngClass]="{ 'sp-clickable' : model.leftIcon.action }" class="sp-td-inner-icon">
+              <td *ngIf="model.leftIcon"
+              class="sp-td-inner-icon"
+              [ngClass]="[model.leftIcon.action ? 'sp-clickable' : '', model.leftIcon.parentStyleClass ? model.leftIcon.parentStyleClass : '']">
                   <i
                   [ngClass]="model.leftIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.leftIcon)"></i>
@@ -41,7 +43,10 @@
               </td>
               <!-- Inner right icon -->
               <ng-container *ngIf="model.rightIcons"><ng-container *ngFor="let rightIcon of model.rightIcons">
-                <td *ngIf="!rightIcon.hidden" [ngClass]="{ 'sp-clickable' : rightIcon.action }" class="sp-td-inner-icon">
+                <td
+                *ngIf="!rightIcon.hidden"
+                class="sp-td-inner-icon"
+                [ngClass]="[rightIcon.action ? 'sp-clickable' : '', rightIcon.parentStyleClass ? rightIcon.parentStyleClass : '']">
                   <i
                   [ngClass]="rightIcon.off ? rightIcon.offIcon : rightIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(rightIcon)"></i>

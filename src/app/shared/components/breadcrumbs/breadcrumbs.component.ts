@@ -2,9 +2,9 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { CoreEvent } from 'src/app/core/services/events/events.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
+import { BreadcrumbDisplayMode, BreadcrumbEventType } from '../../models/breadcrumbs.enum';
 import { AppEvent } from '../../models/events.enum';
-import { IBreadcrumbModel } from './breadcrumbs-model.interface';
+import { IBreadcrumbModel, IBreadcrumbsModel } from './breadcrumbs-model.interface';
 import { BreadcrumbsStateService } from './breadcrumbs-state.service';
 
 @Component({
@@ -14,10 +14,23 @@ import { BreadcrumbsStateService } from './breadcrumbs-state.service';
 })
 export class BreadcrumbsComponent extends CoreComponent implements OnInit {
   @ViewChild('breadcrumbsContainer') private breadcrumbsContainer: ElementRef;
-  public model: IBreadcrumbModel[];
+  public BreadcrumbDisplayMode = BreadcrumbDisplayMode;
+  public model: IBreadcrumbsModel;
   public leftScrollIndicatorVisible = false;
   public rightScrollIndicatorVisible = false;
   public containerClass = 'sp-bc-icon-null';
+
+  get iconVisible(): boolean {
+    return this.model.displayMode === BreadcrumbDisplayMode.All || this.model.displayMode === BreadcrumbDisplayMode.Icon;
+  }
+
+  get captionVisible(): boolean {
+    return this.model.displayMode === BreadcrumbDisplayMode.All || this.model.displayMode === BreadcrumbDisplayMode.Caption;
+  }
+
+  get breadcrumbsVisible(): boolean {
+    return this.model.displayMode !== BreadcrumbDisplayMode.None;
+  }
 
   constructor(private breadcrumbService: BreadcrumbsStateService, private events: EventsService) {
     super();

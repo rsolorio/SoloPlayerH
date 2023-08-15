@@ -12,3 +12,14 @@ export enum BreadcrumbEventType {
   Set,
   ReloadRequested
 }
+
+export enum BreadcrumbDisplayMode {
+  /** Do not display the breadcrumbs. */
+  None,
+  /** Display icons if available. */
+  Icon,
+  /** Display captions if available. */
+  Caption,
+  /** Display icons and captions. */
+  All
+}

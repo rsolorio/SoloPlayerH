@@ -4,6 +4,7 @@
 [infoTemplate]="infoTemplate"
 [imageOverlayTemplate]="imageOverlayTemplate"
 (afterInit)="onListInitialized($event)"
+(listUpdated)="onListUpdated($event)"
 (itemAvatarClick)="onItemImageClick($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #imageOverlayTemplate let-item="item">
