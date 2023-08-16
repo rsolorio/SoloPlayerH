@@ -13,9 +13,9 @@
               <!-- Inner left icon -->
               <td *ngIf="model.leftIcon"
               class="sp-td-inner-icon"
-              [ngClass]="[model.leftIcon.action ? 'sp-clickable' : '', model.leftIcon.parentStyleClass ? model.leftIcon.parentStyleClass : '']">
+              [ngClass]="[!model.leftIcon.off && model.leftIcon.action ? 'sp-clickable' : '', model.leftIcon.off && model.leftIcon.offAction ? 'sp-clickable' : '', model.leftIcon.parentStyleClass ? model.leftIcon.parentStyleClass : '']">
                   <i
-                  [ngClass]="model.leftIcon.icon"
+                  [ngClass]="model.leftIcon.off ? model.leftIcon.offIcon : model.leftIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.leftIcon)"></i>
                   <!-- Sub icon -->
                   <i

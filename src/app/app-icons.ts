@@ -48,7 +48,7 @@ export enum AppAttributeIcons {
 export enum AppActionIcons {
   CloseClear = 'mdi-close mdi',
   Search = 'mdi-magnify mdi',
-  SearchClose = 'mdi-magnify-close mdi',
+  SearchClose = 'mdi-magnify-remove-outline mdi',
   Sort = 'mdi-sort-variant mdi',
   SortAscending = 'mdi-sort-ascending mdi',
   SortDescending = 'mdi-sort-descending mdi-flip-v mdi',

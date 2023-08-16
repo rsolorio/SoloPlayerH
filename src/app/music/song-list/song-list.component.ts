@@ -120,6 +120,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     // Hide all icons by default and manage visibility on list updated
     rightIcons: [
       {
+        id: 'sortIcon',
+        icon: AppActionIcons.Sort,
+        action: () => {
+          this.openSortingPanel();
+        },
+        hidden: true
+      },
+      {
         id: 'quickFilterIcon',
         icon: AppActionIcons.Filter + ' sp-color-primary',
         action: () => {
@@ -129,14 +137,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
         offIcon: AppActionIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
-        },
-        hidden: true
-      },
-      {
-        id: 'sortIcon',
-        icon: AppActionIcons.Sort,
-        action: () => {
-          this.openSortingPanel();
         },
         hidden: true
       },

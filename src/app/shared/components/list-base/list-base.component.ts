@@ -29,6 +29,7 @@ import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
 import { TimeAgo } from 'src/app/core/models/core.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { AppActionIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-list-base',
@@ -144,6 +145,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   private afterListUpdated(): void {
+    this.setDefaultNavbarMode();
     this.loadingService.hide();
     this.showInfo();
     this.listUpdated.emit(this.model);
@@ -165,6 +167,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     else if (routeInfo) {
       navbar.title = routeInfo.name;
     }
+    navbar.mode = NavbarDisplayMode.Title;
 
     if (this.model.leftIcon) {
       navbar.leftIcon = this.model.leftIcon;
@@ -172,7 +175,17 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // If the left icon is not specified, get it from the route
     else if (routeInfo) {
       navbar.leftIcon = {
-        icon: routeInfo.icon
+        icon: routeInfo.icon + ' sp-color-primary',
+        action: () => {
+          // Clear criteria from the list
+          const criteria = new Criteria();
+          // Just keep system and sorting criteria
+          criteria.systemCriteria = this.model.criteriaResult.criteria.systemCriteria.clone();
+          criteria.sortingCriteria = this.model.criteriaResult.criteria.sortingCriteria.clone();
+          this.navigation.forward(this.navigation.current().route, { criteria: criteria });
+        },
+        off: true,
+        offIcon: routeInfo.icon
       };
     }
 
@@ -180,7 +193,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // Search icon
     const searchIcon: IIconAction = {
       id: 'searchIcon',
-      icon: 'mdi-magnify-remove-outline mdi',
+      icon: AppActionIcons.SearchClose,
       action: iconAction => {
         // This will turn OFF the search
         iconAction.off = true;
@@ -193,7 +206,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         this.setNavbarMode(NavbarDisplayMode.Title);
       },
       off: true, // Search turned off by default
-      offIcon: 'mdi-magnify mdi',
+      offIcon: AppActionIcons.Search,
       offAction: iconAction => {
         // This will turn ON the search
         iconAction.off = false;
@@ -256,9 +269,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       navInfo.options.criteria = this.model.criteriaResult.criteria.clone();
     }
 
-    this.model.broadcastService.send(navInfo.options.criteria).subscribe(() => {
-      this.setDefaultNavbarMode();
-    });
+    this.model.broadcastService.send(navInfo.options.criteria).subscribe();
   }
 
   public toggleSelection(item: IListItemModel): void {
@@ -324,11 +335,20 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
    * Sets the breadcrumb mode if supported and data is available, otherwise it will set the Title mode.
    */
   private setDefaultNavbarMode(): void {
+    // If it has breadcrumbs display the component
     if (this.model.breadcrumbsEnabled && this.breadcrumbService.hasBreadcrumbs()) {
       this.setNavbarMode(NavbarDisplayMode.Component);
     }
-    else {
+    // If it doesn't have breadcrumbs and it is displaying the component go back to Title mode
+    else if (this.navbarService.getState().mode === NavbarDisplayMode.Component) {
       this.setNavbarMode(NavbarDisplayMode.Title);
+    }
+    else if (this.navbarService.getState().mode === NavbarDisplayMode.Search && !this.model.criteriaResult.criteria.hasComparison(true)) {
+      this.setNavbarMode(NavbarDisplayMode.Title);
+    }
+    else {
+      // Set the same mode, but run the extra logic
+      this.setNavbarMode(this.navbarService.getState().mode);
     }
   }
 
@@ -342,16 +362,19 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // since the same mode applies to all entities and the same mode
     // can have different icons on different views
     navbar.mode = mode;
+    navbar.leftIcon.off = !this.model.criteriaResult.criteria.hasComparison(true);
 
     // Handle icon visibility
     switch (mode) {
       case NavbarDisplayMode.Component:
         // Hide all the icons
         navbar.rightIcons.forEach(icon => icon.hidden = true);
+        navbar.rightIcons.find(i => i.id === 'searchIcon').off = true;
         break;
       case NavbarDisplayMode.Title:
         // Show all icons
         navbar.rightIcons.forEach(icon => icon.hidden = false);
+        navbar.rightIcons.find(i => i.id === 'searchIcon').off = true;
         break;
       case NavbarDisplayMode.Search:
         // Show search, hide the rest of the icons
