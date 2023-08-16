@@ -206,11 +206,6 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       }
     };
     navbar.rightIcons.push(searchIcon);
-    if (this.breadcrumbService.hasBreadcrumbs()) {
-      // Hide search
-      // How to determine which other icons to hide?
-      // Show/hide state for every navbar mode?
-    }
 
     // Search
     navbar.onSearch = searchTerm => {
@@ -233,6 +228,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   public search(criteria: Criteria, searchTerm?: string): void {
+    // This will not be recorded as a new navigation, should it?
     if (this.model.broadcastService) {
       this.loadingService.show();
       this.model.broadcastService.search(criteria, searchTerm).subscribe();
@@ -240,10 +236,9 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   public send(criteria: Criteria): void {
-    if (this.model.broadcastService) {
-      this.loadingService.show();
-      this.model.broadcastService.send(criteria).subscribe();
-    }
+    // Use the navigation system to record the new criteria as a new navigation
+    const current = this.navigation.current();
+    this.navigation.forward(current.route, { criteria: criteria });
   }
 
   /**

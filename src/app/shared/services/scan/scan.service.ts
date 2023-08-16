@@ -66,6 +66,8 @@ export class ScanService {
   private unknownValue = 'Unknown';
   private scanMode: ScanFileMode;
   private songToProcess: SongEntity;
+  // Options
+  private ignoreNumericGenres = false;
   private genreSplitSymbols: string[] = [];
   private artistSplitSymbols: string[] = [];
 
@@ -133,6 +135,7 @@ export class ScanService {
     this.existingPartyRelations = [];
     this.existingSongClassifications = [];
 
+    this.ignoreNumericGenres = this.options.getBoolean(ModuleOptionName.IgnoreNumericGenres);
     this.genreSplitSymbols = this.options.getArray(ModuleOptionName.GenreSplitCharacters);
     this.artistSplitSymbols = this.options.getArray(ModuleOptionName.ArtistSplitCharacters);
 
@@ -911,6 +914,9 @@ export class ScanService {
   }
 
   private processGenre(name: string, genres: ValueListEntryEntity[]): void {
+    if (this.ignoreNumericGenres && this.utilities.isNumber(name)) {
+      return;
+    }
     const existingGenre = this.lookupService.findValueListEntry(name, null, this.existingGenres);
     if (existingGenre) {
       const existingResult = this.lookupService.findValueListEntry(existingGenre.name, null, genres);

@@ -11,7 +11,8 @@ export enum ModuleOptionName {
   AllowMultipleQuickFilters = 'AllowMultipleQuickFilters',
   LongPlayArtistThreshold = 'LongPlayArtistThreshold',
   LongPlayAlbumThreshold = 'LongPlayAlbumThreshold',
-  LongPlaySongThreshold = 'LongPlaySongThreshold'
+  LongPlaySongThreshold = 'LongPlaySongThreshold',
+  IgnoreNumericGenres = 'IgnoreNumericGenres'
 }
 
 export enum ModuleOptionEditor {

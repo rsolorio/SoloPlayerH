@@ -66,6 +66,10 @@ export class UtilityService {
     return arg !== undefined && arg !== null && typeof arg === 'function';
   }
 
+  public isNumber(value?: string | number): boolean {
+    return (value !== null && value !== '' && !isNaN(Number(value.toString())));
+  }
+
   /**
    * Moves the scrollbar of the specified element to the top.
    * @param elementId The identifier of the element that will scroll to the top. If null, the function will scroll the whole window.

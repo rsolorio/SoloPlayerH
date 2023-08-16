@@ -7,10 +7,16 @@ This is an offline player (for music stored in your device) that currently suppo
 ## Features
 
 ### Breadcrumbs
-The breadcrumbs are displayed as you navigate in the following entities: Classifications, Genres, Album Artists, Albums. They indicate how the current list of entities is being filtered.
+Breadcrumbs are displayed as you navigate in the following entities: Classifications, Genres, Album Artists, Albums. They indicate how the current list of entities is being filtered.
 
 ### Quick Filters
-Each list view supports quick filters which allow you to filter by the most common fields.
+Each list view supports quick filters which allow you to filter by the most common criteria.
+
+### Song Filters
+Besides the standard filter options, the Song List view provides the ability to filter by Decade, Language and Mood.
+
+### Sorting
+Each list view offers multiple sorting options.
 
 ### Playlist Support
 The application has the ability to import playlists from these file types:

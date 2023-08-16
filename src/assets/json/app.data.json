@@ -152,6 +152,16 @@
         "multipleValues": false,
         "system": false,
         "values": false
+      },
+      {
+        "name": "IgnoreNumericGenres",
+        "moduleName": "Music",
+        "title": "Ignore numeric genres",
+        "description": "Ignore genres with numeric values during the audio scan process. Usually genres with a number are bugs or don't mean anything.",
+        "valueEditorType": "YesNo",
+        "multipleValues": false,
+        "system": false,
+        "values": true
       }
     ],
     "relatedImage": [
