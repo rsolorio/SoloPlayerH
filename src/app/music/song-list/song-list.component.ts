@@ -14,9 +14,9 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { SongArtistViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
-import { BreadcrumbDisplayMode, BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
+import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
-import { AppRoute, appRoutes } from 'src/app/app-routes';
+import { AppRoute } from 'src/app/app-routes';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
@@ -37,6 +37,8 @@ import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image
 import { AddToPlaylistService } from 'src/app/playlist/add-to-playlist/add-to-playlist.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
+import { ValueLists } from 'src/app/shared/services/database/database.lists';
+import { DbColumn } from 'src/app/shared/services/database/database.columns';
 
 @Component({
   selector: 'sp-song-list',
@@ -119,48 +121,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     rightIcons: [
       {
         id: 'quickFilterIcon',
-        icon: AppActionIcons.QuickFilter + ' sp-color-primary',
+        icon: AppActionIcons.Filter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: AppActionIcons.QuickFilter,
+        offIcon: AppActionIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
-        },
-        //parentStyleClass: 'sp-bg-09',
-        hidden: true
-      },
-      {
-        id: 'decadeFilterIcon',
-        icon: AppAttributeIcons.Decade,
-        //parentStyleClass: 'sp-bg-09',
-        hidden: true
-      },
-      {
-        id: 'languageFilterIcon',
-        icon: AppAttributeIcons.Language,
-        //parentStyleClass: 'sp-bg-09',
-        hidden: true
-      },
-      {
-        id: 'moodFilterIcon',
-        icon: AppAttributeIcons.Mood,
-        //parentStyleClass: 'sp-bg-09',
-        hidden: true
-      },
-      {
-        id: 'filterToolbarIcon',
-        icon: AppActionIcons.FilterClose,
-        action: iconAction => {
-          iconAction.off = true;
-          this.manageRightIconsVisibility(this.spListBaseComponent.model);
-        },
-        off: true,
-        offIcon: AppActionIcons.Filter,
-        offAction: iconAction => {
-          iconAction.off = false;
-          this.manageRightIconsVisibility(this.spListBaseComponent.model);
         },
         hidden: true
       },
@@ -366,9 +334,36 @@ export class SongListComponent extends CoreComponent implements OnInit {
   public onListInitialized(listBaseModel: IListBaseModel): void {
     // TODO: Add new menu: Save As Playlist, Save As Filter
     const navbarModel = this.navbarService.getState();
+
+    navbarModel.menuList.push({
+      caption: 'Decade',
+      icon: AppAttributeIcons.Decade,
+      action: () => {
+        this.openDecadeFilterPanel();
+      }
+    });
+
+    navbarModel.menuList.push({
+      caption: 'Language',
+      icon: AppAttributeIcons.Language,
+      action: () => {
+        this.openLanguageFilterPanel();
+      }
+    });
+
+    navbarModel.menuList.push({
+      caption: 'Mood',
+      icon: AppAttributeIcons.Mood,
+      action: () => {
+        this.openMoodFilterPanel();
+      }
+    });
+
+    navbarModel.menuList.push({ isSeparator: true });
+
     navbarModel.menuList.push({
       caption: 'Screenshot',
-      icon: 'mdi-image-outline mdi',
+      icon: AppAttributeIcons.Image,
       action: () => {
         this.imageService.getScreenshot().then(result => {
           const imagePreviewModel: IImagePreviewModel = {
@@ -385,7 +380,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
     navbarModel.menuList.push({
       caption: 'Scroll To Song',
-      icon: 'mdi-arrow-up-down mdi',
+      icon: AppActionIcons.Scroll,
       action: () => {
         const playerList = this.playerService.getState().playerList;
         if (this.isListInPlayer(playerList)) {
@@ -455,17 +450,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private manageRightIconsVisibility(model: IListBaseModel): void {
     // Icons from right to left
-    // BREADCRUMBS, FILTER OFF: filter on
-    // BREADCRUMBS, FILTER ON: sort, quick filter, other filters, filter off
-    // TITLE, FILTER OFF, SEARCH OFF: sort, filter on, search
-    // TITLE, FILTER ON, SEARCH OFF: sort, quick filter, other filters, filter off, search
+    // BREADCRUMBS: sort, quick filter
+    // TITLE, FILTER OFF, SEARCH OFF: sort, quick filter, search
     // TITLE, FILTER OFF, SEARCH ON: search off
-    // TITLE, FILTER ENTITY ON: filter remove
+    // TITLE, FILTER ON: filter remove
     const navbarState = this.navbarService.getState();
 
     switch (navbarState.mode) {
       case NavbarDisplayMode.Title:
-        navbarState.title = appRoutes[AppRoute.Songs].name;
         // First hide all icons
         model.rightIcons.forEach(i => i.hidden = true);
         const current = this.navigation.current();
@@ -474,15 +466,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           navbarState.rightIcons.find(i => i.id === 'filterRemoveIcon').hidden = false;
         }
         else {
-          const filterToolbarIcon = navbarState.rightIcons.find(i => i.id === 'filterToolbarIcon');
-          filterToolbarIcon.hidden = false;
-          if (!filterToolbarIcon.off) {
-            navbarState.title = '';
-          }
-          navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').hidden = filterToolbarIcon.off;
-          navbarState.rightIcons.find(i => i.id === 'languageFilterIcon').hidden = filterToolbarIcon.off;
-          navbarState.rightIcons.find(i => i.id === 'decadeFilterIcon').hidden = filterToolbarIcon.off;
-          navbarState.rightIcons.find(i => i.id === 'moodFilterIcon').hidden = filterToolbarIcon.off;
+          navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').hidden = false
           navbarState.rightIcons.find(i => i.id === 'searchIcon').hidden = false;
           navbarState.rightIcons.find(i => i.id === 'sortIcon').hidden = false;
         }
@@ -491,24 +475,137 @@ export class SongListComponent extends CoreComponent implements OnInit {
       case NavbarDisplayMode.Component:
         // First hide all icons
         model.rightIcons.forEach(i => i.hidden = true);
-        const filterToolbarIcon = navbarState.rightIcons.find(i => i.id === 'filterToolbarIcon');
-        filterToolbarIcon.hidden = false;
-        if (filterToolbarIcon.off) {
-          this.breadcrumbService.restoreDisplayMode();
-        }
-        else {
-          this.breadcrumbService.getState().displayMode = BreadcrumbDisplayMode.None;
-        }
-        navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').hidden = filterToolbarIcon.off;
-        navbarState.rightIcons.find(i => i.id === 'languageFilterIcon').hidden = filterToolbarIcon.off;
-        navbarState.rightIcons.find(i => i.id === 'decadeFilterIcon').hidden = filterToolbarIcon.off;
-        navbarState.rightIcons.find(i => i.id === 'moodFilterIcon').hidden = filterToolbarIcon.off;
+        navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').hidden = false;
         navbarState.rightIcons.find(i => i.id === 'sortIcon').hidden = false;
         break;
     }
-
-
     const iconOff = !model.criteriaResult.criteria.quickCriteria.hasComparison();
     navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
+  }
+
+  public async openLanguageFilterPanel(): Promise<void> {
+    const breadcrumbs = this.breadcrumbService.getState().items;
+    const languageBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Language);
+    const languages = languageBreadcrumb?.criteriaItem?.columnValues?.length ? languageBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
+    const model = await this.entities.getValueListSelectorModel(ValueLists.Language.id, true, chip => {
+      return languages.includes(chip.caption);
+    });
+    model.subTitle = 'Language';
+    model.subTitleIcon = AppAttributeIcons.Language;
+    model.onOk = result => {
+      const selectedLanguages = result.items.filter(i => i.selected);
+      const breadcrumbs = this.breadcrumbService.getState().items;
+      const crumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Language);
+      if (crumb) {
+        // Edit the existing breadcrumb
+        if (selectedLanguages.length) {
+          crumb.criteriaItem.columnValues = [];
+          selectedLanguages.forEach(l => crumb.criteriaItem.columnValues.push({ value: l.caption, caption: l.caption }));
+          this.breadcrumbService.set(breadcrumbs);
+        }
+        // Remove the breadcrumb
+        else {
+          this.breadcrumbService.remove(crumb.sequence);
+        }
+      }
+      else {
+        // Create the breadcrumb and add the values
+        if (selectedLanguages.length) {
+          const criteriaItem = new CriteriaItem('language');
+          criteriaItem.comparison = CriteriaComparison.Equals;
+          selectedLanguages.forEach(l => criteriaItem.columnValues.push({ value: l.caption, caption: l.caption }));
+          this.breadcrumbService.addOne({
+            icon: AppAttributeIcons.Language,
+            criteriaItem: criteriaItem,
+            origin: BreadcrumbSource.Language
+          });
+        }
+      }
+    };
+    this.sidebarHostService.loadContent(model);
+  }
+
+  public async openMoodFilterPanel(): Promise<void> {
+    const breadcrumbs = this.breadcrumbService.getState().items;
+    const moodBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Mood);
+    const moods = moodBreadcrumb?.criteriaItem?.columnValues?.length ? moodBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
+    const model = await this.entities.getValueListSelectorModel(ValueLists.Mood.id, false, chip => {
+      return moods.includes(chip.caption);
+    });
+    model.subTitle = 'Mood';
+    model.subTitleIcon = AppAttributeIcons.Mood;
+    model.onOk = result => {
+      const selectedMoods = result.items.filter(i => i.selected);
+      const breadcrumbs = this.breadcrumbService.getState().items;
+      const crumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Mood);
+      if (crumb) {
+        // Edit the existing breadcrumb
+        if (selectedMoods.length) {
+          crumb.criteriaItem.columnValues = [];
+          selectedMoods.forEach(l => crumb.criteriaItem.columnValues.push({ value: l.caption, caption: l.caption }));
+          this.breadcrumbService.set(breadcrumbs);
+        }
+        // Remove the breadcrumb
+        else {
+          this.breadcrumbService.remove(crumb.sequence);
+        }
+      }
+      else {
+        // Create the breadcrumb and add the values
+        if (selectedMoods.length) {
+          const criteriaItem = new CriteriaItem('mood');
+          criteriaItem.comparison = CriteriaComparison.Equals;
+          selectedMoods.forEach(l => criteriaItem.columnValues.push({ value: l.caption, caption: l.caption }));
+          this.breadcrumbService.addOne({
+            icon: AppAttributeIcons.Mood,
+            criteriaItem: criteriaItem,
+            origin: BreadcrumbSource.Mood
+          });
+        }
+      }
+    };
+    this.sidebarHostService.loadContent(model);
+  }
+
+  public async openDecadeFilterPanel(): Promise<void> {
+    const breadcrumbs = this.breadcrumbService.getState().items;
+    const decadeBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Decade);
+    const decades = decadeBreadcrumb?.criteriaItem?.columnValues?.length ? decadeBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
+    const model = await this.entities.getSongValuesSelectorModel(DbColumn.ReleaseDecade, chip => {
+      return decades.includes(chip.caption);
+    });
+    model.subTitle = 'Decade';
+    model.subTitleIcon = AppAttributeIcons.Decade;
+    model.onOk = result => {
+      const selectedDecades = result.items.filter(i => i.selected);
+      const breadcrumbs = this.breadcrumbService.getState().items;
+      const crumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Decade);
+      if (crumb) {
+        // Edit the existing breadcrumb
+        if (selectedDecades.length) {
+          crumb.criteriaItem.columnValues = [];
+          selectedDecades.forEach(l => crumb.criteriaItem.columnValues.push({ value: l.caption, caption: l.caption }));
+          this.breadcrumbService.set(breadcrumbs);
+        }
+        // Remove the breadcrumb
+        else {
+          this.breadcrumbService.remove(crumb.sequence);
+        }
+      }
+      else {
+        // Create the breadcrumb and add the values
+        if (selectedDecades.length) {
+          const criteriaItem = new CriteriaItem('releaseDecade');
+          criteriaItem.comparison = CriteriaComparison.Equals;
+          selectedDecades.forEach(l => criteriaItem.columnValues.push({ value: l.caption, caption: l.caption }));
+          this.breadcrumbService.addOne({
+            icon: AppAttributeIcons.Decade,
+            criteriaItem: criteriaItem,
+            origin: BreadcrumbSource.Decade
+          });
+        }
+      }
+    };
+    this.sidebarHostService.loadContent(model);
   }
 }

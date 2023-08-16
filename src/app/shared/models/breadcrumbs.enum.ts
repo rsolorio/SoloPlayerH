@@ -3,7 +3,10 @@ export enum BreadcrumbSource {
   Artist,
   Album,
   Classification,
-  Genre
+  Genre,
+  Language,
+  Decade,
+  Mood
 }
 
 export enum BreadcrumbEventType {

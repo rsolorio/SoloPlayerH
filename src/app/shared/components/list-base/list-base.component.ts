@@ -225,23 +225,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.setDefaultNavbarMode();
 
     // Menu list
-    navbar.menuList = [
-      {
-        caption: 'Show Count',
-        icon: 'mdi-counter mdi',
-        action: () => {
-          this.displayListInfo();
-        }
-      }
-    ];
-  }
-
-  private displayListInfo(): void {
-    this.displayItemCount();
-  }
-
-  private displayItemCount(): void {
-    this.navbarService.showToast(`Found: ${this.model.criteriaResult.items.length} item` + (this.model.criteriaResult.items.length !== 1 ? 's' : ''));
+    navbar.menuList = [];
   }
 
   public getSelectedItems():IListItemModel[] {

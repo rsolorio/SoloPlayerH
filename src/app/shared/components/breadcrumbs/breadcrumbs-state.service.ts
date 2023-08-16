@@ -182,6 +182,7 @@ export class BreadcrumbsStateService {
     this.events.broadcast(AppEvent.BreadcrumbUpdated, BreadcrumbEventType.ReloadRequested);
   }
 
+  /** Setups the display mode based on the specified breakpoint. */
   private setDisplayMode(breakpointMode: BreakpointMode): void {
     if (breakpointMode === BreakpointMode.Large) {
       this.state.displayMode = BreadcrumbDisplayMode.All;

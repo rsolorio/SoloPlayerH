@@ -80,12 +80,12 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'quickFilterIcon',
-        icon: AppActionIcons.QuickFilter + ' sp-color-primary',
+        icon: AppActionIcons.Filter + ' sp-color-primary',
         action: () => {
           this.openQuickFilterPanel();
         },
         off: true,
-        offIcon: AppActionIcons.QuickFilter,
+        offIcon: AppActionIcons.Filter,
         offAction: () => {
           this.openQuickFilterPanel();
         }

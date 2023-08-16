@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlbumEntity, ArtistEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity } from '../../entities';
+import { AlbumEntity, ArtistEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
@@ -341,7 +341,7 @@ export class DatabaseEntitiesService {
     const result: IChipSelectionModel = {
       componentType: ChipSelectionComponent,
       title: 'Quick Filters',
-      titleIcon: AppActionIcons.QuickFilter,
+      titleIcon: AppActionIcons.Filter,
       subTitle: subTitle,
       subTitleIcon: subTitleIcon,
       displayMode: ChipDisplayMode.Block,
@@ -761,6 +761,49 @@ export class DatabaseEntitiesService {
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-category')
     });
 
+    return result;
+  }
+
+  public async getValueListSelectorModel(valueListTypeId: string, sortByName: boolean, isSelected: (chip: IChipItem) => boolean): Promise<IChipSelectionModel> {
+    let entries = await ValueListEntryEntity.findBy({ valueListTypeId: valueListTypeId });
+    if (sortByName) {
+      entries = this.utilities.sort(entries, 'name');
+    }
+    else {
+      entries = this.utilities.sort(entries, 'sequence');
+    }
+
+    const chips = entries.map(entry => {
+      const chip: IChipItem = {
+        value: entry.id,
+        caption: entry.name
+      };
+      chip.selected = isSelected(chip);
+      return chip;
+    });
+
+    const result: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Filter By',
+      titleIcon: AppActionIcons.Filter,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.Multiple,
+      items: chips
+    };
+    return result;
+  }
+
+  public async getSongValuesSelectorModel(columnName: string, isSelected: (chip: IChipItem) => boolean): Promise<IChipSelectionModel> {
+    let values = await this.getSongValues(columnName);
+    values.forEach(v => v.selected = isSelected(v));
+    const result: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Filter By',
+      titleIcon: AppActionIcons.Filter,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.Multiple,
+      items: values
+    };
     return result;
   }
 }

@@ -41,7 +41,8 @@ export enum AppAttributeIcons {
   LyricsOff = 'mdi-script-outline mdi',
   Explicit = 'mdi-alpha-e-box-outline mdi',
   BitrateHigh = 'mdi-waveform mdi',
-  BitrateLow = 'mdi-wave mdi'
+  BitrateLow = 'mdi-wave mdi',
+  Image = 'mdi-image-outline mdi'
 }
 
 export enum AppActionIcons {
@@ -57,7 +58,8 @@ export enum AppActionIcons {
   Menu = 'mdi-menu mdi',
   DotsVertical = 'mdi-dots-vertical mdi',
   DotsHorizontal = 'mdi-dots-horizontal mdi',
-  ShowSongs = 'mdi-music-box-multiple-outline mdi'
+  ShowSongs = 'mdi-music-box-multiple-outline mdi',
+  Scroll = 'mdi-arrow-up-down mdi'
 }
 
 export enum AppPlayerIcons {
@@ -72,7 +74,6 @@ export enum AppPlayerIcons {
   RepeatOff = 'mdi-repeat-off mdi',
   RepeatOne = 'mdi-repeat-once mdi',
   Queue = 'mdi-playlist-music-outline mdi',
-  AlbumArt = 'mdi-image-outline mdi',
   BackgroundColor = 'mdi-alpha-b-box-outline mdi',
   PrimaryColor = 'mdi-numeric-1-box-outline mdi',
   SecondaryColor = 'mdi-numeric-2-box-outline mdi',
