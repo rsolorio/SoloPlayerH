@@ -16,7 +16,7 @@ import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/b
 import { IBreadcrumbModel } from 'src/app/shared/components/breadcrumbs/breadcrumbs-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
-import { AppRoute } from 'src/app/app-routes';
+import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
@@ -460,15 +460,16 @@ export class SongListComponent extends CoreComponent implements OnInit {
       case NavbarDisplayMode.Title:
         // First hide all icons
         model.rightIcons.forEach(i => i.hidden = true);
-        const current = this.navigation.current();
         // Determine if current criteria comes from a filter entity
-        if (current.options?.criteria?.filterId) {
+        if (model.criteriaResult.criteria.filterId) {
           navbarState.rightIcons.find(i => i.id === 'filterRemoveIcon').hidden = false;
+          navbarState.title = model.criteriaResult.criteria.name;
         }
         else {
           navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').hidden = false
           navbarState.rightIcons.find(i => i.id === 'searchIcon').hidden = false;
           navbarState.rightIcons.find(i => i.id === 'sortIcon').hidden = false;
+          navbarState.title = appRoutes[AppRoute.Songs].name;
         }
         break;
       // Breadcrumbs

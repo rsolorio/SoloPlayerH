@@ -9,7 +9,7 @@
       </td>
       <!-- Middle content -->
       <td class="sp-td-center">
-          <table class="sp-table sp-full-width sp-nav-bar-height"><tr>
+          <table class="sp-table sp-table-support-overflow-ellipsis sp-full-width sp-nav-bar-height"><tr>
               <!-- Inner left icon -->
               <td *ngIf="model.leftIcon"
               class="sp-td-inner-icon"
@@ -24,7 +24,7 @@
                   class="sp-left-sub-icon sp-text-small-fixed"></i>
               </td>
               <!-- Dynamic content -->
-              <td>
+              <td [ngClass]="{ 'sp-text-overflow-ellipsis': model.mode === NavbarDisplayMode.Title }">
                   <!-- Title -->
                   <span *ngIf="model.mode === NavbarDisplayMode.Title && model.title" class="sp-text-xlarge-fixed">{{model.title}}</span>
                   <!-- We need to make sure this element is rendered (as invisible) even if it is not needed. -->
