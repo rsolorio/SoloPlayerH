@@ -2,17 +2,23 @@
   [ngClass]="{ 'sp-no-display': !leftScrollIndicatorVisible || !breadcrumbsVisible }"
   class="mdi-arrow-left mdi sp-scroll-icon sp-scroll-icon-left sp-clickable"
   (click)="onScrollLeftClick()"></i>
-<div #breadcrumbsContainer class="sp-breadcrumbs sp-scrollbar-hidden" [ngClass]="containerClass" (scroll)="onContainerScroll()" (wheel)="onContainerWheel($event)">
+<div
+#breadcrumbsContainer
+class="sp-breadcrumbs sp-scrollbar-hidden"
+[ngClass]="containerClass"
+(scroll)="onContainerScroll()"
+(wheel)="onContainerWheel($event)">
   <ng-container *ngIf="breadcrumbsVisible">
     <div *ngFor="let breadcrumb of model.items; let isLast = last;" (click)="onClick(breadcrumb)" class="sp-breadcrumb">
       <div class="sp-breadcrumb-content sp-bg-09 sp-clickable" [title]="breadcrumb.tooltip">
         <!-- Icon -->
-        <i *ngIf="breadcrumb.icon && iconVisible" [ngClass]="breadcrumb.icon">&nbsp;</i>
+        <i *ngIf="breadcrumb.icon && iconVisible" [ngClass]="breadcrumb.icon" class="sp-text-large">&nbsp;</i>
         <!-- Caption -->
         <span *ngIf="breadcrumb.caption && captionVisible" class="sp-text-large">{{breadcrumb.caption}}</span>
         <span *ngIf="!breadcrumb.caption && captionVisible" class="sp-text-large">{{breadcrumb.criteriaItem.columnValues[0].caption}}</span>
-        <!-- Multiple info -->
-        <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && !captionVisible" class="sp-text-small sp-text-super-v">&nbsp;{{breadcrumb.criteriaItem.columnValues.length}}</span>
+        <!-- Multiple info for icon -->
+        <i *ngIf="breadcrumb.criteriaItem.columnValues.length && !captionVisible" class="sp-text-large" [ngClass]="getNumericIcon(breadcrumb.criteriaItem.columnValues.length)"></i>
+        <!-- Multiple info for caption -->
         <span *ngIf="breadcrumb.criteriaItem.columnValues.length > 1 && captionVisible" class="sp-text-small sp-text-super-v">&nbsp;+{{breadcrumb.criteriaItem.columnValues.length - 1}}</span>
         <!-- Close icon -->
         <span *ngIf="isLast" class="sp-text-large">&nbsp;&nbsp;</span>

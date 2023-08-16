@@ -187,7 +187,7 @@ export class BreadcrumbsStateService {
       this.state.displayMode = BreadcrumbDisplayMode.All;
     }
     else {
-      this.state.displayMode = BreadcrumbDisplayMode.Caption;
+      this.state.displayMode = BreadcrumbDisplayMode.Icon;
     }
   }
 }

@@ -6,6 +6,7 @@ import { BreadcrumbDisplayMode, BreadcrumbEventType } from '../../models/breadcr
 import { AppEvent } from '../../models/events.enum';
 import { IBreadcrumbModel, IBreadcrumbsModel } from './breadcrumbs-model.interface';
 import { BreadcrumbsStateService } from './breadcrumbs-state.service';
+import { getNumericCircleIcon } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-breadcrumbs',
@@ -155,5 +156,9 @@ export class BreadcrumbsComponent extends CoreComponent implements OnInit {
 
   public onScrollRightClick(): void {
     this.scrollToRight();
+  }
+
+  public getNumericIcon(value: number): string {
+    return getNumericCircleIcon(value);
   }
 }

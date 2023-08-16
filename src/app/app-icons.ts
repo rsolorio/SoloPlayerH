@@ -87,3 +87,13 @@ export enum AppViewIcons {
   About = 'mdi-owl mdi',
   Accent = 'mdi-vanish-quarter mdi'
 }
+
+export function getNumericCircleIcon(value: number): string {
+  if (value >= 0 && value < 10) {
+    return `mdi-numeric-${value}-circle mdi`;
+  }
+  if (value > 9) {
+    return 'mdi-numeric-9-plus-circle mdi';
+  }
+  return '';
+}
