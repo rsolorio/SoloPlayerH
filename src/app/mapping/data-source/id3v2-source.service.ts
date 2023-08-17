@@ -282,24 +282,33 @@ export class Id3v2SourceService implements IDataSource {
         if (this.audioInfo.metadata.format.duration) {
           return [this.audioInfo.metadata.format.duration];
         }
-        return [0];
+        break;
       case MetaField.Bitrate:
         if (this.audioInfo.metadata.format.bitrate) {
           return [this.audioInfo.metadata.format.bitrate];
         }
-        return [0];
+        break;
       case MetaField.Frequency:
         if (this.audioInfo.metadata.format.sampleRate) {
           return [this.audioInfo.metadata.format.sampleRate];
         }
-        return [0];
+        break;
       case MetaField.Vbr:
         return [this.audioInfo.metadata.format.codecProfile !== 'CBR'];
+      case MetaField.Tempo:
+        const tempoText = this.metadataService.getValue<string>('TBPM', this.tags);
+        if (tempoText) {
+          const tempo = parseInt(tempoText, 10);
+          if (tempo > 0) {
+            return [tempo];
+          }
+        }
+        break;
       case MetaField.ReplayGain:
         if (this.audioInfo.metadata.format.trackGain) {
           return [this.audioInfo.metadata.format.trackGain];
         }
-        return [0];
+        break;
       case MetaField.TagFullyParsed:
         return [this.audioInfo.fullyParsed];
       case MetaField.Error:

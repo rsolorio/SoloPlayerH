@@ -522,12 +522,9 @@ export class ScanService {
       newAlbum.name = this.unknownValue;
     }
 
-    newAlbum.releaseYear = 0;
     const year = this.first(metadata[MetaField.Year]);
-    if (year > 0 && !ignoredYears.includes(year)) {
-      // Is this actually the album year? Album year and song year might be different.
-      newAlbum.releaseYear = year;
-    }
+    // Is this actually the album year? Album year and song year might be different.
+    newAlbum.releaseYear = year > 0 && !ignoredYears.includes(year) ? year : 0;
 
     let albumStylized = this.first(metadata[MetaField.AlbumStylized]);
     if (!albumStylized) {
@@ -654,18 +651,12 @@ export class ScanService {
     }
 
     // Rating
-    song.rating = 0;
     const rating = this.first(metadata[MetaField.Rating]);
-    if (rating) {
-      song.rating = rating;
-    }
+    song.rating = rating ? rating : 0;
 
     // Play Count
-    song.playCount = 0;
     const playCount = this.first(metadata[MetaField.PlayCount]);
-    if (playCount) {
-      song.playCount = playCount;
-    }
+    song.playCount = playCount ? playCount : 0;
     // This will only be set once just for tracking purposes
     song.initialPlayCount = song.playCount;
 
@@ -705,31 +696,26 @@ export class ScanService {
 
     // Let's start with zero but this cannot be the final value, it should be at least 1
     // If this value is not found here, the processArtistRelations will figure it out
-    song.performers = 0;
     const performers = this.first(metadata[MetaField.Performers]);
-    if (performers) {
-      song.performers = performers;
-    }
+    song.performers = performers ? performers : 0;
 
-    song.seconds = 0;
     let seconds = this.first(metadata[MetaField.Seconds]);
-    if (seconds) {
-      song.seconds = this.utilities.round(seconds, 4);
-    }
-    else {
-      this.log.debug('Duration not found for: ' + song.filePath);
-    }
+    song.seconds = seconds ? this.utilities.round(seconds, 4) : 0;
 
-    song.bitrate = 0;
     let bitrate = this.first(metadata[MetaField.Bitrate]);
-    if (bitrate) {
-      song.bitrate = this.utilities.round(bitrate, 4);
-    }
+    song.bitrate = bitrate ? this.utilities.round(bitrate, 4) : 0;
+
+    let frequency = this.first(metadata[MetaField.Frequency]);
+    song.frequency = frequency ? frequency : 0;
+
+    let tempo = this.first(metadata[MetaField.Tempo]);
+    song.tempo = tempo ? tempo : 0;
+
+    let replayGain = this.first(metadata[MetaField.ReplayGain]);
+    song.replayGain = replayGain ? replayGain : 0;
 
     song.duration = this.utilities.secondsToMinutes(song.seconds);
-    song.frequency = this.first(metadata[MetaField.Frequency]);
     song.vbr = this.first(metadata[MetaField.Vbr]);
-    song.replayGain = this.first(metadata[MetaField.ReplayGain]);
     song.fileSize = this.first(metadata[MetaField.FileSize]);
     song.fullyParsed = this.first(metadata[MetaField.TagFullyParsed]);
     song.infoUrl = this.first(metadata[MetaField.Url]);
@@ -895,6 +881,10 @@ export class ScanService {
     const genres = metadata[MetaField.Genre];
     if (genres?.length) {
       for (const genreName of genres) {
+        if (!genreName) {
+          // It is possible to have an item with no value so ignore it
+          continue;
+        }
         // First process genres by splitting the values;
         // this is key since the very first genre will be marked as the primary genre of the song
         if (splitSymbols && splitSymbols.length) {
@@ -905,9 +895,10 @@ export class ScanService {
             }
           }
         }
-        // TODO: enable this as a module option
-        // Finally process the genre as a whole value
-        // this.processGenre(genreName, genres);
+        else {
+          // If no symbols add the genre as it is
+          this.processGenre(genreName, genres);
+        }
       }
     }
     return result;

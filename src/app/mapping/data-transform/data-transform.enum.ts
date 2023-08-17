@@ -113,6 +113,8 @@ export enum MetaField {
   /** Boolean. Id3v2 */
   Vbr = 'vbr',
   /** Number. Id3v2 */
+  Tempo = 'tempo',
+  /** Number. Id3v2 */
   ReplayGain = 'replayGain',
   /** Id3v2 */
   TagFullyParsed = 'tagFullyParsed',

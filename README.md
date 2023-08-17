@@ -39,6 +39,7 @@ The application has the ability to import playlists from these file types:
 - Multiple covers
 - Language
 - Mood
+- Tempo
 
 ### Tag Mapping
 You can configure how the tag information is retrieved and where it will be stored.

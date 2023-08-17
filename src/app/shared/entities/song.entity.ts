@@ -64,6 +64,8 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   @Column()
   replayGain: number;
   @Column()
+  tempo: number;
+  @Column()
   fullyParsed: boolean;
   @Column()
   favorite: boolean;
