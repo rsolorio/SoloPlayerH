@@ -443,21 +443,46 @@ A longer duration allows to properly see the transition in the whole page. */
 }
 
 // TEXT SIZE  *************************************************************************************
-// Fixed sizes are not changed by the media query
-.sp-text-tiny {
-    font-size: 0.6em;
+/*
+    Size Matrix
+    Name    Small  Large
+    ------- -----  -----
+    Micro   0.6em  0.7em
+    Tiny    0.7em  0.8em
+    Small   0.8em  0.9em
+    Medium  0.9em  1.0em
+    Large   1.0em  1.2em
+    XLarge  1.2em  1.5em
+    Big     1.5em  2.0em
+    Huge    2.0em  2.5em
+    Jumbo          3.0em
+    Giant          4.0em
+*/
+
+// Large resolution sizes
+.sp-text-micro {
+    font-size: 0.7em;
 }
 
+.sp-text-micro-fixed {
+    font-size: 0.7em;
+}
+
+.sp-text-tiny {
+    font-size: 0.8em;
+}
+
+// Fixed sizes are not changed by the media query
 .sp-text-tiny-fixed {
-    font-size: 0.6em;
+    font-size: 0.8em;
 }
 
 .sp-text-small {
-    font-size: 0.8em;
+    font-size: 0.9em;
 }
 
 .sp-text-small-fixed {
-    font-size: 0.8em;
+    font-size: 0.9em;
 }
 
 .sp-text-medium {
@@ -508,15 +533,19 @@ A longer duration allows to properly see the transition in the whole page. */
     line-height: 1.5;
 }
 
+// Small resolution sizes
 @media only screen and (max-width:$sp-media-max-width) {
-    .sp-text-tiny {
-        font-size: 0.5em;
-    }
-    .sp-text-small {
+    .sp-text-micro {
         font-size: 0.6em;
     }
-    .sp-text-medium {
+    .sp-text-tiny {
+        font-size: 0.7em;
+    }
+    .sp-text-small {
         font-size: 0.8em;
+    }
+    .sp-text-medium {
+        font-size: 0.9em;
     }
     .sp-text-large {
         font-size: 1em;
