@@ -162,6 +162,16 @@
         "multipleValues": false,
         "system": false,
         "values": true
+      },
+      {
+        "name": "ListViewLimit",
+        "moduleName": "Music",
+        "title": "List view limit",
+        "description": "Maximum number of items to be loaded in a list view. This option applies to Classifications, Album Artists, Artists, Albums, Songs.",
+        "valueEditorType": "Number",
+        "multipleValues": false,
+        "system": false,
+        "values": 1000
       }
     ],
     "relatedImage": [

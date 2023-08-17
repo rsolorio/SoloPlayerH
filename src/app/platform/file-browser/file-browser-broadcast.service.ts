@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
@@ -9,6 +8,7 @@ import { Observable } from 'rxjs';
 import { Criteria, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { FileService } from '../file/file.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,12 +17,12 @@ export class FileBrowserBroadcastService extends ListBroadcastServiceBase<IFileB
 
   constructor(
     private events: EventsService,
-    private utilities: UtilityService,
+    private options: DatabaseOptionsService,
     private breadcrumbs: BreadcrumbsStateService,
     private navigation: NavigationService,
     private fileService: FileService)
   {
-    super(events, utilities, breadcrumbs);
+    super(events, options, breadcrumbs);
   }
 
   protected getEventName(): string {

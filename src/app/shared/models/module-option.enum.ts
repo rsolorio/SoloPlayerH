@@ -12,7 +12,8 @@ export enum ModuleOptionName {
   LongPlayArtistThreshold = 'LongPlayArtistThreshold',
   LongPlayAlbumThreshold = 'LongPlayAlbumThreshold',
   LongPlaySongThreshold = 'LongPlaySongThreshold',
-  IgnoreNumericGenres = 'IgnoreNumericGenres'
+  IgnoreNumericGenres = 'IgnoreNumericGenres',
+  ListViewLimit = 'ListViewLimit'
 }
 
 export enum ModuleOptionEditor {

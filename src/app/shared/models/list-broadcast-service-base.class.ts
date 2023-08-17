@@ -2,13 +2,13 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { SearchWildcard } from './search.enum';
 import { IDbModel } from './base-model.interface';
-import { AppRoute } from 'src/app/app-routes';
 import { ICriteriaResult } from '../services/criteria/criteria.interface';
 import { Criteria, CriteriaItems } from '../services/criteria/criteria.class';
 import { BreadcrumbsStateService } from '../components/breadcrumbs/breadcrumbs-state.service';
+import { DatabaseOptionsService } from '../services/database/database-options.service';
+import { ModuleOptionName } from './module-option.enum';
 
 export interface IListBroadcastService {
   search(criteria: Criteria, searchTerm?: string): Observable<ICriteriaResult<any>>;
@@ -31,7 +31,7 @@ implements IListBroadcastService {
 
   constructor(
     private eventsService: EventsService,
-    private utilityService: UtilityService,
+    private optionService: DatabaseOptionsService,
     private breadcrumbService: BreadcrumbsStateService) { }
 
   /**
@@ -53,37 +53,6 @@ implements IListBroadcastService {
     );
   }
 
-  /**
-   * Gets the items from the server and redirects to the specified route.
-   * Instead of sending data through a broadcast, this method sends data through parameters picked up
-   * by a route resolver.
-   * @param criteria The criteria information.
-   * @param route The route to redirect to.
-   */
-  public redirect(criteria: Criteria, route: AppRoute): Observable<ICriteriaResult<TItemModel>> {
-    this.beforeGetItems(criteria);
-    return this.innerGetItems(criteria).pipe(
-      map(response => {
-        const result: ICriteriaResult<TItemModel> = {
-          criteria: criteria,
-          items: response
-        };
-        this.innerRedirect(result, route);
-        return result;
-      })
-    );
-  }
-
-  /**
-   * Redirects the specified pagination info to the specified route; it assumes the pagination already contains
-   * the list of items to be displayed after the redirect occurs.
-   * @param listModel The pagination information.
-   * @param route The route to redirect to.
-   */
-  protected innerRedirect(criteriaResult: ICriteriaResult<TItemModel>, route: AppRoute): void {
-    this.utilityService.navigateWithComplexParams(route, criteriaResult);
-  }
-
   /** Performs a search based on the specified term and broadcasts an event with the result. */
   public search(criteria: Criteria, searchTerm?: string): Observable<ICriteriaResult<TItemModel>> {
     // Completely override any previous search
@@ -102,6 +71,14 @@ implements IListBroadcastService {
     }
     // This service will honor what the breadcrumb service has as criteria
     criteria.breadcrumbCriteria = this.breadcrumbService.getCriteria().clone();
+
+    // Set the default only if it hasn't been specified
+    if (!criteria.paging.pageSize) {
+      const limit = this.optionService.getNumber(ModuleOptionName.ListViewLimit);
+      if (limit) {
+        criteria.paging.pageSize = limit;
+      }
+    }
   }
 
   /**

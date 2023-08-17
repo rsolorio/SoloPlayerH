@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { PlaylistViewEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
@@ -9,6 +8,7 @@ import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-s
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -18,11 +18,11 @@ export class PlaylistListBroadcastService extends ListBroadcastServiceBase<IPlay
 
   constructor(
     private events: EventsService,
-    private utilities: UtilityService,
+    private options: DatabaseOptionsService,
     private db: DatabaseService,
     private breadcrumbs: BreadcrumbsStateService)
   {
-    super(events, utilities, breadcrumbs);
+    super(events, options, breadcrumbs);
   }
 
   protected getEventName(): string {
