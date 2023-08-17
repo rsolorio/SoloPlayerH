@@ -4,8 +4,8 @@ export enum AppEntityIcons {
   Album = 'mdi-album mdi',
   Song = 'mdi-music-note mdi',
   Classification = 'mdi-sitemap-outline mdi',
-  Genre = 'mdi-tag-outline mdi',
-  Subgenre = 'mdi-tag-multiple mdi',
+  Genre = 'mdi-tag mdi',
+  Subgenre = 'mdi-tag-text mdi',
   Occasion = 'mdi-snowman mdi',
   Instrument = 'mdi-guitar-acoustic mdi',
   Category = 'mdi-sticker-text mdi',
@@ -42,7 +42,13 @@ export enum AppAttributeIcons {
   Explicit = 'mdi-alpha-e-box-outline mdi',
   BitrateHigh = 'mdi-waveform mdi',
   BitrateLow = 'mdi-wave mdi',
-  Image = 'mdi-image-outline mdi'
+  Image = 'mdi-image-outline mdi',
+  TrackNumber = 'mdi-pound mdi',
+  Duration = 'mdi-timer mdi',
+  PlayCount = 'mdi-counter mdi',
+  AddDate = 'mdi-calendar-plus mdi',
+  ArtistType = 'mdi-account-group mdi',
+  Country = 'mdi-earth mdi'
 }
 
 export enum AppActionIcons {
@@ -59,7 +65,9 @@ export enum AppActionIcons {
   DotsVertical = 'mdi-dots-vertical mdi',
   DotsHorizontal = 'mdi-dots-horizontal mdi',
   ShowSongs = 'mdi-music-box-multiple-outline mdi',
-  Scroll = 'mdi-arrow-up-down mdi'
+  Scroll = 'mdi-arrow-up-down mdi',
+  Edit = 'mdi-pencil-outline mdi',
+  Back = 'mdi-arrow-left mdi'
 }
 
 export enum AppPlayerIcons {
@@ -85,6 +93,8 @@ export enum AppPlayerIcons {
 export enum AppViewIcons {
   Home = 'mdi-home mdi',
   Settings = 'mdi-cogs mdi',
+  Files = 'mdi-folder mdi',
+  Log = "mdi-file-document-edit mdi",
   About = 'mdi-owl mdi',
   Accent = 'mdi-vanish-quarter mdi'
 }

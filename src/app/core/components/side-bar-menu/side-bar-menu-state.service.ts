@@ -8,6 +8,7 @@ import { CoreEvent } from '../../services/events/events.enum';
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { LogService } from '../../services/log/log.service';
 import { LogLevel } from '../../services/log/log.enum';
+import { AppViewIcons } from 'src/app/app-icons';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +44,7 @@ export class SideBarMenuStateService {
   }
 
   private createAboutMenuItem(): IMenuModel {
-    const menuModel = this.createMenuItem('About', 'mdi-owl mdi', false);
+    const menuModel = this.createMenuItem('About', AppViewIcons.About, false);
     menuModel.subtitle = this.utility.getAppVersion();
     return menuModel;
   }
@@ -81,9 +82,9 @@ export class SideBarMenuStateService {
         const routeInfo = appRoutes[key];
         // Show the Log menu only on Verbose
         if (key === AppRoute.Log && this.log.level === LogLevel.Verbose) {
-         routeInfo.menuHidden = false; 
+         routeInfo.menuEnabled = true; 
         }
-        if (!routeInfo.menuHidden) {
+        if (routeInfo.menuEnabled) {
           this.state.items.push(this.createMenuItem(routeInfo.name, routeInfo.icon, false, null, routeInfo.route));
         }
       }

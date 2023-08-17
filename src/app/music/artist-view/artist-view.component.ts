@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AppActionIcons, AppAttributeIcons } from 'src/app/app-icons';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { IIconAction, ISelectableValue } from 'src/app/core/models/core.interface';
+import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
@@ -12,6 +13,7 @@ import { IEntityEditorModel } from 'src/app/shared/components/entity-editor/enti
 import { ArtistEntity, ValueListEntryEntity } from 'src/app/shared/entities';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
 @Component({
   selector: 'sp-artist-view',
@@ -27,6 +29,7 @@ export class ArtistViewComponent implements OnInit {
     private loadingService: LoadingViewStateService,
     private entityService: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
+    private navigation: NavigationService,
     private sidebarHostService: SideBarHostStateService
   )
   { }
@@ -52,7 +55,7 @@ export class ArtistViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'artist_name',
-              icon: 'mdi-account mdi',
+              icon: AppAttributeIcons.ArtistName,
               label: 'Name'
             }
           ]
@@ -61,7 +64,7 @@ export class ArtistViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'artistType',
-              icon: 'mdi-account-multiple-outline mdi',
+              icon: AppAttributeIcons.ArtistType,
               label: 'Type',
               onEdit: () => this.editArtistType()
             }
@@ -71,7 +74,7 @@ export class ArtistViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'country',
-              icon: 'mdi-earth mdi',
+              icon: AppAttributeIcons.Country,
               label: 'Country',
               onEdit: () => this.editCountry()
             }
@@ -93,16 +96,19 @@ export class ArtistViewComponent implements OnInit {
       ],
       title: 'Artist',
       leftIcon: {
-        icon:  'mdi-account-music mdi'
+        icon:  AppActionIcons.Back,
+        action: () => {
+          this.navigation.back();
+        }
       },
       rightIcons: [{
-        icon: 'mdi-heart mdi',
+        icon: AppAttributeIcons.FavoriteOn,
         action: iconAction => {
           this.entityService.setFavoriteArtist(this.artistId, false).then(response => {
             iconAction.off = true;
           });
         },
-        offIcon: 'mdi-heart-outline mdi',
+        offIcon: AppAttributeIcons.FavoriteOff,
         offAction: iconAction => {
           this.entityService.setFavoriteArtist(this.artistId, true).then(response => {
             iconAction.off = false;

@@ -8,7 +8,12 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
+import { AppActionIcons } from 'src/app/app-icons';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
+/**
+ * Component that represents the playlist song list view.
+ */
 @Component({
   selector: 'sp-playlist-song-list',
   templateUrl: './playlist-song-list.component.html',
@@ -22,6 +27,7 @@ export class PlaylistSongListComponent implements OnInit {
     private utility: UtilityService,
     private entities: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
+    private navigation: NavigationService,
     private playerService: HtmlPlayerService,
     private entityService: DatabaseEntitiesService) { }
 
@@ -52,7 +58,10 @@ export class PlaylistSongListComponent implements OnInit {
       ],
       title: this.currentPlaylist.name,
       leftIcon: {
-        icon: routeInfo.icon
+        icon: AppActionIcons.Back,
+        action: () => {
+          this.navigation.back();
+        }
       }
     });
   }

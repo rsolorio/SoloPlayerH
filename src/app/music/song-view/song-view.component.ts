@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -12,6 +13,7 @@ import { IEntityEditorModel, IEntityFieldModel } from 'src/app/shared/components
 import { SongClassificationEntity, ValueListEntryEntity } from 'src/app/shared/entities';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { In, Not } from 'typeorm';
 
 @Component({
@@ -28,6 +30,7 @@ export class SongViewComponent implements OnInit {
     private loadingService: LoadingViewStateService,
     private entityService: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
+    private navigation: NavigationService,
     private sidebarHostService: SideBarHostStateService)
   { }
 
@@ -57,7 +60,7 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_name',
-              icon: 'mdi-music mdi',
+              icon: AppAttributeIcons.SongName,
               label: 'Title'
             }
           ]
@@ -66,7 +69,7 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'primaryArtistName',
-              icon: 'mdi-account-music mdi',
+              icon: AppAttributeIcons.ArtistName,
               label: 'Artist'
             }
           ]
@@ -75,7 +78,7 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'primaryAlbumName',
-              icon: 'mdi-album mdi',
+              icon: AppAttributeIcons.AlbumName,
               label: 'Album'
             }
           ]
@@ -84,12 +87,12 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_trackNumber',
-              icon: 'mdi-pound mdi',
+              icon: AppAttributeIcons.TrackNumber,
               label: 'Track'
             },
             {
               propertyName: 'song_duration',
-              icon: 'mdi-timer-outline mdi',
+              icon: AppAttributeIcons.Duration,
               label: 'Duration'
             }
           ]
@@ -98,12 +101,12 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_releaseYear',
-              icon: 'mdi-calendar-blank mdi',
+              icon: AppAttributeIcons.Year,
               label: 'Year'
             },
             {
               propertyName: 'song_genre',
-              icon: 'mdi-tag mdi',
+              icon: AppEntityIcons.Genre,
               label: 'Genre',
               onEdit: () => {}
             }
@@ -113,13 +116,13 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_language',
-              icon: 'mdi-translate mdi',
+              icon: AppAttributeIcons.Language,
               label: 'Language',
               onEdit: () => {}
             },
             {
               propertyName: 'song_mood',
-              icon: 'mdi-emoticon mdi',
+              icon: AppAttributeIcons.Mood,
               label: 'Mood',
               onEdit: () => {}
             }
@@ -129,12 +132,12 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'song_playCount',
-              icon: 'mdi-play mdi',
+              icon: AppAttributeIcons.PlayCount,
               label: 'Play Count'
             },
             {
               propertyName: 'song_addDate',
-              icon: 'mdi-calendar-plus mdi',
+              icon: AppAttributeIcons.AddDate,
               label: 'Add Date'
             }
           ]
@@ -194,7 +197,10 @@ export class SongViewComponent implements OnInit {
       ],
       title: 'Song',
       leftIcon: {
-        icon:  'mdi-music-note mdi'
+        icon:  AppActionIcons.Back,
+        action: () => {
+          this.navigation.back();
+        }
       }
     });
   }
@@ -202,13 +208,13 @@ export class SongViewComponent implements OnInit {
   private getClassificationTypeIcon(classificationTypeId: string): string {
     switch (classificationTypeId) {
       case ValueLists.ClassificationType.entries.Category:
-        return 'mdi-sticker-text mdi';
+        return AppEntityIcons.Category;
       case ValueLists.ClassificationType.entries.Instrument:
-        return 'mdi-guitar-acoustic mdi';
+        return AppEntityIcons.Instrument;
       case ValueLists.ClassificationType.entries.Occasion:
-        return 'mdi-snowman mdi';
+        return AppEntityIcons.Occasion;
       case ValueLists.ClassificationType.entries.Subgenre:
-        return 'mdi-tag-multiple mdi';
+        return AppEntityIcons.Subgenre;
     }
     return '';
   }

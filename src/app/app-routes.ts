@@ -1,8 +1,10 @@
+import { AppEntityIcons, AppViewIcons } from "./app-icons";
+
 export interface IAppRouteInfo {
   route: AppRoute;
   icon: string;
   name: string;
-  menuHidden?: boolean;
+  menuEnabled?: boolean;
 }
 
 export enum AppRoute {
@@ -27,44 +29,51 @@ export enum AppRoute {
 
 export const appRoutes: { [route: string]: IAppRouteInfo; } = {};
 appRoutes[AppRoute.Home] = { route: AppRoute.Home,
-  icon: 'mdi-home mdi',
-  name: 'Home' };
+  icon: AppViewIcons.Home,
+  name: 'Home',
+  menuEnabled: true };
 appRoutes[AppRoute.AlbumArtists] = { route: AppRoute.AlbumArtists,
-  icon: 'mdi-account-badge mdi',
-  name: 'Album Artists' };
+  icon: AppEntityIcons.AlbumArtist,
+  name: 'Album Artists',
+  menuEnabled: true };
 appRoutes[AppRoute.Artists] = { route: AppRoute.Artists,
-  icon: 'mdi-account-music mdi',
-  name: 'Artists' };
+  icon: AppEntityIcons.Artist,
+  name: 'Artists',
+  menuEnabled: true };
 appRoutes[AppRoute.Albums] = { route: AppRoute.Albums,
-  icon: 'mdi-album mdi',
-  name: 'Albums' };
+  icon: AppEntityIcons.Album,
+  name: 'Albums',
+  menuEnabled: true };
 appRoutes[AppRoute.Genres] = { route: AppRoute.Genres,
-  icon: 'mdi-tag-outline mdi',
-  name: 'Genres' };
+  icon: AppEntityIcons.Genre,
+  name: 'Genres',
+  menuEnabled: true };
 appRoutes[AppRoute.Classifications] = { route: AppRoute.Classifications,
-  icon: 'mdi-sitemap-outline mdi',
-  name: 'Classifications' };
+  icon: AppEntityIcons.Classification,
+  name: 'Classifications',
+  menuEnabled: true };
 appRoutes[AppRoute.Songs] = { route: AppRoute.Songs,
-  icon: 'mdi-music-note mdi',
-  name: 'Songs' };
+  icon: AppEntityIcons.Song,
+  name: 'Songs',
+  menuEnabled: true };
 appRoutes[AppRoute.Playlists] = { route: AppRoute.Playlists,
-  icon: 'mdi-playlist-play mdi',
-  name: 'Playlists' };
+  icon: AppEntityIcons.Playlist,
+  name: 'Playlists',
+  menuEnabled: true };
 appRoutes[AppRoute.Filters] = { route: AppRoute.Filters,
-  icon: 'mdi-filter-variant mdi',
-  name: 'Filters' };
+  icon: AppEntityIcons.Filter,
+  name: 'Filters',
+  menuEnabled: true };
 appRoutes[AppRoute.Settings] = { route: AppRoute.Settings,
-  icon: 'mdi-cogs mdi',
-  name: 'Settings' };
+  icon: AppViewIcons.Settings,
+  name: 'Settings',
+  menuEnabled: true };
 appRoutes[AppRoute.Log] = { route: AppRoute.Log,
-  icon: 'mdi-file-document-edit-outline mdi',
-  name: 'Event Log',
-  menuHidden: true };
+  icon: AppViewIcons.Log,
+  name: 'Event Log' };
 appRoutes[AppRoute.Queries] = { route: AppRoute.Queries,
-  icon: 'mdi-filter-outline mdi',
-  name: 'Queries',
-  menuHidden: true };
+  icon: 'mdi-database-search-outline mdi',
+  name: 'Queries' };
 appRoutes[AppRoute.Files] = { route: AppRoute.Files,
-  icon: 'mdi-folder-outline mdi',
-  name: 'Files',
-  menuHidden: true };
+  icon: AppViewIcons.Files,
+  name: 'Files' };

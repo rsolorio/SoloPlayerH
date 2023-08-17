@@ -4,6 +4,9 @@ import { ITrackListModel } from './track-list.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 
+/**
+ * Base component that displays a list of tracks.
+ */
 @Component({
   selector: 'sp-track-list',
   templateUrl: './track-list.component.html',
