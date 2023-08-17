@@ -6,6 +6,8 @@
   <ng-template #infoTemplate let-item="item">
     <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
     <br>
-    <span *ngIf="item.description" class="sp-color-on-bg-low sp-text-small sp-no-select">{{item.description}}</span>
+    <ng-container *ngIf="item.description">
+      <i class="mdi-note-text mdi sp-color-on-bg-low sp-text-small">&nbsp;</i><span class="sp-color-on-bg-low sp-text-small sp-no-select">{{item.description}}</span>
+    </ng-container>
   </ng-template>
 </sp-list-base>

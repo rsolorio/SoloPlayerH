@@ -12,10 +12,8 @@
           <span class="sp-text-medium sp-no-select">{{item.name}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-            <i class="mdi-format-list-bulleted-type mdi">&nbsp;</i>
-            <span>{{item.classificationType}}&nbsp;&nbsp;</span>
-            <i class="mdi-music-note mdi">&nbsp;</i>
-            <span>{{item.songCount}}</span>
+            <i class="mdi-shape mdi">&nbsp;</i><span>{{item.classificationType}}&nbsp;&nbsp;&nbsp;</span>
+            <i class="mdi-music-circle mdi">&nbsp;</i><span>{{item.songCount}}</span>
           </span>
         </td>
         <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onShowSongsClick(item)">

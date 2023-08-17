@@ -25,6 +25,7 @@ export enum AppAttributeIcons {
   ArtistName = 'mdi-account mdi',
   AlbumName = 'mdi-album mdi',
   SongName = 'mdi-music mdi',
+  SongCount = 'mdi-music-circle mdi',
   GenreName = 'mdi-tag mdi',
   FileInfo = 'mdi-file-music mdi',
   ClassificationType = 'mdi-shape mdi',
@@ -53,7 +54,8 @@ export enum AppAttributeIcons {
   Country = 'mdi-earth mdi',
   Directory = 'mdi-folder mid',
   AudioDirectory = 'mdi-folder-music mdi',
-  PlaylistDirectory = 'mdi-folder-play mdi'
+  PlaylistDirectory = 'mdi-folder-play mdi',
+  Description = 'mdi-note-text mdi'
 }
 
 export enum AppActionIcons {

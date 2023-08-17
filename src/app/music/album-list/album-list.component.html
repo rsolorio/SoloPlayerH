@@ -12,12 +12,15 @@
         *ngIf="item.recentIcon && !item.recentIcon.hidden"
         class="sp-new-item-icon"
         [ngClass]="[item.recentIcon.icon, item.recentIcon.styleClass]"  [title]="item.recentIcon.tooltip"></i>
-        <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}<ng-container *ngIf="item.releaseYear > 0">&nbsp;({{item.releaseYear}})</ng-container></span>
+        <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
         <br>
         <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-          <i class="mdi-account mdi">&nbsp;</i>{{item.artistStylized}}&nbsp;&nbsp;
-          <i class="mdi-music-note mdi">&nbsp;</i>{{item.songCount}}&nbsp;&nbsp;
-          <i class="mdi-timer-outline mdi">&nbsp;</i>{{item.seconds | duration}}
+          <i class="mdi-account mdi">&nbsp;</i><span>{{item.artistStylized}}&nbsp;&nbsp;&nbsp;</span>
+          <ng-container *ngIf="item.releaseYear > 0">
+            <i class="mdi-calendar-month mdi">&nbsp;</i><span>{{item.releaseYear}}&nbsp;&nbsp;&nbsp;</span>
+          </ng-container>
+          <i class="mdi-timer-outline mdi">&nbsp;</i><span>{{item.seconds | duration}}&nbsp;&nbsp;&nbsp;</span>
+          <i class="mdi-music-circle mdi">&nbsp;</i><span>{{item.songCount}}</span>
         </span>
       </td>
       <!-- Favorite Icon -->
