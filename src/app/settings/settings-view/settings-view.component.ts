@@ -7,7 +7,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ModuleOptionEntity, PlaylistEntity, PlaylistSongEntity, SongEntity } from 'src/app/shared/entities';
+import { PlaylistEntity, PlaylistSongEntity, SongEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
@@ -25,6 +25,7 @@ import { MimeType } from 'src/app/core/models/core.enum';
 import { ISyncInfo } from 'src/app/shared/services/scan/scan.interface';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { AppActionIcons, AppAttributeIcons, AppFeatureIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-settings-view',
@@ -95,7 +96,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         settings: [
           {
             name: 'Statistics',
-            icon: 'mdi-chart-bar mdi',
+            icon: AppFeatureIcons.Statistics,
             dataType: 'text',
             descriptions: [],
             descriptionsLargeSize: [
@@ -106,7 +107,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Export Data',
-            icon: 'mdi-database-export mdi',
+            icon: AppActionIcons.ExportData,
             dataType: 'text',
             descriptions: ['Export data into a json file.'],
             action: setting => {
@@ -119,7 +120,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Purge Database',
-            icon: 'mdi-database-remove mdi',
+            icon: AppActionIcons.DeleteData,
             dataType: 'text',
             descriptions: ['Deletes all data and recreates the database.'],
             action: setting => {
@@ -139,13 +140,13 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         settings: [
           {
             name: 'Tag Mapping',
-            icon: 'mdi-tag-text-outline mdi',
+            icon: AppFeatureIcons.TagMapping,
             dataType: 'text',
             descriptions: ['Configure the mapping between the audio tags and the database.']
           },
           {
             name: 'Audio Directory',
-            icon: 'mdi-folder-music-outline mdi',
+            icon: AppAttributeIcons.AudioDirectory,
             dataType: 'text',
             descriptions: [
               ' Click here to set the sync directories for audio.',
@@ -174,7 +175,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Multiple Artists',
-            icon: 'mdi-account-multiple mdi',
+            icon: AppFeatureIcons.MultipleArtists,
             dataType: 'text',
             descriptions: [
               'This feature will take artist tags and split every value by using separators. Click here to specify separators. Leave empty to disable the feature.'
@@ -182,7 +183,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Multiple Genres',
-            icon: 'mdi-tag-multiple mdi',
+            icon: AppFeatureIcons.MultipleGenres,
             dataType: 'text',
             descriptions: [
               'This feature will take genre tags and split every value by using separators. Click here to specify separators. Leave empty to disable the feature.'
@@ -195,7 +196,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         settings: [
           {
             name: 'Playlist Directory',
-            icon: 'mdi-folder-play-outline mdi',
+            icon: AppAttributeIcons.PlaylistDirectory,
             dataType: 'text',
             descriptions: [
               'Click here to set the scan directory for playlists',
@@ -230,7 +231,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           {
             // TODO: this should not be displayed in cordova mode
             name: 'Small Form Factor',
-            icon: 'mdi-cellphone mdi',
+            icon: AppFeatureIcons.Mobile,
             dataType: 'text',
             descriptions: ['Resizes the window to a mobile form factor.'],
             action: () => {
@@ -244,7 +245,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         settings: [
           {
             name: 'Dev Tools',
-            icon: 'mdi-bug mdi',
+            icon: AppActionIcons.Debug,
             dataType: 'text',
             descriptions: ['Open developer tools.'],
             action: () => {
@@ -253,7 +254,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Test',
-            icon: 'mdi-test-tube mdi',
+            icon: AppActionIcons.Test,
             dataType: 'text',
             descriptions: ['Action for testing purposes.'],
             action: () => {

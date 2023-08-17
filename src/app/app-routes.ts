@@ -1,4 +1,4 @@
-import { AppEntityIcons, AppViewIcons } from "./app-icons";
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppViewIcons } from "./app-icons";
 
 export interface IAppRouteInfo {
   route: AppRoute;
@@ -72,8 +72,8 @@ appRoutes[AppRoute.Log] = { route: AppRoute.Log,
   icon: AppViewIcons.Log,
   name: 'Event Log' };
 appRoutes[AppRoute.Queries] = { route: AppRoute.Queries,
-  icon: 'mdi-database-search-outline mdi',
+  icon: AppActionIcons.SearchData,
   name: 'Queries' };
 appRoutes[AppRoute.Files] = { route: AppRoute.Files,
-  icon: AppViewIcons.Files,
+  icon: AppAttributeIcons.Directory,
   name: 'Files' };

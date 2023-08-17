@@ -5,9 +5,10 @@
 (listUpdated)="onListUpdated($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
-    <table class="sp-table sp-table-no-padding sp-full-height sp-full-width">
+    <table class="sp-table sp-table-no-padding sp-table-support-overflow-ellipsis sp-full-height sp-full-width">
       <tr>
-        <td>
+        <!-- Classification Info -->
+        <td class="sp-text-overflow-ellipsis">
           <span class="sp-text-medium sp-no-select">{{item.name}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">

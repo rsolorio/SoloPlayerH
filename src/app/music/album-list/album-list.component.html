@@ -5,9 +5,9 @@
 (itemAvatarClick)="onItemImageClick($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
-    <table class="sp-table sp-table-no-padding sp-full-height sp-full-width"><tr>
+    <table class="sp-table sp-table-no-padding sp-table-support-overflow-ellipsis sp-full-height sp-full-width"><tr>
       <!-- Album Info -->
-      <td>
+      <td class="sp-text-overflow-ellipsis">
         <i
         *ngIf="item.recentIcon && !item.recentIcon.hidden"
         class="sp-new-item-icon"

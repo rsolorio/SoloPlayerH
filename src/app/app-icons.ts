@@ -17,8 +17,8 @@ export enum AppFeatureIcons {
   MultipleArtists = 'mdi-account-multiple mdi',
   MultipleGenres = 'mdi-tag-multiple mdi',
   Statistics = 'mdi-chart-bar mdi',
-  AudioDirectory = 'mdi-folder-music-outline mdi',
-  PlaylistDirectory = 'mdi-folder-play-outline mdi'
+  TagMapping = 'mdi-tag-check mdi',
+  Mobile = 'mdi-cellphone mdi'
 }
 
 export enum AppAttributeIcons {
@@ -32,7 +32,9 @@ export enum AppAttributeIcons {
   Mood = 'mdi-emoticon-outline mdi',
   Year = 'mdi-calendar-month mdi',
   Decade = 'mdi-calendar-blank mdi',
-  Rating = 'mdi-star mdi',
+  RatingOn = 'mdi-star mdi',
+  RatingOff = 'mdi-star-outline mdi',
+  RatingHalf = 'mdi-star-half-full mdi',
   FavoriteOn = 'mdi-heart mdi',
   FavoriteOff = 'mdi-heart-outline mdi',
   LiveOn = 'mdi-broadcast mdi',
@@ -48,7 +50,10 @@ export enum AppAttributeIcons {
   PlayCount = 'mdi-counter mdi',
   AddDate = 'mdi-calendar-plus mdi',
   ArtistType = 'mdi-account-group mdi',
-  Country = 'mdi-earth mdi'
+  Country = 'mdi-earth mdi',
+  Directory = 'mdi-folder mid',
+  AudioDirectory = 'mdi-folder-music mdi',
+  PlaylistDirectory = 'mdi-folder-play mdi'
 }
 
 export enum AppActionIcons {
@@ -67,7 +72,12 @@ export enum AppActionIcons {
   ShowSongs = 'mdi-music-box-multiple-outline mdi',
   Scroll = 'mdi-arrow-up-down mdi',
   Edit = 'mdi-pencil-outline mdi',
-  Back = 'mdi-arrow-left mdi'
+  Back = 'mdi-arrow-left mdi',
+  ExportData = 'mdi-database-export mdi',
+  DeleteData = 'mdi-database-remove mdi',
+  SearchData = 'mdi-database-search mdi',
+  Debug = 'mdi-bug mdi',
+  Test = 'mdi-test-tube mdi'
 }
 
 export enum AppPlayerIcons {
@@ -93,7 +103,6 @@ export enum AppPlayerIcons {
 export enum AppViewIcons {
   Home = 'mdi-home mdi',
   Settings = 'mdi-cogs mdi',
-  Files = 'mdi-folder mdi',
   Log = "mdi-file-document-edit mdi",
   About = 'mdi-owl mdi',
   Accent = 'mdi-vanish-quarter mdi'
