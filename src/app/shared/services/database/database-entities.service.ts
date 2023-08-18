@@ -185,16 +185,22 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public async getSongValues(columnName: string): Promise<ISelectableValue[]> {
+  public async getSongValues(columnName: string): Promise<IChipItem[]> {
     switch(columnName) {
       case DbColumn.Rating:
         return [
-          { caption: '0', value: 0 },
-          { caption: '1', value: 1 },
-          { caption: '2', value: 2 },
-          { caption: '3', value: 3 },
-          { caption: '4', value: 4 },
-          { caption: '5', value: 5 }];
+          { caption: '0', value: 0,
+            middleIcons: [AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff] },
+          { caption: '1', value: 1,
+            middleIcons: [AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff] },
+          { caption: '2', value: 2,
+            middleIcons: [AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff] },
+          { caption: '3', value: 3,
+            middleIcons: [AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOff, AppAttributeIcons.RatingOff] },
+          { caption: '4', value: 4,
+            middleIcons: [AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOff] },
+          { caption: '5', value: 5,
+            middleIcons: [AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn, AppAttributeIcons.RatingOn] }];
       case DbColumn.Favorite:
       case DbColumn.Live:
       case DbColumn.Lyrics:
@@ -373,7 +379,7 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = 'Yes';
     result.push({
       sequence: 1,
-      icon: 'mdi-heart mdi',
+      icon: AppAttributeIcons.FavoriteOn,
       caption: 'Favorite',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-favorite') });
@@ -385,7 +391,7 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = '0';
     result.push({
       sequence: 2,
-      icon: 'mdi-play mdi',
+      icon: AppAttributeIcons.PlayCount,
       caption: 'Not Played',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-playCount') });
@@ -398,22 +404,35 @@ export class DatabaseEntitiesService {
     criteriaItem.displayValue = 'Yes';
     result.push({
       sequence: 3,
-      icon: 'mdi-script-text mdi',
+      icon: AppAttributeIcons.LyricsOn,
       caption: 'Has Lyrics',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-lyrics') });
 
     criteriaItem = new CriteriaItem('rating', 5);
-    criteriaItem.id = 'quickFilter-rating';
+    criteriaItem.id = 'quickFilter-ratingTop';
     criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
     criteriaItem.displayName = 'Rating';
     criteriaItem.displayValue = '5';
     result.push({
       sequence: 4,
-      icon: 'mdi-star mdi',
+      icon: AppAttributeIcons.RatingOn,
       caption: 'Top Rated',
       value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-rating') });
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-ratingTop') });
+
+    criteriaItem = new CriteriaItem('rating', 4);
+    criteriaItem.id = 'quickFilter-ratingHigh';
+    criteriaItem.comparison = CriteriaComparison.GreaterThanOrEqualTo;
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    criteriaItem.displayName = 'Rating';
+    criteriaItem.displayValue = '5';
+    result.push({
+      sequence: 5,
+      icon: AppAttributeIcons.RatingHalf,
+      caption: 'High Rated',
+      value: criteriaItem,
+      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-ratingHigh') });
 
     criteriaItem = new CriteriaItem('live', true);
     criteriaItem.id = 'quickFilter-live';
@@ -421,8 +440,8 @@ export class DatabaseEntitiesService {
     criteriaItem.displayName = 'Live';
     criteriaItem.displayValue = 'Yes';
     result.push({
-      sequence: 5,
-      icon: 'mdi-broadcast mdi',
+      sequence: 6,
+      icon: AppAttributeIcons.LiveOn,
       caption: 'Live',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-live') });
@@ -433,8 +452,8 @@ export class DatabaseEntitiesService {
     criteriaItem.displayName = 'Explicit';
     criteriaItem.displayValue = 'Yes';
     result.push({
-      sequence: 6,
-      icon: 'mdi-alpha-e-box-outline mdi',
+      sequence: 7,
+      icon: AppAttributeIcons.Explicit,
       caption: 'Explicit',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-explicit') });
@@ -446,8 +465,8 @@ export class DatabaseEntitiesService {
     criteriaItem.displayName = 'Performers';
     criteriaItem.displayValue = 'More Than 1';
     result.push({
-      sequence: 7,
-      icon: 'mdi-account-multiple mdi',
+      sequence: 8,
+      icon: AppAttributeIcons.Performers,
       caption: 'Multi Artist',
       value: criteriaItem,
       selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-performers') });

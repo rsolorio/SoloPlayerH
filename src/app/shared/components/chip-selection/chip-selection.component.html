@@ -4,7 +4,13 @@
   *ngFor="let chipItem of model.items"
   class="sp-chip-item sp-clickable sp-text-large"
   [ngClass]="{ 'sp-bg-primary-variant': chipItem.selected, 'sp-bg-09': !chipItem.selected }">
-    <span class="sp-chip-text"><i *ngIf="chipItem.icon" [ngClass]="chipItem.icon">&nbsp;&nbsp;</i>{{chipItem.caption}}</span>
+    <span *ngIf="chipItem.middleIcons && chipItem.middleIcons.length" class="sp-chip-text">
+      <i *ngFor="let icon of chipItem.middleIcons" [ngClass]="icon">&nbsp;</i>
+    </span>
+    <span *ngIf="!chipItem.middleIcons || !chipItem.middleIcons.length" class="sp-chip-text">
+      <i *ngIf="chipItem.icon" [ngClass]="chipItem.icon">&nbsp;&nbsp;</i>
+      <span>{{chipItem.caption}}</span>
+    </span>
     <i *ngIf="chipItem.secondaryIcon" [ngClass]="chipItem.secondaryIcon" class="sp-float-right"></i>
   </div>
 </div>

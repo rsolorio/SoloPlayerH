@@ -3,6 +3,7 @@ import { ISelectableValue } from "src/app/core/models/core.interface";
 
 export interface IChipItem extends ISelectableValue {
   secondaryIcon?: string;
+  middleIcons?: string[];
 }
 export interface IChipSelectionModel extends ISideBarHostModel {
   type: ChipSelectorType;

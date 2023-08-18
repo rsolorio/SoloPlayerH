@@ -1150,7 +1150,7 @@
       },
       {
         "name": "Top Rated",
-        "description": "Tracks with top rating",
+        "description": "Tracks with top rating, random order",
         "filterCriteriaId": "e92be678-a068-4465-bb28-258a0a9327d5",
         "transformAlgorithm": 0
       }
@@ -1208,7 +1208,7 @@
         "id": "e92be678-a068-4465-bb28-258a0a9327d5",
         "distinct": false,
         "limit": 0,
-        "random": false
+        "random": true
       }
     ],
     "filterCriteriaItem": [
