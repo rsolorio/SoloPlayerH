@@ -10,7 +10,7 @@ export enum AppEntityIcons {
   Instrument = 'mdi-guitar-acoustic mdi',
   Category = 'mdi-sticker-text mdi',
   Playlist = 'mdi-playlist-play mdi',
-  Filter = 'mdi-filter-variant mdi'
+  Smartlist = 'mdi-playlist-star mdi'
 }
 
 export enum AppFeatureIcons {

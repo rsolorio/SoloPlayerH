@@ -15,13 +15,18 @@ Each list view supports quick filters which allow you to filter by the most comm
 ### Song Filters
 Besides the standard filter options, the Song List view provides the ability to filter by Decade, Language and Mood.
 
-### Sorting
-Each list view offers multiple sorting options.
+### Playlists and Smartlists
+A playlist is a static list of tracks selected by the user. A playlist and its selected tracks are saved in the database. The content of a playlist never changes unless the user adds/removes tracks.
+
+A smartlist (smart playlist) is a dynamic list of tracks based on criteria created by the user. Criteria are saved in the database, but not the list of tracks. Every time a smart list is executed the result might be different. All information provided by the user and tags (rating, play count, mood, language, grouping, bpm, etc) on a song can be used to build smartlists.
 
 ### Playlist Support
 The application has the ability to import playlists from these file types:
 - PLS
 - M3U
+
+### Sorting
+Each list view offers multiple sorting options.
 
 ### Themes
 - Dark
@@ -46,11 +51,6 @@ You can configure how the tag information is retrieved and where it will be stor
 
 ### Album Art Color Palette
 The application gets a list of dominant colors for each album art, and you can customize the colors of player view for each individual album art.
-
-### Playlists and Filters
-A playlist is a static list of tracks selected by the user. A playlist and its selected tracks are saved in the database. The content of a playlist never changes unless the user adds/removes tracks.
-
-A filter is a dynamic list of tracks based on criteria created by the user. The filter and the criteria are saved in the database, but not the list of tracks. Every time a filter is executed the result might be different. All information provided by the user (rating, play count, mood, language, etc) on a song can be used to build filters.
 
 ### And More...
 - 0-5 rating mechanism
@@ -86,7 +86,7 @@ A filter is a dynamic list of tracks based on criteria created by the user. The 
 - Songs
 - Playlists
   - Tracks
-- Filters
+- Smartlists
   - Songs
 - Settings
 - Log

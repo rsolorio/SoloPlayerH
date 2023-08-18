@@ -61,8 +61,8 @@ appRoutes[AppRoute.Playlists] = { route: AppRoute.Playlists,
   name: 'Playlists',
   menuEnabled: true };
 appRoutes[AppRoute.Filters] = { route: AppRoute.Filters,
-  icon: AppEntityIcons.Filter,
-  name: 'Filters',
+  icon: AppEntityIcons.Smartlist,
+  name: 'Smartlists',
   menuEnabled: true };
 appRoutes[AppRoute.Settings] = { route: AppRoute.Settings,
   icon: AppViewIcons.Settings,
