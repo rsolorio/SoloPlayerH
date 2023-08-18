@@ -608,7 +608,7 @@ export class DatabaseEntitiesService {
     criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
     result.push({
       sequence: 1,
-      icon: 'mdi-account-badge mdi',
+      icon: AppAttributeIcons.ArtistName,
       caption: 'Artist Name',
       value: criteriaItems,
       secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
@@ -623,7 +623,7 @@ export class DatabaseEntitiesService {
     criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
     result.push({
       sequence: 2,
-      icon: 'mdi-album mdi',
+      icon: AppAttributeIcons.AlbumName,
       caption: 'Album Name',
       value: criteriaItems,
       secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
@@ -639,7 +639,7 @@ export class DatabaseEntitiesService {
     criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
     result.push({
       sequence: 3,
-      icon: 'mdi-calendar-blank mdi',
+      icon: AppAttributeIcons.Year,
       caption: 'Release Year',
       value: criteriaItems,
       secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
@@ -653,8 +653,33 @@ export class DatabaseEntitiesService {
     criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
     result.push({
       sequence: 4,
-      icon: 'mdi-play mdi',
+      icon: AppAttributeIcons.PlayCount,
       caption: 'Play Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-playDate';
+    criteriaItems.addSorting('playDate', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 5,
+      icon: AppAttributeIcons.PlayDate,
+      caption: 'Play Date',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-addDate';
+    criteriaItems.addSorting('addDate', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 6,
+      icon: AppAttributeIcons.AddDate,
+      caption: 'Add Date',
       value: criteriaItems,
       secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
       selected: existingCriteria.sortingCriteria.id === criteriaItems.id
@@ -664,8 +689,8 @@ export class DatabaseEntitiesService {
     criteriaItems.id = 'alternate-artist';
     criteriaItems.addSorting('primaryArtistName', CriteriaSortDirection.Alternate);
     result.push({
-      sequence: 5,
-      icon: 'mdi-account-badge mdi',
+      sequence: 7,
+      icon: AppEntityIcons.AlbumArtist,
       caption: 'Alternate Artists',
       secondaryIcon: 'mdi-shuffle-variant mdi',
       value: criteriaItems,
@@ -676,8 +701,8 @@ export class DatabaseEntitiesService {
     criteriaItems.id = 'alternate-language';
     criteriaItems.addSorting('language', CriteriaSortDirection.Alternate);
     result.push({
-      sequence: 6,
-      icon: 'mdi-translate mdi',
+      sequence: 8,
+      icon: AppAttributeIcons.Language,
       caption: 'Alternate Languages',
       secondaryIcon: 'mdi-shuffle-variant mdi',
       value: criteriaItems,
