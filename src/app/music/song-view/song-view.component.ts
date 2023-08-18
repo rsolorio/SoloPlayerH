@@ -141,10 +141,20 @@ export class SongViewComponent implements OnInit {
               label: 'Add Date'
             }
           ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'song_grouping',
+              icon: AppAttributeIcons.Grouping,
+              label: 'Grouping',
+              onEdit: () => {}
+            },
+          ]
         }
       ]
     };
-    // Load extra data
+    // Add classification fields
     let classifications: ValueListEntryEntity[] = [];
     const songClassifications = await SongClassificationEntity.findBy({ songId: songId });
     if (songClassifications.length) {

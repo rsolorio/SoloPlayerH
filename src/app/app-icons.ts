@@ -25,6 +25,7 @@ export enum AppAttributeIcons {
   ArtistName = 'mdi-account mdi',
   AlbumName = 'mdi-album mdi',
   SongName = 'mdi-music mdi',
+  TitleSort = 'mdi-sort-alphabetical-variant mdi',
   SongCount = 'mdi-music-circle mdi',
   GenreName = 'mdi-tag mdi',
   FileInfo = 'mdi-file-music mdi',
@@ -47,6 +48,7 @@ export enum AppAttributeIcons {
   BitrateLow = 'mdi-wave mdi',
   Image = 'mdi-image-outline mdi',
   TrackNumber = 'mdi-pound mdi',
+  MediaNumber = 'mdi-disc mdi',
   Duration = 'mdi-timer mdi',
   PlayCount = 'mdi-counter mdi',
   AddDate = 'mdi-calendar-plus mdi',
@@ -57,7 +59,10 @@ export enum AppAttributeIcons {
   Directory = 'mdi-folder mid',
   AudioDirectory = 'mdi-folder-music mdi',
   PlaylistDirectory = 'mdi-folder-play mdi',
-  Description = 'mdi-note-text mdi'
+  Description = 'mdi-note-text mdi',
+  Grouping = 'mdi-format-list-group mdi',
+  Performers = 'mdi-account-multiple mdi',
+  Limit = 'mdi-sort-numeric-variant mdi'
 }
 
 export enum AppActionIcons {
