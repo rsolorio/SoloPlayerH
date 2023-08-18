@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
@@ -8,7 +8,7 @@ import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.e
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
 import { PlaylistListBroadcastService } from './playlist-list-broadcast.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
-import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
+import { Criteria, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { IImage } from 'src/app/core/models/core.interface';
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { ImageSrcType } from 'src/app/core/models/core.enum';
@@ -16,6 +16,9 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
+import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 
 @Component({
   selector: 'sp-playlist-list',
@@ -24,7 +27,7 @@ import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-play
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlaylistListComponent extends CoreComponent implements OnInit {
-
+  @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   // START - LIST MODEL
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.PlaylistListUpdated,
@@ -54,9 +57,17 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
-    rightIcons: [{
-      icon: 'mdi-playlist-plus mdi'
-    }],
+    rightIcons: [
+      {
+        icon: AppActionIcons.AddPlaylist
+      },
+      {
+        icon: AppActionIcons.Sort,
+        action: () => {
+          this.openSortingPanel();
+        }
+      }
+    ],
     searchIconEnabled: true,
     breadcrumbsEnabled: false,
     broadcastService: this.broadcastService,
@@ -76,6 +87,8 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     private entityService: DatabaseEntitiesService,
     private utilities: UtilityService,
     private navigation: NavigationService,
+    private entities: DatabaseEntitiesService,
+    private sidebarHostService: SideBarHostStateService,
     private playerService: HtmlPlayerService)
   {
     super();
@@ -126,5 +139,26 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
 
   private editPlaylist(playlistId: string): void {
     this.navigation.forward(AppRoute.Playlists, { routeParams: [playlistId] });
+  }
+
+  private openSortingPanel(): void {
+    const chips = this.entities.getSortingForPlaylists(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getSortingPanelModel(chips, 'Playlists', AppEntityIcons.Playlist);
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      // Keep quick criteria
+      criteria.quickCriteria = this.spListBaseComponent.model.criteriaResult.criteria.quickCriteria;
+      // Add sorting criteria, we only support one item
+      const chipItem = okResult.items.find(i => i.selected);
+      if (chipItem) {
+        const criteriaItems = chipItem.value as CriteriaItems;
+        criteria.sortingCriteria = criteriaItems;
+      }
+      else {
+        criteria.sortingCriteria = new CriteriaItems();
+      }
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);
   }
 }

@@ -8,7 +8,7 @@ import { SongClassificationViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ClassificationListBroadcastService } from './classification-list-broadcast.service';
@@ -86,6 +86,12 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       }
     ],
     rightIcons: [
+      {
+        icon: AppActionIcons.Sort,
+        action: () => {
+          this.openSortingPanel();
+        }
+      },
       {
         id: 'quickFilterIcon',
         icon: AppActionIcons.Filter + ' sp-color-primary',
@@ -247,5 +253,26 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
       navbarState.title = route.name;
       navbarState.leftIcon.icon = route.icon;
     }
+  }
+
+  private openSortingPanel(): void {
+    const chips = this.entities.getSortingForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getSortingPanelModel(chips, 'Classifications', AppEntityIcons.Classification);
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      // Keep quick criteria
+      criteria.quickCriteria = this.spListBaseComponent.model.criteriaResult.criteria.quickCriteria;
+      // Add sorting criteria, we only support one item
+      const chipItem = okResult.items.find(i => i.selected);
+      if (chipItem) {
+        const criteriaItems = chipItem.value as CriteriaItems;
+        criteria.sortingCriteria = criteriaItems;
+      }
+      else {
+        criteria.sortingCriteria = new CriteriaItems();
+      }
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);
   }
 }

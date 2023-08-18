@@ -18,7 +18,7 @@ import { DatabaseOptionsService } from './database-options.service';
 import { ModuleOptionName } from '../../models/module-option.enum';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ValueLists } from './database.lists';
-import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 
 @Injectable({
   providedIn: 'root'
@@ -681,6 +681,234 @@ export class DatabaseEntitiesService {
       caption: 'Alternate Languages',
       secondaryIcon: 'mdi-shuffle-variant mdi',
       value: criteriaItems,
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+    
+    return result;
+  }
+
+  public getSortingForAlbumArtists(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+
+    let criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-artistName';
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 1,
+      icon: AppAttributeIcons.ArtistName,
+      caption: 'Artist Name',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-playCount';
+    criteriaItems.addSorting('playCount', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 2,
+      icon: AppAttributeIcons.PlayCount,
+      caption: 'Play Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-songCount';
+    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 3,
+      icon: AppAttributeIcons.SongCount,
+      caption: 'Song Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-addDate';
+    criteriaItems.addSorting('songAddDateMax', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 4,
+      icon: AppAttributeIcons.AddDate,
+      caption: 'Last Song Add Date',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+    
+    return result;
+  }
+
+  public getSortingForAlbums(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+
+    let criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-albumName';
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 1,
+      icon: AppAttributeIcons.AlbumName,
+      caption: 'Album Name',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-playCount';
+    criteriaItems.addSorting('playCount', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 2,
+      icon: AppAttributeIcons.PlayCount,
+      caption: 'Play Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-songCount';
+    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 3,
+      icon: AppAttributeIcons.SongCount,
+      caption: 'Song Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-addDate';
+    criteriaItems.addSorting('songAddDateMax', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 4,
+      icon: AppAttributeIcons.AddDate,
+      caption: 'Last Song Add Date',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-artistName';
+    criteriaItems.addSorting('artistName', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 5,
+      icon: AppAttributeIcons.ArtistName,
+      caption: 'Artist Name',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-releaseYear';
+    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 6,
+      icon: AppAttributeIcons.Year,
+      caption: 'Release Year',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+    
+    return result;
+  }
+
+  public getSortingForClassifications(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+
+    let criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-classificationName';
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 1,
+      icon: AppEntityIcons.Classification,
+      caption: 'Classification Name',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-classificationType';
+    criteriaItems.addSorting('classificationType', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 2,
+      icon: AppAttributeIcons.ClassificationType,
+      caption: 'Classification Type',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-songCount';
+    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 3,
+      icon: AppAttributeIcons.SongCount,
+      caption: 'Song Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+    
+    return result;
+  }
+
+  public getSortingForPlaylists(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+
+    let criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-playlistName';
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 1,
+      icon: AppEntityIcons.Playlist,
+      caption: 'Playlist Name',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-songCount';
+    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
+    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 2,
+      icon: AppAttributeIcons.SongCount,
+      caption: 'Song Count',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
+      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
+    });
+
+    criteriaItems = new CriteriaItems();
+    criteriaItems.id = 'sorting-changeDate';
+    criteriaItems.addSorting('changeDate', CriteriaSortDirection.Ascending);
+    result.push({
+      sequence: 3,
+      icon: AppAttributeIcons.ChangeDate,
+      caption: 'Change Date',
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
       selected: existingCriteria.sortingCriteria.id === criteriaItems.id
     });
     

@@ -50,6 +50,7 @@ export enum AppAttributeIcons {
   Duration = 'mdi-timer mdi',
   PlayCount = 'mdi-counter mdi',
   AddDate = 'mdi-calendar-plus mdi',
+  ChangeDate = 'mdi-calendar-check mdi',
   ArtistType = 'mdi-account-group mdi',
   Country = 'mdi-earth mdi',
   Directory = 'mdi-folder mid',
@@ -79,7 +80,8 @@ export enum AppActionIcons {
   DeleteData = 'mdi-database-remove mdi',
   SearchData = 'mdi-database-search mdi',
   Debug = 'mdi-bug mdi',
-  Test = 'mdi-test-tube mdi'
+  Test = 'mdi-test-tube mdi',
+  AddPlaylist = 'mdi-playlist-plus mdi'
 }
 
 export enum AppPlayerIcons {

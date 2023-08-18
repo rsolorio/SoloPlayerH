@@ -8,7 +8,7 @@ import { AlbumViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AlbumListBroadcastService } from './album-list-broadcast.service';
@@ -86,7 +86,10 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     },
     rightIcons: [
       {
-        icon: 'mdi-sort-variant mdi'
+        icon: AppActionIcons.Sort,
+        action: () => {
+          this.openSortingPanel();
+        }
       },
       {
         id: 'quickFilterIcon',
@@ -246,5 +249,26 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       this.spListBaseComponent.send(criteria);
     };
     this.sidebarHostService.loadContent(model);    
+  }
+
+  private openSortingPanel(): void {
+    const chips = this.entities.getSortingForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getSortingPanelModel(chips, 'Albums', AppEntityIcons.Album);
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      // Keep quick criteria
+      criteria.quickCriteria = this.spListBaseComponent.model.criteriaResult.criteria.quickCriteria;
+      // Add sorting criteria, we only support one item
+      const chipItem = okResult.items.find(i => i.selected);
+      if (chipItem) {
+        const criteriaItems = chipItem.value as CriteriaItems;
+        criteria.sortingCriteria = criteriaItems;
+      }
+      else {
+        criteria.sortingCriteria = new CriteriaItems();
+      }
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);
   }
 }

@@ -9,7 +9,7 @@ import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ArtistListBroadcastService } from './artist-list-broadcast.service';
@@ -76,7 +76,10 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     },
     rightIcons: [
       {
-        icon: 'mdi-sort-variant mdi'
+        icon: AppActionIcons.Sort,
+        action: () => {
+          this.openSortingPanel();
+        }
       },
       {
         id: 'quickFilterIcon',
@@ -295,5 +298,26 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       this.spListBaseComponent.send(criteria);
     };
     this.sidebarHostService.loadContent(model);    
+  }
+
+  private openSortingPanel(): void {
+    const chips = this.entities.getSortingForAlbumArtists(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getSortingPanelModel(chips, 'Artists', AppEntityIcons.AlbumArtist);
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      // Keep quick criteria
+      criteria.quickCriteria = this.spListBaseComponent.model.criteriaResult.criteria.quickCriteria;
+      // Add sorting criteria, we only support one item
+      const chipItem = okResult.items.find(i => i.selected);
+      if (chipItem) {
+        const criteriaItems = chipItem.value as CriteriaItems;
+        criteria.sortingCriteria = criteriaItems;
+      }
+      else {
+        criteria.sortingCriteria = new CriteriaItems();
+      }
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);
   }
 }
