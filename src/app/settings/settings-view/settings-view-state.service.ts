@@ -99,7 +99,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     });
 
     this.events.onEvent(AppEvent.ScanAudioDbCleanupStart).subscribe(() => {
-      console.log('cleanup');
       const setting = this.findSetting('syncAudioFiles');
       if (!setting) {
         return;
@@ -352,7 +351,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     this.scanner.scan(folderPaths, '.mp3', 'scanAudio').then(scanProcessResult => {
       // Start reading file metadata
       this.scanner.syncAudioFiles(scanProcessResult.result).then(processResult => {
-        console.log('finish');
         // At this point the process is done.
         let syncMessage = '';
         if (processResult.result.songAddedRecords.length) {
