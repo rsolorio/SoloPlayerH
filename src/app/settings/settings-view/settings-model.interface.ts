@@ -1,4 +1,4 @@
-import { IIconActionGeneric } from "src/app/core/models/core.interface";
+import { IIconAction, IIconActionGeneric } from "src/app/core/models/core.interface";
 
 export interface ISetting extends IIconActionGeneric<ISetting, any> {
   name: string;
@@ -10,6 +10,7 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   errorText?: string;
   disabled?: boolean;
   running?: boolean;
+  secondaryIcon?: IIconAction;
 }
 
 export interface ISettingCategory {

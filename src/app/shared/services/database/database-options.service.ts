@@ -64,4 +64,25 @@ export class DatabaseOptionsService {
       await moduleOption.save();
     }
   }
+
+  public async saveBoolean(name: ModuleOptionName, value: boolean): Promise<void> {
+    const moduleOption = this.lookup.findModuleOption(name, this.options);
+    if (moduleOption) {
+      moduleOption.values = JSON.stringify(value);
+      await moduleOption.save();
+    }
+  }
+
+  public async refreshOptionValues(name: ModuleOptionName): Promise<void> {
+    const dbModuleOption = await this.lookup.lookupModuleOption(name);
+    if (dbModuleOption) {
+      const cacheModuleOption = this.lookup.findModuleOption(name, this.options);
+      if (cacheModuleOption) {
+        cacheModuleOption.values = dbModuleOption.values;
+      }
+      else {
+        this.options.push(dbModuleOption);
+      }
+    }
+  }
 }

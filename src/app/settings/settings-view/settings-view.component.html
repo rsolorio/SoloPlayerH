@@ -15,6 +15,10 @@
         <i *ngIf="setting.icon && !setting.running" [ngClass]="setting.icon">&nbsp;</i>
         <i *ngIf="setting.running" class="mdi-loading mdi-spin mdi">&nbsp;</i>
         <span>{{setting.name}}</span>
+        <i
+        *ngIf="setting.secondaryIcon"
+        class="sp-setting-secondary-icon"
+        [ngClass]="setting.secondaryIcon.off ? setting.secondaryIcon.offIcon : setting.secondaryIcon.icon"></i>
       </p>
       <!-- Medium Descriptions -->
       <p *ngFor="let description of setting.descriptions" class="sp-text-medium" [innerHtml]="description"></p>

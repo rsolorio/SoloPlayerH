@@ -255,6 +255,31 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         ]
       },
       {
+        name: 'Navigation',
+        settings: [
+          {
+            id: 'multipleQuickFilters',
+            name: 'Multiple Quick Filters',
+            icon: AppActionIcons.Filter,
+            dataType: 'boolean',
+            secondaryIcon: {
+              icon: 'mdi-toggle-switch mdi sp-color-primary',
+              off: true,
+              offIcon: 'mdi-toggle-switch-off mdi'
+            },
+            descriptions: [
+              'If turned off, the quick filter panel will allow to select one filter at a time; as soon as you click the filter the change will be applied.',
+              'If turned on, the quick filter panel will allow to select multiple filters; you need to click OK to apply the changes.'
+            ],
+            action: setting => {
+              this.options.saveBoolean(ModuleOptionName.AllowMultipleQuickFilters, setting.secondaryIcon.off).then(() => {
+                setting.secondaryIcon.off = !setting.secondaryIcon.off;
+              });
+            }
+          }
+        ]
+      },
+      {
         name: 'Appearance',
         settings: [
           {
@@ -328,6 +353,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     ];
     setting.dynamicText = '';
     setting.warningText = '';
+
+    setting = this.findSetting('multipleQuickFilters');
+    const multipleQuickFilters = this.options.getBoolean(ModuleOptionName.AllowMultipleQuickFilters);
+    setting.secondaryIcon.off = !multipleQuickFilters;
   }
 
   private async refreshStatistics(): Promise<void> {

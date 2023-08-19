@@ -91,7 +91,7 @@
         "valueEditorType": "Number",
         "multipleValues": false,
         "system": false,
-        "values": 10
+        "values": "10"
       },
       {
         "name": "PlayerForwardTime",
@@ -101,7 +101,7 @@
         "valueEditorType": "Number",
         "multipleValues": false,
         "system": false,
-        "values": 30
+        "values": "30"
       },
       {
         "name": "LongPlayArtistThreshold",
@@ -111,7 +111,7 @@
         "valueEditorType": "Number",
         "multipleValues": false,
         "system": false,
-        "values": 5
+        "values": "5"
       },
       {
         "name": "LongPlayAlbumThreshold",
@@ -121,7 +121,7 @@
         "valueEditorType": "Number",
         "multipleValues": false,
         "system": false,
-        "values": 5
+        "values": "5"
       },
       {
         "name": "LongPlaySongThreshold",
@@ -131,7 +131,7 @@
         "valueEditorType": "Number",
         "multipleValues": false,
         "system": false,
-        "values": 120
+        "values": "120"
       },
       {
         "name": "AllowDupsInPlaylists",
@@ -141,7 +141,7 @@
         "valueEditorType": "YesNo",
         "multipleValues": false,
         "system": false,
-        "values": false
+        "values": "false"
       },
       {
         "name": "AllowMultipleQuickFilters",
@@ -151,7 +151,7 @@
         "valueEditorType": "YesNo",
         "multipleValues": false,
         "system": false,
-        "values": false
+        "values": "false"
       },
       {
         "name": "IgnoreNumericGenres",
@@ -161,7 +161,7 @@
         "valueEditorType": "YesNo",
         "multipleValues": false,
         "system": false,
-        "values": true
+        "values": "true"
       },
       {
         "name": "ListViewLimit",
@@ -171,7 +171,7 @@
         "valueEditorType": "Number",
         "multipleValues": false,
         "system": false,
-        "values": 1000
+        "values": "1000"
       }
     ],
     "relatedImage": [
