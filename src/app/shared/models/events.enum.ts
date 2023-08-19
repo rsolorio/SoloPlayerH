@@ -20,6 +20,9 @@ export enum AppEvent {
   BreadcrumbUpdated = 'BREADCRUMB_UPDATED',
   // Scan
   ScanFile = 'SCAN_FILE',
+  ScanAudioFileStart = 'SCAN_AUDIO_FILE_START',
+  ScanAudioDbSyncStart = 'SCAN_AUDIO_DB_SYNC_START',
+  ScanAudioDbCleanupStart = 'SCAN_AUDIO_DB_CLEANUP_START',
   ScanPlaylistCreated = 'SCAN_PLAYLIST_CREATED',
   ScanTrackAdded = 'SCAN_TRACK_ADDED',
   // DB

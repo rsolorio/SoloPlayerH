@@ -87,7 +87,8 @@ export enum AppActionIcons {
   SearchData = 'mdi-database-search mdi',
   Debug = 'mdi-bug mdi',
   Test = 'mdi-test-tube mdi',
-  AddPlaylist = 'mdi-playlist-plus mdi'
+  AddPlaylist = 'mdi-playlist-plus mdi',
+  Loading = 'mdi-loading mdi-spin mdi'
 }
 
 export enum AppPlayerIcons {

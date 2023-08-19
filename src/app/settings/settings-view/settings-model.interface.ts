@@ -1,15 +1,15 @@
-export interface ISetting {
+import { IIconActionGeneric } from "src/app/core/models/core.interface";
+
+export interface ISetting extends IIconActionGeneric<ISetting, any> {
   name: string;
   dataType: string;
-  descriptions: string[];
+  descriptions?: string[];
   descriptionsLargeSize?: string[];
   dynamicText?: string;
   warningText?: string;
   errorText?: string;
   disabled?: boolean;
-  icon?: string;
   running?: boolean;
-  action?: (setting: ISetting) => void;
 }
 
 export interface ISettingCategory {

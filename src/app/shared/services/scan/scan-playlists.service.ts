@@ -5,9 +5,7 @@ import { PlaylistEntity, PlaylistSongEntity, SongEntity } from '../../entities';
 import { DatabaseLookupService } from '../database/database-lookup.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ValueLists } from '../database/database.lists';
-import { EventsService } from 'src/app/core/services/events/events.service';
 import { DatabaseService } from '../database/database.service';
-import { AppEvent } from '../../models/events.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
 
 @Injectable({
@@ -19,12 +17,15 @@ export class ScanPlaylistsService {
     private fileService: FileService,
     private lookupService: DatabaseLookupService,
     private utilities: UtilityService,
-    private events: EventsService,
     private db: DatabaseService,
     private log: LogService)
   { }
 
-  public async processPlaylistFile(fileInfo: IFileInfo): Promise<void> {
+  public async processPlaylistFile(
+    fileInfo: IFileInfo,
+    onPlaylistCreated?: (playlist: PlaylistEntity) => void,
+    onTrackCreated?: (track: PlaylistSongEntity) => void): Promise<void>
+  {
     const fileContent = await this.fileService.getText(fileInfo.path);
     // Remove \r and then split by \n
     const fileLines = fileContent.replace(/(\r)/gm, '').split('\n');
@@ -37,11 +38,18 @@ export class ScanPlaylistsService {
       }
 
       if (firstLine === '[PLAYLIST]') {
-          const playlist = await this.createPlaylist(fileInfo.name);
-          tracks = await this.processPls(playlist, fileInfo, fileLines);
-      } else if (firstLine === '#EXTM3U') {
         const playlist = await this.createPlaylist(fileInfo.name);
-        tracks = await this.processM3u(playlist, fileInfo, fileLines);
+        if (onPlaylistCreated) {
+          onPlaylistCreated(playlist);
+        }
+        tracks = await this.processPls(playlist, fileInfo, fileLines, onTrackCreated);
+      }
+      else if (firstLine === '#EXTM3U') {
+        const playlist = await this.createPlaylist(fileInfo.name);
+        if (onPlaylistCreated) {
+          onPlaylistCreated(playlist);
+        }
+        tracks = await this.processM3u(playlist, fileInfo, fileLines, onTrackCreated);
       }
 
       if (tracks && tracks.length) {
@@ -60,11 +68,10 @@ export class ScanPlaylistsService {
     playlist.changeDate = new Date();
     playlist.hash = this.lookupService.hashPlaylist(playlist.name);
     await playlist.save();
-    this.events.broadcast(AppEvent.ScanPlaylistCreated, playlist);
     return playlist;
   }
 
-  private async processPls(playlist: PlaylistEntity, playlistFileInfo: IFileInfo, lines: string[]): Promise<PlaylistSongEntity[]> {
+  private async processPls(playlist: PlaylistEntity, playlistFileInfo: IFileInfo, lines: string[], onTrackCreated?: (track: PlaylistSongEntity) => void): Promise<PlaylistSongEntity[]> {
     const tracks: PlaylistSongEntity[] = [];
     let trackSequence = 1;
     for (const line of lines) {
@@ -77,7 +84,9 @@ export class ScanPlaylistsService {
           if (playlistSong) {
             trackSequence++;
             tracks.push(playlistSong);
-            this.events.broadcast(AppEvent.ScanTrackAdded, playlistSong);
+            if (onTrackCreated) {
+              onTrackCreated(playlistSong);
+            }
           }
         }
       }
@@ -85,7 +94,7 @@ export class ScanPlaylistsService {
     return tracks;
   }
 
-  private async processM3u(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[]): Promise<PlaylistSongEntity[]> {
+  private async processM3u(playlist: PlaylistEntity, fileInfo: IFileInfo, lines: string[], onTrackCreated?: (track: PlaylistSongEntity) => void): Promise<PlaylistSongEntity[]> {
     const tracks: PlaylistSongEntity[] = [];
     let trackSequence = 1;
     for (const line of lines) {
@@ -95,7 +104,9 @@ export class ScanPlaylistsService {
         if (playlistSong) {
           trackSequence++;
           tracks.push(playlistSong);
-          this.events.broadcast(AppEvent.ScanTrackAdded, playlistSong);
+          if (onTrackCreated) {
+            onTrackCreated(playlistSong);
+          }
         }
       }
     }

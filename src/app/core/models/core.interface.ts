@@ -1,3 +1,4 @@
+import { ITimeSpan } from "../services/utility/utility.interface";
 import { ImageSrcType } from "./core.enum";
 
 export type KeyValuesGen<TKey> = { [key: string]: TKey[] };
@@ -131,7 +132,7 @@ export interface IIcon {
   parentStyleClass?: string;
 }
 
-export interface IIconActionGeneric<TParam> extends IIcon {
+export interface IIconActionGeneric<TIconAction, TParam> extends IIcon {
   /** Timeout in milliseconds before the action is performed. */
   actionTimeout?: number;
   /** Caption associated with the default action. */
@@ -139,10 +140,15 @@ export interface IIconActionGeneric<TParam> extends IIcon {
   /** Caption associated with the off action. */
   offCaption?: string;
   /** Action to be fired by the icon. */
-  action?(iconAction: IIconActionGeneric<any>, param?: TParam): void;
+  action?(iconAction: TIconAction, param?: TParam): void;
   /** Action to be fired by the OFF icon. */
-  offAction?(iconAction: IIconActionGeneric<any>, param?: TParam): void;
+  offAction?(iconAction: TIconAction, param?: TParam): void;
 }
 
-export interface IIconAction extends IIconActionGeneric<any> {
+export interface IIconAction extends IIconActionGeneric<IIconAction, any> {
+}
+
+export interface IProcessDuration<TResult> {
+  time: ITimeSpan;
+  result: TResult;
 }
