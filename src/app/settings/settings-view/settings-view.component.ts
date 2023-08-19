@@ -22,7 +22,7 @@ import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { MimeType } from 'src/app/core/models/core.enum';
-import { ISyncInfo } from 'src/app/shared/services/scan/scan.interface';
+import { IScanInfo, ISyncSongInfo } from 'src/app/shared/services/scan/scan.interface';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { AppActionIcons, AppAttributeIcons, AppFeatureIcons } from 'src/app/app-icons';
@@ -270,40 +270,38 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     // Disable the setting
     setting.disabled = true;
     setting.running = true;
-    // Subscribe to files
-    let fileCount = 0;
-    const fileScanSub = this.events.onEvent<IFileInfo>(AppEvent.ScanFile).subscribe(fileInfo => {
-      fileCount++;
-      setting.descriptions[1] = `Files found: ${fileCount}`;
-      setting.dynamicText = `${fileInfo.directoryPath} \n ${fileInfo.fullName}`;
+    const fileScanSub = this.events.onEvent<IScanInfo>(AppEvent.ScanFile).subscribe(scanFileInfo => {
+      const lastFileInfo = scanFileInfo.items[scanFileInfo.items.length -1];
+      setting.descriptions[1] = `Files found: ${scanFileInfo.fileCountProgress}`;
+      setting.dynamicText = `${lastFileInfo.directoryPath} \n ${lastFileInfo.fullName}`;
     });
     this.subs.add(fileScanSub, 'settingsViewScanFile');
     // Start scanning
     const startTime = new Date().getTime();
     setting.descriptions[0] = 'Calculating file count...';
-    this.scanner.scan(folderPaths, '.mp3').then(mp3Files => {
+    this.scanner.scan(folderPaths, '.mp3').then(scanInfoResult => {
       // Calculation process done, delete subscription
       this.subs.unSubscribe('settingsViewScanFile');
       // Start reading file metadata
       setting.descriptions[0] = 'Reading metadata...';
-      this.syncAudioFiles(mp3Files, setting).then(syncInfo => {
+      this.syncAudioFiles(scanInfoResult.items, setting).then(syncInfoResult => {
         // At this point the process is done.        
         let syncMessage = '';
-        if (syncInfo.songAddedRecords.length) {
-          syncMessage = `Added: ${syncInfo.songAddedRecords.length}.`;
+        if (syncInfoResult.songAddedRecords.length) {
+          syncMessage = `Added: ${syncInfoResult.songAddedRecords.length}.`;
         }
-        if (syncInfo.songUpdatedRecords.length) {
-          syncMessage += ` Updated: ${syncInfo.songUpdatedRecords.length}.`;
+        if (syncInfoResult.songUpdatedRecords.length) {
+          syncMessage += ` Updated: ${syncInfoResult.songUpdatedRecords.length}.`;
         }
-        if (syncInfo.songSkippedRecords.length) {
-          syncMessage += ` Skipped: ${syncInfo.songSkippedRecords.length}.`;
+        if (syncInfoResult.songSkippedRecords.length) {
+          syncMessage += ` Skipped: ${syncInfoResult.songSkippedRecords.length}.`;
         }
-        if (syncInfo.songDeletedRecords.length) {
-          syncMessage += ` Deleted: ${syncInfo.songDeletedRecords.length}.`;
+        if (syncInfoResult.songDeletedRecords.length) {
+          syncMessage += ` Deleted: ${syncInfoResult.songDeletedRecords.length}.`;
         }
 
         setting.descriptions[0] = 'Click here to start synchronizing audio files.';
-        const errorFiles = syncInfo.metadataResults.filter(r => r[MetaField.Error].length);
+        const errorFiles = syncInfoResult.metadataResults.filter(r => r[MetaField.Error].length);
         if (errorFiles.length) {
           syncMessage += ` Errors: ${errorFiles.length}.`;
           setting.dynamicText = '';
@@ -315,8 +313,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         }
 
         // Before logging the sync info remove all metadata, since that could be a lot of information
-        syncInfo.metadataResults = [];
-        this.log.debug('Sync info:', syncInfo);
+        syncInfoResult.metadataResults = [];
+        this.log.debug('Sync info:', syncInfoResult);
 
         const endTime = new Date().getTime();
         const timeSpan =  this.utility.toTimeSpan(endTime - startTime,
@@ -334,7 +332,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     }
   }
 
-  private async syncAudioFiles(files: IFileInfo[], setting: ISetting): Promise<ISyncInfo> {
+  private async syncAudioFiles(files: IFileInfo[], setting: ISetting): Promise<ISyncSongInfo> {
     const syncInfo = await this.scanner.syncAudioFiles(files,
       // Before file process
       async (count, file) => {
@@ -360,8 +358,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
     setting.running = true;
     setting.descriptions[0] = 'Scanning playlists...';
     // Start scan process
-    this.scanner.scan(folderPaths, '.m3u').then(playlistFiles => {
-      setting.descriptions[1] = 'Playlist created: 0/' + playlistFiles.length;
+    this.scanner.scan(folderPaths, '.m3u').then(scanInfo => {
+      setting.descriptions[1] = 'Playlist created: 0/' + scanInfo.items.length;
       let playlistCount = 0;
       let trackCount = 0;
       // Subscribe
@@ -372,7 +370,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         // Reset track count
         trackCount = 0;
         // Update status
-        setting.descriptions[1] = `Playlist created: ${playlistCount}/${playlistFiles.length}: ${playlist.name}.`;
+        setting.descriptions[1] = `Playlist created: ${playlistCount}/${scanInfo.items.length}: ${playlist.name}.`;
       });
       this.subs.add(playlistCreatedSub, 'settingsViewScanPlaylistCreated');
       const trackAddedSub = this.events.onEvent<PlaylistSongEntity>(AppEvent.ScanTrackAdded)
@@ -381,7 +379,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         setting.dynamicText = `Track added: ${trackCount} - ${track.song.name} - ${track.song.duration}.`;
       });
       this.subs.add(trackAddedSub, 'settingsViewScanTrackAdded');
-      this.processPlaylistFiles(playlistFiles).then(() => {
+      this.scanner.processPlaylistFiles(scanInfo.items).then(() => {
         // Process done, remove subs
         this.subs.unSubscribe('settingsViewScanPlaylistCreated');
         this.subs.unSubscribe('settingsViewScanTrackAdded');
@@ -392,12 +390,6 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         setting.disabled = false;
       });
     });
-  }
-
-  private async processPlaylistFiles(files: IFileInfo[]): Promise<any> {
-    for (const fileInfo of files) {
-      await this.scanner.processPlaylistFile(fileInfo);
-    }
   }
 
   private async logFileMetadata(): Promise<void> {

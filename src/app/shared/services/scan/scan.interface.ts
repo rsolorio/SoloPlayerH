@@ -1,7 +1,13 @@
 import { KeyValues } from "src/app/core/models/core.interface";
-import { SongEntity } from "../../entities";
+import { PlaylistSongEntity, SongEntity } from "../../entities";
+import { IFileInfo } from "src/app/platform/file/file.interface";
 
-export interface ISyncInfo {
+export interface IScanInfo {
+  fileCountProgress: number;
+  items: IFileInfo[];
+}
+
+export interface ISyncSongInfo {
   songInitialCount: number;
   songFinalCount: number;
   songAddedRecords: SongEntity[];
@@ -9,4 +15,9 @@ export interface ISyncInfo {
   songSkippedRecords: SongEntity[];
   songDeletedRecords: SongEntity[];
   metadataResults: KeyValues[];
+}
+
+export interface ISyncPlaylistInfo {
+  trackCountProgress: number;
+  items: PlaylistSongEntity[];
 }

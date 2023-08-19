@@ -56,7 +56,7 @@ export enum AppAttributeIcons {
   PlayDate = 'mdi-calendar-check mdi',
   ArtistType = 'mdi-account-group mdi',
   Country = 'mdi-earth mdi',
-  Directory = 'mdi-folder mid',
+  Directory = 'mdi-folder mdi',
   AudioDirectory = 'mdi-folder-music mdi',
   PlaylistDirectory = 'mdi-folder-play mdi',
   Description = 'mdi-note-text mdi',
