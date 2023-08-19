@@ -290,6 +290,11 @@
         "id": "f8ce02a9-a951-4142-a66c-acc81a040053",
         "name": "PlaylistGroup",
         "system": true
+      },
+      {
+        "id": "ddf1d521-8836-48f8-a9fa-80db11d1df8e",
+        "name": "FilterType",
+        "system": true
       }
     ],
     "valueListEntry": [
@@ -1009,6 +1014,21 @@
         "name": "Default",
         "isClassification": false,
         "sequence": 1
+      },
+      {
+        "//": "Filter Type",
+        "id": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "valueListTypeId": "ddf1d521-8836-48f8-a9fa-80db11d1df8e",
+        "name": "Smartlist",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "id": "a8c2aeb1-184f-4299-870d-90ffc9715f09",
+        "valueListTypeId": "ddf1d521-8836-48f8-a9fa-80db11d1df8e",
+        "name": "QuickFilters",
+        "isClassification": false,
+        "sequence": 2
       }
     ],
     "dataSource": [
@@ -1104,55 +1124,73 @@
         "name": "Recently added",
         "description": "Last 300 tracks added",
         "filterCriteriaId": "923ed06a-442c-4ebd-8441-6f698d1e916a",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "Favorites",
         "description": "Favorite tracks, random order",
         "filterCriteriaId": "25423af4-ff82-45ad-8f20-8533ee124f94",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "Lyrics",
         "description": "Tracks with lyrics, random order",
         "filterCriteriaId": "82abf992-2675-4229-b477-e45a375c226d",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "Multiple performers",
         "description": "Tracks with more than one performer, random order",
         "filterCriteriaId": "c87d2605-bc6a-4ddd-85d2-84c89d0ebab7",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "Never played",
         "description": "300 tracks without play count, random order",
         "filterCriteriaId": "94b89290-28d9-49a8-8f3e-31a0cbad3e96",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "New releases",
         "description": "Last 300 tracks released",
         "filterCriteriaId": "aad2b962-0208-4c26-bfa8-80ab38411ea5",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "History",
         "description": "Last 300 tracks played",
         "filterCriteriaId": "24f9822b-8612-4820-a238-0b3a38357956",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "Top Played",
         "description": "Top 50 tracks played",
         "filterCriteriaId": "56e82fef-194d-4900-9154-1628471c17df",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       },
       {
         "name": "Top Rated",
         "description": "Tracks with top rating, random order",
         "filterCriteriaId": "e92be678-a068-4465-bb28-258a0a9327d5",
-        "transformAlgorithm": 0
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
       }
     ],
     "filterCriteria": [

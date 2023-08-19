@@ -4,10 +4,21 @@
 [infoTemplate]="infoTemplate"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #infoTemplate let-item="item">
-    <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
-    <br>
-    <ng-container *ngIf="item.description">
-      <i class="mdi-note-text mdi sp-color-on-bg-low sp-text-small">&nbsp;</i><span class="sp-color-on-bg-low sp-text-small sp-no-select">{{item.description}}</span>
-    </ng-container>
+    <table class="sp-table sp-table-no-padding sp-table-support-overflow-ellipsis sp-full-height sp-full-width">
+      <tr>
+        <!-- Filter Info -->
+        <td class="sp-text-overflow-ellipsis">
+          <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
+          <br>
+          <ng-container *ngIf="item.description">
+            <i class="mdi-note-text mdi sp-color-on-bg-low sp-text-small">&nbsp;</i><span class="sp-color-on-bg-low sp-text-small sp-no-select">{{item.description}}</span>
+          </ng-container>
+        </td>
+        <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onFavoriteClick($event, item)">
+          <i *ngIf="item.favorite" class="mdi-heart mdi sp-text-xlarge"></i>
+          <i *ngIf="!item.favorite" class="mdi-heart-outline mdi sp-text-xlarge"></i>
+        </td>
+      </tr>
+    </table>
   </ng-template>
 </sp-list-base>

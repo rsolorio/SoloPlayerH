@@ -19,8 +19,9 @@
             </ng-container>
           </span>
         </td>
-        <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onPlayClick($event, item)">
-          <i class="mdi-play-box-outline mdi sp-text-xlarge"></i>
+        <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onFavoriteClick($event, item)">
+          <i *ngIf="item.favorite" class="mdi-heart mdi sp-text-xlarge"></i>
+          <i *ngIf="!item.favorite" class="mdi-heart-outline mdi sp-text-xlarge"></i>
         </td>
       </tr>
     </table>

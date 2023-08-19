@@ -21,6 +21,13 @@ export class ValueLists {
       Default: '042901e6-66da-4d4e-89ea-ae40ab98f7ab'
     }
   };
+  static FilterType = {
+    id: "ddf1d521-8836-48f8-a9fa-80db11d1df8e",
+    entries: {
+      Smartlist: '336ffcd4-941e-4aea-b94e-292ad5d6e36d',
+      QuickFilters: 'a8c2aeb1-184f-4299-870d-90ffc9715f09'
+    }
+  };
   static AlbumType = {
     id: '6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f',
     entries: {

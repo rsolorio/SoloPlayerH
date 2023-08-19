@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { INavigationInfo, INavigationOptions } from './navigation.interface';
+import { AppRoute } from 'src/app/app-routes';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +42,9 @@ export class NavigationService {
       // Now move the previous route
       const navInfo = this.history[0];
       this.navigate(navInfo.route, navInfo.options);
+    }
+    else {
+      this.navigate(AppRoute.Home);
     }
   }
 

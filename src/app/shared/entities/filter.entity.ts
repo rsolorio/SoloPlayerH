@@ -10,4 +10,8 @@ export class FilterEntity extends ListItemEntity implements IFilterModel {
   filterCriteriaId: string;
   @Column()
   transformAlgorithm: number;
+  @Column()
+  favorite: boolean;
+  @Column()
+  filterTypeId: string;
 }

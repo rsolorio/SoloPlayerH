@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlbumEntity, ArtistEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity, ValueListEntryEntity } from '../../entities';
+import { AlbumEntity, ArtistEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
@@ -98,6 +98,20 @@ export class DatabaseEntitiesService {
     const artist = await ArtistEntity.findOneBy({ id: artistId });
     artist.favorite = favorite;
     await artist.save();
+    return favorite;
+  }
+
+  public async setFavoritePlaylist(playlistId: string, favorite: boolean): Promise<boolean> {
+    const playlist = await PlaylistEntity.findOneBy({ id: playlistId });
+    playlist.favorite = favorite;
+    await playlist.save();
+    return favorite;
+  }
+
+  public async setFavoriteFilter(filterId: string, favorite: boolean): Promise<boolean> {
+    const filter = await FilterEntity.findOneBy({ id: filterId });
+    filter.favorite = favorite;
+    await filter.save();
     return favorite;
   }
 

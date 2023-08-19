@@ -107,6 +107,15 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     this.loadPlaylistAndPlay(playlist);
   }
 
+  public onFavoriteClick(e: Event, playlist: IPlaylistModel): void {
+    // If we don't stop, the onItemContentClick will be fired
+    e.stopImmediatePropagation();
+    // Setting the favorite before updating the db since the promise
+    // will break the change detection cycle and the change will not be reflected in the UI
+    playlist.favorite = !playlist.favorite;
+    this.entities.setFavoritePlaylist(playlist.id, playlist.favorite);
+  }
+
   private async getPlaylistImage(playlist: IPlaylistModel): Promise<IImage> {
     const playlistWithSongs = await this.entityService.getPlaylistWithSongs(playlist.id);
     if (playlistWithSongs?.playlistSongs?.length) {

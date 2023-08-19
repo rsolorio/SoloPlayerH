@@ -9,6 +9,7 @@ import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-s
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
 @Injectable({
@@ -40,6 +41,12 @@ export class FilterListBroadcastService extends ListBroadcastServiceBase<IFilter
       const criteriaItem = new CriteriaItem('name', criteriaSearchTerm, CriteriaComparison.Like);
       result.push(criteriaItem);
     }
+    return result;
+  }
+
+  protected buildSystemCriteria(): CriteriaItems {
+    const result = new CriteriaItems();
+    result.push(new CriteriaItem('filterTypeId', ValueLists.FilterType.entries.Smartlist));
     return result;
   }
 

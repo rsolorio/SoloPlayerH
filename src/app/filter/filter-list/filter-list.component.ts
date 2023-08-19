@@ -19,7 +19,6 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 export class FilterListComponent extends CoreComponent implements OnInit {
 
     // START - LIST MODEL
-
     public listModel: IListBaseModel = {
       listUpdatedEvent: AppEvent.FilterListUpdated,
       itemMenuList: [
@@ -45,8 +44,7 @@ export class FilterListComponent extends CoreComponent implements OnInit {
       searchIconEnabled: true,
       breadcrumbsEnabled: true,
       broadcastService: this.broadcastService
-    };
-  
+    };  
     // END - LIST MODEL
 
   constructor(
@@ -66,5 +64,14 @@ export class FilterListComponent extends CoreComponent implements OnInit {
     this.entities.getCriteriaFromFilter(filter).then(criteria => {
       this.navigation.forward(AppRoute.Songs, { criteria: criteria });
     });
+  }
+
+  public onFavoriteClick(e: Event, filter: IFilterModel): void {
+    // If we don't stop, the onItemContentClick will be fired
+    e.stopImmediatePropagation();
+    // Setting the favorite before updating the db since the promise
+    // will break the change detection cycle and the change will not be reflected in the UI
+    filter.favorite = !filter.favorite;
+    this.entities.setFavoriteFilter(filter.id, filter.favorite);
   }
 }
