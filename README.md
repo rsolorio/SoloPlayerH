@@ -50,7 +50,7 @@ Each list view offers multiple sorting options.
 You can configure how the tag information is retrieved and where it will be stored.
 
 ### Album Art Color Palette
-The application gets a list of dominant colors for each album art, and you can customize the colors of player view for each individual album art.
+The application gets a list of dominant colors for each album art, and you can customize the colors of the player view for each individual album art.
 
 ### And More...
 - 0-5 rating mechanism
@@ -89,7 +89,6 @@ The application gets a list of dominant colors for each album art, and you can c
 - Smartlists
   - Songs
 - Settings
-- Log
 
 ## Icons
 

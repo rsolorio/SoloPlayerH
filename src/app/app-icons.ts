@@ -67,7 +67,9 @@ export enum AppAttributeIcons {
   Limit = 'mdi-sort-numeric-variant mdi',
   LongPlay = 'mdi-music-box-multiple mdi',
   Accent = 'mdi-vanish-quarter mdi',
-  Contributor = 'mdi-account-supervisor mdi'
+  Contributor = 'mdi-account-supervisor mdi',
+  SwitchOn = 'mdi-toggle-switch-variant mdi',
+  SwitchOff = 'mdi-toggle-switch-variant-off mdi'
 }
 
 export enum AppActionIcons {
@@ -94,7 +96,9 @@ export enum AppActionIcons {
   Test = 'mdi-test-tube mdi',
   AddPlaylist = 'mdi-playlist-plus mdi',
   Loading = 'mdi-loading mdi-spin mdi',
-  Alternate = 'mdi-shuffle-variant mdi'
+  Alternate = 'mdi-shuffle-variant mdi',
+  Sync = 'mdi-sync mdi',
+  Scan = 'mdi-magnify-scan mdi'
 }
 
 export enum AppPlayerIcons {

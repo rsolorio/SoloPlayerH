@@ -195,7 +195,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             id: 'syncAudioFiles',
             name: 'Sync Audio Files',
-            icon: 'mdi-sync mdi',
+            icon: AppActionIcons.Sync,
             dataType: 'text',
             action: setting => {
               const musicPaths = this.options.getArray(ModuleOptionName.ScanMusicFolderPath);
@@ -244,7 +244,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             id: 'processPlaylists',
             name: 'Scan Playlist Files',
-            icon: 'mdi-magnify-scan mdi',
+            icon: AppActionIcons.Scan,
             dataType: 'text',
             action: setting => {
               const playlistPaths = this.options.getArray(ModuleOptionName.ScanPlaylistFolderPath);
@@ -269,9 +269,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             icon: AppFeatureIcons.MultipleFilters,
             dataType: 'boolean',
             secondaryIcon: {
-              icon: 'mdi-toggle-switch mdi sp-color-primary',
+              icon: AppAttributeIcons.SwitchOn + ' sp-color-primary',
               off: true,
-              offIcon: 'mdi-toggle-switch-off mdi'
+              offIcon: AppAttributeIcons.SwitchOff
             },
             descriptions: [
               'If turned off, the quick filter panel will allow to select one filter at a time; as soon as you click the filter the change will be applied.',
