@@ -5,8 +5,12 @@
 }
 
 .sp-td-navbar-icon {
-  width: 42px;
+  width: $sp-navbar-height;
   text-align: center;
+}
+
+.sp-navbar-content-height {
+  line-height: 38px;
 }
 
 .sp-tr-song-info {

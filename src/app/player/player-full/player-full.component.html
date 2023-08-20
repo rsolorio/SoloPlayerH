@@ -16,16 +16,14 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
         <td class="sp-text-overflow-ellipsis">
           <i
           (click)="togglePlaylist()"
-          class="mdi sp-text-xlarge-fixed sp-cursor-pointer"
+          class="mdi sp-text-xlarge-fixed sp-navbar-content-height sp-cursor-pointer"
           [ngClass]="{ 'mdi-playlist-music-outline': !model.playerList.isVisible, 'mdi-image-outline': model.playerList.isVisible }"
-          style="line-height: 40px;"
           [ngStyle]="palette.secondary.cssColor"></i>
           <span
-          class="sp-text-large" style="line-height: 40px;vertical-align: top;"
+          class="sp-text-large sp-navbar-content-height" style="vertical-align: top;"
           [ngStyle]="palette.primary.cssColor">&nbsp;{{model.playerList.name}}</span>
           <span
-          class="sp-text-large"
-          style="line-height: 40px;float: right;"
+          class="sp-text-medium sp-navbar-content-height sp-float-right"
           [ngStyle]="palette.primary.cssColor">{{model.playerList.current.sequence}}/{{model.playerList.items.length}}</span>
         </td>
       </tr></table>
