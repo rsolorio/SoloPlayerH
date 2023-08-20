@@ -383,196 +383,67 @@ export class DatabaseEntitiesService {
     return result;
   }
 
+  private addQuickFilterChip(
+    id: string,
+    columnName: string,
+    columnValue: any,
+    comparison: CriteriaComparison,
+    icon: string,
+    caption: string,
+    chips: IChipItem[],
+    criteriaItems: CriteriaItems): void
+  {
+    const criteriaItem = new CriteriaItem(columnName, columnValue);
+    criteriaItem.id = id;
+    criteriaItem.comparison = comparison;
+    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+    chips.push({
+      sequence: chips.length + 1,
+      icon: icon,
+      caption: caption,
+      value: criteriaItem,
+      selected: !!criteriaItems.find(c => c.id === id)
+    });
+  }
+
   public getQuickFiltersForSongs(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItem = new CriteriaItem('favorite', true);
-    criteriaItem.id = 'quickFilter-favorite';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Favorite';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 1,
-      icon: AppAttributeIcons.FavoriteOn,
-      caption: 'Favorite',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-favorite') });
-
-    criteriaItem = new CriteriaItem('playCount', 0);
-    criteriaItem.id = 'quickFilter-playCount';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Play Count';
-    criteriaItem.displayValue = '0';
-    result.push({
-      sequence: 2,
-      icon: AppAttributeIcons.PlayCount,
-      caption: 'Not Played',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-playCount') });
-
-    criteriaItem = new CriteriaItem('lyrics');
-    criteriaItem.id = 'quickFilter-lyrics';
-    criteriaItem.comparison = CriteriaComparison.IsNotNull;
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Has Lyrics';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 3,
-      icon: AppAttributeIcons.LyricsOn,
-      caption: 'Has Lyrics',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-lyrics') });
-
-    criteriaItem = new CriteriaItem('rating', 5);
-    criteriaItem.id = 'quickFilter-ratingTop';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Rating';
-    criteriaItem.displayValue = '5';
-    result.push({
-      sequence: 4,
-      icon: AppAttributeIcons.RatingOn,
-      caption: 'Top Rated',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-ratingTop') });
-
-    criteriaItem = new CriteriaItem('rating', 4);
-    criteriaItem.id = 'quickFilter-ratingHigh';
-    criteriaItem.comparison = CriteriaComparison.GreaterThanOrEqualTo;
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Rating';
-    criteriaItem.displayValue = '5';
-    result.push({
-      sequence: 5,
-      icon: AppAttributeIcons.RatingHalf,
-      caption: 'High Rated',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-ratingHigh') });
-
-    criteriaItem = new CriteriaItem('live', true);
-    criteriaItem.id = 'quickFilter-live';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Live';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 6,
-      icon: AppAttributeIcons.LiveOn,
-      caption: 'Live',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-live') });
-
-    criteriaItem = new CriteriaItem('explicit', true);
-    criteriaItem.id = 'quickFilter-explicit';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Explicit';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 7,
-      icon: AppAttributeIcons.Explicit,
-      caption: 'Explicit',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-explicit') });
-
-    criteriaItem = new CriteriaItem('performers', 1);
-    criteriaItem.id = 'quickFilter-performers';
-    criteriaItem.comparison = CriteriaComparison.GreaterThan;
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Performers';
-    criteriaItem.displayValue = 'More Than 1';
-    result.push({
-      sequence: 8,
-      icon: AppAttributeIcons.Performers,
-      caption: 'Multi Artist',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-performers') });
-
+    this.addQuickFilterChip('quickFilter-favorite', 'favorite', true, CriteriaComparison.Equals, AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-playCount', 'playCount', 0, CriteriaComparison.Equals, AppAttributeIcons.PlayCount, 'Not Played', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-lyrics', 'lyrics', undefined, CriteriaComparison.IsNotNull, AppAttributeIcons.LyricsOn, 'Has Lyrics', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-ratingTop', 'rating', 5, CriteriaComparison.Equals, AppAttributeIcons.RatingOn, 'Top Rated', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-ratingHigh', 'rating', 4, CriteriaComparison.GreaterThanOrEqualTo, AppAttributeIcons.RatingHalf, 'High Rated', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-live', 'live', true, CriteriaComparison.Equals, AppAttributeIcons.LiveOn, 'Live', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-explicit', 'explicit', true, CriteriaComparison.Equals, AppAttributeIcons.Explicit, 'Explicit', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-performers', 'performers', 1, CriteriaComparison.GreaterThan, AppAttributeIcons.Performers, 'Multi Artist', result, existingCriteria.quickCriteria);
     return result;
   }
 
   public getQuickFiltersForArtists(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItem = new CriteriaItem('favorite', true);
-    criteriaItem.id = 'quickFilter-favorite';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Favorite';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 1,
-      icon: 'mdi-heart mdi',
-      caption: 'Favorite',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-favorite') });
-
-    criteriaItem = new CriteriaItem('playCount', 0);
-    criteriaItem.id = 'quickFilter-playCount';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Play Count';
-    criteriaItem.displayValue = '0';
-    result.push({
-      sequence: 2,
-      icon: 'mdi-play mdi',
-      caption: 'Not Played',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-playCount') });
-
+    this.addQuickFilterChip('quickFilter-favorite', 'favorite', true, CriteriaComparison.Equals, AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-playCount', 'playCount', 0, CriteriaComparison.Equals, AppAttributeIcons.PlayCount, 'Not Played', result, existingCriteria.quickCriteria);
     const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayArtistThreshold);
-    criteriaItem = new CriteriaItem('songCount', longPlaySongCount);
-    criteriaItem.id = 'quickFilter-songCount';
-    criteriaItem.comparison = CriteriaComparison.GreaterThanOrEqualTo;
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Song Count';
-    criteriaItem.displayValue = 'Greater than or equal to ' + longPlaySongCount;
-    result.push({
-      sequence: 3,
-      icon: 'mdi-music-box-multiple-outline mdi',
-      caption: 'Long Play',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-songCount') });
-
+    this.addQuickFilterChip('quickFilter-songCount', 'songCount', longPlaySongCount, CriteriaComparison.GreaterThanOrEqualTo, AppAttributeIcons.LongPlay, 'Long Play', result, existingCriteria.quickCriteria);
     return result;
   }
 
   public getQuickFiltersForAlbums(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItem = new CriteriaItem('favorite', true);
-    criteriaItem.id = 'quickFilter-favorite';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Favorite';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 1,
-      icon: 'mdi-heart mdi',
-      caption: 'Favorite',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-favorite') });
-
-    criteriaItem = new CriteriaItem('playCount', 0);
-    criteriaItem.id = 'quickFilter-playCount';
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Play Count';
-    criteriaItem.displayValue = '0';
-    result.push({
-      sequence: 2,
-      icon: 'mdi-play mdi',
-      caption: 'Not Played',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-playCount') });
-
+    this.addQuickFilterChip('quickFilter-favorite', 'favorite', true, CriteriaComparison.Equals, AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-playCount', 'playCount', 0, CriteriaComparison.Equals, AppAttributeIcons.PlayCount, 'Not Played', result, existingCriteria.quickCriteria);
     const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayAlbumThreshold);
-    criteriaItem = new CriteriaItem('songCount', longPlaySongCount);
-    criteriaItem.id = 'quickFilter-songCount';
-    criteriaItem.comparison = CriteriaComparison.GreaterThanOrEqualTo;
-    criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
-    criteriaItem.displayName = 'Song Count';
-    criteriaItem.displayValue = 'Greater than or equal to ' + longPlaySongCount;
-    result.push({
-      sequence: 3,
-      icon: 'mdi-music-box-multiple-outline mdi',
-      caption: 'Long Play',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-songCount') });
+    this.addQuickFilterChip('quickFilter-songCount', 'songCount', longPlaySongCount, CriteriaComparison.GreaterThanOrEqualTo, AppAttributeIcons.LongPlay, 'Long Play', result, existingCriteria.quickCriteria);
+    return result;
+  }
 
+  public getQuickFiltersForClassifications(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+    this.addQuickFilterChip('quickFilter-genre', 'classificationTypeId', ValueLists.Genre.id, CriteriaComparison.Equals, AppEntityIcons.Genre, 'Genres', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-subgenre', 'classificationTypeId', ValueLists.Subgenre.id, CriteriaComparison.Equals, AppEntityIcons.Subgenre, 'Subgenres', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-occasion', 'classificationTypeId', ValueLists.Occasion.id, CriteriaComparison.Equals, AppEntityIcons.Occasion, 'Occasions', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-instrument', 'classificationTypeId', ValueLists.Instrument.id, CriteriaComparison.Equals, AppEntityIcons.Instrument, 'Instruments', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-category', 'classificationTypeId', ValueLists.Category.id, CriteriaComparison.Equals, AppEntityIcons.Category, 'Categories', result, existingCriteria.quickCriteria);
     return result;
   }
 
@@ -629,347 +500,138 @@ export class DatabaseEntitiesService {
     return result;
   }
 
+  private addSortingChip(
+    id: string,
+    columns: string[],
+    icon: string,
+    caption: string,
+    chips: IChipItem[],
+    sortingCriteria: CriteriaItems,
+    sortDirection?: CriteriaSortDirection
+  ): IChipItem {
+    const criteriaItems = new CriteriaItems();
+    criteriaItems.id = id;
+    for (const columnName of columns) {
+      criteriaItems.addSorting(columnName, sortDirection ? sortDirection : CriteriaSortDirection.Ascending);
+    }
+    chips.push({
+      sequence: chips.length + 1,
+      icon: icon,
+      caption: caption,
+      value: criteriaItems,
+      secondaryIcon: this.getSortingIcon(criteriaItems.id, sortingCriteria),
+      selected: sortingCriteria.id === criteriaItems.id
+    });
+    return chips[chips.length - 1];
+  }
+
+  private addAlternateChip(
+    id: string,
+    columns: string[],
+    icon: string,
+    caption: string,
+    chips: IChipItem[],
+    sortingCriteria: CriteriaItems
+  ): IChipItem {
+    return this.addSortingChip(id, columns, icon, caption, chips, sortingCriteria, CriteriaSortDirection.Alternate);
+  }
+
   public getSortingForSongs(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-artistName';
-    criteriaItems.addSorting('primaryArtistName', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('trackNumber', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 1,
-      icon: AppAttributeIcons.ArtistName,
-      caption: 'Artist Name',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-albumName';
-    criteriaItems.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('trackNumber', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 2,
-      icon: AppAttributeIcons.AlbumName,
-      caption: 'Album Name',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-releaseYear';
-    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('primaryAlbumName', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('mediaNumber', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('trackNumber', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 3,
-      icon: AppAttributeIcons.Year,
-      caption: 'Release Year',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-playCount';
-    criteriaItems.addSorting('playCount', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 4,
-      icon: AppAttributeIcons.PlayCount,
-      caption: 'Play Count',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-playDate';
-    criteriaItems.addSorting('playDate', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 5,
-      icon: AppAttributeIcons.PlayDate,
-      caption: 'Play Date',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-addDate';
-    criteriaItems.addSorting('addDate', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 6,
-      icon: AppAttributeIcons.AddDate,
-      caption: 'Add Date',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'alternate-artist';
-    criteriaItems.addSorting('primaryArtistName', CriteriaSortDirection.Alternate);
-    result.push({
-      sequence: 7,
-      icon: AppEntityIcons.AlbumArtist,
-      caption: 'Alternate Artists',
-      secondaryIcon: 'mdi-shuffle-variant mdi',
-      value: criteriaItems,
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'alternate-language';
-    criteriaItems.addSorting('language', CriteriaSortDirection.Alternate);
-    result.push({
-      sequence: 8,
-      icon: AppAttributeIcons.Language,
-      caption: 'Alternate Languages',
-      secondaryIcon: 'mdi-shuffle-variant mdi',
-      value: criteriaItems,
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
+    this.addSortingChip(
+      'sorting-artistName', ['primaryArtistName', 'primaryAlbumName', 'mediaNumber', 'trackNumber', 'name'],
+      AppAttributeIcons.ArtistName, 'Artist Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-albumName', ['primaryAlbumName', 'mediaNumber', 'trackNumber', 'name'],
+      AppAttributeIcons.AlbumName, 'Album Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-releaseYear',
+      ['releaseYear', 'primaryAlbumName', 'mediaNumber', 'trackNumber', 'name'],
+      AppAttributeIcons.Year, 'Release Year', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-playCount', ['playCount', 'releaseYear', 'name'],
+      AppAttributeIcons.PlayCount, 'Play Count', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-playDate', ['playDate'],
+      AppAttributeIcons.PlayDate, 'Play Date', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-addDate', ['addDate', 'name'],
+      AppAttributeIcons.AddDate, 'Add Date', result, existingCriteria.sortingCriteria);
+    this.addAlternateChip(
+      'alternate-artist', ['primaryArtistName'],
+      AppActionIcons.Alternate, 'Alternate Artists', result, existingCriteria.sortingCriteria);
+    this.addAlternateChip(
+      'alternate-language', ['language'],
+      AppActionIcons.Alternate, 'Alternate Languages', result, existingCriteria.sortingCriteria);
     
     return result;
   }
 
   public getSortingForAlbumArtists(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-artistName';
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 1,
-      icon: AppAttributeIcons.ArtistName,
-      caption: 'Artist Name',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-playCount';
-    criteriaItems.addSorting('playCount', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 2,
-      icon: AppAttributeIcons.PlayCount,
-      caption: 'Play Count',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-songCount';
-    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 3,
-      icon: AppAttributeIcons.SongCount,
-      caption: 'Song Count',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-addDate';
-    criteriaItems.addSorting('songAddDateMax', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 4,
-      icon: AppAttributeIcons.AddDate,
-      caption: 'Last Song Add Date',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-    
+    this.addSortingChip(
+      'sorting-artistName', ['name'],
+      AppAttributeIcons.ArtistName, 'Artist Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-playCount', ['playCount', 'name'],
+      AppAttributeIcons.PlayCount, 'Play Count', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-songCount', ['songCount', 'name'],
+      AppAttributeIcons.SongCount, 'Song Count', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-addDate', ['songAddDateMax'],
+      AppAttributeIcons.AddDate, 'Last Song Add Date', result, existingCriteria.sortingCriteria);    
     return result;
   }
 
   public getSortingForAlbums(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-albumName';
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 1,
-      icon: AppAttributeIcons.AlbumName,
-      caption: 'Album Name',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-playCount';
-    criteriaItems.addSorting('playCount', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 2,
-      icon: AppAttributeIcons.PlayCount,
-      caption: 'Play Count',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-songCount';
-    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 3,
-      icon: AppAttributeIcons.SongCount,
-      caption: 'Song Count',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-addDate';
-    criteriaItems.addSorting('songAddDateMax', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 4,
-      icon: AppAttributeIcons.AddDate,
-      caption: 'Last Song Add Date',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-artistName';
-    criteriaItems.addSorting('artistName', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 5,
-      icon: AppAttributeIcons.ArtistName,
-      caption: 'Artist Name',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-releaseYear';
-    criteriaItems.addSorting('releaseYear', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 6,
-      icon: AppAttributeIcons.Year,
-      caption: 'Release Year',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-    
+    this.addSortingChip(
+      'sorting-albumName', ['name'],
+      AppAttributeIcons.AlbumName, 'Album Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-playCount', ['playCount', 'releaseYear', 'name'],
+      AppAttributeIcons.PlayCount, 'Play Count', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-songCount', ['songCount', 'releaseYear', 'name'],
+      AppAttributeIcons.SongCount, 'Song Count', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-addDate', ['songAddDateMax'],
+      AppAttributeIcons.AddDate, 'Last Song Add Date', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-artistName', ['artistName', 'releaseYear', 'name'],
+      AppAttributeIcons.ArtistName, 'Artist Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-releaseYear', ['releaseYear', 'name'],
+      AppAttributeIcons.Year, 'Release Year', result, existingCriteria.sortingCriteria);    
     return result;
   }
 
   public getSortingForClassifications(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-classificationName';
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 1,
-      icon: AppEntityIcons.Classification,
-      caption: 'Classification Name',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-classificationType';
-    criteriaItems.addSorting('classificationType', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 2,
-      icon: AppAttributeIcons.ClassificationType,
-      caption: 'Classification Type',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-songCount';
-    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 3,
-      icon: AppAttributeIcons.SongCount,
-      caption: 'Song Count',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-    
+    this.addSortingChip(
+      'sorting-classificationName', ['name'],
+      AppEntityIcons.Classification, 'Classification Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-classificationType', ['classificationType', 'name'],
+      AppAttributeIcons.ClassificationType, 'Classification Type', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-songCount', ['songCount', 'name'],
+      AppAttributeIcons.SongCount, 'Song Count', result, existingCriteria.sortingCriteria);    
     return result;
   }
 
   public getSortingForPlaylists(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
-
-    let criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-playlistName';
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 1,
-      icon: AppEntityIcons.Playlist,
-      caption: 'Playlist Name',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-songCount';
-    criteriaItems.addSorting('songCount', CriteriaSortDirection.Ascending);
-    criteriaItems.addSorting('name', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 2,
-      icon: AppAttributeIcons.SongCount,
-      caption: 'Song Count',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-
-    criteriaItems = new CriteriaItems();
-    criteriaItems.id = 'sorting-changeDate';
-    criteriaItems.addSorting('changeDate', CriteriaSortDirection.Ascending);
-    result.push({
-      sequence: 3,
-      icon: AppAttributeIcons.ChangeDate,
-      caption: 'Change Date',
-      value: criteriaItems,
-      secondaryIcon: this.getSortingIcon(criteriaItems.id, existingCriteria.sortingCriteria),
-      selected: existingCriteria.sortingCriteria.id === criteriaItems.id
-    });
-    
+    this.addSortingChip(
+      'sorting-playlistName', ['name'],
+      AppEntityIcons.Playlist, 'Playlist Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-songCount', ['songCount', 'name'],
+      AppAttributeIcons.SongCount, 'Song Count', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-changeDate', ['changeDate'],
+      AppAttributeIcons.ChangeDate, 'Change Date', result, existingCriteria.sortingCriteria);    
     return result;
   }
 
@@ -977,77 +639,11 @@ export class DatabaseEntitiesService {
     if (criteriaItems.id === id) {
       const firstItem = criteriaItems[0];
       if (firstItem.sortDirection === CriteriaSortDirection.Ascending) {
-        return 'mdi-sort-ascending mdi';
+        return AppActionIcons.SortAscending;
       }
-      return 'mdi-sort-descending mdi-flip-v mdi';
+      return AppActionIcons.SortDescending;
     }
     return null;
-  }
-
-  public getQuickFiltersForClassifications(existingCriteria: Criteria): IChipItem[] {
-    const result: IChipItem[] = [];
-
-    let criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);
-    criteriaItem.id = 'quickFilter-genre';
-    criteriaItem.displayName = 'Genre';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 1,
-      icon: AppEntityIcons.Genre,
-      caption: 'Genres',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-genre')
-    });
-
-    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Subgenre.id);
-    criteriaItem.id = 'quickFilter-subgenre';
-    criteriaItem.displayName = 'Subgenre';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 2,
-      icon: AppEntityIcons.Subgenre,
-      caption: 'Subgenres',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-subgenre')
-    });
-
-    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Occasion.id);
-    criteriaItem.id = 'quickFilter-occasion';
-    criteriaItem.displayName = 'Occasion';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 3,
-      icon: AppEntityIcons.Occasion,
-      caption: 'Occasions',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-occasion')
-    });
-
-    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Instrument.id);
-    criteriaItem.id = 'quickFilter-instrument';
-    criteriaItem.displayName = 'Instrument';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 4,
-      icon: AppEntityIcons.Instrument,
-      caption: 'Instruments',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-instrument')
-    });
-
-    criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Category.id);
-    criteriaItem.id = 'quickFilter-category';
-    criteriaItem.displayName = 'Category';
-    criteriaItem.displayValue = 'Yes';
-    result.push({
-      sequence: 5,
-      icon: AppEntityIcons.Category,
-      caption: 'Categories',
-      value: criteriaItem,
-      selected: !!existingCriteria.quickCriteria.find(c => c.id === 'quickFilter-category')
-    });
-
-    return result;
   }
 
   public async getValueListSelectorModel(valueListTypeId: string, sortByName: boolean, isSelected: (chip: IChipItem) => boolean): Promise<IChipSelectionModel> {

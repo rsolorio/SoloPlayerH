@@ -63,7 +63,9 @@ export enum AppAttributeIcons {
   Description = 'mdi-note-text mdi',
   Grouping = 'mdi-format-list-group mdi',
   Performers = 'mdi-account-multiple mdi',
-  Limit = 'mdi-sort-numeric-variant mdi'
+  Limit = 'mdi-sort-numeric-variant mdi',
+  LongPlay = 'mdi-music-box-multiple mdi',
+  Accent = 'mdi-vanish-quarter mdi'
 }
 
 export enum AppActionIcons {
@@ -89,7 +91,8 @@ export enum AppActionIcons {
   Debug = 'mdi-bug mdi',
   Test = 'mdi-test-tube mdi',
   AddPlaylist = 'mdi-playlist-plus mdi',
-  Loading = 'mdi-loading mdi-spin mdi'
+  Loading = 'mdi-loading mdi-spin mdi',
+  Alternate = 'mdi-shuffle-variant mdi'
 }
 
 export enum AppPlayerIcons {
@@ -116,8 +119,7 @@ export enum AppViewIcons {
   Home = 'mdi-home mdi',
   Settings = 'mdi-cogs mdi',
   Log = "mdi-file-document-edit mdi",
-  About = 'mdi-owl mdi',
-  Accent = 'mdi-vanish-quarter mdi'
+  About = 'mdi-owl mdi'
 }
 
 export function getNumericCircleIcon(value: number): string {
