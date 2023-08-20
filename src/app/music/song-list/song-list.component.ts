@@ -222,6 +222,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     criteriaItem.columnValues[0].caption = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
     // No need to react to breadcrumb events
     this.breadcrumbService.set([{
+      icon: AppEntityIcons.AlbumArtist,
       criteriaItem: criteriaItem,
       origin: BreadcrumbSource.AlbumArtist
     }], { forceReload: true});
@@ -246,6 +247,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     }
     if (criteriaItem.columnValues.length) {
       this.breadcrumbService.set([{
+        icon: AppEntityIcons.Artist,
         criteriaItem: criteriaItem,
         origin: BreadcrumbSource.Artist
       }], { forceReload: true });
@@ -261,6 +263,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     artistCriteria.displayName = this.db.displayName(artistCriteria.columnName);
     artistCriteria.columnValues[0].caption = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
     const artistBreadcrumb: IBreadcrumbModel = {
+      icon: AppEntityIcons.AlbumArtist,
       criteriaItem: artistCriteria,
       origin: BreadcrumbSource.AlbumArtist
     };
@@ -270,6 +273,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     albumCriteria.displayName = this.db.displayName(albumCriteria.columnName);
     albumCriteria.columnValues[0].caption = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
     const albumBreadcrumb: IBreadcrumbModel = {
+      icon: AppEntityIcons.Album,
       criteriaItem: albumCriteria,
       origin: BreadcrumbSource.Album
     };
