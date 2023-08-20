@@ -24,6 +24,7 @@ export enum AppFeatureIcons {
 
 export enum AppAttributeIcons {
   ArtistName = 'mdi-account mdi',
+  ArtistGroup = 'mdi-account-group mdi',
   AlbumName = 'mdi-album mdi',
   SongName = 'mdi-music mdi',
   TitleSort = 'mdi-sort-alphabetical-variant mdi',
@@ -55,17 +56,18 @@ export enum AppAttributeIcons {
   AddDate = 'mdi-calendar-plus mdi',
   ChangeDate = 'mdi-calendar-edit mdi',
   PlayDate = 'mdi-calendar-check mdi',
-  ArtistType = 'mdi-account-group mdi',
+  ArtistType = 'mdi-account-tag mdi',
   Country = 'mdi-earth mdi',
   Directory = 'mdi-folder mdi',
   AudioDirectory = 'mdi-folder-music mdi',
   PlaylistDirectory = 'mdi-folder-play mdi',
   Description = 'mdi-note-text mdi',
   Grouping = 'mdi-format-list-group mdi',
-  Performers = 'mdi-account-multiple mdi',
+  Performers = 'mdi-account-group mdi',
   Limit = 'mdi-sort-numeric-variant mdi',
   LongPlay = 'mdi-music-box-multiple mdi',
-  Accent = 'mdi-vanish-quarter mdi'
+  Accent = 'mdi-vanish-quarter mdi',
+  Contributor = 'mdi-account-supervisor mdi'
 }
 
 export enum AppActionIcons {

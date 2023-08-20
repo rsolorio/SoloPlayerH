@@ -90,7 +90,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
   <tr class="sp-tr-song-info">
     <td colspan="3" class="sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
-      <i *ngIf="song.explicit" class="mdi-alpha-e-box-outline mdi sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
+      <i *ngIf="song.explicit" [ngClass]="AppAttributeIcons.Explicit" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <i class="mdi-music mdi sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-xlarge sp-text-bold"
@@ -103,13 +103,13 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
       <!-- Artists -->
       <ng-container *ngIf="song.primaryArtistId !== EntityId.ArtistVarious">
         <!-- TODO: show male/female icon depending on artist type -->
-        <i class="mdi-account mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
+        <i [ngClass]="AppAttributeIcons.ArtistName" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
       </ng-container>
       <ng-container *ngIf="song.primaryArtistId === EntityId.ArtistVarious && !contributors">
-        <i class="mdi-account-group mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
+        <i [ngClass]="AppAttributeIcons.ArtistGroup" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
@@ -118,21 +118,21 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
         <span>&nbsp;&nbsp;</span>
       </ng-container>
       <ng-container *ngIf="contributors">
-        <i class="mdi-account-multiple mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
+        <i [ngClass]="AppAttributeIcons.Contributor" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{contributors}}</span>
       </ng-container>
       <br>
       <!-- Album -->
-      <i class="mdi-album mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
+      <i [ngClass]="AppAttributeIcons.AlbumName" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-large"
       [ngStyle]="palette.primary.cssColor">&nbsp;{{song.albumName}}</span>
       <!-- Year -->
       <ng-container *ngIf="song.releaseYear > 0">
         <span>&nbsp;&nbsp;</span>
-        <i class="mdi-calendar mdi sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
+        <i [ngClass]="AppAttributeIcons.Year" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{song.releaseYear}}</span>
@@ -140,21 +140,21 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
       <br>
       <!-- Genre -->
       <ng-container *ngIf="song.genre">
-        <i class="mdi-tag mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
+        <i [ngClass]="AppAttributeIcons.GenreName" class="sp-text-small" [ngStyle]="palette.secondary.cssColor"></i>
         <span
-        class="sp-text-medium"
+        class="sp-text-small"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{song.genre}}&nbsp;&nbsp;</span>
       </ng-container>
       <!-- Time -->
-      <i class="mdi-timer mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
+      <i [ngClass]="AppAttributeIcons.Duration" class="sp-text-small" [ngStyle]="palette.secondary.cssColor"></i>
       <span
-        class="sp-text-medium"
+        class="sp-text-small"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{song.duration}}&nbsp;&nbsp;</span>
       <!-- File Info -->
       <ng-container *ngIf="fileInfoVisible">
-        <i class="mdi-file-music mdi sp-text-medium" [ngStyle]="palette.secondary.cssColor"></i>
+        <i [ngClass]="AppAttributeIcons.FileInfo" class="sp-text-small" [ngStyle]="palette.secondary.cssColor"></i>
         <span
-        class="sp-text-medium sp-text-capitalize"
+        class="sp-text-small sp-text-capitalize"
         [ngStyle]="palette.primary.cssColor">&nbsp;{{getFileInfo()}}</span>
       </ng-container>
     </td>

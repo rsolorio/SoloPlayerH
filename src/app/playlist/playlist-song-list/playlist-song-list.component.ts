@@ -28,8 +28,7 @@ export class PlaylistSongListComponent implements OnInit {
     private entities: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
     private navigation: NavigationService,
-    private playerService: HtmlPlayerService,
-    private entityService: DatabaseEntitiesService) { }
+    private playerService: HtmlPlayerService) { }
 
   ngOnInit(): void {
     this.initialize();
