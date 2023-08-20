@@ -101,6 +101,8 @@ export enum AppPlayerIcons {
   Stop = 'mdi-stop mdi',
   Previous = 'mdi-skip-previous mdi',
   Next = 'mdi-skip-next mdi',
+  Rewind = 'mdi-rewind mdi',
+  FastForward = 'mdi-fast-forward mdi',
   ShuffleOn = 'mdi-shuffle mdi',
   ShuffleOff = 'mdi-shuffle-disabled mdi',
   RepeatAll = 'mdi-repeat mdi',

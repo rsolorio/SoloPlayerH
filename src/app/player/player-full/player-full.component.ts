@@ -7,7 +7,6 @@ import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { PlayerStatus, PlayMode, RepeatMode } from 'src/app/shared/models/player.enum';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
@@ -35,9 +34,6 @@ export class PlayerFullComponent extends PlayerComponentBase {
   @ViewChild('picture') private pictureRef: ElementRef;
   @ViewChild(ResizeObserverDirective) private resizeObserver: ResizeObserverDirective;
   @ViewChild(EyeDropperDirective) private eyeDropper: EyeDropperDirective;
-  public PlayerStatus = PlayerStatus;
-  public RepeatMode = RepeatMode;
-  public PlayMode = PlayMode;
   public EntityId = EntityId;
   public palette: IFullColorPalette;
   public imageSize: ISize = { height: 0, width: 0 };

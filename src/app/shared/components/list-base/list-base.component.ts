@@ -179,6 +179,9 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
         action: () => {
           // Clear criteria from the list
           const criteria = new Criteria();
+          // Since broadcast services automatically take existing breadcrumb criteria,
+          // ensure it is removed before sending the request
+          this.breadcrumbService.clear();
           // Just keep system and sorting criteria
           criteria.systemCriteria = this.model.criteriaResult.criteria.systemCriteria.clone();
           criteria.sortingCriteria = this.model.criteriaResult.criteria.sortingCriteria.clone();

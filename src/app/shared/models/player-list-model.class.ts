@@ -347,6 +347,10 @@ export class PlayerListModel implements IDbModel {
     let result: IPlaylistSongModel = null;
 
     // Get next index
+    // This line relies on the current track being the original instance of the track
+    // It could be the same track, but a new instance, if that happens this will not work
+    // If nextIndex is 0 it means the currentTrack was not found.
+    // TODO: get index by another method?
     const nextIndex = this.playModeItems.indexOf(currentTrack) + 1;
     // Get next item
     if (nextIndex >= this.playModeItems.length) {

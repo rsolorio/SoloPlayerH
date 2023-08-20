@@ -29,6 +29,7 @@ import { IImagePreviewModel } from '../related-image/image-preview/image-preview
 import { ImagePreviewComponent } from '../related-image/image-preview/image-preview.component';
 import { SideBarHostStateService } from '../core/components/side-bar-host/side-bar-host-state.service';
 import { ChipSelectionComponent } from '../shared/components/chip-selection/chip-selection.component';
+import { AppPlayerIcons } from '../app-icons';
 
 /**
  * Base component for any implementation of the player modes.
@@ -42,6 +43,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public PlayerStatus = PlayerStatus;
   public RepeatMode = RepeatMode;
   public PlayMode = PlayMode;
+  public AppPlayerIcons = AppPlayerIcons;
   public images: RelatedImageEntity[] = [];
   public selectedImageIndex = -1;
   public contributors: string;
@@ -210,7 +212,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.playerServiceBase.playPrevious(5);
   }
 
-  public onForward() {
+  public onNext() {
     this.playerServiceBase.playNext();
   }
 

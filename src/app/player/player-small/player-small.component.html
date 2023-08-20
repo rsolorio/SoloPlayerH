@@ -15,7 +15,7 @@
       </td>
       <!-- Back -->
       <td (click)="onPrevious()" class="sp-td-play-control">
-        <i class="mdi-rewind mdi sp-text-big-fixed"></i>
+        <i [ngClass]="AppPlayerIcons.Previous" class="sp-text-big-fixed"></i>
       </td>
       <!-- Play/Pause -->
       <td (click)="onPlayPause()" class="sp-td-play-control">
@@ -26,8 +26,8 @@
           </div>
       </td>
       <!-- Forward -->
-      <td (click)="onForward()" class="sp-td-play-control">
-        <i class="mdi-fast-forward mdi sp-text-big-fixed"></i>
+      <td (click)="onNext()" class="sp-td-play-control">
+        <i [ngClass]="AppPlayerIcons.Next" class="sp-text-big-fixed"></i>
       </td>
       <!-- Menu -->
       <td class="sp-td-play-control sp-text-xlarge-fixed">

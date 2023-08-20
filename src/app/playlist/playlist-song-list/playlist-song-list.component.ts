@@ -77,8 +77,7 @@ export class PlaylistSongListComponent implements OnInit {
       await this.playerService.playByTrack(track);
     }
     else {
-      const tracks = await this.entityService.getTracks(track.playlistId);
-      const sortedTracks = this.utility.sort(tracks, 'sequence');
+      const sortedTracks = this.utility.sort(this.tracks, 'sequence');
       playerList.load(this.currentPlaylist.id, this.currentPlaylist.name, sortedTracks);
       await this.playerService.playByTrack(track);
     }

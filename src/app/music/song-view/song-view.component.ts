@@ -23,6 +23,7 @@ import { In, Not } from 'typeorm';
 })
 export class SongViewComponent implements OnInit {
   public entityEditorModel: IEntityEditorModel;
+  private songId: string;
   private classificationTypes: ValueListEntryEntity[];
   constructor(
     private route: ActivatedRoute,
@@ -35,23 +36,23 @@ export class SongViewComponent implements OnInit {
   { }
 
   ngOnInit(): void {
-    const songId = this.utility.getRouteParam('id', this.route);
-    this.initialize(songId);
+    this.songId = this.utility.getRouteParam('id', this.route);
+    this.initialize();
   }
 
-  private async initialize(songId: string): Promise<void> {
+  private async initialize(): Promise<void> {
     this.loadingService.show();
     this.classificationTypes = await ValueListEntryEntity.findBy({
       valueListTypeId: ValueLists.ClassificationType.id,
       id: Not(ValueLists.ClassificationType.entries.Genre)
     });
-    await this.loadModel(songId);
+    await this.loadModel();
     this.initializeNavbar();
     this.loadingService.hide();
   }
 
-  private async loadModel(songId: string): Promise<void> {
-    const data = await this.entityService.getSongDetails(songId);
+  private async loadModel(): Promise<void> {
+    const data = await this.entityService.getSongDetails(this.songId);
     // Prepare the editor
     this.entityEditorModel = {
       data: data,
@@ -156,7 +157,7 @@ export class SongViewComponent implements OnInit {
     };
     // Add classification fields
     let classifications: ValueListEntryEntity[] = [];
-    const songClassifications = await SongClassificationEntity.findBy({ songId: songId });
+    const songClassifications = await SongClassificationEntity.findBy({ songId: this.songId });
     if (songClassifications.length) {
       classifications = await ValueListEntryEntity.findBy({
         id: In(songClassifications.map(c => c.classificationId))
@@ -190,6 +191,7 @@ export class SongViewComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
+    const favorite = this.entityEditorModel.data['song_favorite'] as number;
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
@@ -211,7 +213,22 @@ export class SongViewComponent implements OnInit {
         action: () => {
           this.navigation.back();
         }
-      }
+      },
+      rightIcons: [{
+        icon: AppAttributeIcons.FavoriteOn,
+        action: iconAction => {
+          this.entityService.setFavoriteSong(this.songId, false).then(response => {
+            iconAction.off = true;
+          });
+        },
+        offIcon: AppAttributeIcons.FavoriteOff,
+        offAction: iconAction => {
+          this.entityService.setFavoriteSong(this.songId, true).then(response => {
+            iconAction.off = false;
+          });
+        },
+        off: !favorite
+      }]
     });
   }
 
