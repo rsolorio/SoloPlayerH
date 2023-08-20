@@ -200,6 +200,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             action: setting => {
               const musicPaths = this.options.getArray(ModuleOptionName.ScanMusicFolderPath);
               if (musicPaths && musicPaths.length) {
+                // If the drive to scan is idle, the scan process might take a time to start and fire events
+                // so disable the setting immediately
+                setting.running = true;
+                setting.disabled = true;
                 this.onFolderScan(musicPaths);
               }
               else {
@@ -245,6 +249,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             action: setting => {
               const playlistPaths = this.options.getArray(ModuleOptionName.ScanPlaylistFolderPath);
               if (playlistPaths && playlistPaths.length) {
+                setting.running = true;
+                setting.disabled = true;
                 this.onPlaylistScan(playlistPaths);
               }
               else {
@@ -260,7 +266,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             id: 'multipleQuickFilters',
             name: 'Multiple Quick Filters',
-            icon: AppActionIcons.Filter,
+            icon: AppFeatureIcons.MultipleFilters,
             dataType: 'boolean',
             secondaryIcon: {
               icon: 'mdi-toggle-switch mdi sp-color-primary',

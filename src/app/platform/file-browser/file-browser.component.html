@@ -8,11 +8,11 @@
 (itemAvatarClick)="itemAvatarClick($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #imageOverlayTemplate>
-    <div class="sp-image-overlay sp-text-big-fixed">
+    <div class="sp-image-overlay sp-text-big-fixed sp-clickable">
       <i class="mdi-folder mdi"></i>
     </div>
   </ng-template>
   <ng-template #infoTemplate let-item="item">
-    <span class="sp-text-large">{{item.name}}</span>
+    <span class="sp-main-text sp-text-large">{{item.name}}</span>
   </ng-template>
 </sp-list-base>

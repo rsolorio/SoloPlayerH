@@ -13,12 +13,15 @@
     </div>
   </ng-template>
   <ng-template #infoTemplate let-item="item">
+    <!-- Recent Indicator -->
     <i
     *ngIf="item.recentIcon && !item.recentIcon.hidden"
     class="sp-color-yellow sp-new-item-icon"
     [ngClass]="[item.recentIcon.icon, item.recentIcon.styleClass]"
     [title]="item.recentIcon.tooltip"></i>
+    <!-- Title -->
     <span class="sp-main-text sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.name}}</span>
+    <!-- Other Indicators -->
     <span *ngIf="songAttributesVisible" class="sp-text-medium">
       <!-- 
         Icon / Color
@@ -41,6 +44,7 @@
       <i *ngIf="item.explicit" class="mdi-alpha-e-box-outline mdi sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
     </span>
     <br>
+    <!-- Extra Info -->
     <span class="sp-color-on-bg-low sp-text-small sp-no-select">
       <i class="mdi-account mdi">&nbsp;</i><span>{{item.artistStylized}}&nbsp;&nbsp;</span>
       <i class="mdi-album mdi">&nbsp;</i><span>{{item.albumName}}&nbsp;&nbsp;</span>

@@ -24,7 +24,6 @@ export class FileBrowserComponent implements OnInit {
   public contentEnabled = false;
 
   // START - LIST BASE
-
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.FileListUpdated,
     itemMenuList: [
@@ -68,8 +67,8 @@ export class FileBrowserComponent implements OnInit {
     },
     prepareItemRender: item => {}
   };
-
   // END - LIST BASE
+
   constructor(
     public broadcastService: FileBrowserBroadcastService,
     private navigation: NavigationService,
