@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-state.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IImagePreviewModel } from './image-preview-model.interface';
+import { AppActionIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-image-preview',
@@ -9,7 +10,7 @@ import { IImagePreviewModel } from './image-preview-model.interface';
   styleUrls: ['./image-preview.component.scss']
 })
 export class ImagePreviewComponent {
-
+  public AppActionIcons = AppActionIcons;
   public model: IImagePreviewModel;
 
   constructor(private utility: UtilityService, private sidebarService: SideBarStateService) { }

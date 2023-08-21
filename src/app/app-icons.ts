@@ -73,6 +73,8 @@ export enum AppAttributeIcons {
 }
 
 export enum AppActionIcons {
+  Add = 'mdi-plus mdi',
+  Edit = 'mdi-pencil-outline mdi',
   CloseClear = 'mdi-close mdi',
   Search = 'mdi-magnify mdi',
   SearchClose = 'mdi-magnify-remove-outline mdi',
@@ -87,18 +89,19 @@ export enum AppActionIcons {
   DotsHorizontal = 'mdi-dots-horizontal mdi',
   ShowSongs = 'mdi-music-box-multiple-outline mdi',
   Scroll = 'mdi-arrow-up-down mdi',
-  Edit = 'mdi-pencil-outline mdi',
   Back = 'mdi-arrow-left mdi',
   ExportData = 'mdi-database-export mdi',
   DeleteData = 'mdi-database-remove mdi',
   SearchData = 'mdi-database-search mdi',
   Debug = 'mdi-bug mdi',
   Test = 'mdi-test-tube mdi',
-  AddPlaylist = 'mdi-playlist-plus mdi',
+  AddToPlaylist = 'mdi-playlist-plus mdi',
   Loading = 'mdi-loading mdi-spin mdi',
   Alternate = 'mdi-shuffle-variant mdi',
   Sync = 'mdi-sync mdi',
-  Scan = 'mdi-magnify-scan mdi'
+  Scan = 'mdi-magnify-scan mdi',
+  Share = 'mdi-share-variant mdi',
+  Download = 'mdi-download mdi'
 }
 
 export enum AppPlayerIcons {

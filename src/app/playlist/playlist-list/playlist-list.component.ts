@@ -59,7 +59,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     },
     rightIcons: [
       {
-        icon: AppActionIcons.AddPlaylist
+        icon: AppActionIcons.Add
       },
       {
         icon: AppActionIcons.Sort,

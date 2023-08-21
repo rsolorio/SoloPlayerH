@@ -10,6 +10,7 @@ import { NavigationService } from 'src/app/shared/services/navigation/navigation
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { AppActionIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-filter-list',
@@ -38,7 +39,7 @@ export class FilterListComponent extends CoreComponent implements OnInit {
         items: []
       },
       rightIcons: [{
-        icon: 'mdi-filter-variant-plus mdi',
+        icon: AppActionIcons.Add,
         action: () => { }
       }],
       searchIconEnabled: true,

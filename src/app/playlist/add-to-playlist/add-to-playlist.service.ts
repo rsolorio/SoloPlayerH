@@ -3,6 +3,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { IAddToPlaylistModel } from './add-to-playlist.interface';
 import { AddToPlaylistComponent } from './add-to-playlist.component';
+import { AppActionIcons, AppAttributeIcons } from 'src/app/app-icons';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,9 @@ export class AddToPlaylistService {
       componentType: AddToPlaylistComponent,
       songs: songs,
       title: 'Add To Playlist',
+      titleIcon: AppActionIcons.AddToPlaylist,
       subTitle: songs[0].name,
-      subTitleIcon: 'mdi-music-note mdi'
+      subTitleIcon: AppAttributeIcons.SongName
     };
     this.sidebarHostService.loadContent(model);
   }

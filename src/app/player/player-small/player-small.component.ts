@@ -12,6 +12,7 @@ import { ImageService } from 'src/app/platform/image/image.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { AppActionIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-player-small',
@@ -44,11 +45,11 @@ export class PlayerSmallComponent extends PlayerComponentBase {
   protected initializeMenu() {
     this.menuList.push({
       caption: 'Add to playlist...',
-      icon: 'mdi mdi-playlist-plus'
+      icon: AppActionIcons.AddToPlaylist
     });
     this.menuList.push({
       caption: 'Share...',
-      icon: 'mdi mdi-share-variant'
+      icon: AppActionIcons.Share
     });
     this.menuList.push({
       caption: 'Log Info',
