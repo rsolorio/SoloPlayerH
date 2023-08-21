@@ -367,7 +367,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
     navbarModel.menuList.push({
       caption: 'Screenshot',
-      icon: AppAttributeIcons.Image,
+      icon: AppActionIcons.Screenshot,
       action: () => {
         this.imageService.getScreenshot().then(result => {
           const imagePreviewModel: IImagePreviewModel = {

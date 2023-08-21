@@ -101,7 +101,10 @@ export enum AppActionIcons {
   Sync = 'mdi-sync mdi',
   Scan = 'mdi-magnify-scan mdi',
   Share = 'mdi-share-variant mdi',
-  Download = 'mdi-download mdi'
+  Download = 'mdi-download mdi',
+  Screenshot = 'mdi-cellphone-screenshot mdi',
+  ResizeUp = 'mdi-resize mdi',
+  ResizeDown = 'mdi-move-resize-variant'
 }
 
 export enum AppPlayerIcons {

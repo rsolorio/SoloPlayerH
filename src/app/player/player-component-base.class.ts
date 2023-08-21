@@ -29,7 +29,7 @@ import { IImagePreviewModel } from '../related-image/image-preview/image-preview
 import { ImagePreviewComponent } from '../related-image/image-preview/image-preview.component';
 import { SideBarHostStateService } from '../core/components/side-bar-host/side-bar-host-state.service';
 import { ChipSelectionComponent } from '../shared/components/chip-selection/chip-selection.component';
-import { AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } from '../app-icons';
+import { AppActionIcons, AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } from '../app-icons';
 
 /**
  * Base component for any implementation of the player modes.
@@ -98,14 +98,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     // TODO: this should not be displayed in cordova mode
     this.menuList.push({
       caption: 'Mobile Size',
-      icon: 'mdi-cellphone mdi',
+      icon: AppFeatureIcons.Mobile,
       action: () => {
         this.dialogService.resizeWindow(this.utilityService.getSmallFormFactor());
       }
     });
     this.menuList.push({
       caption: 'Screenshot',
-      icon: 'mdi-image-outline mdi',
+      icon: AppActionIcons.Screenshot,
       action: () => {
         this.takeScreenshot();
       },
