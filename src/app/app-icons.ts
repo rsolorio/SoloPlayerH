@@ -34,7 +34,7 @@ export enum AppAttributeIcons {
   ClassificationType = 'mdi-shape mdi',
   Language = 'mdi-translate mdi',
   Mood = 'mdi-emoticon-outline mdi',
-  Year = 'mdi-calendar-month mdi',
+  Year = 'mdi-calendar mdi',
   Decade = 'mdi-calendar-blank mdi',
   RatingOn = 'mdi-star mdi',
   RatingOff = 'mdi-star-outline mdi',

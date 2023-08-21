@@ -31,7 +31,7 @@ class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-he
         [ngClass]="{ 'sp-color-playing': playlistSong.song.playerStatus === PlayerSongStatus.Playing }"
         >{{playlistSong.song.name}}</span>
         <br>
-        <span class="sp-text-small sp-no-select">
+        <span class="sp-color-on-bg-low sp-text-small sp-no-select" [ngClass]="{ 'sp-color-primary-low': playlistSong.song.playerStatus === PlayerSongStatus.Playing }">
           <i class="mdi-account mdi">&nbsp;</i>
           <span>{{playlistSong.song.artistStylized}}&nbsp;&nbsp;&nbsp;</span>
           <i class="mdi-album mdi">&nbsp;</i>

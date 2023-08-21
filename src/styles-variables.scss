@@ -138,6 +138,7 @@ $sp-color-background-selected: rgba($sp-color-cyan, $sp-opacity-selected);
 
 // Primary
 $sp-color-primary: $sp-color-cyan;
+$sp-color-primary-low: rgba($sp-color-primary, $sp-opacity-low);
 $sp-color-on-primary: $sp-color-gray-dark;
 // Primary Variant
 $sp-color-primary-variant: $sp-color-cyan-dark;
