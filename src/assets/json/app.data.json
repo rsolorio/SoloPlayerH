@@ -401,7 +401,7 @@
         "sequence": 11
       },
       {
-        "//": "AlbumType",
+        "//": "ALBUMTYPE",
         "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
         "name": "Compilation",
         "isClassification": false,
@@ -451,7 +451,7 @@
         "sequence": 8
       },
       {
-        "//": "ArtistType",
+        "//": "ARTISTTYPE",
         "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
         "name": "Solo - Male",
         "isClassification": false,
@@ -764,39 +764,33 @@
       },
       {
         "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
-        "name": "Quotes",
+        "name": "Relationship",
         "isClassification": true,
         "sequence": 19
       },
       {
         "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
-        "name": "Relationship",
+        "name": "Ringtone",
         "isClassification": true,
         "sequence": 20
       },
       {
         "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
-        "name": "Ringtone",
+        "name": "Sports",
         "isClassification": true,
         "sequence": 21
       },
       {
         "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
-        "name": "Sports",
+        "name": "Supergroup",
         "isClassification": true,
         "sequence": 22
       },
       {
         "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
-        "name": "Supergroup",
-        "isClassification": true,
-        "sequence": 23
-      },
-      {
-        "valueListTypeId": "9442c907-1e72-4c54-9c1d-d0c731a604af",
         "name": "Weird Voice",
         "isClassification": true,
-        "sequence": 24
+        "sequence": 23
       },
       {
         "//": "INSTRUMENT",

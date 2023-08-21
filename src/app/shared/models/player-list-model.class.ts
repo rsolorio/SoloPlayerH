@@ -8,6 +8,7 @@ import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";
 import { IPlaylistSongModel } from "./playlist-song-model.interface";
 import { ISongModel } from "./song-model.interface";
 import { ImageSrcType } from "src/app/core/models/core.enum";
+import { fisherYatesShuffle } from "src/app/app-exports";
 
 /**
  * Class responsible for handling the access to the tracks and updating the playlist status.
@@ -312,20 +313,7 @@ export class PlayerListModel implements IDbModel {
 
   private reloadPlayModeItemsRandom() {
     this.playModeItems = this.items.slice();
-
-    // Performs a Fisher-Yates shuffle
-    // https://bost.ocks.org/mike/shuffle/
-    let lastIndex = this.playModeItems.length;
-    while (lastIndex) {
-      // Get a random index with the max value of the last index
-      const randomIndex = Math.floor(Math.random() * lastIndex--);
-      //  Temporarily save the last "unpicked" item of the array
-      const lastItem = this.playModeItems[lastIndex];
-      // Place the random item at the end of the array
-      this.playModeItems[lastIndex] = this.playModeItems[randomIndex];
-      // Place the unpicked item in the spot where we picked the random item
-      this.playModeItems[randomIndex] = lastItem;
-    }
+    fisherYatesShuffle(this.playModeItems);
   }
 
   private reloadPlayModeItemsSmart() {

@@ -174,6 +174,9 @@ export class DatabaseEntitiesService {
       .getRawOne();
   }
 
+  /**
+   * Get the tracks from the specified playlist ordered by sequence.
+   */
   public getTracks(playlistId: string): Promise<PlaylistSongEntity[]> {
     return PlaylistSongEntity
       .getRepository()

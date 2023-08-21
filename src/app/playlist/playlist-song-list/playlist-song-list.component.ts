@@ -8,8 +8,9 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
-import { AppActionIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
+import { fisherYatesShuffle } from 'src/app/app-exports';
 
 /**
  * Component that represents the playlist song list view.
@@ -46,7 +47,6 @@ export class PlaylistSongListComponent implements OnInit {
 
   private async initializeNavbar(playlistId: string): Promise<void> {
     this.currentPlaylist = await PlaylistEntity.findOneBy({ id: playlistId});
-    const routeInfo = appRoutes[AppRoute.Playlists];
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
@@ -61,7 +61,22 @@ export class PlaylistSongListComponent implements OnInit {
         action: () => {
           this.navigation.back();
         }
-      }
+      },
+      rightIcons: [{
+        icon: AppPlayerIcons.ShuffleOn,
+        // Shuffle the tracks and add the playlist as a brand new playlist and not this one
+        action: () => {
+          // Create a copy of the playlist
+          const playlistCopy = this.tracks.slice();
+          // Shuffle it
+          fisherYatesShuffle(playlistCopy);
+          // Load it
+          const playerList = this.playerService.getState().playerList;
+          playerList.load(this.utility.newGuid(), this.currentPlaylist.name + ' (shuffle)', playlistCopy);
+          // Play it
+          this.playerService.playFirst();
+        }
+      }]
     });
   }
 
@@ -76,8 +91,7 @@ export class PlaylistSongListComponent implements OnInit {
       await this.playerService.playByTrack(track);
     }
     else {
-      const sortedTracks = this.utility.sort(this.tracks, 'sequence');
-      playerList.load(this.currentPlaylist.id, this.currentPlaylist.name, sortedTracks);
+      playerList.load(this.currentPlaylist.id, this.currentPlaylist.name, this.tracks);
       await this.playerService.playByTrack(track);
     }
   }
