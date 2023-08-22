@@ -104,7 +104,11 @@ export enum AppActionIcons {
   Download = 'mdi-download mdi',
   Screenshot = 'mdi-cellphone-screenshot mdi',
   ResizeUp = 'mdi-resize mdi',
-  ResizeDown = 'mdi-move-resize-variant'
+  ResizeDown = 'mdi-move-resize-variant',
+  Import = 'mdi-application-import mdi',
+  Export = 'mdi-application-export mdi',
+  ImportToDb = 'mdi-database-import mdi',
+  ExportFromDb = 'mdi-database-export mdi'
 }
 
 export enum AppPlayerIcons {

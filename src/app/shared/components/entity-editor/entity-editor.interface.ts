@@ -1,3 +1,5 @@
+import { ValueEditorType } from "src/app/core/models/core.enum";
+
 export interface IEntityEditorModel {
   data: any;
   groups: IEntityGroupModel[];
@@ -9,6 +11,7 @@ export interface IEntityFieldModel {
   label: string;
   labelVisible?: boolean;
   badge?: string;
+  editorType?: ValueEditorType;
   onEdit?: (field: IEntityFieldModel) => void;
 }
 

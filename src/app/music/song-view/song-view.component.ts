@@ -5,12 +5,13 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { IEntityEditorModel, IEntityFieldModel } from 'src/app/shared/components/entity-editor/entity-editor.interface';
-import { SongClassificationEntity, ValueListEntryEntity } from 'src/app/shared/entities';
+import { SongClassificationEntity, SongEntity, ValueListEntryEntity } from 'src/app/shared/entities';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -54,6 +55,43 @@ export class SongViewComponent implements OnInit {
   private async loadModel(): Promise<void> {
     const data = await this.entityService.getSongDetails(this.songId);
     // Prepare the editor
+    this.setupModel(data);
+    // Add classification fields
+    let classifications: ValueListEntryEntity[] = [];
+    const songClassifications = await SongClassificationEntity.findBy({ songId: this.songId });
+    if (songClassifications.length) {
+      classifications = await ValueListEntryEntity.findBy({
+        id: In(songClassifications.map(c => c.classificationId))
+      });
+    }
+    for (const classificationType of this.classificationTypes) {
+      // Default value
+      data[classificationType.name] = '<None>';
+      // Find out if there's data
+      const entries = classifications.filter(
+        c => c.valueListTypeId === classificationType.id);
+      if (entries.length) {
+        data[classificationType.name] = entries.map(s => s.name).join(', ');
+        // Hack: save a list of selected ids in case we need to edit
+        data[classificationType.id] = entries.map(s => s.id);
+      }
+      // Create the field
+      this.entityEditorModel.groups.push({ fields: [{
+        propertyName: classificationType.name,
+        icon: this.getClassificationTypeIcon(classificationType.id),
+        label: classificationType.name,
+        onEdit: () => {
+          let selectedEntries: string[] = [];
+          if (this.entityEditorModel.data[classificationType.id]) {
+            selectedEntries = this.entityEditorModel.data[classificationType.id];
+          }
+          this.editClassification(classificationType.id, classificationType.name, selectedEntries);
+        }
+      }]});
+    }
+  }
+
+  private setupModel(data: any): void {
     this.entityEditorModel = {
       data: data,
       groups: [
@@ -146,6 +184,38 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
+              propertyName: 'song_live',
+              icon: AppAttributeIcons.LiveOn,
+              label: 'Live',
+              editorType: ValueEditorType.YesNo,
+              onEdit: () => {
+                SongEntity.findOneBy({ id: this.songId }).then(song => {
+                  song.live = !this.entityEditorModel.data['song_live'];
+                  song.save().then(() => {
+                    this.entityEditorModel.data['song_live'] = song.live;
+                  });
+                });
+              }
+            },
+            {
+              propertyName: 'song_explicit',
+              icon: AppAttributeIcons.Explicit,
+              label: 'Explicit',
+              editorType: ValueEditorType.YesNo,
+              onEdit: () => {
+                SongEntity.findOneBy({ id: this.songId }).then(song => {
+                  song.explicit = !this.entityEditorModel.data['song_explicit'];
+                  song.save().then(() => {
+                    this.entityEditorModel.data['song_explicit'] = song.explicit;
+                  });
+                });
+              }
+            }
+          ]
+        },
+        {
+          fields: [
+            {
               propertyName: 'song_grouping',
               icon: AppAttributeIcons.Grouping,
               label: 'Grouping',
@@ -155,39 +225,6 @@ export class SongViewComponent implements OnInit {
         }
       ]
     };
-    // Add classification fields
-    let classifications: ValueListEntryEntity[] = [];
-    const songClassifications = await SongClassificationEntity.findBy({ songId: this.songId });
-    if (songClassifications.length) {
-      classifications = await ValueListEntryEntity.findBy({
-        id: In(songClassifications.map(c => c.classificationId))
-      });
-    }
-    for (const classificationType of this.classificationTypes) {
-      // Default value
-      data[classificationType.name] = '<None>';
-      // Find out if there's data
-      const entries = classifications.filter(
-        c => c.valueListTypeId === classificationType.id);
-      if (entries.length) {
-        data[classificationType.name] = entries.map(s => s.name).join(', ');
-        // Hack: save a list of selected ids in case we need to edit
-        data[classificationType.id] = entries.map(s => s.id);
-      }
-      // Create the field
-      this.entityEditorModel.groups.push({ fields: [{
-        propertyName: classificationType.name,
-        icon: this.getClassificationTypeIcon(classificationType.id),
-        label: classificationType.name,
-        onEdit: () => {
-          let selectedEntries: string[] = [];
-          if (this.entityEditorModel.data[classificationType.id]) {
-            selectedEntries = this.entityEditorModel.data[classificationType.id];
-          }
-          this.editClassification(classificationType.id, classificationType.name, selectedEntries);
-        }
-      }]});
-    }
   }
 
   private initializeNavbar(): void {

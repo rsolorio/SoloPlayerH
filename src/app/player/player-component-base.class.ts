@@ -97,6 +97,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   protected initializeMenu() {
     // TODO: this should not be displayed in cordova mode
     this.menuList.push({
+      caption: 'Toggle Explicit',
+      icon: AppAttributeIcons.Explicit,
+      action: () => {
+      },
+      actionTimeout: 300
+    });
+    this.menuList.push({ isSeparator: true });
+    this.menuList.push({
       caption: 'Mobile Size',
       icon: AppFeatureIcons.Mobile,
       action: () => {

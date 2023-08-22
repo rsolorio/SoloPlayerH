@@ -13,7 +13,8 @@
     (click)="onPrependClick(field)"
     >{{field.label}}</span>
     <!-- Input -->
-    <input type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>
+    <input *ngIf="field.editorType !== ValueEditorType.YesNo" type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>
+    <input *ngIf="field.editorType === ValueEditorType.YesNo" type="text" [ngModel]="getYesNoValue(field)" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>
     <!-- Edit Icon -->
     <span *ngIf="field.onEdit" (click)="field.onEdit(field)" class="sp-input-edit sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
     <!-- Badge -->
