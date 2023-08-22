@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IStateService } from 'src/app/core/models/core.interface';
 import { ISetting, ISettingCategory } from './settings-model.interface';
-import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
+import { ModuleOptionId, SyncProfileId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { PlaylistEntity, PlaylistSongEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -189,7 +189,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             icon: AppAttributeIcons.AudioDirectory,
             dataType: 'text',
             action: () => {
-              this.showFileBrowserAndSave(ModuleOptionName.ScanMusicFolderPath);
+              this.showFileBrowserAndSave(SyncProfileId.DefaultAudioImport);
             }
           },
           {
@@ -197,14 +197,14 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             name: 'Sync Audio Files',
             icon: AppActionIcons.Sync,
             dataType: 'text',
-            action: setting => {
-              const musicPaths = this.options.getArray(ModuleOptionName.ScanMusicFolderPath);
-              if (musicPaths && musicPaths.length) {
+            action: async setting => {
+              const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
+              if (syncProfile.directories && syncProfile.directories.length) {
                 // If the drive to scan is idle, the scan process might take a time to start and fire events
                 // so disable the setting immediately
                 setting.running = true;
                 setting.disabled = true;
-                this.onFolderScan(musicPaths);
+                this.onFolderScan(syncProfile.directories);
               }
               else {
                 setting.warningText = 'Unable to start sync. Please select the audio directory first.';
@@ -238,7 +238,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             icon: AppAttributeIcons.PlaylistDirectory,
             dataType: 'text',
             action: () => {
-              this.showFileBrowserAndSave(ModuleOptionName.ScanPlaylistFolderPath);
+              this.showFileBrowserAndSave(SyncProfileId.DefaultPlaylistImport);
             }
           },
           {
@@ -246,12 +246,12 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             name: 'Scan Playlist Files',
             icon: AppActionIcons.Scan,
             dataType: 'text',
-            action: setting => {
-              const playlistPaths = this.options.getArray(ModuleOptionName.ScanPlaylistFolderPath);
-              if (playlistPaths && playlistPaths.length) {
+            action: async setting => {
+              const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
+              if (syncProfile.directories && syncProfile.directories.length) {
                 setting.running = true;
                 setting.disabled = true;
-                this.onPlaylistScan(playlistPaths);
+                this.onPlaylistScan(syncProfile.directories);
               }
               else {
                 setting.warningText = 'Unable to start scan. Please select the playlist directory first.';
@@ -278,7 +278,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
               'If turned on, the quick filter panel will allow to select multiple filters; you need to click OK to apply the changes.'
             ],
             action: setting => {
-              this.options.saveBoolean(ModuleOptionName.AllowMultipleQuickFilters, setting.secondaryIcon.off).then(() => {
+              this.options.saveBoolean(ModuleOptionId.AllowMultipleQuickFilters, setting.secondaryIcon.off).then(() => {
                 setting.secondaryIcon.off = !setting.secondaryIcon.off;
               });
             }
@@ -331,10 +331,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     this.refreshStatistics();
 
     let setting = this.findSetting('audioDirectory');
-    const musicPaths = this.options.getArray(ModuleOptionName.ScanMusicFolderPath);
+    const audioSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
     setting.descriptions = [
       ' Click here to set the sync directories for audio.',
-      `Directories: <br><span class="sp-color-primary">${(musicPaths?.length ? musicPaths.join('<br>') : '[Not Selected]')}</span>`
+      `Directories: <br><span class="sp-color-primary">${(audioSyncProfile.directories?.length ? audioSyncProfile.directories.join('<br>') : '[Not Selected]')}</span>`
     ];
 
     setting = this.findSetting('syncAudioFiles');
@@ -346,10 +346,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     setting.warningText = '';
 
     setting = this.findSetting('playlistDirectory');
-    const playlistPaths = this.options.getArray(ModuleOptionName.ScanPlaylistFolderPath);
+    const playlistSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
     setting.descriptions = [
       'Click here to set the scan directory for playlists',
-      `Directories: <br><span class="sp-color-primary">${(playlistPaths?.length ? playlistPaths.join('<br>') : '[Not Selected]')}</span>`
+      `Directories: <br><span class="sp-color-primary">${(playlistSyncProfile.directories?.length ? playlistSyncProfile.directories.join('<br>') : '[Not Selected]')}</span>`
     ];
 
     setting = this.findSetting('processPlaylists');
@@ -361,7 +361,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     setting.warningText = '';
 
     setting = this.findSetting('multipleQuickFilters');
-    const multipleQuickFilters = this.options.getBoolean(ModuleOptionName.AllowMultipleQuickFilters);
+    const multipleQuickFilters = this.options.getBoolean(ModuleOptionId.AllowMultipleQuickFilters);
     setting.secondaryIcon.off = !multipleQuickFilters;
   }
 
@@ -459,13 +459,15 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     return null;
   }
 
-  private showFileBrowserAndSave(optionToSave: ModuleOptionName): void {
+  private showFileBrowserAndSave(syncProfileId: string): void {
     // The onOk callback will be executed on the browser component
     const browserModel: IFileBrowserModel = {
       backRoute: AppRoute.Settings,
       onOk: async values => {
         // save value in DB
-        await this.options.saveText(optionToSave, values.map(v => v.fileInfo.path));
+        const syncProfile = await this.entities.getSyncProfile(syncProfileId);
+        syncProfile.directories = values.map(v => v.fileInfo.path);
+        await this.entities.saveSyncProfile(syncProfile);
         return true;
       }
     };

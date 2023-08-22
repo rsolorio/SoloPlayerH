@@ -11,7 +11,7 @@ import { DatabaseLookupService } from 'src/app/shared/services/database/database
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { SideBarStateService } from 'src/app/core/components/side-bar/side-bar-state.service';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
-import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
+import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 
 @Component({
   selector: 'sp-add-to-playlist',
@@ -136,7 +136,7 @@ export class AddToPlaylistComponent implements OnInit {
   private async addSongsToPlaylist(songs: ISongModel[], playlistId: string): Promise<void> {
     let trackAdded = false;
     let sequence = await PlaylistSongEntity.countBy({ playlistId: playlistId });
-    const allowDuplicates = this.options.getBoolean(ModuleOptionName.AllowDupsInPlaylists);
+    const allowDuplicates = this.options.getBoolean(ModuleOptionId.AllowDupsInPlaylists);
     for (const song of songs) {
       let existingPlaylistSong: PlaylistSongEntity;
       if (!allowDuplicates) {

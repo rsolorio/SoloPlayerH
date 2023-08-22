@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ModuleOptionEntity } from '../../entities';
 import { DatabaseLookupService } from './database-lookup.service';
-import { ModuleOptionEditor, ModuleOptionName } from '../../models/module-option.enum';
+import { ValueEditorType } from 'src/app/core/models/core.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -14,25 +14,25 @@ export class DatabaseOptionsService {
     this.options = await ModuleOptionEntity.find();
   }
 
-  public getArray(moduleOptionName: string): string[] {
-    const moduleOption = this.lookup.findModuleOption(moduleOptionName, this.options);
-    if (moduleOption.valueEditorType !== ModuleOptionEditor.Text) {
+  public getArray(id: string): string[] {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
+    if (moduleOption.valueEditorType !== ValueEditorType.Text) {
       // TODO:
     }
     return JSON.parse(moduleOption.values) as string[];
   }
 
-  public getBoolean(moduleOptionName: string): boolean {
-    const moduleOption = this.lookup.findModuleOption(moduleOptionName, this.options);
-    if (moduleOption.valueEditorType !== ModuleOptionEditor.YesNo) {
+  public getBoolean(id: string): boolean {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
+    if (moduleOption.valueEditorType !== ValueEditorType.YesNo) {
       // TODO:
     }
     return JSON.parse(moduleOption.values) as boolean;
   }
 
-  public getText(moduleOptionName: string): string {
-    const moduleOption = this.lookup.findModuleOption(moduleOptionName, this.options);
-    if (moduleOption.valueEditorType !== ModuleOptionEditor.YesNo) {
+  public getText(id: string): string {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
+    if (moduleOption.valueEditorType !== ValueEditorType.YesNo) {
       // TODO:
     }
     if (moduleOption.values) {
@@ -41,8 +41,8 @@ export class DatabaseOptionsService {
     return null;
   }
 
-  public getNumber(moduleOptionName: string): number {
-    const moduleOption = this.lookup.findModuleOption(moduleOptionName, this.options);
+  public getNumber(id: string): number {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
     if (moduleOption.values) {
       const numericValue = JSON.parse(moduleOption.values) as number;
       if (!Number.isNaN(numericValue) && numericValue > 0) {
@@ -52,8 +52,8 @@ export class DatabaseOptionsService {
     return 0;
   }
 
-  public async saveText(name: ModuleOptionName, values: string[]): Promise<void> {
-    const moduleOption = this.lookup.findModuleOption(name, this.options);
+  public async saveText(id: string, values: string[]): Promise<void> {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
     if (moduleOption) {
       if (moduleOption.multipleValues) {
         moduleOption.values = JSON.stringify(values);
@@ -65,18 +65,18 @@ export class DatabaseOptionsService {
     }
   }
 
-  public async saveBoolean(name: ModuleOptionName, value: boolean): Promise<void> {
-    const moduleOption = this.lookup.findModuleOption(name, this.options);
+  public async saveBoolean(id: string, value: boolean): Promise<void> {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
     if (moduleOption) {
       moduleOption.values = JSON.stringify(value);
       await moduleOption.save();
     }
   }
 
-  public async refreshOptionValues(name: ModuleOptionName): Promise<void> {
-    const dbModuleOption = await this.lookup.lookupModuleOption(name);
+  public async refreshOptionValues(id: string): Promise<void> {
+    const dbModuleOption = await this.lookup.lookupModuleOption(id);
     if (dbModuleOption) {
-      const cacheModuleOption = this.lookup.findModuleOption(name, this.options);
+      const cacheModuleOption = this.lookup.findModuleOption(id, this.options);
       if (cacheModuleOption) {
         cacheModuleOption.values = dbModuleOption.values;
       }

@@ -23,3 +23,27 @@ export enum RelatedImageSrc {
 export enum EntityId {
   ArtistVarious = '85904485-14b3-4d3c-a5ef-f9277e38c480'
 }
+
+export enum ModuleOptionId {
+  ArtistSplitCharacters = 'cc11be68-0024-4c71-a49c-d9ad334f6ef7',
+  GenreSplitCharacters = '838ba832-f509-4eec-8086-87b342207125',
+  ExpandPlayerOnSongPlay = '28ee7f59-8e9e-405b-8840-14c4cf6fe57c',
+  ScanMusicFolderPath = 'ScanMusicFolderPath',
+  ScanPlaylistFolderPath = 'ScanPlaylistFolderPath',
+  HideNavbarOnScroll = '8d440dcc-8d43-498a-b500-06353c2e4a81',
+  PlayerReplayTime = '1d6c47a9-451c-4ea4-a40d-38f4a8195201',
+  PlayerForwardTime = '3c6d07e4-3170-45f9-bd73-d4a54cc17059',
+  AllowDupsInPlaylists = '9a748b8e-fd4d-4e6a-b823-de1b46f83d98',
+  AllowMultipleQuickFilters = '110bb054-c5ba-481a-a26f-4c5249e96d83',
+  LongPlayArtistThreshold = 'c91d9fab-2b6b-42ac-960d-05c0a6463c19',
+  LongPlayAlbumThreshold = '9c9da962-47a4-4956-8556-e74cae38b4b8',
+  LongPlaySongThreshold = 'b160a72f-da26-4690-ac07-ae17957a9fdd',
+  IgnoreNumericGenres = '3f4b56c7-167c-4807-afc2-1b6460b7822d',
+  ListViewLimit = '05543fcf-c0fe-4608-8187-41c68e4bd1c3'
+}
+
+export enum SyncProfileId {
+  DefaultAudioImport = 'ef4c2f46-8803-4dc8-b937-2c8ffb150a62',
+  DefaultPlaylistImport = '2b5878c0-3bcb-46f6-9c0d-c0d5a5049655',
+  DefaultExport = '5021cccd-eafc-46ae-b521-f075dda9e105'
+}

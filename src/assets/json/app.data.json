@@ -13,162 +13,131 @@
     ],
     "moduleOption": [
       {
-        "name": "ScanMusicFolderPath",
+        "id": "cc11be68-0024-4c71-a49c-d9ad334f6ef7",
+        "name": "Artist split characters",
         "moduleName": "Music",
-        "title": "Music Folder Path",
-        "description": "Directory paths to look for audio files.",
-        "valueEditorType": "Text",
-        "multipleValues": true,
-        "system": false,
-        "values": "[]"
-      },
-      {
-        "name": "ScanPlaylistFolderPath",
-        "moduleName": "Music",
-        "title": "Playlist Folder Path",
-        "description": "Directory path to look for playlist files.",
-        "valueEditorType": "Text",
-        "multipleValues": true,
-        "system": false,
-        "values": "[]"
-      },
-      {
-        "name": "ArtistSplitCharacters",
-        "moduleName": "Music",
-        "title": "Artist Split Characters",
         "description": "Symbols to be used to split the Artist tag into multiple artists.",
-        "valueEditorType": "Text",
+        "valueEditorType": "text",
         "multipleValues": true,
         "system": false,
         "values": "[\"\\\\\"]"
       },
       {
-        "name": "GenreSplitCharacters",
+        "id": "838ba832-f509-4eec-8086-87b342207125",
+        "name": "Genre split characters",
         "moduleName": "Music",
-        "title": "Genre Split Characters",
         "description": "Symbols to be used to split the Genre tag into multiple genres.",
-        "valueEditorType": "Text",
+        "valueEditorType": "text",
         "multipleValues": true,
         "system": false,
         "values": "[\"\\\\\"]"
       },
       {
-        "name": "ExpandPlayerOnSongPlay",
+        "id": "28ee7f59-8e9e-405b-8840-14c4cf6fe57c",
+        "name": "Expand player on song play",
         "moduleName": "Music",
-        "title": "Expand Player On Song Play",
         "description": "Whether or not the full player should be expanded when a song starts to played from the song list.",
-        "valueEditorType": "YesNo",
+        "valueEditorType": "yesNo",
         "multipleValues": false,
         "system": false,
         "values": "true"
       },
       {
-        "name": "HideNavbarOnScroll",
+        "id": "8d440dcc-8d43-498a-b500-06353c2e4a81",
+        "name": "Hide navbar on scroll",
         "moduleName": "Music",
-        "title": "Hide Navbar On Scroll",
         "description": "Automatically hide the navbar when scrolling down; this will give more vertical space to the lists. To show the navbar just scroll up.",
-        "valueEditorType": "YesNo",
+        "valueEditorType": "yesNo",
         "multipleValues": false,
         "system": false,
         "values": "true"
       },
       {
-        "name": "ScanSongMetadataReader",
-        "moduleName": "Music",
-        "title": "Data mapping profile for scanning songs",
-        "description": "Profile that contains the mappings to read metadata from a song and save it to the database during the scan process using the songDbProcessor.",
-        "valueEditorType": "ValueList",
-        "valueListTypeId": "02d80294-90fa-472b-a2c5-459030b48e36",
-        "multipleValues": false,
-        "system": true,
-        "values": "\"ef4c2f46-8803-4dc8-b937-2c8ffb150a62\""
-      },
-      {
-        "name": "PlayerReplayTime",
+        "id": "1d6c47a9-451c-4ea4-a40d-38f4a8195201",
+        "name": "Player replay time",
         "moduleName": "Player",
-        "title": "Player replay time",
         "description": "Amount of time in seconds to go back when replaying a track.",
-        "valueEditorType": "Number",
+        "valueEditorType": "number",
         "multipleValues": false,
         "system": false,
         "values": "10"
       },
       {
-        "name": "PlayerForwardTime",
+        "id": "3c6d07e4-3170-45f9-bd73-d4a54cc17059",
+        "name": "Player forward time",
         "moduleName": "Player",
-        "title": "Player forward time",
         "description": "Amount of time in seconds to go forward when playing a track.",
-        "valueEditorType": "Number",
+        "valueEditorType": "number",
         "multipleValues": false,
         "system": false,
         "values": "30"
       },
       {
-        "name": "LongPlayArtistThreshold",
+        "id": "c91d9fab-2b6b-42ac-960d-05c0a6463c19",
+        "name": "Long play artist threshold",
         "moduleName": "Music",
-        "title": "Long play artist threshold",
         "description": "The minimum number of tracks associated to an album artist to be considered a long play artist.",
-        "valueEditorType": "Number",
+        "valueEditorType": "number",
         "multipleValues": false,
         "system": false,
         "values": "5"
       },
       {
-        "name": "LongPlayAlbumThreshold",
+        "id": "9c9da962-47a4-4956-8556-e74cae38b4b8",
+        "name": "Long play album threshold",
         "moduleName": "Music",
-        "title": "Long play album threshold",
         "description": "The minimum number of tracks in an album to be considered a long play album.",
-        "valueEditorType": "Number",
+        "valueEditorType": "number",
         "multipleValues": false,
         "system": false,
         "values": "5"
       },
       {
-        "name": "LongPlaySongThreshold",
+        "id": "b160a72f-da26-4690-ac07-ae17957a9fdd",
+        "name": "Long play song threshold",
         "moduleName": "Music",
-        "title": "Short play song threshold",
         "description": "The minimum duration, in seconds, for a song to be considered a long play song.",
-        "valueEditorType": "Number",
+        "valueEditorType": "number",
         "multipleValues": false,
         "system": false,
         "values": "120"
       },
       {
-        "name": "AllowDupsInPlaylists",
+        "id": "9a748b8e-fd4d-4e6a-b823-de1b46f83d98",
+        "name": "Allow duplicates in playlists",
         "moduleName": "Playlist",
-        "title": "Allow dups in playlists",
         "description": "Allow to add a song that was already added to that playlist.",
-        "valueEditorType": "YesNo",
+        "valueEditorType": "yesNo",
         "multipleValues": false,
         "system": false,
         "values": "false"
       },
       {
-        "name": "AllowMultipleQuickFilters",
+        "id": "110bb054-c5ba-481a-a26f-4c5249e96d83",
+        "name": "Allow multiple quick filters",
         "moduleName": "Filter",
-        "title": "Allow multiple quick filters",
         "description": "Allow the user to apply multiple quick filters instead of just one. This feature implies an extra click for the user.",
-        "valueEditorType": "YesNo",
+        "valueEditorType": "yesNo",
         "multipleValues": false,
         "system": false,
         "values": "false"
       },
       {
-        "name": "IgnoreNumericGenres",
+        "id": "3f4b56c7-167c-4807-afc2-1b6460b7822d",
+        "name": "Ignore numeric genres",
         "moduleName": "Music",
-        "title": "Ignore numeric genres",
         "description": "Ignore genres with numeric values during the audio scan process. Usually genres with a number are bugs or don't mean anything.",
-        "valueEditorType": "YesNo",
+        "valueEditorType": "yesNo",
         "multipleValues": false,
         "system": false,
         "values": "true"
       },
       {
-        "name": "ListViewLimit",
+        "id": "05543fcf-c0fe-4608-8187-41c68e4bd1c3",
+        "name": "List view limit",
         "moduleName": "Music",
-        "title": "List view limit",
         "description": "Maximum number of items to be loaded in a list view. This option applies to Classifications, Album Artists, Artists, Albums, Songs.",
-        "valueEditorType": "Number",
+        "valueEditorType": "number",
         "multipleValues": false,
         "system": false,
         "values": "1000"
@@ -1023,6 +992,28 @@
         "name": "QuickFilters",
         "isClassification": false,
         "sequence": 2
+      }
+    ],
+    "syncProfile": [
+      {
+        "id": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
+        "name": "Default Audio Import Configuration",
+        "description": "Profile that contains the data sources to read metadata from a song and save it to the database.",
+        "syncType": "import",
+        "system": true
+      },
+      {
+        "id": "2b5878c0-3bcb-46f6-9c0d-c0d5a5049655",
+        "name": "Default Playlist Import Configuration",
+        "description": "Profile to specify the directory to look for playlist files.",
+        "syncType": "import",
+        "system": true
+      },
+      {
+        "id": "5021cccd-eafc-46ae-b521-f075dda9e105",
+        "name": "Default Export Configuration",
+        "syncType": "export",
+        "system": true
       }
     ],
     "dataSource": [

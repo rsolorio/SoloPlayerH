@@ -6,10 +6,10 @@ import { ListItemEntity } from "./base.entity";
 export class ModuleOptionEntity extends ListItemEntity implements IModuleOptionModel {
   @Column()
   moduleName: string;
-  @Column()
-  title: string;
   @Column({ nullable: true })
   description: string;
+  @Column({ nullable: true })
+  icon: string;
   @Column()
   valueEditorType: string;
   @Column()

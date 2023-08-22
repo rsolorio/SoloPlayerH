@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlbumEntity, ArtistEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity, ValueListEntryEntity } from '../../entities';
+import { AlbumEntity, ArtistEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
@@ -15,10 +15,11 @@ import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.en
 import { IFilterModel } from '../../models/filter-model.interface';
 import { ChipSelectionComponent } from '../../components/chip-selection/chip-selection.component';
 import { DatabaseOptionsService } from './database-options.service';
-import { ModuleOptionName } from '../../models/module-option.enum';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ValueLists } from './database.lists';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
+import { ModuleOptionId } from './database.seed';
+import { ISyncProfileParsed } from '../../models/sync-profile-model.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -305,6 +306,28 @@ export class DatabaseEntitiesService {
     return result;
   }
 
+  public async getSyncProfile(id: string): Promise<ISyncProfileParsed> {
+    const entity = await SyncProfileEntity.findOneBy({ id: id });
+    return {
+      id: entity.id,
+      name: entity.name,
+      description: entity.description,
+      directories: entity.directories ? JSON.parse(entity.directories) : null,
+      config: entity.config ? JSON.parse(entity.config) : null,
+      syncInfo: entity.syncInfo ? JSON.parse(entity.syncInfo) : null,
+      syncDate: entity.syncDate
+    };
+  }
+
+  public async saveSyncProfile(data: ISyncProfileParsed): Promise<void> {
+    const syncProfile = await SyncProfileEntity.findOneBy({ id: data.id });
+    syncProfile.directories = data.directories ? JSON.stringify(data.directories) : null;
+    syncProfile.config = data.config ? JSON.stringify(data.config) : null;
+    syncProfile.syncInfo = data.syncInfo ? JSON.stringify(data.syncInfo) : null;
+    syncProfile.syncDate = data.syncDate;
+    await syncProfile.save();
+  }
+
   public async getCriteriaFromFilter(filter: IFilterModel): Promise<Criteria> {
     const filterCriteria = await FilterCriteriaEntity.findOneBy({ id: filter.filterCriteriaId });
     const filterCriteriaItems = await FilterCriteriaItemEntity.findBy({ filterCriteriaId: filter.filterCriteriaId });
@@ -360,7 +383,7 @@ export class DatabaseEntitiesService {
   }
 
   public getQuickFilterPanelModel(chips: IChipItem[], subTitle: string, subTitleIcon: string): IChipSelectionModel {
-    const multipleEnabled = this.options.getBoolean(ModuleOptionName.AllowMultipleQuickFilters);
+    const multipleEnabled = this.options.getBoolean(ModuleOptionId.AllowMultipleQuickFilters);
     const result: IChipSelectionModel = {
       componentType: ChipSelectionComponent,
       title: 'Quick Filters',
@@ -426,7 +449,7 @@ export class DatabaseEntitiesService {
     const result: IChipItem[] = [];
     this.addQuickFilterChip('quickFilter-favorite', 'favorite', true, CriteriaComparison.Equals, AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.quickCriteria);
     this.addQuickFilterChip('quickFilter-playCount', 'playCount', 0, CriteriaComparison.Equals, AppAttributeIcons.PlayCount, 'Not Played', result, existingCriteria.quickCriteria);
-    const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayArtistThreshold);
+    const longPlaySongCount = this.options.getNumber(ModuleOptionId.LongPlayArtistThreshold);
     this.addQuickFilterChip('quickFilter-songCount', 'songCount', longPlaySongCount, CriteriaComparison.GreaterThanOrEqualTo, AppAttributeIcons.LongPlay, 'Long Play', result, existingCriteria.quickCriteria);
     return result;
   }
@@ -435,7 +458,7 @@ export class DatabaseEntitiesService {
     const result: IChipItem[] = [];
     this.addQuickFilterChip('quickFilter-favorite', 'favorite', true, CriteriaComparison.Equals, AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.quickCriteria);
     this.addQuickFilterChip('quickFilter-playCount', 'playCount', 0, CriteriaComparison.Equals, AppAttributeIcons.PlayCount, 'Not Played', result, existingCriteria.quickCriteria);
-    const longPlaySongCount = this.options.getNumber(ModuleOptionName.LongPlayAlbumThreshold);
+    const longPlaySongCount = this.options.getNumber(ModuleOptionId.LongPlayAlbumThreshold);
     this.addQuickFilterChip('quickFilter-songCount', 'songCount', longPlaySongCount, CriteriaComparison.GreaterThanOrEqualTo, AppAttributeIcons.LongPlay, 'Long Play', result, existingCriteria.quickCriteria);
     return result;
   }

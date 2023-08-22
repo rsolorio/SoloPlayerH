@@ -20,14 +20,12 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { DatabaseService } from '../database/database.service';
 import { DatabaseOptionsService } from '../database/database-options.service';
 import { DatabaseLookupService } from '../database/database-lookup.service';
-import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { ValueLists } from '../database/database.lists';
-import { ModuleOptionName } from '../../models/module-option.enum';
 import { DataTransformId, MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { ISyncSongInfo } from './scan.interface';
 import { In, Not } from 'typeorm';
-import { EntityId } from '../database/database.seed';
+import { EntityId, ModuleOptionId } from '../database/database.seed';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { PartyRelationType } from '../../models/music.enum';
@@ -113,9 +111,9 @@ export class ScanAudioService {
     this.existingPartyRelations = [];
     this.existingSongClassifications = [];
 
-    this.ignoreNumericGenres = this.options.getBoolean(ModuleOptionName.IgnoreNumericGenres);
-    this.genreSplitSymbols = this.options.getArray(ModuleOptionName.GenreSplitCharacters);
-    this.artistSplitSymbols = this.options.getArray(ModuleOptionName.ArtistSplitCharacters);
+    this.ignoreNumericGenres = this.options.getBoolean(ModuleOptionId.IgnoreNumericGenres);
+    this.genreSplitSymbols = this.options.getArray(ModuleOptionId.GenreSplitCharacters);
+    this.artistSplitSymbols = this.options.getArray(ModuleOptionId.ArtistSplitCharacters);
 
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language

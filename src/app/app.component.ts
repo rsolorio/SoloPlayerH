@@ -12,7 +12,7 @@ import { FeatureDetectionService } from './core/services/feature-detection/featu
 import { NavigationService } from './shared/services/navigation/navigation.service';
 import { IMenuModel } from './core/models/menu-model.interface';
 import { NavBarStateService } from './core/components/nav-bar/nav-bar-state.service';
-import { ModuleOptionName } from './shared/models/module-option.enum';
+import { ModuleOptionId } from './shared/services/database/database.seed';
 import { DatabaseOptionsService } from './shared/services/database/database-options.service';
 
 /**
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
       this.navbarService.restoreOuterLeftIcon();
     });
 
-    if (this.options.getBoolean(ModuleOptionName.HideNavbarOnScroll)) {
+    if (this.options.getBoolean(ModuleOptionId.HideNavbarOnScroll)) {
       this.navbarService.enableAutoHide();
     }
   }

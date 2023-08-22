@@ -21,7 +21,7 @@ import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/c
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { SongBadge } from 'src/app/shared/models/music.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
-import { ModuleOptionName } from 'src/app/shared/models/module-option.enum';
+import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { IImage } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -208,7 +208,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.expandPlayerOnPlay = this.options.getBoolean(ModuleOptionName.ExpandPlayerOnSongPlay);
+    this.expandPlayerOnPlay = this.options.getBoolean(ModuleOptionId.ExpandPlayerOnSongPlay);
     this.subs.sink = this.events.onEvent<IPlayerStatusChangedEventArgs>(AppEvent.PlayerStatusChanged)
     .subscribe(() => {
       this.cd.detectChanges();

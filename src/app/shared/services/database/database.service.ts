@@ -40,7 +40,8 @@ import {
   PartyRelationEntity,
   FilterEntity,
   FilterCriteriaEntity,
-  FilterCriteriaItemEntity
+  FilterCriteriaItemEntity,
+  SyncProfileEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -184,7 +185,8 @@ export class DatabaseService {
         DataMappingEntity,
         FilterEntity,
         FilterCriteriaEntity,
-        FilterCriteriaItemEntity
+        FilterCriteriaItemEntity,
+        SyncProfileEntity
       ],
       synchronize: true,
       logging: logging

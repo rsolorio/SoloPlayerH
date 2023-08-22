@@ -8,7 +8,7 @@ import { ICriteriaResult } from '../services/criteria/criteria.interface';
 import { Criteria, CriteriaItems } from '../services/criteria/criteria.class';
 import { BreadcrumbsStateService } from '../components/breadcrumbs/breadcrumbs-state.service';
 import { DatabaseOptionsService } from '../services/database/database-options.service';
-import { ModuleOptionName } from './module-option.enum';
+import { ModuleOptionId } from '../services/database/database.seed';
 
 export interface IListBroadcastService {
   search(criteria: Criteria, searchTerm?: string): Observable<ICriteriaResult<any>>;
@@ -74,7 +74,7 @@ implements IListBroadcastService {
 
     // Set the default only if it hasn't been specified
     if (!criteria.paging.pageSize) {
-      const limit = this.optionService.getNumber(ModuleOptionName.ListViewLimit);
+      const limit = this.optionService.getNumber(ModuleOptionId.ListViewLimit);
       if (limit) {
         criteria.paging.pageSize = limit;
       }

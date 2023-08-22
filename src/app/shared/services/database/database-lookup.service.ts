@@ -85,17 +85,12 @@ export class DatabaseLookupService {
   }
 
   // MODULE OPTION
-  public hashModuleOption(name: string): string {
-    return this.hashValues([name]);
+  public findModuleOption(id: string, items: ModuleOptionEntity[]): ModuleOptionEntity {
+    return items.find(i => i.id === id);
   }
 
-  public findModuleOption(name: string, items: ModuleOptionEntity[]): ModuleOptionEntity {
-    const hash = this.hashModuleOption(name);
-    return items.find(i => i.hash === hash);
-  }
-
-  public async lookupModuleOption(name: string): Promise<ModuleOptionEntity> {
-    return ModuleOptionEntity.findOneBy({ name: name });
+  public async lookupModuleOption(id: string): Promise<ModuleOptionEntity> {
+    return ModuleOptionEntity.findOneBy({ id: id });
   }
 
   // VALUE LIST ENTRY

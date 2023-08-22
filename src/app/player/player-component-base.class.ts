@@ -24,7 +24,7 @@ import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../share
 import { PartyRelationType } from '../shared/models/music.enum';
 import { In } from 'typeorm';
 import { DatabaseOptionsService } from '../shared/services/database/database-options.service';
-import { ModuleOptionName } from '../shared/models/module-option.enum';
+import { ModuleOptionId } from '../shared/services/database/database.seed';
 import { IImagePreviewModel } from '../related-image/image-preview/image-preview-model.interface';
 import { ImagePreviewComponent } from '../related-image/image-preview/image-preview.component';
 import { SideBarHostStateService } from '../core/components/side-bar-host/side-bar-host-state.service';
@@ -304,14 +304,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public adjustTimeDown(): void {
-    const seconds = this.optionsService.getNumber(ModuleOptionName.PlayerReplayTime);
+    const seconds = this.optionsService.getNumber(ModuleOptionId.PlayerReplayTime);
     if (seconds) {
       this.playerServiceBase.adjustTimeDown(seconds);
     }
   }
 
   public adjustTimeUp(): void {
-    const seconds = this.optionsService.getNumber(ModuleOptionName.PlayerForwardTime);
+    const seconds = this.optionsService.getNumber(ModuleOptionId.PlayerForwardTime);
     if (seconds) {
       this.playerServiceBase.adjustTimeUp(seconds);
     }
