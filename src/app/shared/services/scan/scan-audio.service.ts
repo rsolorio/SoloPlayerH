@@ -22,10 +22,10 @@ import { DatabaseOptionsService } from '../database/database-options.service';
 import { DatabaseLookupService } from '../database/database-lookup.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { ValueLists } from '../database/database.lists';
-import { DataTransformId, MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { ISyncSongInfo } from './scan.interface';
 import { In, Not } from 'typeorm';
-import { EntityId, ModuleOptionId } from '../database/database.seed';
+import { EntityId, ModuleOptionId, SyncProfileId } from '../database/database.seed';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { PartyRelationType } from '../../models/music.enum';
@@ -117,7 +117,7 @@ export class ScanAudioService {
 
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language
-    await this.metadataReader.init({ profileId: DataTransformId.MetadataReader, dynamicFields: this.existingClassTypes.map(c => c.name) });
+    await this.metadataReader.init({ profileId: SyncProfileId.DefaultAudioImport, dynamicFields: this.existingClassTypes.map(c => c.name) });
 
     const result: ISyncSongInfo = {
       songInitialCount: this.existingSongs.length,

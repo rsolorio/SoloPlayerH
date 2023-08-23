@@ -4,7 +4,6 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { KeyValues } from 'src/app/core/models/core.interface';
-import { DataTransformId } from './data-transform.enum';
 import { Id3v2SourceService } from '../data-source/id3v2-source.service';
 import { FileInfoSourceService } from '../data-source/file-info-source.service';
 import { PathExpressionSourceService } from '../data-source/path-expression-source.service';
