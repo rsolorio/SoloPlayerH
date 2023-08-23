@@ -459,18 +459,23 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     return null;
   }
 
-  private showFileBrowserAndSave(syncProfileId: string): void {
+  private async showFileBrowserAndSave(syncProfileId: string): Promise<void> {
     // The onOk callback will be executed on the browser component
     const browserModel: IFileBrowserModel = {
+      selectedItems: [],
       backRoute: AppRoute.Settings,
-      onOk: async values => {
+      onOk: async browserModel => {
         // save value in DB
         const syncProfile = await this.entities.getSyncProfile(syncProfileId);
-        syncProfile.directories = values.map(v => v.fileInfo.path);
+        syncProfile.directories = browserModel.selectedItems.map(v => v.id);
         await this.entities.saveSyncProfile(syncProfile);
         return true;
       }
     };
+    const syncProfile = await this.entities.getSyncProfile(syncProfileId);
+    if (syncProfile.directories?.length) {
+      syncProfile.directories.forEach(d => browserModel.selectedItems.push({ id: d, name: '', canBeRendered: false}));
+    }
     this.browserService.browse(browserModel);
   }
 

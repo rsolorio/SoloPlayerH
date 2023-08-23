@@ -5,14 +5,25 @@
 [imageOverlayTemplate]="imageOverlayTemplate"
 [infoTemplate]="infoTemplate"
 (afterInit)="onAfterInit($event)"
+(listUpdated)="onListUpdated($event)"
 (itemAvatarClick)="itemAvatarClick($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #imageOverlayTemplate>
     <div class="sp-image-overlay sp-text-big-fixed sp-clickable">
-      <i class="mdi-folder mdi"></i>
+      <i [ngClass]="AppAttributeIcons.Directory"></i>
     </div>
   </ng-template>
   <ng-template #infoTemplate let-item="item">
-    <span class="sp-main-text sp-text-large">{{item.name}}</span>
+    <table class="sp-table sp-table-no-padding sp-table-support-overflow-ellipsis sp-full-height sp-full-width"><tr>
+      <!-- Item Info -->
+      <td class="sp-text-overflow-ellipsis">
+        <span class="sp-main-text sp-text-large">{{item.name}}</span>
+      </td>
+      <!-- Favorite Icon -->
+      <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onSelectClick($event, item)">
+        <i *ngIf="!item.selected" [ngClass]="AppAttributeIcons.Unselected" class="sp-text-xlarge"></i>
+        <i *ngIf="item.selected" [ngClass]="AppAttributeIcons.Selected" class="sp-text-xlarge"></i>
+      </td>
+    </tr></table>
   </ng-template>
 </sp-list-base>

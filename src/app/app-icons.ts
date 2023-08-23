@@ -69,12 +69,15 @@ export enum AppAttributeIcons {
   Accent = 'mdi-vanish-quarter mdi',
   Contributor = 'mdi-account-supervisor mdi',
   SwitchOn = 'mdi-toggle-switch-variant mdi',
-  SwitchOff = 'mdi-toggle-switch-variant-off mdi'
+  SwitchOff = 'mdi-toggle-switch-variant-off mdi',
+  Selected = 'mdi-checkbox-outline mdi',
+  Unselected = 'mdi-checkbox-blank-outline mdi'
 }
 
 export enum AppActionIcons {
   Add = 'mdi-plus mdi',
   Edit = 'mdi-pencil-outline mdi',
+  Ok = 'mdi-check mdi',
   CloseClear = 'mdi-close mdi',
   Search = 'mdi-magnify mdi',
   SearchClose = 'mdi-magnify-remove-outline mdi',
@@ -108,7 +111,8 @@ export enum AppActionIcons {
   Import = 'mdi-application-import mdi',
   Export = 'mdi-application-export mdi',
   ImportToDb = 'mdi-database-import mdi',
-  ExportFromDb = 'mdi-database-export mdi'
+  ExportFromDb = 'mdi-database-export mdi',
+  LevelUp = 'mdi-arrow-up-right-bold mdi'
 }
 
 export enum AppPlayerIcons {
@@ -146,6 +150,16 @@ export function getNumericCircleIcon(value: number): string {
   }
   if (value > 9) {
     return 'mdi-numeric-9-plus-circle mdi';
+  }
+  return '';
+}
+
+export function getNumericBoxIcon(value: number): string {
+  if (value >= 0 && value < 10) {
+    return `mdi-numeric-${value}-box-outline mdi`;
+  }
+  if (value > 9) {
+    return 'mdi-numeric-9-plus-box-outline mdi';
   }
   return '';
 }

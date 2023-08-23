@@ -2,11 +2,12 @@ import { IListItemModel } from "src/app/shared/models/base-model.interface";
 import { IFileInfo } from "../file/file.interface";
 
 export interface IFileBrowserItem extends IListItemModel {
-  fileInfo: IFileInfo;
+  fileInfo?: IFileInfo;
 }
 
 export interface IFileBrowserModel {
-  onOk: (values: IFileBrowserItem[]) => Promise<boolean>;
+  selectedItems?: IFileBrowserItem[];
+  onOk: (model: IFileBrowserModel) => Promise<boolean>;
   backRoute: string;
   onCancel?: () => Promise<boolean>;
 }

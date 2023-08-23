@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IFileBrowserItem, IFileBrowserQueryParams } from './file-browser.interface';
+import { IFileBrowserItem, IFileBrowserModel, IFileBrowserQueryParams } from './file-browser.interface';
 import { FileBrowserBroadcastService } from './file-browser-broadcast.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
@@ -11,6 +11,7 @@ import { FileService } from '../file/file.service';
 import { IFileInfo } from '../file/file.interface';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
+import { AppActionIcons, AppAttributeIcons, getNumericBoxIcon } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-file-browser',
@@ -22,19 +23,18 @@ export class FileBrowserComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   /** Flag that indicates when the content is allowed to be rendered. */
   public contentEnabled = false;
+  public AppAttributeIcons = AppAttributeIcons;
+  private model: IFileBrowserModel;
 
   // START - LIST BASE
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.FileListUpdated,
+    searchIconEnabled: false,
     itemMenuList: [
       {
-        caption: 'Select',
-        icon: 'mdi-select mdi mdi',
+        caption: 'Details',
+        icon: 'mdi-folder-information mdi',
         action: (menuItem, param) => {
-          const fileItem = param as IFileBrowserItem;
-          if (fileItem) {
-            this.itemAvatarClick(fileItem);
-          }
         }
       }
     ],
@@ -44,18 +44,44 @@ export class FileBrowserComponent implements OnInit {
     },
     breadcrumbsEnabled: false,
     broadcastService: this.broadcastService,
-    rightIcons: [{
-      icon: 'mdi-arrow-up-right-bold mdi',
-      action: async () => {
-        const queryParams = this.getQueryParams();
-        if (queryParams?.path) {
-          const parentFileInfo = await this.fileService.getParentDir(queryParams.path);
-          if (!parentFileInfo.hasError) {
-            this.navigateFolder(parentFileInfo);
+    leftIcon: {
+      offIcon: AppActionIcons.Back,
+      offAction: () => {
+        // Should we save?
+        this.navigation.forward(this.model.backRoute);
+      }
+    },
+    rightIcons: [
+      {
+        icon: AppActionIcons.LevelUp,
+        action: async () => {
+          const queryParams = this.getQueryParams();
+          if (queryParams?.path) {
+            const parentFileInfo = await this.fileService.getParentDir(queryParams.path);
+            if (!parentFileInfo.hasError) {
+              this.navigateFolder(parentFileInfo);
+            }
           }
         }
+      },
+      {
+        icon: AppActionIcons.Ok,
+        action: () => {
+          const browserModel = this.browserService.getState();
+          browserModel.onOk(browserModel).then(response => {
+            if (response) {
+              this.navigation.forward(browserModel.backRoute);
+            }
+          });
+        }
+      },
+      {
+        icon: AppAttributeIcons.Unselected,
+        action: () => {
+          // TODO: display a panel with all selected paths and ability to delete them
+        }
       }
-    }],
+    ],
     getDisplayInfo: model => {
       let itemsText = `${model.criteriaResult.items.length} item`;
       itemsText += model.criteriaResult.items.length === 1 ? '' : 's';
@@ -64,8 +90,7 @@ export class FileBrowserComponent implements OnInit {
         return `${queryParams.path}  (${itemsText})`;
       }
       return itemsText;
-    },
-    prepareItemRender: item => {}
+    }
   };
   // END - LIST BASE
 
@@ -78,8 +103,8 @@ export class FileBrowserComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const model = this.browserService.getState();
-    if (!model.onOk || !model.backRoute) {
+    this.model = this.browserService.getState();
+    if (!this.model.onOk || !this.model.backRoute) {
       // Send to home if this doesn't have the proper configuration
       this.navigation.forward(AppRoute.Home);
     }
@@ -94,6 +119,7 @@ export class FileBrowserComponent implements OnInit {
     else {
       this.listModel.title = '[Root]';
     }
+    this.updateSelectionCount();
   }
 
   public onItemContentClick(fileItem: IFileBrowserItem): void {
@@ -101,29 +127,25 @@ export class FileBrowserComponent implements OnInit {
   }
 
   public itemAvatarClick(fileItem: IFileBrowserItem): void {
-    const model = this.browserService.getState();
-    model.onOk([fileItem]).then(response => {
-      if (response) {
-        this.navigation.forward(model.backRoute);
-      }
-    });
+    this.navigateFolder(fileItem.fileInfo);
+  }
+
+  public onSelectClick(e: Event, fileItem: IFileBrowserItem): void {
+    e.stopImmediatePropagation();
+    fileItem.selected = !fileItem.selected;
+    if (fileItem.selected) {
+      this.model.selectedItems = this.model.selectedItems ? this.model.selectedItems : [];
+      this.model.selectedItems.push(fileItem);
+    }
+    else {
+      this.model.selectedItems = this.model.selectedItems.filter(i => i.id !== fileItem.id);
+    }
+    this.updateSelectionCount();
   }
 
   public onAfterInit(listBaseModel: IListBaseModel): void {
     const navbarModel = this.navbarService.getState();
     navbarModel.menuList = [
-      {
-        caption: 'Select',
-        icon: 'mdi-select mdi mdi',
-        action: () => {
-          const queryParams = this.getQueryParams();
-          if (queryParams?.path) {
-            this.fileService.getFileInfo(queryParams.path).then(fileInfo => {
-              this.itemAvatarClick({ fileInfo: fileInfo, name: fileInfo.name, image: null, canBeRendered: false, id: null });
-            });
-          }
-        }
-      },
       {
         caption: 'Show Info',
         icon: 'mdi-folder-eye-outline mdi',
@@ -151,6 +173,15 @@ export class FileBrowserComponent implements OnInit {
     ];
   }
 
+  public onListUpdated(listModel: IListBaseModel): void {
+    listModel.criteriaResult.items.forEach(listItem => {
+      const selectedItem = this.model.selectedItems.find(i => i.id === listItem.id);
+      if (selectedItem) {
+        listItem.selected = true;
+      }
+    });
+  }
+
   private getQueryParams(): IFileBrowserQueryParams {
     const current = this.navigation.current();
     if (current.options?.queryParams) {
@@ -169,5 +200,14 @@ export class FileBrowserComponent implements OnInit {
     });
     // The previous routine will stay in the same route, but we need to make sure the title is updated
     this.navbarService.getState().title = fileInfo.name;
+  }
+
+  private updateSelectionCount(): void {
+    if (this.model.selectedItems.length) {
+      this.listModel.rightIcons[2].icon = getNumericBoxIcon(this.model.selectedItems.length);
+    }
+    else {
+      this.listModel.rightIcons[2].icon = AppAttributeIcons.Unselected;
+    }
   }
 }

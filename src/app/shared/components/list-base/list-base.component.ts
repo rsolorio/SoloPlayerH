@@ -193,35 +193,37 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     }
 
     navbar.rightIcons = this.model.rightIcons ? this.model.rightIcons : [];
-    // Search icon
-    const searchIcon: IIconAction = {
-      id: 'searchIcon',
-      icon: AppActionIcons.SearchClose,
-      action: iconAction => {
-        // This will turn OFF the search
-        iconAction.off = true;
-        navbar.searchTerm = '';
-        if (navbar.onSearch) {
-          navbar.onSearch(navbar.searchTerm);
+    if (this.model.searchIconEnabled) {
+      // Search icon
+      const searchIcon: IIconAction = {
+        id: 'searchIcon',
+        icon: AppActionIcons.SearchClose,
+        action: iconAction => {
+          // This will turn OFF the search
+          iconAction.off = true;
+          navbar.searchTerm = '';
+          if (navbar.onSearch) {
+            navbar.onSearch(navbar.searchTerm);
+          }
+          // The only way to get to the search mode if from the Title mode,
+          // so for now go back to title mode from search mode
+          this.setNavbarMode(NavbarDisplayMode.Title);
+        },
+        off: true, // Search turned off by default
+        offIcon: AppActionIcons.Search,
+        offAction: iconAction => {
+          // This will turn ON the search
+          iconAction.off = false;
+          navbar.searchTerm = '';
+          this.setNavbarMode(NavbarDisplayMode.Search);
+          // Give the search box time to render before setting focus
+          setTimeout(() => {
+            this.navbarService.searchBoxFocus();
+          });
         }
-        // The only way to get to the search mode if from the Title mode,
-        // so for now go back to title mode from search mode
-        this.setNavbarMode(NavbarDisplayMode.Title);
-      },
-      off: true, // Search turned off by default
-      offIcon: AppActionIcons.Search,
-      offAction: iconAction => {
-        // This will turn ON the search
-        iconAction.off = false;
-        navbar.searchTerm = '';
-        this.setNavbarMode(NavbarDisplayMode.Search);
-        // Give the search box time to render before setting focus
-        setTimeout(() => {
-          this.navbarService.searchBoxFocus();
-        });
-      }
-    };
-    navbar.rightIcons.push(searchIcon);
+      };
+      navbar.rightIcons.push(searchIcon);
+    }
 
     // Search
     navbar.onSearch = searchTerm => {
@@ -366,18 +368,23 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // can have different icons on different views
     navbar.mode = mode;
     navbar.leftIcon.off = !this.model.criteriaResult.criteria.hasComparison(true);
+    const searchIcon = navbar.rightIcons.find(i => i.id === 'searchIcon');
 
     // Handle icon visibility
     switch (mode) {
       case NavbarDisplayMode.Component:
         // Hide all the icons
         navbar.rightIcons.forEach(icon => icon.hidden = true);
-        navbar.rightIcons.find(i => i.id === 'searchIcon').off = true;
+        if (searchIcon) {
+          searchIcon.off = true;
+        }
         break;
       case NavbarDisplayMode.Title:
         // Show all icons
         navbar.rightIcons.forEach(icon => icon.hidden = false);
-        navbar.rightIcons.find(i => i.id === 'searchIcon').off = true;
+        if (searchIcon) {
+          searchIcon.off = true;
+        }
         break;
       case NavbarDisplayMode.Search:
         // Show search, hide the rest of the icons
