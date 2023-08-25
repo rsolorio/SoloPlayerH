@@ -41,7 +41,8 @@ import {
   FilterEntity,
   FilterCriteriaEntity,
   FilterCriteriaItemEntity,
-  SyncProfileEntity
+  SyncProfileEntity,
+  SongTempEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -186,7 +187,8 @@ export class DatabaseService {
         FilterEntity,
         FilterCriteriaEntity,
         FilterCriteriaItemEntity,
-        SyncProfileEntity
+        SyncProfileEntity,
+        SongTempEntity
       ],
       synchronize: true,
       logging: logging

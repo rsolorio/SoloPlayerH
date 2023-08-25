@@ -26,11 +26,41 @@ export class PlayerListModel implements IDbModel {
   private playModeItems: IPlaylistSongModel[];
   private playModeItemsRefreshRequired = false;
   private emptyTrack: IPlaylistSongModel = {
+    playlistId: null,
+    songId: null,
     sequence: 0,
     id: '0',
-    songId: null,
-    playlistId: null,
-    name: null,
+    name: '[Empty Song]',
+    primaryAlbumId: null,
+    filePath: null,
+    fileSize: 0,
+    trackNumber: 0,
+    mediaNumber: 0,
+    releaseYear: 0,
+    releaseDecade: 0,
+    rating: 0,
+    playCount: 0,
+    performers: 0,
+    genre: null,
+    mood: null,
+    language: null,
+    lyrics: null,
+    seconds: 0,
+    duration: '00:00',
+    bitrate: 0,
+    frequency: 0,
+    vbr: false,
+    favorite: false,
+    live: false,
+    explicit: false,
+    addDate: null,
+    playDate: null,
+    primaryAlbumName: '[Empty Album]',
+    primaryArtistId: null,
+    primaryArtistName: '[Empty Artist]',
+    primaryArtistStylized: '[Empty Artist]',
+    playerStatus: PlayerSongStatus.Empty,
+    
     image: {
       defaultSrc: RelatedImageSrc.DefaultSmall,
       src: RelatedImageSrc.DefaultSmall,
@@ -38,54 +68,6 @@ export class PlayerListModel implements IDbModel {
     },
     canBeRendered: false,
     selected: false,
-    song: {
-      id: '0',
-      name: '[Empty Song]',
-      seconds: 0,
-      duration: '00:00',
-      bitrate: 0,
-      vbr: false,
-      frequency: 0,
-      playCount: 0,
-      filePath: null,
-      fileSize: 0,
-      releaseYear: 0,
-      releaseDecade: 0,
-      genre: null,
-      favorite: false,
-      live: false,
-      explicit: false,
-      performers: 0,
-      rating: 0,
-      mood: null,
-      language: null,
-      lyrics: null,
-      addDate: null,
-      playDate: null,
-      albumWithYear: '[Empty Album]',
-      artistName: '[Empty Artist]',
-      primaryArtistName: '[Empty Artist]',
-      artistStylized: '[Empty Artist]',
-      primaryArtistStylized: '[Empty Artist]',
-      trackNumber: 0,
-      mediaNumber: 0,
-      playCountText: '',
-      titleSort: null,
-      albumName: '[Empty Album]',
-      primaryAlbumName: '[Empty Album]',
-      primaryAlbum: null,
-      playerStatus: PlayerSongStatus.Empty,
-      image: {
-        defaultSrc: RelatedImageSrc.DefaultSmall,
-        src: RelatedImageSrc.DefaultSmall,
-        srcType: ImageSrcType.WebUrl
-      },
-      canBeRendered: false,
-      selected: false,
-      primaryAlbumId: null,
-      primaryArtistId: null,
-      classificationId: null
-    }
   };
 
   // IDbModel
@@ -192,7 +174,7 @@ export class PlayerListModel implements IDbModel {
     let sequence = 0;
     for (const song of songs) {
       sequence++;
-      tracks.push(this.toTrack(song, sequence));
+      tracks.push(this.toTrack(song, playlistId, sequence));
     }
     this.load(playlistId, playlistName, tracks);
   }
@@ -229,8 +211,7 @@ export class PlayerListModel implements IDbModel {
   public getTrackById(songId: string): IPlaylistSongModel {
     let result: IPlaylistSongModel = null;
     for (const track of this.items) {
-      const trackSongId = track.songId ? track.songId : track.song.id;
-      if (trackSongId === songId) {
+      if (track.songId === songId) {
         result = track;
       }
     }
@@ -246,40 +227,15 @@ export class PlayerListModel implements IDbModel {
     this.playModeItems = [];
   }
 
-  /**
-   * Converts a list of songs into tracks and then loads them as a new list.
-   */
-  public loadList(songList: ISongModel[], id?: string, name?: string): void {
-    if (songList) {
-      this.id = id;
-      this.name = name;
-      let sequence = 0;
-      this.items = [];
-      for (const song of songList) {
-        sequence++;
-        this.items.push(this.toTrack(song, sequence));
-      }
-      this.setPlaylistCursor(this.emptyTrack);
-      this.forceReloadPlayModeItems();
-    }
-  }
-
   // Private Methods ****************************************************************************
-  private toTrack(song: ISongModel, sequence: number): IPlaylistSongModel {
+  private toTrack(song: ISongModel, playlistId: string, sequence: number): IPlaylistSongModel {
     return {
-      id: this.utilities.newGuid(),
-      playlistId: null,
+      ...song,
+      playlistId: playlistId,
       songId: song.id,
-      name: song.name,
-      sequence,
-      image: {
-        defaultSrc: RelatedImageSrc.DefaultSmall,
-        src: RelatedImageSrc.DefaultSmall,
-        srcType: ImageSrcType.WebUrl
-      },
+      sequence: sequence,
       canBeRendered: false,
-      selected: false,
-      song: song
+      selected: false
     };
   }
 
@@ -391,9 +347,6 @@ export class PlayerListModel implements IDbModel {
   }
 
   private isSameTrack(a: IPlaylistSongModel, b: IPlaylistSongModel): boolean {
-    if (a.id && b.id) {
-      return a.id === b.id;
-    }
     // In theory there should not be two different tracks with the same sequence
     return a.playlistId === b.playlistId && a.sequence === b.sequence;
   }
@@ -404,11 +357,11 @@ export class PlayerListModel implements IDbModel {
       return;
     }
     // This means we are removing the old track from being current
-    if (this.hasTrack() && this.current.song.playerStatus !== PlayerSongStatus.Empty) {
-      const oldStatus = this.current.song.playerStatus;
-      this.current.song.playerStatus = PlayerSongStatus.Empty;
+    if (this.hasTrack() && this.current.playerStatus !== PlayerSongStatus.Empty) {
+      const oldStatus = this.current.playerStatus;
+      this.current.playerStatus = PlayerSongStatus.Empty;
       if (this.doAfterSongStatusChange) {
-        this.doAfterSongStatusChange(this.current.song, oldStatus);
+        this.doAfterSongStatusChange(this.current, oldStatus);
       }
     }
     const args: IEventArgs<IPlaylistSongModel> = {
@@ -419,11 +372,11 @@ export class PlayerListModel implements IDbModel {
     this.previous = this.innerGetPrevious(this.current);
     this.next = this.innerGetNext(this.current);
     // Now mark it as current
-    if (this.hasTrack() && this.current.song.playerStatus !== PlayerSongStatus.Stopped) {
-      const oldStatus = this.current.song.playerStatus;
-      this.current.song.playerStatus = PlayerSongStatus.Stopped;
+    if (this.hasTrack() && this.current.playerStatus !== PlayerSongStatus.Stopped) {
+      const oldStatus = this.current.playerStatus;
+      this.current.playerStatus = PlayerSongStatus.Stopped;
       if (this.doAfterSongStatusChange) {
-        this.doAfterSongStatusChange(this.current.song, oldStatus);
+        this.doAfterSongStatusChange(this.current, oldStatus);
       }
     }
 

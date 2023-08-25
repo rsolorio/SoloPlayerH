@@ -154,10 +154,9 @@ export class PlayerFullComponent extends PlayerComponentBase {
   }
 
   public toggleLive(): void {
-    const song = this.model.playerList.current.song;
-    const newValue = !song.live;
-    this.entityService.setLive(song.id, newValue).then(() => {
-      song.live = newValue;
+    const newValue = !this.model.playerList.current.live;
+    this.entityService.setLive(this.model.playerList.current.id, newValue).then(() => {
+      this.model.playerList.current.live = newValue;
     });
   }
 

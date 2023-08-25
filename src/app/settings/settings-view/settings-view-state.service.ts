@@ -22,6 +22,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { IScanItemInfo } from 'src/app/shared/services/scan/scan.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
+import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -119,14 +120,14 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       setting.descriptions[1] = `Playlist created: ${scanPlaylistInfo.progress}/${scanPlaylistInfo.total}: ${scanPlaylistInfo.item.name}`;
     });
 
-    this.events.onEvent<IScanItemInfo<PlaylistSongEntity>>(AppEvent.ScanTrackAdded).subscribe(scanTrackInfo => {
+    this.events.onEvent<IScanItemInfo<IPlaylistSongModel>>(AppEvent.ScanTrackAdded).subscribe(scanTrackInfo => {
       const setting = this.findSetting('processPlaylists');
       if (!setting) {
         return;
       }
       setting.disabled = true;
       setting.running = true;
-      setting.dynamicText = `Track added: ${scanTrackInfo.progress} - ${scanTrackInfo.item.song.name} - ${scanTrackInfo.item.song.duration}`;
+      setting.dynamicText = `Track added: ${scanTrackInfo.progress} - ${scanTrackInfo.item.name} - ${scanTrackInfo.item.duration}`;
     });
   }
 

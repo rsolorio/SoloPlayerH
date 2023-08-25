@@ -66,7 +66,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public get song(): ISongModel {
-    return this.model.playerList.current.song;
+    return this.model.playerList.current;
   }
 
   public get image(): RelatedImageEntity {
@@ -87,7 +87,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.model = this.playerServiceBase.getState();
     this.initializeMenu();
     if (this.model.playerList.hasTrack()) {
-      this.setupAssociatedData(this.model.playerList.current.song);
+      this.setupAssociatedData(this.model.playerList.current);
     }
     this.subs.sink = this.eventService.onEvent<IEventArgs<IPlaylistSongModel>>(AppEvent.PlaylistCurrentTrackChanged).subscribe(eventArgs => {
       this.onTrackChanged(eventArgs);
@@ -122,7 +122,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   protected onTrackChanged(eventArgs: IEventArgs<IPlaylistSongModel>): void {
-    this.setupAssociatedData(eventArgs.newValue.song);
+    this.setupAssociatedData(eventArgs.newValue);
   }
 
   /**
@@ -158,8 +158,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     await this.setSrc(songImages);
     const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
     await this.setSrc(albumImages);
-    const artistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-    const artistImages = await RelatedImageEntity.findBy({ relatedId: artistId });
+    const artistImages = await RelatedImageEntity.findBy({ relatedId: song.primaryArtistId });
     await this.setSrc(artistImages);
     this.images = [...songImages, ...albumImages, ...artistImages];
     if (!this.images.length) {
@@ -182,28 +181,28 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   protected getExtension(): string {
     // TODO: save extension in table
-    if (this.model.playerList.current.song.filePath) {
-      const fileParts = this.model.playerList.current.song.filePath.split('.');
+    if (this.model.playerList.current.filePath) {
+      const fileParts = this.model.playerList.current.filePath.split('.');
       return fileParts[fileParts.length - 1];
     }
     return null;
   }
 
   protected getBitrate(): string {
-    if (this.model.playerList.current.song.vbr) {
+    if (this.model.playerList.current.vbr) {
       return 'Vbr';
     }
-    const kbps = this.model.playerList.current.song.bitrate / 1000;
+    const kbps = this.model.playerList.current.bitrate / 1000;
     return kbps + 'Kbps';
   }
 
   protected getFrequency(): string {
-    const khz = this.model.playerList.current.song.frequency / 1000;
+    const khz = this.model.playerList.current.frequency / 1000;
     return khz + 'KHz';
   }
 
   protected getSize(): string {
-    const mb = this.model.playerList.current.song.fileSize / 1000 / 1000;
+    const mb = this.model.playerList.current.fileSize / 1000 / 1000;
     return this.utilityService.round(mb, 2) + 'Mb';
   }
 

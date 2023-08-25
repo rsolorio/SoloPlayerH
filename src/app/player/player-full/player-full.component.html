@@ -104,13 +104,13 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
         <i [ngClass]="AppAttributeIcons.ArtistName" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.primaryArtistName}}</span>
       </ng-container>
       <ng-container *ngIf="song.primaryArtistId === EntityId.ArtistVarious && !contributors">
         <i [ngClass]="AppAttributeIcons.ArtistGroup" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
-        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.artistName}}</span>
+        [ngStyle]="palette.primary.cssColor">&nbsp;{{song.primaryArtistName}}</span>
       </ng-container>
       <ng-container *ngIf="song.primaryArtistId !== EntityId.ArtistVarious && contributors">
         <span>&nbsp;&nbsp;</span>
@@ -126,7 +126,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
       <i [ngClass]="AppAttributeIcons.AlbumName" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-large"
-      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.albumName}}</span>
+      [ngStyle]="palette.primary.cssColor">&nbsp;{{song.primaryAlbumName}}</span>
       <!-- Year -->
       <ng-container *ngIf="song.releaseYear > 0">
         <span>&nbsp;&nbsp;</span>

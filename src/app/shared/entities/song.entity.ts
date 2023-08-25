@@ -1,20 +1,22 @@
-import { Column, Entity, ManyToOne, Relation, JoinColumn, OneToMany } from 'typeorm';
-import { ISongModel } from '../models/song-model.interface';
-import { AlbumEntity } from './album.entity';
-import { PlaylistSongEntity } from './playlist-song.entity';
+import { Column, Entity } from 'typeorm';
+import { ISongFullModel } from '../models/song-model.interface';
 import { SongBaseEntity } from './song-base.entity';
-import { SongClassificationEntity } from './song-classification.entity';
 
 @Entity({name: 'song'})
-export class SongEntity extends SongBaseEntity implements ISongModel {
+export class SongEntity extends SongBaseEntity implements ISongFullModel {
+  // Ids
   @Column()
-  titleSort: string;
+  primaryAlbumId: string;
+  @Column({ nullable: true })
+  externalId: string;
+  // File info
   @Column({ unique: true })
   filePath: string;
   @Column()
   fileSize: number;
-  @Column({ nullable: true })
-  externalId: string;
+  // Song info
+  @Column()
+  titleSort: string;
   @Column()
   trackNumber: number;
   @Column()
@@ -23,34 +25,33 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   releaseYear: number;
   @Column()
   releaseDecade: number;
+  @Column()
+  rating: number;
+  @Column()
+  playCount: number;
+  @Column()
+  initialPlayCount: number;
+  @Column()
+  performers: number;
   @Column({ nullable: true })
   genre: string;
+  @Column()
+  mood: string;
+  @Column()
+  language: string;
+  @Column({ nullable: true })
+  lyrics: string;
+  @Column({ nullable: true })
+  grouping: string;
   @Column({ nullable: true })
   composer: string;
   @Column({ nullable: true })
   comment: string;
-  @Column()
-  addDate: Date;
-  @Column()
-  changeDate: Date;
   @Column({ nullable: true })
-  replaceDate: Date;
+  infoUrl: string;
   @Column({ nullable: true })
-  playDate: Date;
-  @Column()
-  language: string;
-  @Column()
-  mood: string;
-  @Column({ nullable: true })
-  grouping: string;
-  @Column()
-  initialPlayCount: number;
-  @Column()
-  playCount: number;
-  @Column()
-  rating: number;
-  @Column({ nullable: true })
-  lyrics: string;
+  videoUrl: string;
+  // Audio info
   @Column()
   seconds: number;
   @Column()
@@ -67,32 +68,20 @@ export class SongEntity extends SongBaseEntity implements ISongModel {
   tempo: number;
   @Column()
   fullyParsed: boolean;
+  // Flags
   @Column()
   favorite: boolean;
   @Column()
   live: boolean;
   @Column()
   explicit: boolean;
+  // Dates
   @Column()
-  performers: number;
+  addDate: Date;
   @Column()
-  primaryAlbumId: string;
+  changeDate: Date;
   @Column({ nullable: true })
-  infoUrl: string;
+  playDate: Date;
   @Column({ nullable: true })
-  videoUrl: string;
-
-  @ManyToOne(() => AlbumEntity, album => album.songs)
-  @JoinColumn({ name: 'primaryAlbumId'})
-  primaryAlbum: Relation<AlbumEntity>;
-
-  @OneToMany(() => SongClassificationEntity, songClassification => songClassification.song)
-  songClassifications: Relation<SongClassificationEntity[]>;
-
-  @OneToMany(() => PlaylistSongEntity, playlistSong => playlistSong.song)
-  playlistSongs: Relation<PlaylistSongEntity[]>;
-
-  // Empty properties from ISongModel interface
-  primaryArtistId: string;
-  classificationId: string;
+  replaceDate: Date;
 }

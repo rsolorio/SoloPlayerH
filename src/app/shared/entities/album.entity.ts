@@ -1,11 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
-import { ArtistEntity } from './artist.entity';
 import { ListItemEntity } from './base.entity';
-import { SongEntity } from './song.entity';
 
 @Entity({name: 'album'})
 export class AlbumEntity extends ListItemEntity implements IAlbumModel {
+  @Column()
+  primaryArtistId: string;
   @Column()
   albumTypeId: string;
   @Column()
@@ -18,18 +18,9 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   albumSort: string;
   @Column()
   albumStylized: string;
-  @Column()
-  primaryArtistId: string;
 
-  @ManyToOne(() => ArtistEntity, artist => artist.albums)
-  @JoinColumn({ name: 'primaryArtistId'})
-  primaryArtist: Relation<ArtistEntity>;
-
-  @OneToMany(() => SongEntity, song => song.primaryAlbum)
-  songs: Relation<SongEntity[]>;
-
-  artistName: string;
-  artistStylized: string;
+  primaryArtistName: string;
+  primaryArtistStylized: string;
   songCount: number;
   playCount: number;
   seconds: number;

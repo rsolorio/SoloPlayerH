@@ -504,7 +504,6 @@ export class ScanAudioService {
     newAlbum.isNew = true;
     newAlbum.id = this.utilities.newGuid();
     newAlbum.favorite = false;
-    newAlbum.primaryArtist = artist;
     newAlbum.primaryArtistId = artist.id;
     newAlbum.releaseDecade = this.utilities.getDecade(newAlbum.releaseYear);
     const albumType = this.first(metadata[MetaField.AlbumType]);
@@ -542,7 +541,6 @@ export class ScanAudioService {
       }
     }
 
-    song.primaryAlbum = album;
     song.primaryAlbumId = album.id;
     const trackNumber = this.first(metadata[MetaField.TrackNumber]);
     song.trackNumber = trackNumber ? trackNumber : 0;

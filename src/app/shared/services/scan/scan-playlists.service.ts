@@ -118,8 +118,8 @@ export class ScanPlaylistsService {
     const song = await SongEntity.findOneBy({ filePath: audioFilePath });
     if (song) {
       const playlistSong = new PlaylistSongEntity();
-      playlistSong.playlist = playlist;
-      playlistSong.song = song;
+      playlistSong.playlistId = playlist.id;
+      playlistSong.songId = song.id;
       playlistSong.sequence = sequence;
       return playlistSong;
     }

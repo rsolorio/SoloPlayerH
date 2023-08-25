@@ -117,12 +117,11 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   }
 
   private async getPlaylistImage(playlist: IPlaylistModel): Promise<IImage> {
-    const playlistWithSongs = await this.entityService.getPlaylistWithSongs(playlist.id);
-    if (playlistWithSongs?.playlistSongs?.length) {
-      // TODO: use entities service (getRelatedImages) instead
-      playlistWithSongs.playlistSongs = this.utilities.sort(playlistWithSongs.playlistSongs, 'sequence');
-      const track = playlistWithSongs.playlistSongs[0];
-      const buffer = await this.fileService.getBuffer(track.song.filePath);
+    const tracks = await this.entityService.getTracks(playlist.id);
+    if (tracks.length) {
+      // TODO: use entities service (getRelatedImages) to get the image instead of this routine
+      const track = tracks[0];
+      const buffer = await this.fileService.getBuffer(track.filePath);
       const audioInfo = await this.metadataService.getMetadata(buffer);
       const pictures = this.metadataService.getPictures(audioInfo.metadata, [MusicImageType.Front]);
       return this.metadataService.getImage(pictures);
@@ -135,14 +134,13 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
 
   private async loadPlaylistAndPlay(playlist: IPlaylistModel): Promise<void> {
     const tracks = await this.entityService.getTracks(playlist.id);
-    const sortedTracks = this.utilities.sort(tracks, 'sequence');
     const success = this.playerService.stop();
     if (!success) {
       // Log a problem
       return;
     }
     const playerList = this.playerService.getState().playerList;
-    playerList.load(playlist.id, playlist.name, sortedTracks);
+    playerList.load(playlist.id, playlist.name, tracks);
     await this.playerService.playFirst();
   }
 

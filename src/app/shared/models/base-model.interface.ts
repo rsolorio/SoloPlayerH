@@ -4,6 +4,7 @@ import { ITransitionImageModel } from 'src/app/related-image/transition-image/tr
 export interface IDbModel extends ISelectable {
   id: string;
   name: string;
+  hash?: string;
 }
 
 export interface IListItemModel extends IDbModel {

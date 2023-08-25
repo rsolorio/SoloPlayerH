@@ -31,3 +31,4 @@ export * from './filter.entity';
 export * from './filter-criteria.entity';
 export * from './filter-criteria-item.entity';
 export * from './sync-profile.entity';
+export * from './song-temp.entity';

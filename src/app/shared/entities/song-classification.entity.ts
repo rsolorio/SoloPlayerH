@@ -1,5 +1,4 @@
-import { BaseEntity, PrimaryColumn, Entity, Relation, ManyToOne, Column } from 'typeorm';
-import { SongEntity } from './song.entity';
+import { BaseEntity, PrimaryColumn, Entity, Column } from 'typeorm';
 
 @Entity({name: 'songClassification'})
 export class SongClassificationEntity extends BaseEntity {
@@ -11,7 +10,4 @@ export class SongClassificationEntity extends BaseEntity {
 
   @Column()
   primary: boolean;
-
-  @ManyToOne(() => SongEntity, song => song.songClassifications)
-  song: Relation<SongEntity>;
 }

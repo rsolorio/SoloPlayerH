@@ -278,20 +278,20 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     const track = this.state.playerList.current;
 
     if (this.nav.mediaSession.metadata &&
-        this.nav.mediaSession.metadata.title === track.song.name &&
-        this.nav.mediaSession.metadata.artist === track.song.artistName &&
-        this.nav.mediaSession.metadata.album === track.song.albumName) {
+        this.nav.mediaSession.metadata.title === track.name &&
+        this.nav.mediaSession.metadata.artist === track.primaryArtistName &&
+        this.nav.mediaSession.metadata.album === track.primaryAlbumName) {
           return;
     }
 
     // TODO: determine why TS doesn't recognize this
     // @ts-ignore
     this.nav.mediaSession.metadata = new MediaMetadata({
-      title: track.song.name,
-      artist: track.song.artistName,
-      album: track.song.albumName,
+      title: track.name,
+      artist: track.primaryArtistName,
+      album: track.primaryAlbumName,
       artwork: [{
-        src: track.song.image.src,
+        src: track.image.src,
         // Does this work if it doesn't have the type (mime type)?
         // type: ''
       }]
@@ -351,8 +351,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     }
     else {
       this.state.elapsedSeconds = seconds;
-      if (this.state.playerList.hasTrack() && this.state.playerList.current.song.seconds > 0) {
-        const percentage = seconds / this.state.playerList.current.song.seconds * 100;
+      if (this.state.playerList.hasTrack() && this.state.playerList.current.seconds > 0) {
+        const percentage = seconds / this.state.playerList.current.seconds * 100;
         this.state.elapsedPercentage = percentage;
       }
       else {
@@ -434,7 +434,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       track = this.state.playerList.current;
     }
     if (track) {
-      return `${track.name} - ${track.song.artistName}`;
+      return `${track.name} - ${track.primaryArtistName}`;
     }
     return null;
   }
@@ -454,7 +454,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
    */
   private setupNewTrack(track: IPlaylistSongModel): boolean {
     this.state.playerList.setCurrent(track);
-    return this.loadAudio(this.utilities.fileToUrl(track.song.filePath));
+    return this.loadAudio(this.utilities.fileToUrl(track.filePath));
   }
 
   private getTrack(sequence: number): IPlaylistSongModel {
@@ -488,11 +488,11 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
         break;
     }
 
-    if (newSongStatus && newSongStatus !== this.state.playerList.current.song.playerStatus) {
-      const oldSongStatus = this.state.playerList.current.song.playerStatus;
-      this.state.playerList.current.song.playerStatus = newSongStatus;
+    if (newSongStatus && newSongStatus !== this.state.playerList.current.playerStatus) {
+      const oldSongStatus = this.state.playerList.current.playerStatus;
+      this.state.playerList.current.playerStatus = newSongStatus;
       if (this.state.playerList.doAfterSongStatusChange) {
-        this.state.playerList.doAfterSongStatusChange(this.state.playerList.current.song, oldSongStatus);
+        this.state.playerList.doAfterSongStatusChange(this.state.playerList.current, oldSongStatus);
       }
     }
     const eventArgs: IPlayerStatusChangedEventArgs = {
@@ -577,7 +577,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
           }
       }
       else {
-          if (currentTime < this.state.playerList.current.song.seconds) {
+          if (currentTime < this.state.playerList.current.seconds) {
               // If this happens let's assume the song was paused by an external action
               this.onAudioPause();
               this.registerEvent(HtmlMediaEvent.Pause, 'External pause at: ' + currentTime.toString());

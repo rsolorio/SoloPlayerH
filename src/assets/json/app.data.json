@@ -1102,6 +1102,18 @@
         "sequence": 8,
         "disabled": false,
         "system": true
+      },
+      {
+        "id": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "profileId": "5021cccd-eafc-46ae-b521-f075dda9e105",
+        "name": "dbToId3Mappings",
+        "type": "SongModel",
+        "config": "",
+        "fields": "",
+        "customMapping": true,
+        "sequence": 1,
+        "disabled": false,
+        "system": true
       }
     ],
     "filter": [

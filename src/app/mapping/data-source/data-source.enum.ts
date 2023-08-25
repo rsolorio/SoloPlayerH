@@ -3,5 +3,6 @@ export enum DataSourceType {
   FileInfo = 'FileInfo',
   AudioInfo = 'AudioInfo',
   PathExpression = 'PathExpression',
-  RegularExpression = 'RegularExpression'
+  RegularExpression = 'RegularExpression',
+  SongModel = 'SongModel'
 }

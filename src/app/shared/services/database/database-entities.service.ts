@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlbumEntity, ArtistEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
+import { AlbumEntity, ArtistEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, PlaylistSongViewEntity, RelatedImageEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
@@ -20,6 +20,7 @@ import { ValueLists } from './database.lists';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { ModuleOptionId } from './database.seed';
 import { ISyncProfileParsed } from '../../models/sync-profile-model.interface';
+import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -134,21 +135,6 @@ export class DatabaseEntitiesService {
     await song.save();
   }
 
-  /**
-   * Gets a playlist with its associated song entities.
-   * If the playlist doesn't have associated songs, it will return null.
-   */
-  public getPlaylistWithSongs(playlistId: string): Promise<PlaylistEntity> {
-    return PlaylistEntity
-      .getRepository()
-      .createQueryBuilder('playlist')
-      .innerJoinAndSelect('playlist.playlistSongs', 'playlistSong')
-      .innerJoinAndSelect('playlistSong.song', 'song')
-      .where('playlist.id = :playlistId')
-      .setParameter('playlistId', playlistId)
-      .getOne();
-  }
-
   public getArtistDetails(artistId: string): Promise<any> {
     return ArtistEntity
       .getRepository()
@@ -178,17 +164,11 @@ export class DatabaseEntitiesService {
   /**
    * Get the tracks from the specified playlist ordered by sequence.
    */
-  public getTracks(playlistId: string): Promise<PlaylistSongEntity[]> {
-    return PlaylistSongEntity
-      .getRepository()
-      .createQueryBuilder('playlistSong')
-      .innerJoinAndSelect('playlistSong.song', 'song')
-      .innerJoinAndSelect('song.primaryAlbum', 'album')
-      .innerJoinAndSelect('album.primaryArtist', 'artist')
-      .where('playlistSong.playlistId = :playlistId')
-      .setParameter('playlistId', playlistId)
-      .orderBy('playlistSong.sequence')
-      .getMany();
+  public getTracks(playlistId: string): Promise<IPlaylistSongModel[]> {
+    const criteria = new Criteria();
+    criteria.searchCriteria.push(new CriteriaItem('playlistId', playlistId));
+    criteria.addSorting('sequence');
+    return this.db.getList(PlaylistSongViewEntity, criteria);
   }
 
   public async export(): Promise<any> {

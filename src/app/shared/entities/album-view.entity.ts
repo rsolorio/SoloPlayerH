@@ -1,18 +1,17 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
-import { IArtistModel } from '../models/artist-model.interface';
 import { AlbumEntity } from './album.entity';
 import { ListItemEntity } from './base.entity';
 
 /**
- * Fields: id, primaryArtistId, name, hash, albumSort, releaseYear, releaseDecade, favorite, artistName, artistStylized, songCount, playCount, seconds, songAddDateMax
+ * Fields: id, primaryArtistId, name, hash, albumSort, releaseYear, releaseDecade, favorite, primaryArtistName, primaryArtistStylized, songCount, playCount, seconds, songAddDateMax
  */
 @ViewEntity({
   name: 'albumView',
   expression: ds => ds
     .createQueryBuilder(AlbumEntity, 'album')
-    .innerJoin('album.primaryArtist', 'artist')
-    .innerJoin('album.songs', 'song')
+    .innerJoin('artist', 'artist', 'album.primaryArtistId = artist.id')
+    .innerJoin('song', 'song', 'album.id = song.primaryAlbumId')
     .select('album.id', 'id')
     .addSelect('artist.id', 'primaryArtistId')
     .addSelect('album.name', 'name')
@@ -21,8 +20,8 @@ import { ListItemEntity } from './base.entity';
     .addSelect('album.releaseYear', 'releaseYear')
     .addSelect('album.releaseDecade', 'releaseDecade')
     .addSelect('album.favorite', 'favorite')
-    .addSelect('artist.name', 'artistName')
-    .addSelect('artist.artistStylized', 'artistStylized')
+    .addSelect('artist.name', 'primaryArtistName')
+    .addSelect('artist.artistStylized', 'primaryArtistStylized')
     .addSelect('COUNT(album.id)', 'songCount')
     .addSelect('SUM(song.playCount)', 'playCount')
     .addSelect('SUM(song.seconds)', 'seconds')
@@ -47,9 +46,9 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   @ViewColumn()
   favorite: boolean;
   @ViewColumn()
-  artistName: string;
+  primaryArtistName: string;
   @ViewColumn()
-  artistStylized: string;
+  primaryArtistStylized: string;
   @ViewColumn()
   albumSort: string;
   @ViewColumn()
@@ -60,5 +59,4 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   songAddDateMax: Date;
 
   albumTypeId: string;
-  primaryArtist: IArtistModel;
 }

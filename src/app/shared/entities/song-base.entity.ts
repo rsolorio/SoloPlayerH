@@ -1,4 +1,4 @@
-import { IAlbumModel } from "../models/album-model.interface";
+import { IIcon } from "src/app/core/models/core.interface";
 import { PlayerSongStatus } from "../models/player.enum";
 import { ListItemEntity } from "./base.entity";
 
@@ -8,41 +8,17 @@ import { ListItemEntity } from "./base.entity";
  * need decorators that depend on the parent class.
  */
 export class SongBaseEntity extends ListItemEntity {
-  releaseYear: number;
+  // Join info
   primaryAlbumName: string;
+  primaryArtistId: string;
   primaryArtistName: string;
   primaryArtistStylized: string;
-  playCount: number;
+  // Optional info
+  artistId: string;
+  classificationId: string;
+  playlistId: string;
+
+  // Data not saved
   playerStatus = PlayerSongStatus.Empty;
-  primaryAlbum: IAlbumModel;
-
-  public get albumName(): string {
-    if (this.primaryAlbum) {
-      return this.primaryAlbum.name;
-    }
-    return this.primaryAlbumName;
-  }
-
-  public get artistName(): string {
-    if (this.primaryAlbum && this.primaryAlbum.primaryArtist) {
-      return this.primaryAlbum.primaryArtist.name;
-    }
-    return this.primaryArtistName;
-  }
-
-  public get artistStylized(): string {
-    if (this.primaryAlbum && this.primaryAlbum.primaryArtist) {
-      return this.primaryAlbum.primaryArtist.artistStylized;
-    }
-    return this.primaryArtistStylized;
-  }
-
-  public get albumWithYear(): string {
-    const yearText = this.releaseYear > 0 ? ` (${this.releaseYear})` : '';
-    return this.albumName + yearText;
-  }
-
-  public get playCountText(): string {
-    return this.playCount > 0 ? this.playCount.toString() : '';
-  }
+  recentPlayIcon?: IIcon;
 }

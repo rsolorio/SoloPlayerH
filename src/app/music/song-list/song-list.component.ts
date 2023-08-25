@@ -85,7 +85,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
         icon: 'mdi-web mdi',
         action: (menuItem, param) => {
           const song = param as ISongModel;
-          this.utility.googleSearch(`${song.artistName} ${song.name}`);
+          this.utility.googleSearch(`${song.primaryArtistName} ${song.name}`);
         }
       },
       {
@@ -216,10 +216,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private setBreadcrumbsForAlbumArtistSongs(song: ISongModel): void {
-    const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-    const criteriaItem = new CriteriaItem('primaryArtistId', primaryArtistId);
+    const criteriaItem = new CriteriaItem('primaryArtistId', song.primaryArtistId);
     criteriaItem.displayName = this.db.displayName(criteriaItem.columnName);
-    criteriaItem.columnValues[0].caption = song.primaryArtistName ? song.primaryArtistName : song.primaryAlbum.primaryArtist.name;
+    criteriaItem.columnValues[0].caption = song.primaryArtistName;
     // No need to react to breadcrumb events
     this.breadcrumbService.set([{
       icon: AppEntityIcons.AlbumArtist,
@@ -237,11 +236,10 @@ export class SongListComponent extends CoreComponent implements OnInit {
     criteriaItem.comparison = CriteriaComparison.Equals;
     for (var songArtist of songArtistRows) {
       // Ignore the primary artist
-      const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-      if (songArtist.artistId !== primaryArtistId) {
+      if (songArtist.artistId !== song.primaryArtistId) {
         criteriaItem.columnValues.push({
           value: songArtist.artistId,
-          caption: songArtist.artistStylized
+          caption: songArtist.primaryArtistStylized
         });
       }
     }
@@ -258,20 +256,18 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
   private setBreadcrumbsForAlbumSongs(song: ISongModel): void {
     // Primary Artist
-    const primaryArtistId = song.primaryArtistId ? song.primaryArtistId : song.primaryAlbum.primaryArtist.id;
-    const artistCriteria = new CriteriaItem('primaryArtistId', primaryArtistId);
+    const artistCriteria = new CriteriaItem('primaryArtistId', song.primaryArtistId);
     artistCriteria.displayName = this.db.displayName(artistCriteria.columnName);
-    artistCriteria.columnValues[0].caption = song.primaryArtistStylized ? song.primaryArtistStylized : song.primaryAlbum.primaryArtist.artistStylized;
+    artistCriteria.columnValues[0].caption = song.primaryArtistStylized;
     const artistBreadcrumb: IBreadcrumbModel = {
       icon: AppEntityIcons.AlbumArtist,
       criteriaItem: artistCriteria,
       origin: BreadcrumbSource.AlbumArtist
     };
     // Album
-    const primaryAlbumId = song.primaryAlbumId ? song.primaryAlbumId : song.primaryAlbum.id;
-    const albumCriteria = new CriteriaItem('primaryAlbumId', primaryAlbumId);
+    const albumCriteria = new CriteriaItem('primaryAlbumId', song.primaryAlbumId);
     albumCriteria.displayName = this.db.displayName(albumCriteria.columnName);
-    albumCriteria.columnValues[0].caption = song.primaryAlbumName ? song.primaryAlbumName : song.primaryAlbum.name;
+    albumCriteria.columnValues[0].caption = song.primaryAlbumName;
     const albumBreadcrumb: IBreadcrumbModel = {
       icon: AppEntityIcons.Album,
       criteriaItem: albumCriteria,

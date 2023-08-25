@@ -1,6 +1,6 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { ISongModel } from '../models/song-model.interface';
-import { SongBaseEntity } from './song-base.entity';
+import { SongViewBaseEntity } from './song-view-base.entity';
 
 /**
  * This view combines the song entity with the PartyRelation entity.
@@ -18,11 +18,13 @@ import { SongBaseEntity } from './song-base.entity';
  @ViewEntity({
   name: 'songArtistView',
   expression: `
-  SELECT song.id, song.name, song.hash, song.filePath, song.fileSize,
-  song.playCount, song.releaseYear, song.releaseDecade, song.genre, song.trackNumber, song.mediaNumber, song.titleSort,
-  song.seconds, song.duration, song.bitrate, song.vbr, song.frequency,
-  song.favorite, song.live, song.explicit, song.performers, song.rating, song.mood, song.language, song.lyrics, song.addDate, song.playDate,
-  album.name AS primaryAlbumName, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, song.primaryAlbumId, album.primaryArtistId,
+  SELECT song.id, song.name, song.hash,
+  song.primaryAlbumId, song.filePath, song.fileSize,
+  song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.rating, song.playCount,
+  song.performers, song.genre, song.mood, song.language, song.lyrics,
+  song.seconds, song.duration, song.bitrate, song.frequency, song.vbr,
+  song.favorite, song.live, song.explicit, song.addDate, song.playDate,
+  album.name AS primaryAlbumName, album.primaryArtistId AS primaryArtistId, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized,
   partyRelation.relatedId AS artistId
   FROM song
   INNER JOIN album
@@ -34,74 +36,7 @@ import { SongBaseEntity } from './song-base.entity';
   WHERE partyRelation.relationTypeId = 'Artist-Song-Primary' OR partyRelation.relationTypeId = 'Artist-Song-Featuring'
 `
 })
-export class SongArtistViewEntity extends SongBaseEntity implements ISongModel {
-  @ViewColumn()
-  id: string;
-  @ViewColumn()
-  name: string;
-  @ViewColumn()
-  hash: string;
-  @ViewColumn()
-  filePath: string;
-  @ViewColumn()
-  fileSize: number;
-  @ViewColumn()
-  playCount: number;
-  @ViewColumn()
-  releaseYear: number;
-  @ViewColumn()
-  releaseDecade: number;
-  @ViewColumn()
-  genre: string;
-  @ViewColumn()
-  trackNumber: number;
-  @ViewColumn()
-  mediaNumber: number;
-  @ViewColumn()
-  titleSort: string;
-  @ViewColumn()
-  primaryAlbumName: string;
-  @ViewColumn()
-  primaryArtistName: string;
-  @ViewColumn()
-  primaryArtistStylized: string;
-  @ViewColumn()
-  seconds: number;
-  @ViewColumn()
-  duration: string;
-  @ViewColumn()
-  bitrate: number;
-  @ViewColumn()
-  vbr: boolean;
-  @ViewColumn()
-  frequency: number;
-  @ViewColumn()
-  favorite: boolean;
-  @ViewColumn()
-  live: boolean;
-  @ViewColumn()
-  explicit: boolean;
-  @ViewColumn()
-  performers: number;
-  @ViewColumn()
-  rating: number;
-  @ViewColumn()
-  mood: string;
-  @ViewColumn()
-  language: string;
-  @ViewColumn()
-  lyrics: string;
-  @ViewColumn()
-  addDate: Date;
-  @ViewColumn()
-  playDate: Date;
-  @ViewColumn()
-  primaryAlbumId: string;
-  @ViewColumn()
-  primaryArtistId: string;
+export class SongArtistViewEntity extends SongViewBaseEntity implements ISongModel {
   @ViewColumn()
   artistId: string;
-
-  // Empty properties from ISongModel interface
-  classificationId: string;
 }

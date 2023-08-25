@@ -119,3 +119,13 @@ export enum MetaField {
   /** ScanFileMode. None. */
   FileMode = 'fileMode'
 }
+
+/**
+ * Do we really need another enum for editable fields?
+ * If so, should we call the other one MetaReadableField or MetaReadOnlyField
+ * Compare against the app.config
+ */
+export enum MetaEditableField {
+  DirectoryPath = 'directoryPath',
+  FileNameWithExtension = 'fileNameWithExtension'
+}

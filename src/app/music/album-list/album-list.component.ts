@@ -53,7 +53,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         icon: 'mdi-web mdi',
         action: (menuItem, param) => {
           const albumModel = param as IAlbumModel;
-          this.utility.googleSearch(`${albumModel.artistName} ${albumModel.name}`);
+          this.utility.googleSearch(`${albumModel.primaryArtistName} ${albumModel.name}`);
         }
       },
       {
@@ -191,7 +191,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       if (albumView && albumView.primaryArtistId) {
         const criteriaItem = new CriteriaItem('primaryArtistId', albumView.primaryArtistId);
         criteriaItem.displayName = this.db.displayName(criteriaItem.columnName);
-        criteriaItem.columnValues[0].caption = album.artistName;
+        criteriaItem.columnValues[0].caption = album.primaryArtistName;
         // Suppress event so this component doesn't react to this change;
         // these breadcrumbs are for another list that hasn't been loaded yet
         this.breadcrumbService.addOne({
