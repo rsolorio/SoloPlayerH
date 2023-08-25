@@ -15,5 +15,6 @@ export interface ISyncSongInfo {
   songUpdatedRecords: SongEntity[];
   songSkippedRecords: SongEntity[];
   songDeletedRecords: SongEntity[];
+  ignoredFiles: string[];
   metadataResults: KeyValues[];
 }

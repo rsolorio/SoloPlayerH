@@ -412,6 +412,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             setting.warningText = `Sync process done. ${syncMessage}`;
             this.log.debug('Sync failures', errorFiles);
           }
+          // TODO: report ignored files
           else {
             setting.dynamicText = `Sync process done. ${syncMessage}`;
           }

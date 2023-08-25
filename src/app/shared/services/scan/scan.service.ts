@@ -10,6 +10,7 @@ import { IProcessDuration } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { PlaylistEntity, PlaylistSongEntity } from '../../entities';
+import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 
 /**
  * Services for scanning files.
@@ -65,6 +66,10 @@ export class ScanService {
       this.events.broadcast(AppEvent.ScanAudioFileStart, info);
       this.scanAudioService.setMode(file);
       const metadata = await this.scanAudioService.processAudioFile(file);
+      const ignoredData = metadata[MetaField.Ignored];
+      if (ignoredData?.length && ignoredData[0]) {
+        result.ignoredFiles.push(file.path);
+      }
       result.metadataResults.push(metadata);
     }
 

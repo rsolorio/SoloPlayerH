@@ -114,8 +114,10 @@ export enum MetaField {
   ReplayGain = 'replayGain',
   /** Id3v2 */
   TagFullyParsed = 'tagFullyParsed',
-  /** Id3v2 */
+  /** String. Id3v2. Scan. */
   Error = 'error',
+  /** Boolean. Scan. */
+  Ignored = 'ignored',
   /** ScanFileMode. None. */
   FileMode = 'fileMode'
 }

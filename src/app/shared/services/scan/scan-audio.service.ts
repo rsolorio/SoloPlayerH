@@ -66,6 +66,7 @@ export class ScanAudioService {
   private ignoreNumericGenres = false;
   private genreSplitSymbols: string[] = [];
   private artistSplitSymbols: string[] = [];
+  private minimumAudioDuration = 0;
 
   private existingArtists: ArtistEntity[];
   private existingAlbums: AlbumEntity[];
@@ -114,6 +115,7 @@ export class ScanAudioService {
     this.ignoreNumericGenres = this.options.getBoolean(ModuleOptionId.IgnoreNumericGenres);
     this.genreSplitSymbols = this.options.getArray(ModuleOptionId.GenreSplitCharacters);
     this.artistSplitSymbols = this.options.getArray(ModuleOptionId.ArtistSplitCharacters);
+    this.minimumAudioDuration = this.options.getNumber(ModuleOptionId.MinimumAudioDuration);
 
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language
@@ -126,6 +128,7 @@ export class ScanAudioService {
       songUpdatedRecords: null,
       songSkippedRecords: null,
       songDeletedRecords: null,
+      ignoredFiles: [],
       metadataResults: []
     };
     return result;
@@ -245,6 +248,15 @@ export class ScanAudioService {
     if (!errors) {
       errors = metadata[MetaField.Error] = [];
     }
+
+    if (this.minimumAudioDuration) {
+      const seconds = this.first(metadata[MetaField.Seconds]);
+      if (seconds && seconds < this.minimumAudioDuration) {
+        metadata[MetaField.Ignored] = [true];
+        return metadata;
+      }
+    }
+
     if (errors.length) {
       return metadata;
     }
@@ -264,8 +276,7 @@ export class ScanAudioService {
     const artists = this.processArtists(metadata, this.artistSplitSymbols);
 
     // PRIMARY ALBUM
-    // Hack for SoloSoft: ignore 1900
-    const primaryAlbum = this.processAlbum(primaryArtist, metadata, [1900]);
+    const primaryAlbum = this.processAlbum(primaryArtist, metadata);
 
     // GENRES
     // TODO: add default genre if no one found
@@ -458,7 +469,7 @@ export class ScanAudioService {
     return newArtist;
   }
 
-  private processAlbum(artist: ArtistEntity, metadata: KeyValues, ignoredYears?: number[]): AlbumEntity {
+  private processAlbum(artist: ArtistEntity, metadata: KeyValues): AlbumEntity {
     const newAlbum = new AlbumEntity();
     newAlbum.name = this.first(metadata[MetaField.Album]);
     if (!newAlbum.name) {
@@ -467,7 +478,7 @@ export class ScanAudioService {
 
     const year = this.first(metadata[MetaField.Year]);
     // Is this actually the album year? Album year and song year might be different.
-    newAlbum.releaseYear = year > 0 && !ignoredYears.includes(year) ? year : 0;
+    newAlbum.releaseYear = year > 0 ? year : 0;
 
     let albumStylized = this.first(metadata[MetaField.AlbumStylized]);
     if (!albumStylized) {

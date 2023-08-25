@@ -15,7 +15,7 @@
       {
         "id": "cc11be68-0024-4c71-a49c-d9ad334f6ef7",
         "name": "Artist split characters",
-        "moduleName": "Music",
+        "moduleName": "Scan",
         "description": "Symbols to be used to split the Artist tag into multiple artists.",
         "valueEditorType": "text",
         "multipleValues": true,
@@ -25,7 +25,7 @@
       {
         "id": "838ba832-f509-4eec-8086-87b342207125",
         "name": "Genre split characters",
-        "moduleName": "Music",
+        "moduleName": "Scan",
         "description": "Symbols to be used to split the Genre tag into multiple genres.",
         "valueEditorType": "text",
         "multipleValues": true,
@@ -125,7 +125,7 @@
       {
         "id": "3f4b56c7-167c-4807-afc2-1b6460b7822d",
         "name": "Ignore numeric genres",
-        "moduleName": "Music",
+        "moduleName": "Scan",
         "description": "Ignore genres with numeric values during the audio scan process. Usually genres with a number are bugs or don't mean anything.",
         "valueEditorType": "yesNo",
         "multipleValues": false,
@@ -141,6 +141,16 @@
         "multipleValues": false,
         "system": false,
         "values": "1000"
+      },
+      {
+        "id": "0cad8c29-3af4-41c2-b10b-8a9ec7832f30",
+        "name": "Minimum duration",
+        "moduleName": "Scan",
+        "description": "Audio with this duration (in seconds) or less will be ignored by the scan process.",
+        "valueEditorType": "number",
+        "multipleValues": false,
+        "system": false,
+        "values": "60"
       }
     ],
     "relatedImage": [
