@@ -39,6 +39,7 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
       result.push(criteriaItem);
 
       criteriaItem = new CriteriaItem('name', criteriaSearchTerm, CriteriaComparison.Like);
+      criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
       result.push(criteriaItem);
     }
     // TODO: sort by LastSongAddDate
