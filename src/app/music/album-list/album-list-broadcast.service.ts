@@ -8,7 +8,7 @@ import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
-import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
+import { CriteriaComparison, CriteriaJoinOperator } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
@@ -34,7 +34,11 @@ export class AlbumListBroadcastService extends ListBroadcastServiceBase<IAlbumMo
     const result = new CriteriaItems();
     if (searchTerm) {
       const criteriaSearchTerm = this.normalizeCriteriaSearchTerm(searchTerm, true);
-      const criteriaItem = new CriteriaItem('name', criteriaSearchTerm, CriteriaComparison.Like);
+      let criteriaItem = new CriteriaItem('primaryArtistName', criteriaSearchTerm, CriteriaComparison.Like);
+      criteriaItem.expressionOperator = CriteriaJoinOperator.Or;
+      result.push(criteriaItem);
+
+      criteriaItem = new CriteriaItem('name', criteriaSearchTerm, CriteriaComparison.Like);
       result.push(criteriaItem);
     }
     // TODO: sort by LastSongAddDate
