@@ -3,7 +3,8 @@ import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-w
 import { IExportConfig } from './export.interface';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { DatabaseService } from '../database/database.service';
-import { FilterEntity, SongViewEntity } from '../../entities';
+import { FilterEntity, SongTempEntity, SongViewEntity } from '../../entities';
+import { ISongModel } from '../../models/song-model.interface';
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -50,24 +51,23 @@ export class ExportService {
   }
 
   private async populateSongs(config: IExportConfig): Promise<void> {
+    if (!config.songs) {
+      if (config.criteria) {
+        config.songs = await this.db.getList(SongViewEntity, config.criteria);
+      }
+      else if (config.filterId) {
+        const filter = await FilterEntity.findOneBy({ id: config.filterId });
+        config.criteria = await this.entities.getCriteriaFromFilter(filter);
+        config.songs = await this.db.getList(SongViewEntity, config.criteria);
+      }
+      else if (config.playlistId) {
+        config.songs = await this.entities.getTracks(config.playlistId);
+      }
+    }
+
     if (config.songs) {
-      return;
-    }
-
-    if (config.criteria) {
-      config.songs = await this.db.getList(SongViewEntity, config.criteria);
-      return;
-    }
-
-    if (config.filterId) {
-      const filter = await FilterEntity.findOneBy({ id: config.filterId });
-      config.criteria = await this.entities.getCriteriaFromFilter(filter);
-      config.songs = await this.db.getList(SongViewEntity, config.criteria);
-      return;
-    }
-
-    if (config.playlistId) {
-      config.songs = await this.entities.getTracks(config.playlistId);
+      await this.fillSongTemp(config.songs);
+      // TODO: redirect song view, song artist view, song classification view to use the songTemp entity
       return;
     }
 
@@ -78,5 +78,15 @@ export class ExportService {
 
     // Send all songs
     config.songs = await SongViewEntity.find();
+  }
+
+  private async fillSongTemp(songs: ISongModel[]): Promise<void> {
+    await SongTempEntity.clear();
+    const songTempData: SongTempEntity[] = [];
+    for (const song of songs) {
+      const songTemp = this.db.mapEntities(song, SongTempEntity);
+      songTempData.push(songTemp);
+    }
+    await this.db.bulkInsert(SongTempEntity, songTempData);
   }
 }

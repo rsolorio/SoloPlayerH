@@ -47,7 +47,7 @@ export class SongTempEntity extends SongBaseEntity implements ISongModel {
   mood: string;
   @Column()
   language: string;
-  @Column()
+  @Column({ nullable: true })
   lyrics: string;
   // Audio info
   @Column()
@@ -70,7 +70,7 @@ export class SongTempEntity extends SongBaseEntity implements ISongModel {
   // Dates
   @Column()
   addDate: Date;
-  @Column()
+  @Column({ nullable: true })
   playDate: Date;
   // Join info  
   @Column()
@@ -82,8 +82,10 @@ export class SongTempEntity extends SongBaseEntity implements ISongModel {
   @Column()
   primaryArtistStylized: string;
   // Optional info
-  @Column()
+  @Column({ nullable: true })
   artistId: string;
-  @Column()
+  @Column({ nullable: true })
   classificationId: string;
+  @Column({ nullable: true })
+  playlistId: string;
 }

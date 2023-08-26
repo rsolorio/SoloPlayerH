@@ -819,4 +819,17 @@ export class DatabaseService {
       });
     });
   }
+
+  public mapEntities<T extends ObjectLiteral>(source: any, destinationEntity: EntityTarget<T>): T {
+    const repo = this.dataSource.getRepository(destinationEntity);
+    const entityInstance = repo.metadata.create();
+    for (const column of repo.metadata.columns) {
+      // For now all column names match the property names, so we can do this logic
+      const value = source[column.databaseName];
+      if (value !== undefined) {
+        entityInstance[column.databaseName] = value;
+      }
+    }
+    return entityInstance as T;
+  }
 }

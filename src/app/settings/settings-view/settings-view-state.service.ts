@@ -3,7 +3,7 @@ import { IStateService } from 'src/app/core/models/core.interface';
 import { ISetting, ISettingCategory } from './settings-model.interface';
 import { ModuleOptionId, SyncProfileId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
-import { PlaylistEntity, PlaylistSongEntity, SongEntity } from 'src/app/shared/entities';
+import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { AppActionIcons, AppAttributeIcons, AppFeatureIcons } from 'src/app/app-icons';
