@@ -36,7 +36,7 @@ import { IImagePreviewModel } from 'src/app/related-image/image-preview/image-pr
 import { ImagePreviewComponent } from 'src/app/related-image/image-preview/image-preview.component';
 import { AddToPlaylistService } from 'src/app/playlist/add-to-playlist/add-to-playlist.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
-import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { DbColumn } from 'src/app/shared/services/database/database.columns';
 
@@ -49,6 +49,8 @@ import { DbColumn } from 'src/app/shared/services/database/database.columns';
 export class SongListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public PlayerSongStatus = PlayerSongStatus;
+  public AppPlayerIcons = AppPlayerIcons;
+  public AppAttributeIcons = AppAttributeIcons;
   public SongBadge = SongBadge;
   public songAttributesVisible = true;
   private expandPlayerOnPlay = false;

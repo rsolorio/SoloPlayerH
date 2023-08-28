@@ -9,7 +9,7 @@
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #imageOverlayTemplate let-item="item">
     <div *ngIf="item.playerStatus === PlayerSongStatus.Playing" class="sp-image-overlay sp-text-big-fixed">
-      <i class="mdi-play mdi sp-color-primary"></i>
+      <i [ngClass]="AppPlayerIcons.Play" class="sp-color-primary"></i>
     </div>
   </ng-template>
   <ng-template #infoTemplate let-item="item">
@@ -34,24 +34,24 @@
         Recent / Blue
         Explicit / Yellow
        -->
-      <i *ngIf="item.bitrate === 320000" class=" mdi-waveform mdi sp-title-icon sp-color-320" [title]="SongBadge.Kbps320"></i>
-      <i *ngIf="item.vbr" class=" mdi-waveform mdi sp-title-icon sp-color-vbr" [title]="SongBadge.Vbr"></i>
-      <i *ngIf="item.lyrics" class="mdi-script-text-outline mdi sp-title-icon sp-color-lyric" [title]="SongBadge.Lyrics"></i>
-      <i *ngIf="item.live" class="mdi-broadcast mdi sp-title-icon sp-color-success" [title]="SongBadge.Live"></i>
-      <i *ngIf="item.rating === 5" class="mdi-star-outline mdi sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
-      <i *ngIf="item.favorite" class="mdi-heart-outline mdi sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
+      <i *ngIf="item.bitrate === 320000" [ngClass]="AppAttributeIcons.BitrateHigh" class=" sp-title-icon sp-color-320" [title]="SongBadge.Kbps320"></i>
+      <i *ngIf="item.vbr" [ngClass]="AppAttributeIcons.BitrateHigh" class="sp-title-icon sp-color-vbr" [title]="SongBadge.Vbr"></i>
+      <i *ngIf="item.lyrics" [ngClass]="AppAttributeIcons.LyricsOn" class="sp-title-icon sp-color-lyric" [title]="SongBadge.Lyrics"></i>
+      <i *ngIf="item.live" [ngClass]="AppAttributeIcons.LiveOn" class="sp-title-icon sp-color-success" [title]="SongBadge.Live"></i>
+      <i *ngIf="item.rating === 5" [ngClass]="AppAttributeIcons.RatingOn" class="sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
+      <i *ngIf="item.favorite" [ngClass]="AppAttributeIcons.FavoriteOn" class="sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
       <i *ngIf="item.recentPlayIcon" class="mdi-timer-play-outline mdi sp-title-icon sp-color-info" [ngClass]="item.recentPlayIcon.styleClass" [title]="item.recentPlayIcon.tooltip"></i>
-      <i *ngIf="item.explicit" class="mdi-alpha-e-box-outline mdi sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
+      <i *ngIf="item.explicit" [ngClass]="AppAttributeIcons.ExplicitOn" class="sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
     </span>
     <br>
     <!-- Extra Info -->
     <span class="sp-color-on-bg-low sp-text-small sp-no-select" [ngClass]="{ 'sp-color-primary-low': item.playerStatus === PlayerSongStatus.Playing }">
-      <i class="mdi-account mdi">&nbsp;</i><span>{{item.primaryArtistStylized}}&nbsp;&nbsp;</span>
-      <i class="mdi-album mdi">&nbsp;</i><span>{{item.primaryAlbumName}}&nbsp;&nbsp;</span>
+      <i [ngClass]="AppAttributeIcons.ArtistName">&nbsp;</i><span>{{item.primaryArtistStylized}}&nbsp;&nbsp;</span>
+      <i [ngClass]="AppAttributeIcons.AlbumName">&nbsp;</i><span>{{item.primaryAlbumName}}&nbsp;&nbsp;</span>
       <ng-container *ngIf="item.releaseYear > 0">
-        <i class="mdi-calendar-month mdi">&nbsp;</i><span>{{item.releaseYear}}&nbsp;&nbsp;</span>
+        <i [ngClass]="AppAttributeIcons.Year">&nbsp;</i><span>{{item.releaseYear}}&nbsp;&nbsp;</span>
       </ng-container>
-      <i class="mdi-timer mdi">&nbsp;</i><span>{{item.duration}}</span>
+      <i [ngClass]="AppAttributeIcons.Duration">&nbsp;</i><span>{{item.duration}}</span>
     </span>
   </ng-template>
 </sp-list-base>

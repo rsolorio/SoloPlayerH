@@ -9,11 +9,16 @@ import { FileInfoSourceService } from '../data-source/file-info-source.service';
 import { PathExpressionSourceService } from '../data-source/path-expression-source.service';
 
 /**
- * A transform service to retrieve metadata from a list of data sources.
- * It uses the specified profile to get a list of mappings that define source/destination items.
- * Each destination will be represented as a property in an object that will be returned in the process method.
- * If the name of a destination is changed, any code using this service will need to be updated.
- * TODO: create an interface with fixed properties available as destinations.
+ * A transform service to retrieve metadata from a list of data sources;
+ * it uses the specified profile to get a list of data sources.
+ * It receives a file info object and returns a metadata (KeyValues) object.
+ * This service assumes all the data sources have the same responsibility: read metadata from a file;
+ * each data source type has an implicit way of reading metadata, but they all return
+ * the same data type depending on the attribute being retrieved.
+ * Each data source has its own configuration and its own list of supported fields to read.
+ * Although a generic data source can have mappings, currently, data sources for the metadata reader don't
+ * support mappings, which means that the mappings between the metadata and the database is "hardcoded"
+ * and cannot be customized.
  */
 @Injectable({
   providedIn: 'root'

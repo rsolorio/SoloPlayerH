@@ -98,7 +98,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     // TODO: this should not be displayed in cordova mode
     this.menuList.push({
       caption: 'Toggle Explicit',
-      icon: AppAttributeIcons.Explicit,
+      icon: AppAttributeIcons.ExplicitOn,
       action: () => {
       },
       actionTimeout: 300

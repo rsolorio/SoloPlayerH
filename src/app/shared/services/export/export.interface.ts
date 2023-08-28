@@ -8,6 +8,7 @@ export interface IExportConfig {
   playlistId?: string;
   criteria?: Criteria;
   songs?: ISongModel[];
+  songTempEnabled?: boolean;
   playlistsEnabled?: boolean;
   smartlistsEnabled?: boolean;
   autolistsEnabled?: boolean;

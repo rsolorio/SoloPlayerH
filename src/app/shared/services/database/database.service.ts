@@ -820,6 +820,10 @@ export class DatabaseService {
     });
   }
 
+  /**
+   * Converts an existing entity into a different entity by using the properties in the
+   * destination to get the values from the source.
+   */
   public mapEntities<T extends ObjectLiteral>(source: any, destinationEntity: EntityTarget<T>): T {
     const repo = this.dataSource.getRepository(destinationEntity);
     const entityInstance = repo.metadata.create();

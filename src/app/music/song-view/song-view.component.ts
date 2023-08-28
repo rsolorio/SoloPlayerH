@@ -199,7 +199,7 @@ export class SongViewComponent implements OnInit {
             },
             {
               propertyName: 'song_explicit',
-              icon: AppAttributeIcons.Explicit,
+              icon: AppAttributeIcons.ExplicitOn,
               label: 'Explicit',
               editorType: ValueEditorType.YesNo,
               onEdit: () => {

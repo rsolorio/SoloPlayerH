@@ -9,11 +9,10 @@ import { PathExpressionSourceService } from '../data-source/path-expression-sour
 
 /**
  * A transform service to save metadata to an audio file.
- * It uses the specified profile to get a list of mappings that define source/destination items.
- * Each destination will be represented as a property in an object that will be used get the metadata.
- * If the name of a destination is changed, the code used to save the metadata into the file
- * will need to be updated.
- * TODO: create an interface with fixed properties 
+ * It uses the specified profile to get a list of data sources;
+ * data sources have the responsibility of reading metadata and pass it to the writer.
+ * Data sources support custom mapping, but the mapping is not used to get a different version of the metadata;
+ * the mapping of the data source is used to tell the writer where the metadata will be saved.
  */
 @Injectable({
   providedIn: 'root'

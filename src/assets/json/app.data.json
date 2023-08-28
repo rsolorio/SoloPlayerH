@@ -1124,6 +1124,18 @@
         "sequence": 1,
         "disabled": false,
         "system": true
+      },
+      {
+        "id": "07766c67-2ac9-4562-85e3-86186a3bea08",
+        "profileId": "5021cccd-eafc-46ae-b521-f075dda9e105",
+        "name": "dbToPlaylists",
+        "type": "SongModel",
+        "config": "",
+        "fields": "",
+        "customMapping": true,
+        "sequence": 1,
+        "disabled": false,
+        "system": true
       }
     ],
     "filter": [

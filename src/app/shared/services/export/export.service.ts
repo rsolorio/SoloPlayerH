@@ -38,19 +38,26 @@ export class ExportService {
   public async copyAndTag(config: IExportConfig): Promise<void> {
     // In theory a writer should only have one data source
     await this.writer.init({ profileId: config.profileId });
-    await this.populateSongs(config);
+    await this.prepareSongs(config);
 
     for (const song of config.songs) {
-
+      // Writer needs to have the config to determine where the song will be saved, since the writer will save the file
+      // writer.process (song) -- Change method to be generic or take an any; OR make the writer prepare the songs
+      // -- getContext -> gets KeyValues using song and sources; mapping will determine how data from the song will be set into the KeyValues obj
+      // -- copy file and save id3 directly from KeyValues
+      // this doesn't really need the songTemp table, it only needs to process the songs in memory
     }
-    // Get a list of songs from the configuration
-    // For each song in songs
-    // writer.process (song)
-    // -- getContext -> gets KeyValues using song and sources; mapping will determine how data from the song will be set into the KeyValues obj
-    // -- copy file and save id3 directly from KeyValues
+
+    // Another data source? We need a data source to get data from SongTemp/or regular views table for filters (and auto playlists) to export
+    // This data source also needs the config object
+    // This data source processes a playlist id or a filter id
+    // Export also needs the config to determine where the playlists will be exported
   }
 
-  private async populateSongs(config: IExportConfig): Promise<void> {
+  /**
+   * Sets up the songs in the config object based on the specified criteria and fills the SongTemp table if needed.
+   */
+  private async prepareSongs(config: IExportConfig): Promise<void> {
     if (!config.songs) {
       if (config.criteria) {
         config.songs = await this.db.getList(SongViewEntity, config.criteria);
@@ -67,7 +74,9 @@ export class ExportService {
 
     if (config.songs) {
       await this.fillSongTemp(config.songs);
+      config.songTempEnabled = true;
       // TODO: redirect song view, song artist view, song classification view to use the songTemp entity
+      // Whenever getList is called we just need to use the SongTempEntity instead of the views
       return;
     }
 
