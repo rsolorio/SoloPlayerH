@@ -33,9 +33,10 @@ export enum AppAttributeIcons {
   FileInfo = 'mdi-file-music mdi',
   ClassificationType = 'mdi-shape mdi',
   Language = 'mdi-translate mdi',
-  Mood = 'mdi-emoticon-outline mdi',
+  MoodOn = 'mdi-emoticon mdi',
+  MoodOff = 'mdi-emoticon-neutral-outline',
   Year = 'mdi-calendar mdi',
-  Decade = 'mdi-calendar-blank mdi',
+  Decade = 'mdi-calendar-month mdi',
   RatingOn = 'mdi-star mdi',
   RatingOff = 'mdi-star-outline mdi',
   RatingHalf = 'mdi-star-half-full mdi',
@@ -49,7 +50,7 @@ export enum AppAttributeIcons {
   ExplicitOff = 'mdi-alpha-e-box-outline mdi',
   BitrateHigh = 'mdi-waveform mdi',
   BitrateLow = 'mdi-wave mdi',
-  Image = 'mdi-image-outline mdi',
+  Image = 'mdi-image mdi',
   TrackNumber = 'mdi-pound mdi',
   MediaNumber = 'mdi-disc mdi',
   Duration = 'mdi-timer mdi',
@@ -72,7 +73,8 @@ export enum AppAttributeIcons {
   SwitchOn = 'mdi-toggle-switch-variant mdi',
   SwitchOff = 'mdi-toggle-switch-variant-off mdi',
   Selected = 'mdi-checkbox-outline mdi',
-  Unselected = 'mdi-checkbox-blank-outline mdi'
+  Unselected = 'mdi-checkbox-blank-outline mdi',
+  Recent = 'mdi-history mdi'
 }
 
 export enum AppActionIcons {

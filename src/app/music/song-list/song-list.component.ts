@@ -355,7 +355,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
 
     navbarModel.menuList.push({
       caption: 'Mood',
-      icon: AppAttributeIcons.Mood,
+      icon: AppAttributeIcons.MoodOn,
       action: () => {
         this.openMoodFilterPanel();
       }
@@ -536,7 +536,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       return moods.includes(chip.caption);
     });
     model.subTitle = 'Mood';
-    model.subTitleIcon = AppAttributeIcons.Mood;
+    model.subTitleIcon = AppAttributeIcons.MoodOn;
     model.onOk = result => {
       const selectedMoods = result.items.filter(i => i.selected);
       const breadcrumbs = this.breadcrumbService.getState().items;
@@ -560,7 +560,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
           criteriaItem.comparison = CriteriaComparison.Equals;
           selectedMoods.forEach(l => criteriaItem.columnValues.push({ value: l.caption, caption: l.caption }));
           this.breadcrumbService.addOne({
-            icon: AppAttributeIcons.Mood,
+            icon: AppAttributeIcons.MoodOn,
             criteriaItem: criteriaItem,
             origin: BreadcrumbSource.Mood
           });

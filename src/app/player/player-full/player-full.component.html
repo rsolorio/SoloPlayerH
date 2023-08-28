@@ -17,7 +17,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
           <i
           (click)="togglePlaylist()"
           class="mdi sp-text-xlarge-fixed sp-navbar-content-height sp-cursor-pointer"
-          [ngClass]="{ 'mdi-playlist-music-outline': !model.playerList.isVisible, 'mdi-image-outline': model.playerList.isVisible }"
+          [ngClass]="model.playerList.isVisible ? AppAttributeIcons.Image : AppPlayerIcons.Queue"
           [ngStyle]="palette.secondary.cssColor"></i>
           <span
           class="sp-text-large sp-navbar-content-height" style="vertical-align: top;"
@@ -89,7 +89,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
     <td colspan="3" class="sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
       <i *ngIf="song.explicit" [ngClass]="AppAttributeIcons.Explicit" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
-      <i class="mdi-music mdi sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
+      <i [ngClass]="AppAttributeIcons.SongName" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-xlarge sp-text-bold"
       [ngStyle]="palette.primary.cssColor">&nbsp;{{song.name}}</span>
@@ -172,14 +172,14 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
                   <i
                   (click)="toggleLive()"
                   class="mdi sp-cursor-pointer"
-                  [ngClass]="song.live ? 'mdi-broadcast' : 'mdi-broadcast-off'"></i>
+                  [ngClass]="song.live ? AppAttributeIcons.LiveOn : AppAttributeIcons.LiveOff"></i>
                 </td>
                 <!-- Lyrics icon -->
                 <td>
                   <i
                   class="mdi sp-cursor-pointer"
                   (click)="toggleLyrics()"
-                  [ngClass]="song.lyrics ? 'mdi-script-text-outline' : 'mdi-script-outline'"></i>
+                  [ngClass]="song.lyrics ? AppAttributeIcons.LyricsOn : AppAttributeIcons.LyricsOff"></i>
                 </td>
                 <!-- Rating icon -->
                 <td>
@@ -195,14 +195,14 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
                   <i
                   class="mdi sp-cursor-pointer"
                   (click)="onMoodClick(song)"
-                  [ngClass]="song.mood && song.mood !== 'No Mood' ? 'mdi-emoticon-happy-outline' : 'mdi-emoticon-neutral-outline'"></i>
+                  [ngClass]="song.mood && song.mood !== 'No Mood' ? AppAttributeIcons.MoodOn : AppAttributeIcons.MoodOff"></i>
                 </td>
                 <!-- Favorite icon -->
                 <td>
                   <i
                   class="mdi sp-cursor-pointer"
                   (click)="onFavoriteClick(song)"
-                  [ngClass]="song.favorite ? 'mdi-heart' : 'mdi-heart-outline'"></i>
+                  [ngClass]="song.favorite ? AppAttributeIcons.FavoriteOn : AppAttributeIcons.FavoriteOff"></i>
                 </td>
               </tr>
             </table>
@@ -273,8 +273,8 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
           <td><span *ngIf="image" class="sp-text-large">{{image.imageType.toUpperCase()}}</span></td>
           <td><i class="mdi-chevron-right mdi sp-text-big sp-cursor-pointer" [ngClass]="{ 'sp-color-item-disabled': images.length < 2 }" (click)="onToolbarNext($event)"></i></td>
           <td>
-            <i *ngIf="!isLoadingPalette" (click)="onImageControlsClose($event)" class="mdi-close mdi sp-text-big sp-cursor-pointer"></i>
-            <i *ngIf="isLoadingPalette" class="mdi-loading mdi-spin mdi sp-text-big"></i>
+            <i *ngIf="!isLoadingPalette" (click)="onImageControlsClose($event)" [ngClass]="AppActionIcons.CloseClear" class="sp-text-big sp-cursor-pointer"></i>
+            <i *ngIf="isLoadingPalette" [ngClass]="AppActionIcons.Loading" class="sp-text-big"></i>
           </td>
         </tr>
         <!-- Colors -->

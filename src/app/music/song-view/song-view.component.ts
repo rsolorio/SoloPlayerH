@@ -161,7 +161,7 @@ export class SongViewComponent implements OnInit {
             },
             {
               propertyName: 'song_mood',
-              icon: AppAttributeIcons.Mood,
+              icon: AppAttributeIcons.MoodOn,
               label: 'Mood',
               onEdit: () => {}
             }
