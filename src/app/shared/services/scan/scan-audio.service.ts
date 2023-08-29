@@ -31,6 +31,7 @@ import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-met
 import { PartyRelationType } from '../../models/music.enum';
 import { IImageSource, KeyValues } from 'src/app/core/models/core.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
+import { DatabaseEntitiesService } from '../database/database-entities.service';
 
 enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -86,6 +87,7 @@ export class ScanAudioService {
     private metadataReader: MetadataReaderService,
     private utilities: UtilityService,
     private db: DatabaseService,
+    private entities: DatabaseEntitiesService,
     private options: DatabaseOptionsService,
     private lookupService: DatabaseLookupService,
     private log: LogService
@@ -119,7 +121,10 @@ export class ScanAudioService {
 
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language
-    await this.metadataReader.init({ profileId: SyncProfileId.DefaultAudioImport, dynamicFields: this.existingClassTypes.map(c => c.name) });
+    const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
+    syncProfile.config = syncProfile.config ? syncProfile.config : {};
+    syncProfile.config.dynamicFields = this.existingClassTypes.map(c => c.name);
+    await this.metadataReader.init(syncProfile);
 
     const result: ISyncSongInfo = {
       songInitialCount: this.existingSongs.length,

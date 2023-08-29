@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { IDataSource, ILoadInfo } from './data-source.interface';
+import { IDataSourceParsed, IDataSourceService } from './data-source.interface';
 import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
 import { FileService } from 'src/app/platform/file/file.service';
 import { IAudioInfo, IIdentifierTag, IMemoTag, IPictureExt, IPopularimeterTag, IUrlTag } from 'src/app/platform/audio-metadata/audio-metadata.interface';
-import { ITag } from 'music-metadata-browser';
+import { IFileInfo, ITag } from 'music-metadata-browser';
 import { MetaField } from '../data-transform/data-transform.enum';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { IImageSource } from 'src/app/core/models/core.interface';
@@ -13,26 +13,26 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 @Injectable({
   providedIn: 'root'
 })
-export class Id3v2SourceService implements IDataSource {
-  protected loadInfo: ILoadInfo;
+export class Id3v2SourceService implements IDataSourceService {
+  protected inputData: IFileInfo;
   protected audioInfo: IAudioInfo;
   protected tags: ITag[];
 
   constructor(private metadataService: AudioMetadataService, private fileService: FileService, private utility: UtilityService) { }
 
-  public async load(info: ILoadInfo): Promise<ILoadInfo> {
-    if (this.loadInfo && this.loadInfo.filePath === info.filePath) {
-      return info;
+  public async init(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
+    if (this.inputData && this.inputData.path === input.path) {
+      return entity;
     }
-    this.loadInfo = info;
+    this.inputData = input;
 
     let buffer: Buffer;
     try {
-      buffer = await this.fileService.getBuffer(info.filePath);
+      buffer = await this.fileService.getBuffer(input.path);
     }
     catch (err) {
-      this.loadInfo.error = err;
-      return this.loadInfo;
+      entity.error = err;
+      return entity;
     }
 
     // If we get here is because there was no error getting the buffer
@@ -40,8 +40,8 @@ export class Id3v2SourceService implements IDataSource {
     this.tags = [];
 
     if (this.audioInfo.error) {
-      this.loadInfo.error = this.audioInfo.error;
-      return this.loadInfo;
+      entity.error = this.audioInfo.error;
+      return entity;
     }
     // ID3v1 is being handled by the metadata.common properties
     const tagVersions = ['ID3v2.4', 'ID3v2.3', 'ID3v1'];
@@ -52,7 +52,7 @@ export class Id3v2SourceService implements IDataSource {
         this.tags = this.tags.concat(newTags);
       }
     });
-    return this.loadInfo;
+    return entity;
   }
 
   public async get(propertyName: string, isDynamic?: boolean): Promise<any[]> {
@@ -350,7 +350,7 @@ export class Id3v2SourceService implements IDataSource {
       const pictures = this.audioInfo.metadata.common.picture as IPictureExt[];
       pictures.filter(p => p.imageType === imageType).forEach(p => {
         result.push({
-          sourcePath: this.loadInfo.filePath,
+          sourcePath: this.inputData.path,
           sourceIndex: p.index,
           sourceType: MusicImageSourceType.AudioTag,
           mimeType: p.format,

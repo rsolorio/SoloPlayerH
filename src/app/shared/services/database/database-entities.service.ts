@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlbumEntity, ArtistEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, PlaylistSongViewEntity, RelatedImageEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
+import { AlbumEntity, ArtistEntity, DataMappingEntity, DataSourceEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, PlaylistSongViewEntity, RelatedImageEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
@@ -21,6 +21,7 @@ import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-i
 import { ModuleOptionId } from './database.seed';
 import { ISyncProfileParsed } from '../../models/sync-profile-model.interface';
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
+import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -306,6 +307,26 @@ export class DatabaseEntitiesService {
     syncProfile.syncInfo = data.syncInfo ? JSON.stringify(data.syncInfo) : null;
     syncProfile.syncDate = data.syncDate;
     await syncProfile.save();
+  }
+
+  public async getDataSources(profileId: string): Promise<IDataSourceParsed[]> {
+    const result: IDataSourceParsed[] = [];
+    const sourceData = await DataSourceEntity.findBy({ profileId: profileId });
+    const sortedSources = this.utilities.sort(sourceData, 'sequence');
+    for (const sourceRow of sortedSources) {
+      if (!sourceRow.disabled) {
+        result.push({
+          id: sourceRow.id,
+          type: sourceRow.type,
+          config: sourceRow.config ? JSON.parse(sourceRow.config) : null,
+          fieldArray: sourceRow.fields ? sourceRow.fields.split(',') : null,
+          sequence: sourceRow.sequence,
+          disabled: sourceRow.disabled,
+          mappings: await DataMappingEntity.findBy({ dataSourceId: sourceRow.id })
+        });
+      }
+    }
+    return result;
   }
 
   public async getCriteriaFromFilter(filter: IFilterModel): Promise<Criteria> {

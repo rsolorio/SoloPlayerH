@@ -1,26 +1,28 @@
 import { Injectable } from '@angular/core';
-import { IDataSource, ILoadInfo } from './data-source.interface';
+import { IDataSourceParsed, IDataSourceService } from './data-source.interface';
 import { MetaField } from '../data-transform/data-transform.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { IFileInfo } from 'music-metadata-browser';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PathExpressionSourceService implements IDataSource {
-  protected loadInfo: ILoadInfo;
+export class PathExpressionSourceService implements IDataSourceService {
+  protected inputData: IFileInfo;
+  protected entityData: IDataSourceParsed;
   protected matchInfo: RegExpExecArray;
   protected regExpText: string;
   constructor(private utility: UtilityService) { }
 
-  public async load(info: ILoadInfo): Promise<ILoadInfo> {
-    if (this.loadInfo && this.loadInfo.filePath === info.filePath && this.loadInfo.config === info.config) {
-      return info;
+  public async init(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
+    if (this.inputData && this.inputData.path === input.path && this.entityData.config === entity.config) {
+      return entity;
     }
 
-    if (!this.loadInfo || this.loadInfo.config !== info.config) {
+    if (!this.entityData || this.entityData.config !== entity.config) {
       // 1. Convert tokens into regex groups
-      this.regExpText = info.config;
-      for (const field of info.fieldArray) {
+      this.regExpText = entity.config;
+      for (const field of entity.fieldArray) {
         const token = `%${field}%`;
         const group = `(?<${field}>[^\\\\]+)`;
         this.regExpText = this.regExpText.replace(token, group);
@@ -30,16 +32,17 @@ export class PathExpressionSourceService implements IDataSource {
       // 3. Prepend dummy
       this.regExpText = '(?<dummy>.+)\\\\' + this.regExpText;
       // 4. Append extension
-      const extension = this.getExtension(info.filePath);
+      const extension = this.getExtension(input.path);
       if (extension) {
         this.regExpText += '\\' + extension;
       }
     }
 
     const regExp = new RegExp(this.regExpText);
-    this.matchInfo = regExp.exec(info.filePath);    
-    this.loadInfo = info;
-    return this.loadInfo;
+    this.matchInfo = regExp.exec(input.path);    
+    this.inputData = input;
+    this.entityData = entity;
+    return entity;
   }
 
   public async get(propertyName: string): Promise<any[]> {

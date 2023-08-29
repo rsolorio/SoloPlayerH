@@ -5,9 +5,26 @@ import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { DatabaseService } from '../database/database.service';
 import { FilterEntity, SongTempEntity, SongViewEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
+import { SyncProfileId } from '../database/database.seed';
 
 /**
  * Service to copy audio and playlist files to other locations.
+ * The export service will do one thing: export audio files and playlists based on configuration.
+ * The configuration will be associated to a sync profile record.
+ * The export service will have the responsibility of getting the list of song records to process based on config.
+ * It will use a file writer to create to copy and tag the audio file; the writer will be initialized with the profile id,
+ * and probably with some more info (like the destination directory); it will load all data sources associated, in this case, only one, the Song Row data source;
+ * the export service will iterate each song row, pass it to the writer which will get the metadata (KeyValues), and use it to create the file with the proper tags in the proper location;
+ * the mappings in the SongRow data source will determine how the KeyValues object is used to save the tags.
+ * The export service now needs to determine three more actions: playlists, smartlists, autolists.
+ * The export service will use the playlist writer; and pass location, playlist type, to initialize the writer.
+ * The playlist writer will also use a SongRow data source but with less fields.
+ * The export service will export playlists only if all songs were exported.
+ * if so, it will iterate each playlist and use the playlist writer;
+ * for each playlist, the writer will be loaded/initialized (which will create the playlist file in memory), then each song record passed to the writer will add
+ * the track; once the playlist tracks are added, the playlist file should be created in the proper location. Call some kind of finalization process to actually save the file.
+ * Do the same for filters, get the name, get the tracks (using the regular songview or the song temp), and use the writer.
+ * Do the same for auto, get the name, get the tracks, use the writer.
  */
 @Injectable({
   providedIn: 'root'
@@ -35,9 +52,11 @@ export class ExportService {
    * 4. Select/update mappings? How to choose other mappings without changing existing ones.
    * 5. Save results in profile, Sync history?
    */
-  public async copyAndTag(config: IExportConfig): Promise<void> {
+  public async copyAndTag(): Promise<void> {
     // In theory a writer should only have one data source
-    await this.writer.init({ profileId: config.profileId });
+    const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultExport);
+    await this.writer.init(syncProfile);
+    const config = syncProfile.config as IExportConfig;
     await this.prepareSongs(config);
 
     for (const song of config.songs) {

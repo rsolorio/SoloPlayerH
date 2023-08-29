@@ -1,11 +1,6 @@
-import { IFileInfo } from "src/app/platform/file/file.interface";
+import { ISyncProfileParsed } from "src/app/shared/models/sync-profile-model.interface";
 
-export interface IDataTransform {
-  init(config?: IDataTransformConfig): Promise<void>;
-  process(fileInfo: IFileInfo): Promise<any>;
-}
-
-export interface IDataTransformConfig {
-  profileId: string;
-  dynamicFields?: string[];
+export interface IDataTransformService {
+  init(profile: ISyncProfileParsed): Promise<void>;
+  process(item: any): Promise<any>;
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IDataSource, ILoadInfo } from './data-source.interface';
+import { IDataSourceParsed, IDataSourceService } from './data-source.interface';
 import { MetaField } from '../data-transform/data-transform.enum';
 import { FileService } from 'src/app/platform/file/file.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
@@ -17,18 +17,16 @@ interface IJsonInfo {
 @Injectable({
   providedIn: 'root'
 })
-export class FileInfoSourceService implements IDataSource {
-  protected loadInfo: ILoadInfo;
-  protected fileInfo: IFileInfo;
+export class FileInfoSourceService implements IDataSourceService {
+  protected inputData: IFileInfo;
   protected jsonInfo: IJsonInfo = {};
   constructor(private fileService: FileService) { }
 
-  public async load(info: ILoadInfo): Promise<ILoadInfo> {
-    if (this.loadInfo && this.loadInfo.filePath === info.filePath) {
-      return info;
+  public async init(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
+    if (this.inputData && this.inputData.path === input.path) {
+      return entity;
     }
-    this.loadInfo = info;
-    this.fileInfo = await this.fileService.getFileInfo(info.filePath);
+    this.inputData = input;
 
     const artistFilePath = this.findFile('artist.json', 1);
     if (artistFilePath) {
@@ -60,26 +58,26 @@ export class FileInfoSourceService implements IDataSource {
       this.jsonInfo.albumFilePath = null;
     }
 
-    return this.loadInfo;
+    return entity;
   }
 
   public async get(propertyName: string): Promise<any[]> {
-    if (!this.loadInfo) {
+    if (!this.inputData) {
       return null;
     }
     switch (propertyName) {
       case MetaField.FilePath:
-        return [this.fileInfo.path];
+        return [this.inputData.path];
       case MetaField.FileName:
-        return [this.fileInfo.name];
+        return [this.inputData.name];
       case MetaField.AddDate:
-        return [this.fileInfo.addDate];
+        return [this.inputData.addDate];
       case MetaField.ChangeDate:
-        return [this.fileInfo.changeDate];
+        return [this.inputData.changeDate];
       case MetaField.FileSize:
-        return [this.fileInfo.size];
+        return [this.inputData.size];
       case MetaField.UnSyncLyrics:
-        const lyrics = await this.getLyrics(this.fileInfo);
+        const lyrics = await this.getLyrics(this.inputData);
         if (lyrics) {
           return [lyrics];
         }
@@ -110,7 +108,7 @@ export class FileInfoSourceService implements IDataSource {
 
   private findFile(fileName: string, levelsUp: number = 0): string {
     let result = '';
-    let rootPath = this.fileInfo.directoryPath;
+    let rootPath = this.inputData.directoryPath;
     for (let level = 0; level <= levelsUp; level++) {
       if (!result) {
         const filePath = rootPath + fileName;
@@ -150,7 +148,7 @@ export class FileInfoSourceService implements IDataSource {
         imageType = MusicImageType.FrontAlternate;
         break;
       case MetaField.SingleImage:
-        fileName = this.fileInfo.name + '.jpg';
+        fileName = this.inputData.name + '.jpg';
         imageType = MusicImageType.Single;
         break;
     }

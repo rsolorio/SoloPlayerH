@@ -2,10 +2,13 @@ import { Injectable } from '@angular/core';
 import { DataTransformServiceBase } from './data-transform-service-base.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { Id3v2SourceService } from '../data-source/id3v2-source.service';
-import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { FileInfoSourceService } from '../data-source/file-info-source.service';
 import { PathExpressionSourceService } from '../data-source/path-expression-source.service';
+import { IDataSourceService } from '../data-source/data-source.interface';
+import { KeyValues } from 'src/app/core/models/core.interface';
+import { ISongModel } from 'src/app/shared/models/song-model.interface';
+import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 
 /**
  * A transform service to save metadata to an audio file.
@@ -17,19 +20,28 @@ import { PathExpressionSourceService } from '../data-source/path-expression-sour
 @Injectable({
   providedIn: 'root'
 })
-export class MetadataWriterService extends DataTransformServiceBase<any> {
+export class MetadataWriterService extends DataTransformServiceBase<ISongModel, any> {
 
   constructor(
     private utility: UtilityService,
     private log: LogService,
     private id3v2Service: Id3v2SourceService,
     private fileInfoService: FileInfoSourceService,
+    private entities: DatabaseEntitiesService,
     private pathExpressionService: PathExpressionSourceService) {
-    super(utility, log, id3v2Service, fileInfoService, pathExpressionService);
+    super(entities);
   }
 
-  public process(fileInfo: IFileInfo): Promise<any> {
+  public process(input: ISongModel): Promise<any> {
     // TODO: this should return a log of the file save process
-    return this.getContext(fileInfo);
+    return this.getData(input);
+  }
+
+  protected async getData(input: ISongModel): Promise<KeyValues> {
+    return null;
+  }
+
+  protected getService(dataSourceType: string): IDataSourceService {
+    return null;
   }
 }

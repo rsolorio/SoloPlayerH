@@ -1,22 +1,18 @@
 import { DataMappingEntity, DataSourceEntity } from "src/app/shared/entities";
 
-export interface IDataSource {
+export interface IDataSourceService {
   get(propertyName: string, isDynamic?: boolean): Promise<any[]>;
-  load(info: ILoadInfo): Promise<ILoadInfo>;
+  init(input: any, entity: IDataSourceParsed): Promise<IDataSourceParsed>;
 }
 
-export interface IDataSourceInfo {
-  source: IDataSource;
-  data: DataSourceEntity;
+export interface IDataSourceParsed {
+  id: string;
+  type: string;
+  config: any;
+  fieldArray: string[];
+  sequence: number;
+  disabled: boolean;
   mappings?: DataMappingEntity[];
-  fieldArray: string[];
-  dynamicFieldArray?: string[];
-}
-
-export interface ILoadInfo {
-  filePath: string;
-  config: string;
-  fieldArray: string[];
+  service?: IDataSourceService;
   error?: any;
-  // TODO: continueOnError
 }
