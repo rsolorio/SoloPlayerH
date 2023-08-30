@@ -63,6 +63,8 @@ export class ScanAudioService {
   private unknownValue = 'Unknown';
   private scanMode: ScanFileMode;
   private songToProcess: SongEntity;
+  /** List of classification types that will be processed. */
+  private classTypeFields = [MetaField.Subgenre, MetaField.Category, MetaField.Occasion, MetaField.Instrument];
   // Options
   private ignoreNumericGenres = false;
   private genreSplitSymbols: string[] = [];
@@ -99,8 +101,6 @@ export class ScanAudioService {
     this.existingArtists = await ArtistEntity.find();
     this.existingAlbums = await AlbumEntity.find();
     this.existingClassTypes = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.ClassificationType.id });
-    // Do not include genre as a class type since it is handled separately
-    this.existingClassTypes = this.existingClassTypes.filter(classType => classType.id !== ValueLists.Genre.id);
     // Do not include genres as classifications
     this.existingClassifications = await ValueListEntryEntity.findBy({ isClassification: true, valueListTypeId: Not(ValueLists.Genre.id) });
     this.existingGenres = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Genre.id });
@@ -900,8 +900,15 @@ export class ScanAudioService {
   private processClassifications(metadata: KeyValues): ValueListEntryEntity[] {
     const result: ValueListEntryEntity[] = [];
 
-    for (const classificationType of this.existingClassTypes) {
-      const classData = this.first(metadata[classificationType.name]);
+    for (const classTypeField of this.classTypeFields) {
+      // Fields should be camel case;
+      // Class types should be pascal case (no spaces);
+      // so let's compare both with lower case
+      const classificationType = this.existingClassTypes.find(t => t.name.toLowerCase() === classTypeField.toLowerCase());
+      if (!classificationType) {
+        continue;
+      }
+      const classData = this.first(metadata[classTypeField]);
       if (classData) {
         let names = classData.split(',');
         names = this.utilities.removeDuplicates(names);
