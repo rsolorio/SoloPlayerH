@@ -31,6 +31,14 @@ export enum MetaField {
   /** String. Id3v2, Id3v1 */
   Genre = 'genre',
   /** String. Id3v2 */
+  Subgenre = 'subgenre',
+  /** String. Id3v2 */
+  Occasion = 'occasion',
+  /** String. Id3v2 */
+  Instrument = 'instrument',
+  /** String. Id3v2 */
+  Category = 'category',
+  /** String. Id3v2 */
   UfId = 'ufId',
   /** String. Id3v2, Id3v1 */
   Title = 'title',

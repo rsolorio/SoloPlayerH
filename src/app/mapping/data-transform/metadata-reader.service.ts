@@ -43,47 +43,27 @@ export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, K
 
   protected async getData(input: IFileInfo): Promise<KeyValues> {
     // All values for a given destination will be saved in an array
-    const context: KeyValues = {};
+    const result: KeyValues = {};
     for (const source of this.sources) {
       if (source.service) {
-        const loadInfo = await source.service.init(input, source);
-        if (loadInfo.error) {
-          context[MetaField.Error] = [loadInfo.error];
+        const initResult = await source.service.init(input, source);
+        if (initResult.error) {
+          result[MetaField.Error] = [initResult.error];
           // TODO: continueOnError for other data sources
-          return context;
+          return result;
         }
         if (source?.mappings?.length) {
           // TODO: custom mapping and tags
         }
         else {
-          await this.setValues(context, source.service, source.fieldArray);
-          if (source.type === DataSourceType.Id3v2 && this.syncProfile?.config?.dynamicFieldArray) {
-            await this.setValues(context, source.service, this.syncProfile?.config?.dynamicFieldArray, true);
-          }
+          await this.setValues(result, source.service, source.fieldArray);
         }
       }
       else {
         this.log.warn('Data source service not found for id: ' + source.id);
       }
     }
-    return context;
-  }
-
-  protected async setValues(context: KeyValues, dataSource: IDataSourceService, fields: string[], isDynamic?: boolean): Promise<void> {
-    if (!fields || !fields.length) {
-      return;
-    }
-    for (const field of fields) {
-      if (!context[field]) {
-        context[field] = [];
-      }
-      if (!context[field].length) {
-        const values = await dataSource.get(field, isDynamic);
-        if (values && values.length) {
-          context[field] = values;
-        }
-      }
-    }
+    return result;
   }
 
   protected getService(dataSourceType: string): IDataSourceService {

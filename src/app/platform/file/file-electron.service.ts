@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { promises, existsSync } from 'fs';
+import { promises, existsSync, copyFileSync } from 'fs';
 import { join, resolve, extname, parse } from 'path';
 import { exec } from 'child_process';
 import { Observable, Subscriber } from 'rxjs';
@@ -35,6 +35,10 @@ export class FileElectronService extends FileService {
 
   exists(path: string): boolean {
     return existsSync(path);
+  }
+
+  copyFile(sourceFilePath: string, destinationFilePath: string): void {
+    copyFileSync(sourceFilePath, destinationFilePath);
   }
 
   private async pushFiles(directoryPaths: string[], observer: Subscriber<IFileInfo>): Promise<void> {

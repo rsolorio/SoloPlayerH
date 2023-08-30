@@ -1,8 +1,9 @@
-import { DataMappingEntity, DataSourceEntity } from "src/app/shared/entities";
+import { DataMappingEntity } from "src/app/shared/entities";
+import { ISyncProfileParsed } from "src/app/shared/models/sync-profile-model.interface";
 
 export interface IDataSourceService {
-  get(propertyName: string, isDynamic?: boolean): Promise<any[]>;
-  init(input: any, entity: IDataSourceParsed): Promise<IDataSourceParsed>;
+  get(propertyName: string): Promise<any[]>;
+  init(input: any, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed>;
 }
 
 export interface IDataSourceParsed {

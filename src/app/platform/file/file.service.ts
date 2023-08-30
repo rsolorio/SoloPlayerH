@@ -23,6 +23,8 @@ export abstract class FileService {
 
   abstract exists(path: string): boolean;
 
+  abstract copyFile(sourceFilePath: string, destinationFilePath: string): void;
+
   removeBom(value: string): string {
     // 0xFEFF = 65279
     if (value && value.charCodeAt(0) === 0xFEFF) {

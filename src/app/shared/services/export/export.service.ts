@@ -60,11 +60,7 @@ export class ExportService {
     await this.prepareSongs(config);
 
     for (const song of config.songs) {
-      // Writer needs to have the config to determine where the song will be saved, since the writer will save the file
-      // writer.process (song) -- Change method to be generic or take an any; OR make the writer prepare the songs
-      // -- getContext -> gets KeyValues using song and sources; mapping will determine how data from the song will be set into the KeyValues obj
-      // -- copy file and save id3 directly from KeyValues
-      // this doesn't really need the songTemp table, it only needs to process the songs in memory
+      this.writer.process(song);
     }
 
     // Another data source? We need a data source to get data from SongTemp/or regular views table for filters (and auto playlists) to export

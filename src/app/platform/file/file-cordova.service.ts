@@ -40,6 +40,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  copyFile(sourceFilePath: string, destinationFilePath: string): void {
+    // ToDo
+  }
+
   public getParentPath(path: string): string {
     return null;
   }

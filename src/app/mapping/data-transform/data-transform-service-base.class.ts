@@ -11,8 +11,6 @@ export abstract class DataTransformServiceBase<TInput, TOutput> implements IData
   constructor(private entityService: DatabaseEntitiesService)
   { }
 
-  public abstract process(input: TInput): Promise<TOutput>;
-
   public async init(profile: ISyncProfileParsed): Promise<void> {
     this.syncProfile = profile;
     this.sources = await this.entityService.getDataSources(profile.id);
@@ -21,7 +19,29 @@ export abstract class DataTransformServiceBase<TInput, TOutput> implements IData
     });
   }
 
+  public abstract process(input: TInput): Promise<TOutput>;
+
   protected abstract getData(input: TInput): Promise<KeyValues>;
 
   protected abstract getService(dataSourceType: string): IDataSourceService;
+
+  /**
+   * Sets the value of the metadata based on the specified fields using the specified data source.
+   */
+  protected async setValues(metadata: KeyValues, dataSource: IDataSourceService, fields: string[]): Promise<void> {
+    if (!fields || !fields.length) {
+      return;
+    }
+    for (const field of fields) {
+      if (!metadata[field]) {
+        metadata[field] = [];
+      }
+      if (!metadata[field].length) {
+        const values = await dataSource.get(field);
+        if (values && values.length) {
+          metadata[field] = values;
+        }
+      }
+    }
+  }
 }

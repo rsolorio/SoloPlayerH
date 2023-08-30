@@ -55,10 +55,13 @@ export class Id3v2SourceService implements IDataSourceService {
     return entity;
   }
 
-  public async get(propertyName: string, isDynamic?: boolean): Promise<any[]> {
-    if (isDynamic) {
-      return this.metadataService.getValues<string>(propertyName, this.tags, true);
-    }
+  /**
+   * Gets the value of the specified property.
+   * @param propertyName The name of the metadata property to retrieve.
+   * @param isDynamic If true, the property will not be considered part of the MetaField enum
+   * and it will be looked as a custom tag.
+   */
+  public async get(propertyName: string): Promise<any[]> {
     switch (propertyName) {
       case MetaField.Artist:
         if (this.audioInfo.metadata.common.artists) {
@@ -70,7 +73,7 @@ export class Id3v2SourceService implements IDataSourceService {
         // for this tag; however, the audio metadata library only supports one string.
         // What's happening here is that the array is being converted to a single string
         // with the items separated by unicode null character: \u0000.
-        // For now we only case about multiple artists, that's why we don't need to do the same
+        // For now we only care about multiple artists, that's why we don't need to do the same
         // for album artist sort, album sort, title sort.
         // Here's the process to parse that value.
         const result: string[] = [];
@@ -82,10 +85,16 @@ export class Id3v2SourceService implements IDataSourceService {
           }
         }
         return result;
+      // User defined tags
       case MetaField.ArtistType:
       case MetaField.AlbumType:
       case MetaField.ArtistStylized:
       case MetaField.Country:
+      case MetaField.Subgenre:
+      case MetaField.Occasion:
+      case MetaField.Instrument:
+      case MetaField.Category:
+        // TODO: for classifications split value using a separator and return the array of items
         return this.metadataService.getValues<string>(propertyName, this.tags, true);
       case MetaField.AlbumArtist:
         if (this.audioInfo.metadata.common.albumartist) {

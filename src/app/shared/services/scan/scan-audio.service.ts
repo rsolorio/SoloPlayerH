@@ -122,8 +122,6 @@ export class ScanAudioService {
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language
     const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
-    syncProfile.config = syncProfile.config ? syncProfile.config : {};
-    syncProfile.config.dynamicFields = this.existingClassTypes.map(c => c.name);
     await this.metadataReader.init(syncProfile);
 
     const result: ISyncSongInfo = {
