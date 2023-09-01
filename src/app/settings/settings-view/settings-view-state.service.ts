@@ -506,7 +506,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       language: 'english',
       genre: 'rock',
       artist: 'madonna',
-      year: 0,
+      year: 1986,
       album: 'true blue',
       media: 1,
       track: 2,

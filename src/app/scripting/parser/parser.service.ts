@@ -65,23 +65,39 @@ export class ParserService {
     return result;
   }
 
-  private parsePlaceholders(expression: string, context: any): string {
+  private parsePlaceholders(expression: string, context: any): any {
     let parsedExpression = expression;
     const placeholderRegExp = new RegExp('\\%\\w+\\%', 'g');
     const placeholderMatches = parsedExpression.match(placeholderRegExp);
     if (placeholderMatches?.length) {
-      for (const placeholderMatch of placeholderMatches) {
-        const placeholderName = placeholderMatch.replace(new RegExp('%', 'g'), '');
-        const placeholderValue = context[placeholderName];
+      if (placeholderMatches.length === 1 && placeholderMatches[0] === expression) {
+        // This is the case where the placeholder fully matches the expression
+        // so return the value in the original data type instead of converting to string
+        const placeholderValue = this.getToken(placeholderMatches[0], context);
         if (placeholderValue !== undefined && placeholderValue !== null) {
-          parsedExpression = parsedExpression.replace(placeholderMatch, placeholderValue.toString());
+          return placeholderValue;
         }
-        else {
-          // Leave the placeholder there if no value was found
+        // Leave the placeholder since we did not find a value
+        return expression;
+      }
+      else {
+        for (const placeholderMatch of placeholderMatches) {
+          const placeholderValue = this.getToken(placeholderMatch, context);
+          if (placeholderValue !== undefined && placeholderValue !== null) {
+            parsedExpression = parsedExpression.replace(placeholderMatch, placeholderValue.toString());
+          }
+          else {
+            // Leave the placeholder there if no value was found
+          }
         }
       }
     }
     return parsedExpression;
+  }
+
+  private getToken(placeholderPattern: string, context): any {
+    const placeholderName = placeholderPattern.replace(new RegExp('%', 'g'), '');
+    return context[placeholderName];
   }
 
   private findClosingParenthesis(text: string, startIndex: number): number {
