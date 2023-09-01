@@ -23,6 +23,7 @@ import { IScanItemInfo } from 'src/app/shared/services/scan/scan.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
+import { ParserService } from 'src/app/scripting/parser/parser.service';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private fileService: FileService,
     private log: LogService,
     private metadataService: AudioMetadataService,
+    private parser: ParserService,
     private events: EventsService)
   {
     this.subscribeToScanEvents();
@@ -497,6 +499,21 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
   }
 
   private async test(): Promise<void> {
-    this.logFileMetadata();
+    //this.logFileMetadata();
+    const expression = '%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%, 4) - %album%, %album%)\\$digits(%media%, 2)-$digits(%track%, 2) - %title%.%extension%';
+    const context = {
+      rootPath: 'c:',
+      language: 'english',
+      genre: 'rock',
+      artist: 'madonna',
+      year: 0,
+      album: 'true blue',
+      media: 1,
+      track: 2,
+      title: 'isla bonita',
+      extension: 'mp3'
+    };
+    const result = this.parser.parse(expression, context, null);
+    console.log(result);
   }
 }

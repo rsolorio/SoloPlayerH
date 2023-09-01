@@ -61,6 +61,7 @@ export enum AppAttributeIcons {
   ArtistType = 'mdi-account-tag mdi',
   Country = 'mdi-earth mdi',
   Directory = 'mdi-folder mdi',
+  DirectoryInfo = 'mdi-folder-information mdi',
   AudioDirectory = 'mdi-folder-music mdi',
   PlaylistDirectory = 'mdi-folder-play mdi',
   Description = 'mdi-note-text mdi',

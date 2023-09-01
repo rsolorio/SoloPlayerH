@@ -33,7 +33,7 @@ export class FileBrowserComponent implements OnInit {
     itemMenuList: [
       {
         caption: 'Details',
-        icon: 'mdi-folder-information mdi',
+        icon: AppAttributeIcons.DirectoryInfo,
         action: (menuItem, param) => {
         }
       }
@@ -147,15 +147,20 @@ export class FileBrowserComponent implements OnInit {
     const navbarModel = this.navbarService.getState();
     navbarModel.menuList = [
       {
-        caption: 'Show Info',
-        icon: 'mdi-folder-eye-outline mdi',
+        caption: 'Details',
+        icon: AppAttributeIcons.DirectoryInfo,
         action: () => {
           this.spListBaseComponent.showInfo();
         }
       },
       {
+        caption: 'Clear Selection',
+        icon: AppAttributeIcons.Unselected,
+        action: () => {}
+      },
+      {
         caption: 'Cancel',
-        icon: 'mdi-close-box-outline mdi',
+        icon: AppActionIcons.CloseClear,
         action: () => {
           const model = this.browserService.getState();
           if (model.onCancel) {

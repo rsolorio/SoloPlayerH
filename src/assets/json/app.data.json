@@ -1141,7 +1141,7 @@
     "dataMapping": [
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%rootPath%\\%language%\\%genre%\\%artist%\\%year% - %album%\\%media%-%track% - %title%.%extension%",
+        "source": "%rootPath%\\%language%\\%genre%\\%artist%\\$digits(%year%, 4) - %album%\\$digits(%media%, 2)-$digits(%track%, 2) - %title%.%extension%",
         "destination": "filePath",
         "sequence": 1,
         "disabled": false,
