@@ -23,7 +23,7 @@ import { IScanItemInfo } from 'src/app/shared/services/scan/scan.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
-import { ParserService } from 'src/app/scripting/parser/parser.service';
+import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +41,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private fileService: FileService,
     private log: LogService,
     private metadataService: AudioMetadataService,
-    private parser: ParserService,
+    private parser: ScriptParserService,
     private events: EventsService)
   {
     this.subscribeToScanEvents();

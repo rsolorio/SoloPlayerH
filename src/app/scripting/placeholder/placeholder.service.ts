@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IParseInformation } from '../parser/parser.interface';
+import { IParseInformation } from '../script-parser/script-parser.interface';
 
 @Injectable({
   providedIn: 'root'

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { IParseInformation } from './parser.interface';
+import { IParseInformation } from './script-parser.interface';
 import { FunctionService } from '../function/function.service';
 import { PlaceholderService } from '../placeholder/placeholder.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ParserService {
+export class ScriptParserService {
   constructor(private functions: FunctionService, private placeholders: PlaceholderService) { }
 
   public parse(info: IParseInformation): any {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IParseInformation } from '../parser/parser.interface';
+import { IParseInformation } from '../script-parser/script-parser.interface';
 import { PlaceholderService } from '../placeholder/placeholder.service';
 import { FunctionDefinitionService } from './function-definition.service';
 
@@ -52,7 +52,7 @@ export class FunctionService {
         result.context[functionResult.uniqueName] = functionResult.value;
       }
       else {
-        // Return a placeholder %null%
+        // Return a placeholder %null%; the intent is to let the user know the function did not return any values.
         result.expression = result.expression.replace(fullFunctionExpression, '%null%');
       }
       // Last step is to look for more functions
