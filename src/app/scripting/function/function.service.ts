@@ -1,107 +1,84 @@
 import { Injectable } from '@angular/core';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { IFunctionDefinition, IFunctionResult } from './function.interface';
+import { IParseInformation } from '../parser/parser.interface';
+import { PlaceholderService } from '../placeholder/placeholder.service';
+import { FunctionDefinitionService } from './function-definition.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FunctionService {
-  private functionCounter = 0;
-  private functions: IFunctionDefinition[] = [];
-  constructor(private utility: UtilityService) {
-    this.initializeFunctions();
-  }
+  private functionPrefix = '$';
+  constructor(
+    private placeholders: PlaceholderService,
+    private definitions: FunctionDefinitionService) { }
 
-  public resetCounter(): void {
-    this.functionCounter = 0;
-  }
-
-  public run(prefix: string, args: any[]): IFunctionResult {
-    const definition = this.functions.find(f => f.syntax.startsWith(prefix));
-    if (definition) {
-      this.functionCounter++;
-      const placeholderName = `${definition.name}_${this.utility.enforceDigits(this.functionCounter, 2)}`;
-      return {
-        name: definition.name,
-        placeholderName: placeholderName,
-        placeholderPattern: '%' + placeholderName + '%',
-        value: definition.fn(args)
-      };
-    }
-    return null;
-  }
-
-  private initializeFunctions(): void {
-    this.ifFunction();
-    this.andFunction();
-    this.orFunction();
-    this.digitsFunction();
-    this.intFunction();
-  }
-
-  private ifFunction(): void {
-    this.functions.push({
-      name: 'if',
-      syntax: '$if(x,y,z)',
-      description: 'If x is true, y is returned, otherwise z.',
-      fn: args => {
-        const x = args[0];
-        const y = args[1];
-        const z = args[2];
-        if (x) {
-          return y;
+  public parse(info: IParseInformation): IParseInformation {
+    this.definitions.resetCounter();
+    const result: IParseInformation = { expression: info.expression, context: info.context, mappings: info.mappings };
+    const regExpPattern = `\\${this.functionPrefix}\\w+\\(`;
+    const functionRegExp = new RegExp(regExpPattern, 'g');
+    let functionMatches = result.expression.match(functionRegExp);
+    while (functionMatches?.length) {
+      // Get the very first function match
+      const functionPrefix = functionMatches[0];
+      // Get the arguments of the function
+      const functionIndex = result.expression.indexOf(functionPrefix);
+      const openParenthesisIndex = functionIndex + functionPrefix.length - 1;
+      const closeParenthesisIndex = this.findClosingParenthesis(result.expression, openParenthesisIndex + 1);
+      let args = [];
+      if (openParenthesisIndex < closeParenthesisIndex) {
+        const functionArguments = result.expression.substring(openParenthesisIndex + 1, closeParenthesisIndex);
+        if (functionArguments) {
+          // Recursive call to parse functions one level deeper
+          const parseArgumentsResult = this.parse({ expression: functionArguments, context: result.context, mappings: result.mappings });
+          result.context = parseArgumentsResult.context;
+          // At this point, the expression should only have placeholders
+          // so now split without worrying about commas from other functions
+          const argArray = parseArgumentsResult.expression.split(',');
+          argArray.forEach(arg => {
+            const argumentValue = this.placeholders.parse({ expression: arg.trim(), context: result.context, mappings: result.mappings });
+            args.push(argumentValue);
+          });
         }
-        return z;
       }
-    });
+
+      const fullFunctionExpression = result.expression.substring(functionIndex, closeParenthesisIndex + 1);
+      const functionResult = this.definitions.run(functionPrefix, args);
+      if (functionResult) {
+        // Replace the function with the placeholder
+        result.expression = result.expression.replace(fullFunctionExpression, this.placeholders.format(functionResult.uniqueName));
+        // Add new context property for the function
+        result.context = Object.assign({}, result.context);
+        result.context[functionResult.uniqueName] = functionResult.value;
+      }
+      else {
+        // Return a placeholder %null%
+        result.expression = result.expression.replace(fullFunctionExpression, '%null%');
+      }
+      // Last step is to look for more functions
+      functionMatches = result.expression.match(functionRegExp);
+    }
+    return result;
   }
 
-  private andFunction(): void {
-    this.functions.push({
-      name: 'and',
-      syntax: '$and(x,y)',
-      description: 'Returns true if x and y are true.',
-      fn: args => {
-        const x = args[0];
-        const y = args[1];
-        return x && y;
+  private findClosingParenthesis(text: string, startIndex: number): number {
+    let result = -1;
+    let openCount = 0;
+    for (let charIndex = startIndex; charIndex <= text.length; charIndex++) {
+      const charValue = text[charIndex];
+      if (charValue === '(') {
+        openCount++;
       }
-    });
-  }
-
-  private orFunction(): void {
-    this.functions.push({
-      name: 'or',
-      syntax: '$or(x,y)',
-      description: 'Returns true if x or y is true.',
-      fn: args => {
-        const x = args[0];
-        const y = args[1];
-        return x || y;
+      else if (charValue === ')') {
+        if (openCount) {
+          openCount--;
+        }
+        else {
+          result = charIndex;
+          break;
+        }
       }
-    });
-  }
-
-  private digitsFunction(): void {
-    this.functions.push({
-      name: 'digits',
-      syntax: '$digits(x,y)',
-      fn: args => {
-        const x = args[0];
-        const y = args[1];
-        return this.utility.enforceDigits(x, y);
-      }
-    });
-  }
-
-  private intFunction(): void {
-    this.functions.push({
-      name: 'int',
-      syntax: '$int(x)',
-      fn: args => {
-        const x = args[0];
-        return parseInt(x.toString(), 10);
-      }
-    });
+    }
+    return result;
   }
 }

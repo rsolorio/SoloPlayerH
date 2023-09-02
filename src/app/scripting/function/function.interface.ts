@@ -8,6 +8,5 @@ export interface IFunctionDefinition {
 export interface IFunctionResult {
   value: any;
   name: string;
-  placeholderName: string;
-  placeholderPattern: string;
+  uniqueName: string;
 }

@@ -500,12 +500,12 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
   private async test(): Promise<void> {
     //this.logFileMetadata();
-    const expression = '%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%, 4) - %album%, %album%)\\$digits(%media%, 2)-$digits(%track%, 2) - %title%.%extension%';
+    const expression = '%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%, 4) - %album%, %album%)\\$digits(%media%, 2)-$digits(%track%, 2) - %openParen%%title%%closeParen%.%extension%';
     const context = {
       rootPath: 'c:',
       language: 'english',
       genre: 'rock',
-      artist: 'madonna',
+      artistName: 'madonna',
       year: 1986,
       album: 'true blue',
       media: 1,
@@ -513,7 +513,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       title: 'isla bonita',
       extension: 'mp3'
     };
-    const result = this.parser.parse(expression, context, null);
+    const result = this.parser.parse({ expression: expression, context: context, mappings: { 'artist': 'artistName'} });
     console.log(result);
   }
 }

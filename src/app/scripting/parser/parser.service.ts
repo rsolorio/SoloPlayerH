@@ -1,123 +1,36 @@
 import { Injectable } from '@angular/core';
-import { IParseFunctionResult } from './parser.interface';
+import { IParseInformation } from './parser.interface';
 import { FunctionService } from '../function/function.service';
+import { PlaceholderService } from '../placeholder/placeholder.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ParserService {
-  constructor(private functions: FunctionService) { }
+  constructor(private functions: FunctionService, private placeholders: PlaceholderService) { }
 
-  public parse(expression: string, context: any, placeholderMapping?: any): any {
-    const functionsResult = this.parseFunctions(expression, context);
-    const placeholdersResult = this.parsePlaceholders(functionsResult.expression, functionsResult.context);
+  public parse(info: IParseInformation): any {
+    const functionsResult = this.functions.parse({
+      expression: info.expression,
+      context: this.addPredefinedPlaceholders(info.context),
+      mappings: info.mappings });
+    const placeholdersResult = this.placeholders.parse(functionsResult);
     return placeholdersResult;
-
-    // Pre-defined fields:
-    // %comma% %openparen% %closeparen% %percentage% %dollar% %null% %space%
   }
 
-  private parseFunctions(expression: string, context: any): IParseFunctionResult {
-    this.functions.resetCounter();
-    const result: IParseFunctionResult = { expression: expression, context: context };
-    const functionRegExp = new RegExp('\\$\\w+\\(', 'g');
-    let functionMatches = result.expression.match(functionRegExp);
-    while (functionMatches?.length) {
-      // Get the very first function match
-      const functionPrefix = functionMatches[0];
-      // Get the arguments of the function
-      const functionIndex = result.expression.indexOf(functionPrefix);
-      const openParenthesisIndex = functionIndex + functionPrefix.length - 1;
-      const closeParenthesisIndex = this.findClosingParenthesis(result.expression, openParenthesisIndex + 1);
-      let args = [];
-      if (openParenthesisIndex < closeParenthesisIndex) {
-        const functionArguments = result.expression.substring(openParenthesisIndex + 1, closeParenthesisIndex);
-        if (functionArguments) {
-          // Recursive call to parse functions one level deeper
-          const parseArgumentsResult = this.parseFunctions(functionArguments, result.context);
-          result.context = parseArgumentsResult.context;
-          // At this point, the expression should only have placeholders
-          // so now split without worrying about commas from other functions
-          const argArray = parseArgumentsResult.expression.split(',');
-          argArray.forEach(arg => {
-            const argumentValue = this.parsePlaceholders(arg.trim(), result.context);
-            args.push(argumentValue);
-          });
-        }
-      }
-
-      const fullFunctionExpression = result.expression.substring(functionIndex, closeParenthesisIndex + 1);
-      const functionResult = this.functions.run(functionPrefix, args);
-      if (functionResult) {
-        // Replace the function with the placeholder
-        result.expression = result.expression.replace(fullFunctionExpression, functionResult.placeholderPattern);
-        // Add new context property for the function
-        result.context = Object.assign({}, result.context);
-        result.context[functionResult.placeholderName] = functionResult.value;
-      }
-      else {
-        // Return a placeholder %null%
-        result.expression = result.expression.replace(fullFunctionExpression, '%null%');
-      }
-      // Last step is to look for more functions
-      functionMatches = result.expression.match(functionRegExp);
-    }
+  /**
+   * Adds the following placeholders: comma, percentage, dollar, space, openParen, closeParen.
+   */
+  private addPredefinedPlaceholders(context: any): any {
+    // TODO: should we add more specific names like 'p-comma' to prevent colliding with
+    // properties from the original context?
+    const result = Object.assign({}, context);
+    result['comma'] = ',';
+    result['percentage'] = '%';
+    result['dollar'] = '$';
+    result['space'] = ' ';
+    result['openParen'] = '(';
+    result['closeParen'] = ')';
     return result;
   }
-
-  private parsePlaceholders(expression: string, context: any): any {
-    let parsedExpression = expression;
-    const placeholderRegExp = new RegExp('\\%\\w+\\%', 'g');
-    const placeholderMatches = parsedExpression.match(placeholderRegExp);
-    if (placeholderMatches?.length) {
-      if (placeholderMatches.length === 1 && placeholderMatches[0] === expression) {
-        // This is the case where the placeholder fully matches the expression
-        // so return the value in the original data type instead of converting to string
-        const placeholderValue = this.getToken(placeholderMatches[0], context);
-        if (placeholderValue !== undefined && placeholderValue !== null) {
-          return placeholderValue;
-        }
-        // Leave the placeholder since we did not find a value
-        return expression;
-      }
-      else {
-        for (const placeholderMatch of placeholderMatches) {
-          const placeholderValue = this.getToken(placeholderMatch, context);
-          if (placeholderValue !== undefined && placeholderValue !== null) {
-            parsedExpression = parsedExpression.replace(placeholderMatch, placeholderValue.toString());
-          }
-          else {
-            // Leave the placeholder there if no value was found
-          }
-        }
-      }
-    }
-    return parsedExpression;
-  }
-
-  private getToken(placeholderPattern: string, context): any {
-    const placeholderName = placeholderPattern.replace(new RegExp('%', 'g'), '');
-    return context[placeholderName];
-  }
-
-  private findClosingParenthesis(text: string, startIndex: number): number {
-    let result = -1;
-    let openCount = 0;
-    for (let charIndex = startIndex; charIndex <= text.length; charIndex++) {
-      const charValue = text[charIndex];
-      if (charValue === '(') {
-        openCount++;
-      }
-      else if (charValue === ')') {
-        if (openCount) {
-          openCount--;
-        }
-        else {
-          result = charIndex;
-          break;
-        }
-      }
-    }
-    return result;
-  }  
 }

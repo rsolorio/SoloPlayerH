@@ -1,6 +1,7 @@
 import { ITimeSpan } from "../services/utility/utility.interface";
 import { ImageSrcType } from "./core.enum";
 
+export type KeyValueGen<TKey> = { [key: string]: TKey };
 export type KeyValuesGen<TKey> = { [key: string]: TKey[] };
 export type KeyValues = KeyValuesGen<any>;
 
