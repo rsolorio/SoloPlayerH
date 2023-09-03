@@ -567,6 +567,10 @@ export class ScanAudioService {
     if (composer) {
       song.composer = composer;
     }
+    const composerSort = this.first(metadata[MetaField.ComposerSort]);
+    if (composerSort) {
+      song.composerSort = composerSort;
+    }
     const comment = this.first(metadata[MetaField.Comment]);
     if (comment) {
       song.comment = comment;

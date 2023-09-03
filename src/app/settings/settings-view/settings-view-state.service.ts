@@ -489,8 +489,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       const fileInfo = await this.fileService.getFileInfo(selectedFiles[0]);
       const buffer = await this.fileService.getBuffer(fileInfo.path);
       const audioInfo = await this.metadataService.getMetadata(buffer, MimeType.Mp3, true);
-      this.log.info('File info.', fileInfo);
-      this.log.info('Audio info.', audioInfo);
+      // As warning to bypass the default log config
+      this.log.warn('File info.', fileInfo);
+      this.log.warn('Audio info.', audioInfo);
     }
   }
 
@@ -499,21 +500,21 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
   }
 
   private async test(): Promise<void> {
-    //this.logFileMetadata();
-    const expression = '%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%, 4) - %album%, %album%)\\$digits(%media%, 2)-$digits(%track%, 2) - %openParen%%title%%closeParen%.%extension%';
-    const context = {
-      rootPath: 'c:',
-      language: 'english',
-      genre: 'rock',
-      artistName: 'madonna',
-      year: 1986,
-      album: 'true blue',
-      media: 1,
-      track: 2,
-      title: 'isla bonita',
-      extension: 'mp3'
-    };
-    const result = this.parser.parse({ expression: expression, context: context, mappings: { 'artist': 'artistName'} });
-    console.log(result);
+    this.logFileMetadata();
+    // const expression = '%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%, 4) - %album%, %album%)\\$digits(%media%, 2)-$digits(%track%, 2) - %openParen%%title%%closeParen%.%extension%';
+    // const context = {
+    //   rootPath: 'c:',
+    //   language: 'english',
+    //   genre: 'rock',
+    //   artistName: 'madonna',
+    //   year: 1986,
+    //   album: 'true blue',
+    //   media: 1,
+    //   track: 2,
+    //   title: 'isla bonita',
+    //   extension: 'mp3'
+    // };
+    // const result = this.parser.parse({ expression: expression, context: context, mappings: { 'artist': 'artistName'} });
+    // console.log(result);
   }
 }

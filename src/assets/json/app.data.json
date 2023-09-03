@@ -1131,7 +1131,7 @@
         "name": "dbToPlaylists",
         "type": "SongModel",
         "config": "",
-        "fields": "",
+        "fields": "artist,artistSort,artistType,artistStylized,featuring,albumArtist,albumArtistSort,album,albumSort,albumType,albumStylized,year,country,genre,subgenre,occasion,instrument,category,ufId,title,subTitle,titleSort,track,media,composer,composerSort,comment,copyright,contributor,singer,grouping,addDate,changeDate,language,mood,rating,playCount,url,syncLyrics,unSyncLyrics,live,favorite,explicit,performers,artistImage,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,filePath,fileName,fileSize,classification,seconds,bitrate,frequency,vbr,tempo,replayGain,owner",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,
@@ -1141,8 +1141,56 @@
     "dataMapping": [
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%rootPath%\\%language%\\%genre%\\%artist%\\$digits(%year%, 4) - %album%\\$digits(%media%, 2)-$digits(%track%, 2) - %title%.%extension%",
+        "source": "%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%,4) - %album%, %album%)\\$digits(%media%,2)-$digits(%track%,2) - %openParen%%title%%closeParen%.%extension%",
         "destination": "filePath",
+        "sequence": 1,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$digits(%year%,4)-%album%-$digits(%media%,2)-$digits(%track%,2)-%title%",
+        "destination": "titleSort",
+        "sequence": 1,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$digits(%year%,4)-%album%",
+        "destination": "albumSort",
+        "sequence": 1,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "hello world!",
+        "destination": "comment",
+        "sequence": 1,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "rsolorio",
+        "destination": "owner",
+        "sequence": 1,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%addDate%",
+        "destination": "custom_addDate",
+        "sequence": 1,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$getPlayHistory()",
+        "destination": "custom_playHistory",
         "sequence": 1,
         "disabled": false,
         "system": true

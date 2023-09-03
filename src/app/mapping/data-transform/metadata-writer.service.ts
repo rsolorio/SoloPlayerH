@@ -14,8 +14,7 @@ import { MetaField } from './data-transform.enum';
  * A transform service to save metadata to an audio file.
  * It uses the specified profile to get a list of data sources;
  * data sources have the responsibility of reading metadata and pass it to the writer.
- * Data sources support custom mapping, but the mapping is not used to get a different version of the metadata;
- * the mapping of the data source is used to tell the writer where the metadata will be saved.
+ * Data sources support custom mapping.
  */
 @Injectable({
   providedIn: 'root'

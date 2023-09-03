@@ -46,6 +46,8 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column({ nullable: true })
   composer: string;
   @Column({ nullable: true })
+  composerSort: string;
+  @Column({ nullable: true })
   comment: string;
   @Column({ nullable: true })
   infoUrl: string;

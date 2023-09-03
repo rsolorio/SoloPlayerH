@@ -155,6 +155,11 @@ export class Id3v2SourceService implements IDataSourceService {
           return this.audioInfo.metadata.common.composer;
         }
         break;
+      case MetaField.ComposerSort:
+        if (this.audioInfo.metadata.common.composersort) {
+          return [this.audioInfo.metadata.common.composersort];
+        }
+        break;
       case MetaField.Comment:
         if (this.audioInfo.metadata.common.comment) {
           return this.audioInfo.metadata.common.comment;
@@ -327,6 +332,8 @@ export class Id3v2SourceService implements IDataSourceService {
         break;
       case MetaField.SubTitle:
         return this.metadataService.getValues<string>('TIT3', this.tags);
+      case MetaField.Owner:
+        return this.metadataService.getValues<string>('TOWN', this.tags, true);
     }
     return [];
   }

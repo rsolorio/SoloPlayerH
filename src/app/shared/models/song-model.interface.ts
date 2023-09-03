@@ -64,6 +64,7 @@ export interface ISongFullModel extends ISongModel {
   initialPlayCount: number;
   grouping: string;
   composer: string;
+  composerSort: string;
   comment: string;
   infoUrl: string;
   videoUrl: string;

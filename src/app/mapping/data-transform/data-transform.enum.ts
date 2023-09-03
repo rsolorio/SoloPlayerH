@@ -52,6 +52,8 @@ export enum MetaField {
   MediaNumber = 'media',
   /** String. Id3v2 */
   Composer = 'composer',
+  /** String. Id3v2 */
+  ComposerSort = 'composerSort',
   /** String. Id3v2, Id3v1 */
   Comment = 'comment',
   /** String. Id3v2 */
@@ -120,8 +122,10 @@ export enum MetaField {
   Tempo = 'tempo',
   /** Number. Id3v2 */
   ReplayGain = 'replayGain',
-  /** Id3v2 */
+  /** Boolean. Id3v2 */
   TagFullyParsed = 'tagFullyParsed',
+  /** String. Id3v2 */
+  Owner = 'owner',
   /** String. Id3v2. Scan. */
   Error = 'error',
   /** Boolean. Scan. */
