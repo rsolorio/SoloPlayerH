@@ -39,7 +39,6 @@ export class ExportService {
   /**
    * Configurations:
    * 0. Empty folder, or real sync add/replace/remove (profile config)
-   * 1. Audio directory: the destination path (profile property)
    * 2. Copy All? (data source config)
    * 3a. Copy all: yes
    * 3a1. Export playlists? If so, specify playlist directory, playlist format (profile config)
@@ -52,15 +51,20 @@ export class ExportService {
    * 4. Select/update mappings? How to choose other mappings without changing existing ones.
    * 5. Save results in profile, Sync history?
    */
-  public async copyAndTag(): Promise<void> {
+  public async copyAndTag(configOverride?: IExportConfig): Promise<void> {
     // In theory a writer should only have one data source
     const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultExport);
+    let config = syncProfile.config as IExportConfig;
+    if (configOverride) {
+      syncProfile.directories = configOverride.directories;
+      config = configOverride;
+    }
+
     await this.writer.init(syncProfile);
-    const config = syncProfile.config as IExportConfig;
     await this.prepareSongs(config);
 
     for (const song of config.songs) {
-      this.writer.process(song);
+      await this.writer.process(song);
     }
 
     // Another data source? We need a data source to get data from SongTemp/or regular views table for filters (and auto playlists) to export

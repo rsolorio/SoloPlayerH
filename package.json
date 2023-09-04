@@ -37,6 +37,7 @@
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "music-metadata-browser": "^2.5.9",
+    "node-id3": "^0.2.6",
     "object-hash": "^3.0.0",
     "primeicons": "^1.0.0",
     "primeng": "^10.0.3",

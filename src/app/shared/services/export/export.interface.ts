@@ -3,7 +3,7 @@ import { Criteria } from "../criteria/criteria.class";
 
 export interface IExportConfig {
   profileId: string;
-  directories: string[];
+  directories?: string[];
   filterId?: string;
   playlistId?: string;
   criteria?: Criteria;

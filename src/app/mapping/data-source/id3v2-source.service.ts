@@ -333,7 +333,9 @@ export class Id3v2SourceService implements IDataSourceService {
       case MetaField.SubTitle:
         return this.metadataService.getValues<string>('TIT3', this.tags);
       case MetaField.Owner:
-        return this.metadataService.getValues<string>('TOWN', this.tags, true);
+        return this.metadataService.getValues<string>('TOWN', this.tags);
+      case MetaField.MediaType:
+        return this.metadataService.getValues<string>('TMED', this.tags);
     }
     return [];
   }

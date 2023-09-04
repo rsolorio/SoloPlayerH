@@ -1131,7 +1131,7 @@
         "name": "dbToPlaylists",
         "type": "SongModel",
         "config": "",
-        "fields": "artist,artistSort,artistType,artistStylized,featuring,albumArtist,albumArtistSort,album,albumSort,albumType,albumStylized,year,country,genre,subgenre,occasion,instrument,category,ufId,title,subTitle,titleSort,track,media,composer,composerSort,comment,copyright,contributor,singer,grouping,addDate,changeDate,language,mood,rating,playCount,url,syncLyrics,unSyncLyrics,live,favorite,explicit,performers,artistImage,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,filePath,fileName,fileSize,classification,seconds,bitrate,frequency,vbr,tempo,replayGain,owner",
+        "fields": "artist,artistSort,artistType,artistStylized,featuring,albumArtist,albumArtistSort,album,albumSort,albumType,albumStylized,year,country,genre,subgenre,occasion,instrument,category,ufId,title,subTitle,titleSort,track,media,mediaType,composer,composerSort,comment,copyright,contributor,singer,grouping,addDate,changeDate,language,mood,rating,playCount,url,syncLyrics,unSyncLyrics,live,favorite,explicit,performers,artistImage,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,filePath,fileName,fileSize,classification,seconds,bitrate,frequency,vbr,tempo,replayGain,owner",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { promises, existsSync, copyFileSync } from 'fs';
+import { promises, existsSync } from 'fs';
 import { join, resolve, extname, parse } from 'path';
 import { exec } from 'child_process';
 import { Observable, Subscriber } from 'rxjs';
@@ -37,8 +37,13 @@ export class FileElectronService extends FileService {
     return existsSync(path);
   }
 
-  copyFile(sourceFilePath: string, destinationFilePath: string): void {
-    copyFileSync(sourceFilePath, destinationFilePath);
+  async copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void> {
+    const directoryPath = destinationFilePath.substring(0, destinationFilePath.lastIndexOf('\\'));
+    // Hack to determine if this is not a drive
+    if (!directoryPath.endsWith(':')) {
+      await promises.mkdir(directoryPath, { recursive: true });
+    }
+    return promises.copyFile(sourceFilePath, destinationFilePath);
   }
 
   private async pushFiles(directoryPaths: string[], observer: Subscriber<IFileInfo>): Promise<void> {

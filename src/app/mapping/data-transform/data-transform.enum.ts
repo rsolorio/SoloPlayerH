@@ -1,3 +1,45 @@
+/*
+Fields to support
+
+Key   Name                    Supported  Multiple  Version
+TIT2  Title                   Yes
+TSOT  Title Sort              Yes                  v2.4
+TPE1  Artist/Performer        Yes        Yes
+TSOP  Artist/Performer Sort   Yes        Yes       v2.4
+TPE2  Album Artist            Yes
+TSO2  Album Artist Sort       No
+TALB  Album                   Yes
+TSOA  Album Sort              Yes        No        v2.4
+TCON  Genre                   Yes        Yes
+TRCK  Track                   Yes
+TPOS  Media Number            Yes
+COMM  Comment                 Yes
+TCOM  Composer                Yes
+TSOC  Composer Sort           No         No        v2.4
+TIT1  Grouping                Yes
+UFID  Unique Identifier       Yes
+PCNT  Play Count              No
+POPM  Popularimeter           Yes
+APIC  Picture                 Yes
+TLAN  Language                Yes
+TMOO  Mood                    Yes
+TMED  Media Type              Yes
+TLEN  Media Length            Yes
+TOWN  Owner                   Yes
+TIT3  Subtitle                Yes
+USLT  Unsync Lyrics           Yes
+SYLT  Sync Lyrics             Yes
+TYER  Recording Year          Yes       No         v2.3
+TDAT  Recording Date          Yes       No         v2.3
+TIME  Recording Time          Yes       No         v2.3
+TDRL  Release Date            Yes       No         v2.4
+TDRC  Recording Date          Yes       No         v2.4
+TBPM  Tempo                   Yes
+TXXX  User Defined            Yes
+PRIV  Private                 Yes
+
+*/
+
 /**
  * Supported fields for the transform tasks.
  */
@@ -50,6 +92,8 @@ export enum MetaField {
   TrackNumber = 'track',
   /** Number. Id3v2 */
   MediaNumber = 'media',
+  /** String. Id3v2 */
+  MediaType = 'mediaType',
   /** String. Id3v2 */
   Composer = 'composer',
   /** String. Id3v2 */

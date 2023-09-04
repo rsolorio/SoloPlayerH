@@ -23,7 +23,7 @@ export abstract class FileService {
 
   abstract exists(path: string): boolean;
 
-  abstract copyFile(sourceFilePath: string, destinationFilePath: string): void;
+  abstract copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>;
 
   removeBom(value: string): string {
     // 0xFEFF = 65279

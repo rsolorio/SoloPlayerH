@@ -23,7 +23,10 @@ import { IScanItemInfo } from 'src/app/shared/services/scan/scan.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
-import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
+import { ExportService } from 'src/app/shared/services/export/export.service';
+import { IExportConfig } from 'src/app/shared/services/export/export.interface';
+import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
+import { CriteriaSortDirection } from 'src/app/shared/services/criteria/criteria.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +44,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private fileService: FileService,
     private log: LogService,
     private metadataService: AudioMetadataService,
-    private parser: ScriptParserService,
+    private exporter: ExportService,
     private events: EventsService)
   {
     this.subscribeToScanEvents();
@@ -500,21 +503,21 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
   }
 
   private async test(): Promise<void> {
-    this.logFileMetadata();
-    // const expression = '%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%, 4) - %album%, %album%)\\$digits(%media%, 2)-$digits(%track%, 2) - %openParen%%title%%closeParen%.%extension%';
-    // const context = {
-    //   rootPath: 'c:',
-    //   language: 'english',
-    //   genre: 'rock',
-    //   artistName: 'madonna',
-    //   year: 1986,
-    //   album: 'true blue',
-    //   media: 1,
-    //   track: 2,
-    //   title: 'isla bonita',
-    //   extension: 'mp3'
-    // };
-    // const result = this.parser.parse({ expression: expression, context: context, mappings: { 'artist': 'artistName'} });
-    // console.log(result);
+    //this.logFileMetadata();
+    this.testExporter();
+  }
+
+  private testExporter(): void {
+    const criteria = new Criteria();
+    criteria.paging.pageSize = 200;
+    criteria.addSorting('addDate', CriteriaSortDirection.Descending);
+    const config: IExportConfig = {
+      profileId: SyncProfileId.DefaultExport,
+      directories: ['E:\\Test'],
+      criteria: criteria
+    };
+    this.exporter.copyAndTag(config).then(() => {
+      console.log('done');
+    });
   }
 }
