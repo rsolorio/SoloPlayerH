@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
 import { IExportConfig } from './export.interface';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { DatabaseService } from '../database/database.service';
 import { FilterEntity, SongTempEntity, SongViewEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { SyncProfileId } from '../database/database.seed';
+import { MetadataNetWriterService } from 'src/app/mapping/data-transform/metadata-net-writer.service';
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -33,7 +33,7 @@ export class ExportService {
 
   constructor(
     private db: DatabaseService,
-    private writer: MetadataWriterService,
+    private writer: MetadataNetWriterService,
     private entities: DatabaseEntitiesService) { }
 
   /**

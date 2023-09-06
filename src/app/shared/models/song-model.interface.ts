@@ -61,7 +61,6 @@ export interface ISongFullModel extends ISongModel {
   externalId: string;
   // Song info
   titleSort: string;
-  initialPlayCount: number;
   grouping: string;
   composer: string;
   composerSort: string;
@@ -71,8 +70,17 @@ export interface ISongFullModel extends ISongModel {
   // Audio info
   replayGain: number;
   tempo: number;
-  fullyParsed: boolean;
   // Dates
   changeDate: Date;
   replaceDate: Date;
+}
+
+export interface ISongExtendedModel extends ISongFullModel {
+  primaryAlbumSort: string;
+  primaryArtistSort: string;
+  primaryArtistType: string;
+  albumImage: string;
+  albumSecondaryImage: string;
+  albumArtistImage: string;
+  singleImage: string;
 }

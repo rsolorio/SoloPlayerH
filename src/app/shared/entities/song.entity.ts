@@ -30,8 +30,6 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column()
   playCount: number;
   @Column()
-  initialPlayCount: number;
-  @Column()
   performers: number;
   @Column({ nullable: true })
   genre: string;
@@ -68,8 +66,6 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   replayGain: number;
   @Column()
   tempo: number;
-  @Column()
-  fullyParsed: boolean;
   // Flags
   @Column()
   favorite: boolean;

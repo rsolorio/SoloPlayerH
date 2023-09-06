@@ -375,11 +375,6 @@ export class ScanAudioService {
       this.songToProcess.fileSize = fileSize;
       replaced = true;
     }
-    // const fullyParsed = metadata[MetaField.TagFullyParsed];
-    // if (fullyParsed?.length && fullyParsed[0] !== this.songToProcess.fullyParsed) {
-    //   this.songToProcess.fullyParsed = fullyParsed[0];
-    //   replaced = true;
-    // }
 
     // Add date
     let newAddDate = this.first(metadata[MetaField.AddDate]);
@@ -616,8 +611,6 @@ export class ScanAudioService {
     // Play Count
     const playCount = this.first(metadata[MetaField.PlayCount]);
     song.playCount = playCount ? playCount : 0;
-    // This will only be set once just for tracking purposes
-    song.initialPlayCount = song.playCount;
 
     let lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
     if (!lyrics) {
@@ -676,7 +669,6 @@ export class ScanAudioService {
     song.duration = this.utilities.secondsToMinutes(song.seconds);
     song.vbr = this.first(metadata[MetaField.Vbr]);
     song.fileSize = this.first(metadata[MetaField.FileSize]);
-    song.fullyParsed = this.first(metadata[MetaField.TagFullyParsed]);
     song.infoUrl = this.first(metadata[MetaField.Url]);
 
     this.processImage(song.id, metadata, MetaField.SingleImage);
