@@ -47,7 +47,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.Year:
         return [this.inputData.releaseYear];
       case MetaField.Genre: // List of genres
-        return [];
+        return [this.inputData.genre];
       case MetaField.UnSyncLyrics:
         return [this.inputData.lyrics];
       case MetaField.Album:

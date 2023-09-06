@@ -25,6 +25,8 @@ export abstract class FileService {
 
   abstract copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>;
 
+  abstract runCommand(command: string): Promise<any>;
+
   removeBom(value: string): string {
     // 0xFEFF = 65279
     if (value && value.charCodeAt(0) === 0xFEFF) {

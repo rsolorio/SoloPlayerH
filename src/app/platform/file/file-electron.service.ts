@@ -140,24 +140,33 @@ export class FileElectronService extends FileService {
     return resolve(locationPath, endPath);
   }
 
-  private getRootDirectories(): Promise<IFileInfo[]> {
-    return new Promise<IFileInfo[]>((resolve, reject) => {
-      exec('wmic logicaldisk get name', async (error, stdout) => {
+  runCommand(command: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
         if (error) {
           reject(error);
         }
+        else if (stderr) {
+          reject(stderr);
+        }
         else {
-          const lines = stdout.split('\r\r\n').map(value => value.trim());
-          // Get only the drives
-          const directories = lines.filter(value => /[A-Za-z]:/.test(value));
-          const result: IFileInfo[] = [];
-          for (const dir of directories) {
-            const dirInfo = await this.getFileInfo(dir);
-            result.push(dirInfo);
-          }
-          resolve(result);
+          resolve(stdout);
         }
       });
+    });
+  }
+
+  private getRootDirectories(): Promise<IFileInfo[]> {
+    return this.runCommand('wmic logicaldisk get name').then(async response => {
+      const lines = response.split('\r\r\n').map(value => value.trim());
+      // Get only the drives
+      const directories = lines.filter(value => /[A-Za-z]:/.test(value));
+      const result: IFileInfo[] = [];
+      for (const dir of directories) {
+        const dirInfo = await this.getFileInfo(dir);
+        result.push(dirInfo);
+      }
+      return result;
     });
   }
 

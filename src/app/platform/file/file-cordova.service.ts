@@ -44,6 +44,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  runCommand(command: string): Promise<any> {
+    return null;
+  }
+
   public getParentPath(path: string): string {
     return null;
   }
