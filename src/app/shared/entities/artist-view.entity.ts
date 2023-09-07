@@ -1,6 +1,7 @@
 import { ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
 import { ArtistViewBaseEntity } from './artist-view-base.entity';
+import { PartyRelationType } from '../models/music.enum';
 
 /**
  * Retrieves all the records from the artist table with associated songs as primary or featuring artist.
@@ -15,7 +16,7 @@ import { ArtistViewBaseEntity } from './artist-view-base.entity';
     LEFT JOIN (
       SELECT relatedId, songId
       FROM partyRelation
-      WHERE partyRelation.relationTypeId = 'Artist-Song-Primary' OR partyRelation.relationTypeId = 'Artist-Song-Featuring'
+      WHERE partyRelation.relationTypeId = '${PartyRelationType.Primary}' OR partyRelation.relationTypeId = '${PartyRelationType.Featuring}'
     ) AS partyRelation
     ON artist.id = partyRelation.relatedId
     GROUP BY artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite

@@ -10,17 +10,17 @@ export enum SongBadge {
 
 /**
  * The relation types for the PartyRelation table.
- * The value of each type represents the format: RelatedId(Song,Album,Artist)-Id-Type
+ * The value of each type represents the format: RelatedId Data | PartyId Data
  */
 export enum PartyRelationType {
   /** The main artist of the song. */
-  Primary = 'Artist-Song-Primary',
+  Primary = 'primaryArtist|song',
   /** The featuring artist of the song. */
-  Featuring = 'Artist-Song-Featuring',
+  Featuring = 'featuringArtist|song',
   /** The lead singer of the band. */
-  Singer = 'Artist-Artist-Singer',
-  /** The associated artist that contributes to another artist. */
-  Contributor = 'Artist-Artist-Contributor',
+  Singer = 'singerArtist|bandArtist',
+  /** The associated artist that contributes with another artist. */
+  Contributor = 'contributorArtist|primaryArtist',
   /** The composer of the song. */
-  Composer = 'Artist-Song-Composer'
+  Composer = 'composerArtist|song'
 }

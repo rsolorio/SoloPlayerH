@@ -1,5 +1,6 @@
 import { ViewEntity } from 'typeorm';
 import { ArtistViewEntity } from './artist-view.entity';
+import { PartyRelationType } from '../models/music.enum';
 
 /**
  * Retrieves all the records from the artist table with associated songs as composer.
@@ -13,7 +14,7 @@ import { ArtistViewEntity } from './artist-view.entity';
     LEFT JOIN (
       SELECT relatedId, songId
       FROM partyRelation
-      WHERE partyRelation.relationTypeId = 'Artist-Song-Composer'
+      WHERE partyRelation.relationTypeId = '${PartyRelationType.Composer}'
     ) AS partyRelation
     ON artist.id = partyRelation.relatedId
     GROUP BY artist.id

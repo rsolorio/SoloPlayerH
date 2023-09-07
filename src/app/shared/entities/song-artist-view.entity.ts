@@ -1,6 +1,7 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { ISongModel } from '../models/song-model.interface';
 import { SongViewBaseEntity } from './song-view-base.entity';
+import { PartyRelationType } from '../models/music.enum';
 
 /**
  * This view combines the song entity with the PartyRelation entity.
@@ -33,7 +34,7 @@ import { SongViewBaseEntity } from './song-view-base.entity';
   ON album.primaryArtistId = artist.id
   INNER JOIN partyRelation
   ON song.id = partyRelation.songId
-  WHERE partyRelation.relationTypeId = 'Artist-Song-Primary' OR partyRelation.relationTypeId = 'Artist-Song-Featuring'
+  WHERE partyRelation.relationTypeId = '${PartyRelationType.Primary}' OR partyRelation.relationTypeId = '${PartyRelationType.Featuring}'
 `
 })
 export class SongArtistViewEntity extends SongViewBaseEntity implements ISongModel {
