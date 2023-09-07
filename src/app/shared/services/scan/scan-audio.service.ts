@@ -154,7 +154,7 @@ export class ScanAudioService {
     }
     const artistsToBeUpdated = this.existingArtists.filter(artist => artist.hasChanges);
     if (artistsToBeUpdated.length) {
-      const artistUpdateColumns = ['artistTypeId', 'artistSort', 'artistStylized', 'countryId'];
+      const artistUpdateColumns = ['artistType', 'artistSort', 'artistStylized', 'country'];
       await this.db.bulkUpdate(ArtistEntity, artistsToBeUpdated, artistUpdateColumns);
       //artistsToBeUpdated.forEach(a => a.hasChanges = false);
     }
@@ -430,21 +430,18 @@ export class ScanAudioService {
     const artistStylized = this.first(metadata[MetaField.ArtistStylized]);
     const artistSort = this.first(metadata[MetaField.AlbumArtistSort]);
 
-    const newArtist = new ArtistEntity();
-    newArtist.name = artistName;
-    newArtist.artistSort = artistSort ? artistSort : newArtist.name;
-    newArtist.artistTypeId = artistType ? this.getValueListEntryId(artistType, ValueLists.ArtistType.id, this.existingArtistTypes) : ValueLists.ArtistType.entries.Unknown;
-    newArtist.countryId = country ? this.getValueListEntryId(country, ValueLists.Country.id, this.existingCountries) : ValueLists.Country.entries.Unknown;
-    newArtist.artistStylized = artistStylized ? artistStylized : artistName;
+    const newArtist = this.createArtist(artistName, artistSort, artistStylized);
+    newArtist.artistType = artistType ? this.registerValueListEntry(artistType, ValueLists.ArtistType.id, this.existingArtistTypes) : this.unknownValue;
+    newArtist.country = country ? this.registerValueListEntry(country, ValueLists.Country.id, this.existingCountries) : this.unknownValue;
 
     const existingArtist = this.lookupService.findArtist(newArtist.name, this.existingArtists);
     if (existingArtist) {
-      if (existingArtist.artistTypeId === ValueLists.ArtistType.entries.Unknown && existingArtist.artistTypeId !== newArtist.artistTypeId) {
-        existingArtist.artistTypeId = newArtist.artistTypeId;
+      if (existingArtist.artistType === this.unknownValue && existingArtist.artistType !== newArtist.artistType) {
+        existingArtist.artistType = newArtist.artistType;
         this.setChangesIfNotNew(existingArtist);
       }
-      if (existingArtist.countryId === ValueLists.Country.entries.Unknown && existingArtist.countryId !== newArtist.countryId) {
-        existingArtist.countryId = newArtist.countryId;
+      if (existingArtist.country === this.unknownValue && existingArtist.country !== newArtist.country) {
+        existingArtist.country = newArtist.country;
         this.setChangesIfNotNew(existingArtist);
       }
       if (existingArtist.artistStylized === existingArtist.name && existingArtist.artistStylized !== newArtist.artistStylized) {
@@ -458,10 +455,6 @@ export class ScanAudioService {
       return existingArtist;
     }
 
-    newArtist.isNew = true;
-    newArtist.id = this.utilities.newGuid();
-    newArtist.favorite = false;
-    newArtist.hash = this.lookupService.hashArtist(newArtist.name);
     this.processImage(newArtist.id, metadata, MetaField.AlbumArtistImage);
     this.existingArtists.push(newArtist);
     return newArtist;
@@ -516,7 +509,7 @@ export class ScanAudioService {
     newAlbum.primaryArtistId = artist.id;
     newAlbum.releaseDecade = this.utilities.getDecade(newAlbum.releaseYear);
     const albumType = this.first(metadata[MetaField.AlbumType]);
-    newAlbum.albumTypeId = albumType ? this.getValueListEntryId(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP;
+    newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : this.unknownValue;
     newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
@@ -764,7 +757,7 @@ export class ScanAudioService {
         }
       }
       else {
-        const newArtist = this.createArtist(artistName, artistSort);
+        //const newArtist = this.createArtist(artistName, artistSort);
         // First, add the artist as it is
         //this.existingArtists.push(newArtist);
         //result.push(newArtist);
@@ -795,24 +788,27 @@ export class ScanAudioService {
     return result;
   }
 
-  private createArtist(artistName: string, artistSort: string): ArtistEntity {
+  private createArtist(artistName: string, artistSort?: string, artistStylized?: string): ArtistEntity {
     const artist = new ArtistEntity();
     artist.id = this.utilities.newGuid();
     artist.isNew = true;
     artist.name = artistName;
-    artist.artistStylized = artistName;
-    artist.artistSort = artistSort;
+    artist.artistStylized = artistStylized ? artistStylized : artistName;
+    artist.artistSort = artistSort ? artistSort : artistName;
     artist.favorite = false;
-    artist.artistTypeId = ValueLists.ArtistType.entries.Unknown;
-    artist.countryId = ValueLists.Country.entries.Unknown;
+    // Most of the artists are vocal
+    artist.vocal = true;
+    artist.artistType = this.unknownValue;
+    artist.artistGender = this.unknownValue;
+    artist.country = this.unknownValue;
     artist.hash = this.lookupService.hashArtist(artistName);
     return artist;
   }
 
-  private getValueListEntryId(entryName: string, valueListTypeId: string, entries: ValueListEntryEntity[]): string {
+  private registerValueListEntry(entryName: string, valueListTypeId: string, entries: ValueListEntryEntity[]): string {
     const existingEntry = this.lookupService.findValueListEntry(entryName, null, entries);
     if (existingEntry) {
-      return existingEntry.id;
+      return existingEntry.name;
     }
     const newEntry = new ValueListEntryEntity();
     newEntry.id = this.utilities.newGuid();
@@ -824,7 +820,7 @@ export class ScanAudioService {
     newEntry.isClassification = false;
     newEntry.isNew = true;
     entries.push(newEntry);
-    return newEntry.id;
+    return newEntry.name;
   }
 
   private processGenres(metadata: KeyValues, splitSymbols: string[]): ValueListEntryEntity[] {

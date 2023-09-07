@@ -47,14 +47,14 @@ export class ArtistViewComponent implements OnInit {
   }
 
   private async loadModel(): Promise<void> {
-    const data = await this.entityService.getArtistDetails(this.artistId);
+    const data = await ArtistEntity.findOneBy({ id: this.artistId });
     this.entityEditorModel = {
       data: data,
       groups: [
         {
           fields: [
             {
-              propertyName: 'artist_name',
+              propertyName: 'name',
               icon: AppAttributeIcons.ArtistName,
               label: 'Name'
             }
@@ -85,7 +85,7 @@ export class ArtistViewComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
-    const favorite = this.entityEditorModel.data['artist_favorite'] as number;
+    const favorite = this.entityEditorModel.data['favorite'] as number;
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
@@ -123,10 +123,10 @@ export class ArtistViewComponent implements OnInit {
     const entries = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.ArtistType.id });
     const values = entries.map(entry => {
       const valuePair: ISelectableValue = {
-        value: entry.id,
+        value: entry.name,
         caption: entry.name
       };
-      if (entry.id === this.entityEditorModel.data['artist_artistTypeId']) {
+      if (entry.id === this.entityEditorModel.data['artistType']) {
         valuePair.selected = true;
       }
       return valuePair;
@@ -140,11 +140,10 @@ export class ArtistViewComponent implements OnInit {
       onOk: model => {
         const selectedValues = model.items.filter(value => value.selected);
         const valuePair = selectedValues[0];
-        if (valuePair.value !== this.entityEditorModel.data['artist_artistTypeId']) {
-          this.entityEditorModel.data['artist_artistTypeId'] = valuePair.value;
-          this.entityEditorModel.data['artistType'] = valuePair.caption;
-          ArtistEntity.findOneBy({ id: this.entityEditorModel.data['artist_id']}).then(artist => {
-            artist.artistTypeId = valuePair.value;
+        if (valuePair.value !== this.entityEditorModel.data['artistType']) {
+          this.entityEditorModel.data['artistType'] = valuePair.value;
+          ArtistEntity.findOneBy({ id: this.entityEditorModel.data['id']}).then(artist => {
+            artist.artistType = valuePair.value;
             artist.save();
           });
         }
@@ -157,10 +156,10 @@ export class ArtistViewComponent implements OnInit {
     const entries = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Country.id });
     const values = entries.map(entry => {
       const valuePair: ISelectableValue = {
-        value: entry.id,
+        value: entry.name,
         caption: entry.name
       };
-      if (entry.id === this.entityEditorModel.data['artist_countryId']) {
+      if (entry.id === this.entityEditorModel.data['country']) {
         valuePair.selected = true;
       }
       return valuePair;
@@ -174,11 +173,10 @@ export class ArtistViewComponent implements OnInit {
       onOk: model => {
         const selectedValues = model.items.filter(value => value.selected);
         const valuePair = selectedValues[0];
-        if (valuePair.value !== this.entityEditorModel.data['artist_countryId']) {
-          this.entityEditorModel.data['artist_countryId'] = valuePair.value;
-          this.entityEditorModel.data['country'] = valuePair.caption;
-          ArtistEntity.findOneBy({ id: this.entityEditorModel.data['artist_id']}).then(artist => {
-            artist.countryId = valuePair.value;
+        if (valuePair.value !== this.entityEditorModel.data['country']) {
+          this.entityEditorModel.data['country'] = valuePair.value;
+          ArtistEntity.findOneBy({ id: this.entityEditorModel.data['id']}).then(artist => {
+            artist.country = valuePair.value;
             artist.save();
           });
         }

@@ -4,9 +4,11 @@
       {
         "id": "85904485-14b3-4d3c-a5ef-f9277e38c480",
         "name": "Various",
-        "artistTypeId": "9f0b9c29-5d9b-4086-897a-1b69fc243afc",
-        "countryId": "77aad7f2-044e-4fb1-aed8-65cde38077a4",
+        "artistType": "Unknown",
+        "artistGender": "Unknown",
+        "country": "Unknown",
         "favorite": false,
+        "vocal": true,
         "artistSort": "Various",
         "artistStylized": "Various"
       }
@@ -213,6 +215,11 @@
       {
         "id": "5582c562-53c5-4937-af3c-f285ee2cc696",
         "name": "ArtistType",
+        "system": true
+      },
+      {
+        "id": "98270b93-5181-4971-a9b7-140d8f60e081",
+        "name": "Gender",
         "system": true
       },
       {
@@ -432,99 +439,27 @@
       {
         "//": "ARTISTTYPE",
         "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Solo - Male",
+        "name": "Solo",
         "isClassification": false,
         "sequence": 1
       },
       {
         "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Solo - Male Singer",
+        "name": "Duo",
         "isClassification": false,
         "sequence": 2
       },
       {
         "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Solo - Female",
+        "name": "Trio",
         "isClassification": false,
         "sequence": 3
       },
       {
         "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Solo - Female Singer",
-        "isClassification": false,
-        "sequence": 4
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Duo",
-        "isClassification": false,
-        "sequence": 5
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Duo - Male Singer",
-        "isClassification": false,
-        "sequence": 6
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Duo - Female Singer",
-        "isClassification": false,
-        "sequence": 7
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Duo - Mixed Singers",
-        "isClassification": false,
-        "sequence": 8
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Trio",
-        "isClassification": false,
-        "sequence": 9
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Trio - Male Singer",
-        "isClassification": false,
-        "sequence": 10
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Trio - Female Singer",
-        "isClassification": false,
-        "sequence": 11
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Trio - Mixed Singers",
-        "isClassification": false,
-        "sequence": 12
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
         "name": "Band",
         "isClassification": false,
-        "sequence": 13
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Band - Female Singer",
-        "isClassification": false,
-        "sequence": 14
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Band - Male Singer",
-        "isClassification": false,
-        "sequence": 15
-      },
-      {
-        "valueListTypeId": "5582c562-53c5-4937-af3c-f285ee2cc696",
-        "name": "Band - Mixed Singers",
-        "isClassification": false,
-        "sequence": 16
+        "sequence": 4
       },
       {
         "id": "9f0b9c29-5d9b-4086-897a-1b69fc243afc",
@@ -532,6 +467,38 @@
         "name": "Unknown",
         "isClassification": false,
         "sequence": 17
+      },
+      {
+        "//": "GENDER",
+        "valueListTypeId": "98270b93-5181-4971-a9b7-140d8f60e081",
+        "name": "Male",
+        "isClassification": false,
+        "sequence": 1
+      },
+      {
+        "valueListTypeId": "98270b93-5181-4971-a9b7-140d8f60e081",
+        "name": "Female",
+        "isClassification": false,
+        "sequence": 2
+      },
+      {
+        "valueListTypeId": "98270b93-5181-4971-a9b7-140d8f60e081",
+        "name": "Mixed",
+        "isClassification": false,
+        "sequence": 3
+      },
+      {
+        "valueListTypeId": "98270b93-5181-4971-a9b7-140d8f60e081",
+        "name": "Other",
+        "isClassification": false,
+        "sequence": 4
+      },
+      {
+        "id": "a6016ac9-6235-4df2-aed8-d0ec69351137",
+        "valueListTypeId": "98270b93-5181-4971-a9b7-140d8f60e081",
+        "name": "Unknown",
+        "isClassification": false,
+        "sequence": 5
       },
       {
         "//": "COUNTRY",

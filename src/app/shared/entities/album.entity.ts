@@ -7,7 +7,7 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   @Column()
   primaryArtistId: string;
   @Column()
-  albumTypeId: string;
+  albumType: string;
   @Column()
   releaseYear: number;
   @Column()

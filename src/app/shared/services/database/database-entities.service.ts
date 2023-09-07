@@ -136,19 +136,6 @@ export class DatabaseEntitiesService {
     await song.save();
   }
 
-  public getArtistDetails(artistId: string): Promise<any> {
-    return ArtistEntity
-      .getRepository()
-      .createQueryBuilder('artist')
-      .innerJoin('valueListEntry', 'artistTypeEntry', 'artist.artistTypeId = artistTypeEntry.id')
-      .innerJoin('valueListEntry', 'countryEntry', 'artist.countryId = countryEntry.id')
-      .addSelect('artistTypeEntry.name', 'artistType')
-      .addSelect('countryEntry.name', 'country')
-      .where('artist.id = :artistId')
-      .setParameter('artistId', artistId)
-      .getRawOne();
-  }
-
   public getSongDetails(songId: string): Promise<any> {
     return SongEntity
       .getRepository()

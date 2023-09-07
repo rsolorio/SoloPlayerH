@@ -40,6 +40,12 @@ export class ValueLists {
       Unknown: '9f0b9c29-5d9b-4086-897a-1b69fc243afc'
     }
   };
+  static Gender = {
+    id: '98270b93-5181-4971-a9b7-140d8f60e081',
+    entries: {
+      Unknown: 'a6016ac9-6235-4df2-aed8-d0ec69351137'
+    }
+  };
   static Country = {
     id: '794fb6f0-6fe1-4afe-99e9-3976e1b748a5',
     entries: {

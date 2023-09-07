@@ -1,49 +1,23 @@
-import { ViewColumn, ViewEntity } from 'typeorm';
+import { ViewEntity } from 'typeorm';
 import { IArtistModel } from '../models/artist-model.interface';
-import { ListItemEntity } from './base.entity';
+import { ArtistViewBaseEntity } from './artist-view-base.entity';
 
 /**
- * Fields: id, name, hash, artistSort, artistStylized, favorite, country, albumCount, songCount, playCount, songAddDateMax
+ * Fields: id, name, hash, artistSort, artistStylized, artistType, country, favorite, albumCount, songCount, playCount, songAddDateMax
  */
 @ViewEntity({
   name: 'albumArtistView',
   expression: `
-  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.favorite, valueListEntry.name AS country, COUNT(album.id) AS albumCount, SUM(album.songCount) AS songCount, SUM(album.playCount) AS playCount, MAX(album.songAddDateMax) AS songAddDateMax
+  SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.artistType, artist.country, artist.favorite,
+  COUNT(album.id) AS albumCount, SUM(album.songCount) AS songCount, SUM(album.playCount) AS playCount, MAX(album.songAddDateMax) AS songAddDateMax
   FROM artist
-  INNER JOIN valueListEntry
-  ON artist.countryId = valueListEntry.id
   INNER JOIN (
     SELECT album.id, album.primaryArtistId, album.name, COUNT(song.id) AS songCount, SUM(song.playCount) AS playCount, MAX(song.addDate) AS songAddDateMax
     FROM album INNER JOIN song ON album.id = song.primaryAlbumId
     GROUP BY album.id, album.primaryArtistId, album.name
   ) AS album ON artist.id = album.primaryArtistId
-  GROUP BY artist.id, artist.name, artist.artistSort, artist.artistStylized, artist.favorite, valueListEntry.name
+  GROUP BY artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.artistType, artist.artistGender, artist.country, artist.favorite
 `
 })
-export class AlbumArtistViewEntity extends ListItemEntity implements IArtistModel {
-  @ViewColumn()
-  id: string;
-  @ViewColumn()
-  name: string;
-  @ViewColumn()
-  hash: string;
-  @ViewColumn()
-  albumCount: number;
-  @ViewColumn()
-  songCount: number;
-  @ViewColumn()
-  playCount: number;
-  @ViewColumn()
-  artistSort: string;
-  @ViewColumn()
-  artistStylized: string;
-  @ViewColumn()
-  favorite: boolean;
-  @ViewColumn()
-  country: string;
-  @ViewColumn()
-  songAddDateMax: Date;
-
-  artistTypeId: string;
-  countryId: string;
+export class AlbumArtistViewEntity extends ArtistViewBaseEntity implements IArtistModel {
 }

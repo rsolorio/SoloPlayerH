@@ -1,7 +1,7 @@
 import { IListItemModel } from './base-model.interface';
 
 export interface IAlbumModel extends IListItemModel {
-  albumTypeId: string;
+  albumType: string;
   releaseYear: number;
   releaseDecade: number;
   favorite: boolean;
