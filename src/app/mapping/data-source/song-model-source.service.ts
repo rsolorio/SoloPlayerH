@@ -49,15 +49,19 @@ export class SongModelSourceService implements IDataSourceService {
         return [this.inputData.mediaNumber];
       case MetaField.Year:
         return [this.inputData.releaseYear];
-      case MetaField.UnSyncLyrics:
-        return [this.inputData.lyrics];
       case MetaField.Album:
         // TODO: get unique name
         return [this.inputData.primaryAlbumName];
+      case MetaField.AlbumStylized:
+        return [this.inputData.primaryAlbumStylized];
       case MetaField.AlbumSort:
         return [this.inputData.primaryAlbumSort];
+      case MetaField.AlbumType:
+        return [this.inputData.primaryAlbumType];
       case MetaField.AlbumArtist:
         return [this.inputData.primaryArtistName];
+      case MetaField.AlbumArtistSort:
+        return [this.inputData.primaryArtistSort];
       case MetaField.ArtistStylized:
         return [this.inputData.primaryArtistStylized];
       case MetaField.Artist:
@@ -81,15 +85,17 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.UfId:
         return [this.inputData.id];
       case MetaField.AlbumImage:
-        return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Front);
+        return await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.Front);
       case MetaField.AlbumSecondaryImage:
-        return await this.getRelatedImagePath(this.inputData.id, MusicImageType.FrontAlternate);
+        return await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.FrontAlternate);
       case MetaField.SingleImage:
         return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
       case MetaField.AlbumArtistImage:
-        return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Artist);
+        return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.Artist);
       case MetaField.Title:
         return [this.inputData.name];
+      case MetaField.SubTitle:
+        return []; // ToDo
       case MetaField.ArtistType:
         return [this.inputData.primaryArtistType];
       case MetaField.UnSyncLyrics:
@@ -108,6 +114,10 @@ export class SongModelSourceService implements IDataSourceService {
         return this.getClassifications(this.inputData.id, ValueLists.Occasion.id);
       case MetaField.Instrument:
         return this.getClassifications(this.inputData.id, ValueLists.Instrument.id);
+      case MetaField.Url:
+        return [this.inputData.infoUrl];
+      case MetaField.PlayHistory:
+        return []; // ToDo
       case MetaField.Rating:
       case MetaField.PlayCount:
       case MetaField.PerformerCount:
@@ -123,6 +133,11 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.Composer:
       case MetaField.ComposerSort:
       case MetaField.TitleSort:
+      case MetaField.Comment:
+      case MetaField.Seconds:
+      case MetaField.Tempo:
+      case MetaField.ReplayGain:
+      case MetaField.Country:
         return [this.inputData[propertyName]];
     }
     return [];

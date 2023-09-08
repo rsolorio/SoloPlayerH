@@ -119,8 +119,8 @@ song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.la
 song.lyrics, song.grouping, song.composer, song.composerSort, song.comment, song.infoUrl, song.videoUrl,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
 song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate, song.replaceDate,
-album.name AS primaryAlbumName, album.albumSort AS primaryAlbumSort, album.primaryArtistId,
-artist.name AS primaryArtistName, artist.artistSort AS primaryArtistSort, artist.artistStylized AS primaryArtistStylized, artist.artistType AS primaryArtistType
+album.name AS primaryAlbumName, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.primaryArtistId,
+artist.country, artist.name AS primaryArtistName, artist.artistSort AS primaryArtistSort, artist.artistStylized AS primaryArtistStylized, artist.artistType AS primaryArtistType
 `;
 
 /**
@@ -152,7 +152,13 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   @ViewColumn()
   replaceDate: Date;
   @ViewColumn()
+  country: string;
+  @ViewColumn()
   primaryAlbumSort: string;
+  @ViewColumn()
+  primaryAlbumStylized: string;
+  @ViewColumn()
+  primaryAlbumType: string;
   @ViewColumn()
   primaryArtistSort: string;
   @ViewColumn()

@@ -172,6 +172,8 @@ export enum MetaField {
   TagFullyParsed = 'tagFullyParsed',
   /** String. Id3v2 */
   Owner = 'owner',
+  /** */
+  PlayHistory = 'playHistory',
   /** String. Id3v2. Scan. */
   Error = 'error',
   /** Boolean. Scan. */

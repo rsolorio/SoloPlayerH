@@ -1086,7 +1086,7 @@
         "name": "dbToId3Mappings",
         "type": "SongModel",
         "config": "",
-        "fields": "",
+        "fields": "track,media,year,unSyncLyrics,album,albumSort,albumArtist,artistStylized,artist,ufId,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,owner,genre,subgenre,occasion,instrument,category,rating,playCount,performerCount,mood,language,favorite,live,explicit,addDate,changeDate,filePath,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,url,tempo,replayGain,subTitle,country,albumStylized,playHistory",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,
@@ -1098,7 +1098,7 @@
         "name": "dbToPlaylists",
         "type": "SongModel",
         "config": "",
-        "fields": "artist,artistSort,artistType,artistStylized,featuring,albumArtist,albumArtistSort,album,albumSort,albumType,albumStylized,year,country,genre,subgenre,occasion,instrument,category,ufId,title,subTitle,titleSort,track,media,mediaType,composer,composerSort,comment,copyright,contributor,singer,grouping,addDate,changeDate,language,mood,rating,playCount,url,syncLyrics,unSyncLyrics,live,favorite,explicit,performerCount,artistImage,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,filePath,fileName,fileSize,classification,seconds,bitrate,frequency,vbr,tempo,replayGain,owner",
+        "fields": "",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,
@@ -1140,7 +1140,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "rsolorio",
+        "source": "rsolorio2",
         "destination": "owner",
         "sequence": 1,
         "disabled": false,
@@ -1150,14 +1150,6 @@
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%addDate%",
         "destination": "custom_addDate",
-        "sequence": 1,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$getPlayHistory()",
-        "destination": "custom_playHistory",
         "sequence": 1,
         "disabled": false,
         "system": true

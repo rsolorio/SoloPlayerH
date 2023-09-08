@@ -503,8 +503,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
   }
 
   private async test(): Promise<void> {
-    this.logFileMetadata();
-    //this.testExporter();
+    //this.logFileMetadata();
+    this.testExporter();
   }
 
   private testExporter(): void {
@@ -513,7 +513,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     criteria.addSorting('addDate', CriteriaSortDirection.Descending);
     const config: IExportConfig = {
       profileId: SyncProfileId.DefaultExport,
-      directories: ['E:\\Test'],
+      directories: ['J:\\Test'],
       criteria: criteria
     };
     this.exporter.copyAndTag(config).then(() => {

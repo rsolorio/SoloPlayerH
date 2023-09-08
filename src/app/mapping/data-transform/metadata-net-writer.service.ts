@@ -73,7 +73,8 @@ export class MetadataNetWriterService extends DataTransformServiceBase<ISongMode
     const id3UtilityFilePath = 'F:\\Code\\VS Online\\SoloSoft\\Bin46\\Id3Command.exe';
     const jsonText = JSON.stringify(metadata);
     // We don't need to escape single backslashes since they are escaped when the object is stringified
-    const escapedJsonText = jsonText.replace(new RegExp('"', 'g'), '\\"');
+    let escapedJsonText = jsonText.replace(new RegExp('"', 'g'), '\\"');
+    escapedJsonText = escapedJsonText.replace(new RegExp('&', 'g'), '^&');
     return `"${id3UtilityFilePath}" "${escapedJsonText}"`;
   }
 }
