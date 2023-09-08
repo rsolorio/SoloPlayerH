@@ -133,7 +133,7 @@ export enum MetaField {
   /** Boolean. Id3v2. */
   Explicit = 'explicit',
   /** Number. Id3v2. */
-  Performers = 'performers',
+  PerformerCount = 'performerCount',
   /** IImageSource. FileInfo, Id3v2 */
   ArtistImage = 'artistImage',
   /** IImageSource. FileInfo, Id3v2 */
@@ -150,6 +150,8 @@ export enum MetaField {
   FilePath = 'filePath',
   /** String. FileInfo */
   FileName = 'fileName',
+  /** String. FileInfo */
+  FileExtension = 'fileExtension',
   /** Number. FileInfo */
   FileSize = 'fileSize',
   /** String; format: classificationType|classification1,classification2. Id3v2 */
@@ -176,14 +178,4 @@ export enum MetaField {
   Ignored = 'ignored',
   /** ScanFileMode. None. */
   FileMode = 'fileMode'
-}
-
-/**
- * Do we really need another enum for editable fields?
- * If so, should we call the other one MetaReadableField or MetaReadOnlyField
- * Compare against the app.config
- */
-export enum MetaEditableField {
-  DirectoryPath = 'directoryPath',
-  FileNameWithExtension = 'fileNameWithExtension'
 }

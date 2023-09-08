@@ -333,6 +333,9 @@ export class SongViewComponent implements OnInit {
       const songClassification = new SongClassificationEntity();
       songClassification.songId = this.entityEditorModel.data['song_id'];
       songClassification.classificationId = valuePair.value;
+      // We need this to get the type
+      const classification = await ValueListEntryEntity.findOneBy({ id: songClassification.classificationId });
+      songClassification.classificationTypeId = classification.valueListTypeId;
       // TODO: determine how to setup this one
       songClassification.primary = false;
       await songClassification.save();

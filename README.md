@@ -117,6 +117,8 @@ All standard entities have three main fields:
   - ID3 mapping: TSOT
 - filePath
   - song file location
+- fileExtension
+  - song file extension without the dot
 - externalId
   - unique identifier from an external source
   - ID3 mapping: UFID
@@ -201,9 +203,9 @@ All standard entities have three main fields:
   - Flag that indicates if the song has explicit content
   - ID3 mapping: iTunesAdvisory or TXXX:Explicit
   - It can be set the by user
-- performers
+- performerCount
   - Number of artists performing the song
-  - ID3 mapping: custom TXXX:Performers
+  - ID3 mapping: custom TXXX:PerformerCount
   - If not present it will automatically calculated based on featuring artists
 - primaryAlbumId
   - The album associated with the track
@@ -224,11 +226,12 @@ All standard entities have three main fields:
 - albumType
 
 ### Artist table
+- artistSort
 - artistType
+- artistGenre
 - country
 - favorite
-- artistSort
-
+- vocal
 ### PartyRelation table
 - id
 - relatedId
@@ -241,6 +244,7 @@ All standard entities have three main fields:
 - description
 - favorite
 - groupId
+  - A field for categorization/grouping purposes
 - changeDate
 
 ### PlaylistSong table

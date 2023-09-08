@@ -219,12 +219,12 @@ export class Id3v2SourceService implements IDataSourceService {
           return [playCountPopularimeter.counter];
         }
         break;
-      case MetaField.Performers:
-        const performersText = this.metadataService.getValue<string>(propertyName, this.tags, true);
-        if (performersText) {
-          const performers = parseInt(performersText, 10);
-          if (performers > 0) {
-            return [performers];
+      case MetaField.PerformerCount:
+        const performerCountText = this.metadataService.getValue<string>(propertyName, this.tags, true);
+        if (performerCountText) {
+          const performerCount = parseInt(performerCountText, 10);
+          if (performerCount > 0) {
+            return [performerCount];
           }
         }
         break;

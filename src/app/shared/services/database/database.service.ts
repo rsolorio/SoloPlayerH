@@ -42,7 +42,15 @@ import {
   FilterCriteriaEntity,
   FilterCriteriaItemEntity,
   SyncProfileEntity,
-  SongTempEntity
+  SongExportEntity,
+  SongExtendedViewEntity,
+  SongExtendedByArtistViewEntity,
+  SongExtendedByClassificationViewEntity,
+  SongExtendedByPlaylistViewEntity,
+  SongExpExtendedViewEntity,
+  SongExpExtendedByArtistViewEntity,
+  SongExpExtendedByClassificationViewEntity,
+  SongExpExtendedByPlaylistViewEntity
 } from '../../entities';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -188,7 +196,15 @@ export class DatabaseService {
         FilterCriteriaEntity,
         FilterCriteriaItemEntity,
         SyncProfileEntity,
-        SongTempEntity
+        SongExportEntity,
+        SongExtendedViewEntity,
+        SongExtendedByArtistViewEntity,
+        SongExtendedByClassificationViewEntity,
+        SongExtendedByPlaylistViewEntity,
+        SongExpExtendedViewEntity,
+        SongExpExtendedByArtistViewEntity,
+        SongExpExtendedByClassificationViewEntity,
+        SongExpExtendedByPlaylistViewEntity
       ],
       synchronize: true,
       logging: logging
@@ -373,6 +389,10 @@ export class DatabaseService {
   }
 
   // SQLite Bulk Actions - END
+
+  public run(query: string, parameters?: any[]): Promise<any> {
+    return this.dataSource.query(query, parameters);
+  }
 
   public async getList<T extends ObjectLiteral>(entity: EntityTarget<T>, criteria: Criteria): Promise<T[]> {
     const entityTempName = 'getListEntity';

@@ -1,4 +1,4 @@
-import { ISongModel } from "../../models/song-model.interface";
+import { ISongExtendedModel, ISongModel } from "../../models/song-model.interface";
 import { Criteria } from "../criteria/criteria.class";
 
 export interface IExportConfig {
@@ -7,8 +7,8 @@ export interface IExportConfig {
   filterId?: string;
   playlistId?: string;
   criteria?: Criteria;
-  songs?: ISongModel[];
-  songTempEnabled?: boolean;
+  songs?: ISongExtendedModel[];
+  songExportEnabled?: boolean;
   playlistsEnabled?: boolean;
   smartlistsEnabled?: boolean;
   autolistsEnabled?: boolean;

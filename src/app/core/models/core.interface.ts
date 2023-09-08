@@ -1,8 +1,11 @@
 import { ITimeSpan } from "../services/utility/utility.interface";
 import { ImageSrcType } from "./core.enum";
 
+/** A generic key/value pair where the key is the indexed property. */
 export type KeyValueGen<TKey> = { [key: string]: TKey };
+/** A generic key/value pair where the key is the indexed property and the value is a list of items. */
 export type KeyValuesGen<TKey> = { [key: string]: TKey[] };
+/** A key/value pair where the key is the indexed property and the value is a list of items. */
 export type KeyValues = KeyValuesGen<any>;
 
 export interface IValueModel<T> {

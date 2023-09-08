@@ -66,7 +66,7 @@ export enum AppAttributeIcons {
   PlaylistDirectory = 'mdi-folder-play mdi',
   Description = 'mdi-note-text mdi',
   Grouping = 'mdi-format-list-group mdi',
-  Performers = 'mdi-account-group mdi',
+  PerformerCount = 'mdi-account-group mdi',
   Limit = 'mdi-sort-numeric-variant mdi',
   LongPlay = 'mdi-music-box-multiple mdi',
   Accent = 'mdi-vanish-quarter mdi',

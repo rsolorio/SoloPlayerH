@@ -1,3 +1,5 @@
+import { ValueListEntryEntity } from "../entities";
+
 export interface ISyncProfileParsed {
   id: string;
   name: string;
@@ -6,4 +8,6 @@ export interface ISyncProfileParsed {
   config: any;
   syncInfo: any;
   syncDate: Date;
+  classifications?: ValueListEntryEntity[];
+  nonPrimaryRelations?: any[];
 }

@@ -12,6 +12,7 @@ export interface ISongModel extends IListItemModel {
   // File info
   filePath: string;
   fileSize: number;
+  fileExtension: string;
   // Song info
   trackNumber: number;
   mediaNumber: number;
@@ -19,7 +20,7 @@ export interface ISongModel extends IListItemModel {
   releaseDecade: number;
   rating: number;
   playCount: number;
-  performers: number;
+  performerCount: number;
   genre: string;
   mood: string;
   language: string;
@@ -79,8 +80,4 @@ export interface ISongExtendedModel extends ISongFullModel {
   primaryAlbumSort: string;
   primaryArtistSort: string;
   primaryArtistType: string;
-  albumImage: string;
-  albumSecondaryImage: string;
-  albumArtistImage: string;
-  singleImage: string;
 }

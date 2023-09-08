@@ -315,6 +315,7 @@ export class ScanAudioService {
         const songClassification = new SongClassificationEntity();
         songClassification.songId = this.songToProcess.id;
         songClassification.classificationId = classification.id;
+        songClassification.classificationTypeId = classification.valueListTypeId;
         songClassification.primary = primary;
         // This flag will only be true in the first iteration, turn it off for the rest of the items
         primary = false;
@@ -509,7 +510,8 @@ export class ScanAudioService {
     newAlbum.primaryArtistId = artist.id;
     newAlbum.releaseDecade = this.utilities.getDecade(newAlbum.releaseYear);
     const albumType = this.first(metadata[MetaField.AlbumType]);
-    newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : this.unknownValue;
+    // TODO: Get it from the value list table
+    newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : 'LP';
     newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
@@ -523,6 +525,7 @@ export class ScanAudioService {
     song.id = this.utilities.newGuid();
     song.isNew = true;
     song.filePath = this.first(metadata[MetaField.FilePath]);
+    song.fileExtension = this.first(metadata[MetaField.FileExtension]);
     song.hash = this.lookupService.hashSong(song.filePath);
 
     const ufId = this.first(metadata[MetaField.UfId]);
@@ -641,8 +644,8 @@ export class ScanAudioService {
 
     // Let's start with zero but this cannot be the final value, it should be at least 1
     // If this value is not found here, the processArtistRelations will figure it out
-    const performers = this.first(metadata[MetaField.Performers]);
-    song.performers = performers ? performers : 0;
+    const performerCount = this.first(metadata[MetaField.PerformerCount]);
+    song.performerCount = performerCount ? performerCount : 0;
 
     let seconds = this.first(metadata[MetaField.Seconds]);
     song.seconds = seconds ? this.utilities.round(seconds, 4) : 0;
@@ -953,17 +956,17 @@ export class ScanAudioService {
         featuringCount++;
       }
     }
-    if (!this.songToProcess.performers) {
+    if (!this.songToProcess.performerCount) {
       if (featuringCount) {
-        this.songToProcess.performers = featuringCount;
+        this.songToProcess.performerCount = featuringCount;
         // Also take the primary artist in consideration, except for Various which is not an actual artist
         if (primaryArtist.id !== EntityId.ArtistVarious) {
-          this.songToProcess.performers++;
+          this.songToProcess.performerCount++;
         }
       }
       else {
         // Default
-        this.songToProcess.performers = 1;
+        this.songToProcess.performerCount = 1;
       }
     }
 

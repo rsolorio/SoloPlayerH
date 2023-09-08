@@ -179,15 +179,6 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     }
   }
 
-  protected getExtension(): string {
-    // TODO: save extension in table
-    if (this.model.playerList.current.filePath) {
-      const fileParts = this.model.playerList.current.filePath.split('.');
-      return fileParts[fileParts.length - 1];
-    }
-    return null;
-  }
-
   protected getBitrate(): string {
     if (this.model.playerList.current.vbr) {
       return 'Vbr';
@@ -299,7 +290,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public getFileInfo(): string {
-    return `${this.getExtension()} · ${this.getBitrate()} · ${this.getFrequency()}`;
+    return `${this.model.playerList.current.fileExtension} · ${this.getBitrate()} · ${this.getFrequency()}`;
   }
 
   public adjustTimeDown(): void {

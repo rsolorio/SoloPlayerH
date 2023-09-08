@@ -13,6 +13,8 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column({ unique: true })
   filePath: string;
   @Column()
+  fileExtension: string;
+  @Column()
   fileSize: number;
   // Song info
   @Column()
@@ -30,7 +32,7 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column()
   playCount: number;
   @Column()
-  performers: number;
+  performerCount: number;
   @Column({ nullable: true })
   genre: string;
   @Column()
@@ -83,3 +85,12 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column({ nullable: true })
   replaceDate: Date;
 }
+
+/**
+ * This is a copy of the schema of the song table.
+ * This table will help the exporting mechanism to store
+ * a subset of data that can be later used to apply additional criteria
+ * without using the full song table.
+ */
+@Entity({name: 'songExport'})
+export class SongExportEntity extends SongEntity {}

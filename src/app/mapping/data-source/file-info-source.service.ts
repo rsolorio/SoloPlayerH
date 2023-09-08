@@ -70,6 +70,8 @@ export class FileInfoSourceService implements IDataSourceService {
         return [this.inputData.path];
       case MetaField.FileName:
         return [this.inputData.name];
+      case MetaField.FileExtension:
+        return [this.inputData.extension.replace('.', '')];
       case MetaField.AddDate:
         return [this.inputData.addDate];
       case MetaField.ChangeDate:

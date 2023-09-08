@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { IDataSourceParsed, IDataSourceService } from './data-source.interface';
-import { ISongModel } from 'src/app/shared/models/song-model.interface';
+import { ISongExtendedModel } from 'src/app/shared/models/song-model.interface';
 import { MetaField } from '../data-transform/data-transform.enum';
-import { DataMappingEntity } from 'src/app/shared/entities';
+import { DataMappingEntity, RelatedImageEntity, SongClassificationEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
 import { KeyValueGen } from 'src/app/core/models/core.interface';
 import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.interface';
+import { ValueLists } from 'src/app/shared/services/database/database.lists';
+import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 
 /**
  * A data source that retrieves information from a ISongModel object.
@@ -17,13 +19,13 @@ import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.int
   providedIn: 'root'
 })
 export class SongModelSourceService implements IDataSourceService {
-  private inputData: ISongModel;
+  private inputData: ISongExtendedModel;
   private entityData: IDataSourceParsed;
   private syncProfileData: ISyncProfileParsed;
   private context: any;
   constructor(private utility: UtilityService, private parser: ScriptParserService) { }
 
-  public async init(input: ISongModel, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed> {
+  public async init(input: ISongExtendedModel, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed> {
     if (this.inputData && this.inputData.filePath === input.filePath) {
       return entity;
     }
@@ -37,6 +39,7 @@ export class SongModelSourceService implements IDataSourceService {
   public async get(propertyName: string): Promise<any[]> {
     const mappings = this.getMappings(propertyName);
     if (mappings?.length) {
+      // Prefer user mappings over default mappings
       return this.getDataFromMappings(mappings);
     }
     switch (propertyName) {
@@ -46,63 +49,80 @@ export class SongModelSourceService implements IDataSourceService {
         return [this.inputData.mediaNumber];
       case MetaField.Year:
         return [this.inputData.releaseYear];
-      case MetaField.Genre: // List of genres
-        return [this.inputData.genre];
       case MetaField.UnSyncLyrics:
         return [this.inputData.lyrics];
       case MetaField.Album:
         // TODO: get unique name
         return [this.inputData.primaryAlbumName];
       case MetaField.AlbumSort:
-        return []; // Not in song view
+        return [this.inputData.primaryAlbumSort];
       case MetaField.AlbumArtist:
         return [this.inputData.primaryArtistName];
       case MetaField.ArtistStylized:
         return [this.inputData.primaryArtistStylized];
       case MetaField.Artist:
-        return []; // List of artists, the first one is the primary
+        const artists: string[] = [];
+        artists.push(this.inputData.primaryArtistName);
+        // Find artists associated with songs using songId and featuring type
+        const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === this.inputData.id);
+        for (const relation of songRelations) {
+          if (!artists.includes(relation.artistName)) {
+            artists.push(relation.artistName);
+          }
+        }
+        // Then find artists associated with primary artist by using artistId and lead singer or contributor
+        const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === this.inputData.primaryArtistId);
+        for (const relation of artistRelations) {
+          if (!artists.includes(relation.artistName)) {
+            artists.push(relation.artistName);
+          }
+        }
+        return artists;
       case MetaField.UfId:
         return [this.inputData.id];
-      case MetaField.Composer:
-        return []; // Not in song view
-      case MetaField.ComposerSort:
-        return []; // Not in song view
       case MetaField.AlbumImage:
+        return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Front);
       case MetaField.AlbumSecondaryImage:
+        return await this.getRelatedImagePath(this.inputData.id, MusicImageType.FrontAlternate);
       case MetaField.SingleImage:
+        return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
       case MetaField.AlbumArtistImage:
-      case MetaField.OtherImage:
-        return []; // Not in song view
+        return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Artist);
       case MetaField.Title:
         return [this.inputData.name];
-      case MetaField.TitleSort:
-        return []; // Not in song view
       case MetaField.ArtistType:
-        return []; // Not in song view
-      case MetaField.Grouping:
-        return []; // Not in song view
-      case MetaField.ChangeDate:
-        return []; // Not in song view
+        return [this.inputData.primaryArtistType];
       case MetaField.UnSyncLyrics:
         // TODO: remove this property and implement a method to get this data
         return [this.inputData.lyrics];
       case MetaField.Owner:
-        return []; // Not saved in the db
+        // TODO: a module option?
+        return ['rsolorio'];
+      case MetaField.Genre:
+        return this.getClassifications(this.inputData.id, ValueLists.Genre.id);
       case MetaField.Subgenre:
+        return this.getClassifications(this.inputData.id, ValueLists.Subgenre.id);
       case MetaField.Category:
+        return this.getClassifications(this.inputData.id, ValueLists.Category.id);
       case MetaField.Occasion:
+        return this.getClassifications(this.inputData.id, ValueLists.Occasion.id);
       case MetaField.Instrument:
-        return []; // Special case for these fields.
+        return this.getClassifications(this.inputData.id, ValueLists.Instrument.id);
       case MetaField.Rating:
       case MetaField.PlayCount:
-      case MetaField.Performers:
+      case MetaField.PerformerCount:
       case MetaField.Mood:
       case MetaField.Language:
       case MetaField.Favorite:
       case MetaField.Live:
       case MetaField.Explicit:
       case MetaField.AddDate:
+      case MetaField.ChangeDate:
       case MetaField.FilePath:
+      case MetaField.Grouping:
+      case MetaField.Composer:
+      case MetaField.ComposerSort:
+      case MetaField.TitleSort:
         return [this.inputData[propertyName]];
     }
     return [];
@@ -152,6 +172,7 @@ export class SongModelSourceService implements IDataSourceService {
     result['media'] = 'mediaNumber';
     result['track'] = 'trackNumber';
     result['title'] = 'name';
+    result['ext'] = 'fileExtension';
     return result;
   }
 
@@ -160,11 +181,27 @@ export class SongModelSourceService implements IDataSourceService {
    */
   private getContext(): any {
     const context = Object.assign({}, this.inputData);
-    // Extension without the dot
-    context['extension'] = this.inputData.filePath.substring(this.inputData.filePath.lastIndexOf('.') + 1);
     // Destination path without the last backslash
     const destinationPath = this.syncProfileData.directories[0];
     context['rootPath'] = destinationPath.endsWith('\\') ? destinationPath.slice(0, -1) : destinationPath;
     return context;
+  }
+
+  private async getClassifications(songId: string, classificationTypeId: string): Promise<string[]> {
+    const result: string[] = [];
+    const classifications = await SongClassificationEntity.findBy({ songId: songId, classificationTypeId: classificationTypeId });
+    for (const classification of classifications) {
+      const classificationInfo = this.syncProfileData.classifications.find(c => c.id === classification.classificationId);
+      result.push(classificationInfo.name);
+    }
+    return result;
+  }
+
+  private async getRelatedImagePath(songId: string, imageType: MusicImageType): Promise<string[]> {
+    const relatedImage = await RelatedImageEntity.findOneBy({ relatedId: songId, imageType: imageType, sourceType: MusicImageSourceType.ImageFile });
+    if (relatedImage?.sourcePath) {
+      return [relatedImage.sourcePath];
+    }
+    return [];
   }
 }

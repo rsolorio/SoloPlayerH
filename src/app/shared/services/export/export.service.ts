@@ -2,10 +2,18 @@ import { Injectable } from '@angular/core';
 import { IExportConfig } from './export.interface';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { DatabaseService } from '../database/database.service';
-import { FilterEntity, SongTempEntity, SongViewEntity } from '../../entities';
+import { FilterEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { SyncProfileId } from '../database/database.seed';
 import { MetadataNetWriterService } from 'src/app/mapping/data-transform/metadata-net-writer.service';
+import {
+  SongExtendedByArtistViewEntity,
+  SongExtendedByClassificationViewEntity,
+  SongExtendedByPlaylistViewEntity,
+  SongExtendedViewEntity
+} from '../../entities/song-extended-view.entity';
+import { Criteria, CriteriaItem } from '../criteria/criteria.class';
+import { PartyRelationType } from '../../models/music.enum';
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -60,6 +68,20 @@ export class ExportService {
       config = configOverride;
     }
 
+    // Cache for getting classification data
+    const nonPrimaryRelationsQuery = `
+      SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName
+      FROM partyRelation
+      INNER JOIN artist
+      ON partyRelation.relatedId = artist.id
+      WHERE relationTypeId = '${PartyRelationType.Featuring}'
+      OR relationTypeId = '${PartyRelationType.Contributor}'
+      OR relationTypeId = '${PartyRelationType.Singer}'
+    `;
+    // TODO: create interface or entity for this query
+    syncProfile.nonPrimaryRelations = await this.db.run(nonPrimaryRelationsQuery);
+    syncProfile.classifications = await ValueListEntryEntity.findBy({ isClassification: true });
+
     await this.writer.init(syncProfile);
     await this.prepareSongs(config);
 
@@ -74,26 +96,38 @@ export class ExportService {
   }
 
   /**
-   * Sets up the songs in the config object based on the specified criteria and fills the SongTemp table if needed.
+   * Sets up the songs in the config object based on the specified criteria and fills the SongExport table if needed.
    */
   private async prepareSongs(config: IExportConfig): Promise<void> {
     if (!config.songs) {
-      if (config.criteria) {
-        config.songs = await this.db.getList(SongViewEntity, config.criteria);
+      if (config.playlistId && !config.criteria) {
+        config.criteria = new Criteria('Playlist Search');
+        config.criteria.searchCriteria.push(new CriteriaItem('playlistId', config.playlistId));
       }
-      else if (config.filterId) {
+      if (config.filterId && !config.criteria) {
         const filter = await FilterEntity.findOneBy({ id: config.filterId });
         config.criteria = await this.entities.getCriteriaFromFilter(filter);
-        config.songs = await this.db.getList(SongViewEntity, config.criteria);
       }
-      else if (config.playlistId) {
-        config.songs = await this.entities.getTracks(config.playlistId);
+
+      if (config.criteria) {
+        if (config.criteria.hasComparison(false, 'playlistId')) {
+          config.songs = await this.db.getList(SongExtendedByPlaylistViewEntity, config.criteria);
+        }
+        else if (config.criteria.hasComparison(false, 'classificationId')) {
+          config.songs = await this.db.getList(SongExtendedByClassificationViewEntity, config.criteria);
+        }
+        else if (config.criteria.hasComparison(false, 'artistId')) {
+          config.songs = await this.db.getList(SongExtendedByArtistViewEntity, config.criteria);
+        }
+        else {
+          config.songs = await this.db.getList(SongExtendedViewEntity, config.criteria);
+        }
       }
     }
 
     if (config.songs) {
-      await this.fillSongTemp(config.songs);
-      config.songTempEnabled = true;
+      await this.fillSongExport(config.songs);
+      config.songExportEnabled = true;
       // TODO: redirect song view, song artist view, song classification view to use the songTemp entity
       // Whenever getList is called we just need to use the SongTempEntity instead of the views
       return;
@@ -105,16 +139,16 @@ export class ExportService {
     // getList: song view table
 
     // Send all songs
-    config.songs = await SongViewEntity.find();
+    config.songs = await SongExtendedViewEntity.find();
   }
 
-  private async fillSongTemp(songs: ISongModel[]): Promise<void> {
-    await SongTempEntity.clear();
-    const songTempData: SongTempEntity[] = [];
+  private async fillSongExport(songs: ISongModel[]): Promise<void> {
+    await SongExportEntity.clear();
+    const songTempData: SongExportEntity[] = [];
     for (const song of songs) {
-      const songTemp = this.db.mapEntities(song, SongTempEntity);
+      const songTemp = this.db.mapEntities(song, SongExportEntity);
       songTempData.push(songTemp);
     }
-    await this.db.bulkInsert(SongTempEntity, songTempData);
+    await this.db.bulkInsert(SongExportEntity, songTempData);
   }
 }
