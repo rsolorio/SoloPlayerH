@@ -85,7 +85,7 @@ export enum MetaField {
   /** String. Id3v2, Id3v1 */
   Title = 'title',
   /** String. None. */
-  SubTitle = 'subTitle',
+  Subtitle = 'subtitle',
   /** String. Id3v2 */
   TitleSort = 'titleSort',
   /** Number. Id3v2, Id3v1 */

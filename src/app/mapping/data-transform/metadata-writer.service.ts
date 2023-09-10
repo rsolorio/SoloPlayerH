@@ -83,7 +83,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.titleSortOrder = titleSort;
     }
 
-    const subtitle = this.first(metadata[MetaField.SubTitle]);
+    const subtitle = this.first(metadata[MetaField.Subtitle]);
     if (subtitle) {
       tags.subtitle = subtitle;
     }

@@ -499,6 +499,14 @@ export class UtilityService {
   }
 
   /**
+   * Gets a list of values that match text within round brackets.
+   */
+  public matchParenthesis(value: string): string[] {
+    const regexp = new RegExp('\\((.*?)\\)', 'g');
+    return value.match(regexp);
+  }
+
+  /**
    * Returns a new array of sorted items.
    * @param items List of items to sort.
    * @param sortProperty Property name used to perform the comparison in the sort process.

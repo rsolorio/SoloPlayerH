@@ -19,6 +19,10 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   // Song info
   @Column()
   titleSort: string;
+  @Column({ nullable: true })
+  subtitle: string;
+  @Column({ nullable: true })
+  featuring: string;
   @Column()
   trackNumber: number;
   @Column()

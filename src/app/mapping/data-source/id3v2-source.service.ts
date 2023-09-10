@@ -330,7 +330,7 @@ export class Id3v2SourceService implements IDataSourceService {
           return [this.audioInfo.error];
         }
         break;
-      case MetaField.SubTitle:
+      case MetaField.Subtitle:
         return this.metadataService.getValues<string>('TIT3', this.tags);
       case MetaField.Owner:
         return this.metadataService.getValues<string>('TOWN', this.tags);

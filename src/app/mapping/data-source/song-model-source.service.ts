@@ -94,8 +94,6 @@ export class SongModelSourceService implements IDataSourceService {
         return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.Artist);
       case MetaField.Title:
         return [this.inputData.name];
-      case MetaField.SubTitle:
-        return []; // ToDo
       case MetaField.ArtistType:
         return [this.inputData.primaryArtistType];
       case MetaField.UnSyncLyrics:
@@ -138,6 +136,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.Tempo:
       case MetaField.ReplayGain:
       case MetaField.Country:
+      case MetaField.Subtitle:
         return [this.inputData[propertyName]];
     }
     return [];

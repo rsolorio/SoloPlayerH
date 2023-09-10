@@ -540,10 +540,26 @@ export class ScanAudioService {
     // Clean file name from brackets
     // TODO: use a module option to perform this action
     const brackets = this.utilities.matchBrackets(song.name);
-    if (brackets && brackets.length) {
+    if (brackets?.length) {
       for (const bracket of brackets) {
         song.name = song.name.replace(bracket, '').trim();
       }
+    }
+
+    song.subtitle = this.first(metadata[MetaField.Subtitle]);
+    if (!song.subtitle) {
+      const parenthesis = this.utilities.matchParenthesis(song.name);
+      if (parenthesis?.length) {
+        song.subtitle = parenthesis.map(v => v.replace('(', '').replace(')', '')).join(', ');
+      }
+    }
+
+    const featuringArtists = metadata[MetaField.FeaturingArtist];
+    if (featuringArtists?.length) {
+      song.featuring = featuringArtists.join(', ');
+    }
+    else if (brackets?.length) {
+      song.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
     }
 
     song.primaryAlbumId = album.id;

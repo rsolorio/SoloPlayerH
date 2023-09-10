@@ -29,7 +29,7 @@ ON album.primaryArtistId = artist.id
  * favorite, live, explicit, addDate, playDate, primaryAlbumName, primaryArtistId,
  * primaryArtistName, primaryArtistStylized.
  * Excluded fields:
- * externalId, titleSort, grouping, composer, composerSort, comment,
+ * externalId, titleSort, subtitle, featuring, grouping, composer, composerSort, comment,
  * infoUrl, videoUrl, replayGain, tempo, changeDate, replaceDate
  */
 export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
@@ -131,6 +131,10 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   externalId: string;
   @ViewColumn()
   titleSort: string;
+  @ViewColumn()
+  subtitle: string;
+  @ViewColumn()
+  featuring: string;
   @ViewColumn()
   grouping: string;
   @ViewColumn()
