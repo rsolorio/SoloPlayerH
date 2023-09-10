@@ -114,7 +114,7 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
 export const songExtendedViewSelect = `
 SELECT song.id, song.name, song.hash, song.primaryAlbumId, song.externalId,
 song.filePath, song.fileExtension, song.fileSize,
-song.titleSort, song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade,
+song.titleSort, song.subtitle, song.featuring, song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade,
 song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.language,
 song.lyrics, song.grouping, song.composer, song.composerSort, song.comment, song.infoUrl, song.videoUrl,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
