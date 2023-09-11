@@ -509,12 +509,12 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
   private testExporter(): void {
     const criteria = new Criteria();
-    criteria.paging.pageSize = 1000;
+    criteria.paging.pageSize = 1;
     criteria.addSorting('addDate', CriteriaSortDirection.Descending);
     const config: IExportConfig = {
       profileId: SyncProfileId.DefaultExport,
       directories: ['J:\\Test'],
-      criteria: criteria
+      criteria
     };
     this.exporter.copyAndTag(config).then(() => {
       console.log('done');

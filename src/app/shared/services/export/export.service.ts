@@ -5,7 +5,6 @@ import { DatabaseService } from '../database/database.service';
 import { FilterEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { SyncProfileId } from '../database/database.seed';
-import { MetadataNetWriterService } from 'src/app/mapping/data-transform/metadata-net-writer.service';
 import {
   SongExtendedByArtistViewEntity,
   SongExtendedByClassificationViewEntity,
@@ -14,13 +13,14 @@ import {
 } from '../../entities/song-extended-view.entity';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { PartyRelationType } from '../../models/music.enum';
+import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
 
 /**
  * Service to copy audio and playlist files to other locations.
  * The export service will do one thing: export audio files and playlists based on configuration.
  * The configuration will be associated to a sync profile record.
  * The export service will have the responsibility of getting the list of song records to process based on config.
- * It will use a file writer to create to copy and tag the audio file; the writer will be initialized with the profile id,
+ * It will use a file writer to copy and tag the audio file; the writer will be initialized with the profile id,
  * and probably with some more info (like the destination directory); it will load all data sources associated, in this case, only one, the Song Row data source;
  * the export service will iterate each song row, pass it to the writer which will get the metadata (KeyValues), and use it to create the file with the proper tags in the proper location;
  * the mappings in the SongRow data source will determine how the KeyValues object is used to save the tags.
@@ -41,7 +41,8 @@ export class ExportService {
 
   constructor(
     private db: DatabaseService,
-    private writer: MetadataNetWriterService,
+    //private writer: MetadataNetWriterService,
+    private writer: MetadataWriterService,
     private entities: DatabaseEntitiesService) { }
 
   /**

@@ -16,6 +16,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  writeBuffer(filePath: string, buffer: Buffer): Promise<void> {
+    return null;
+  }
+
   getText(filePath: string): Promise<string> {
     return null;
   }

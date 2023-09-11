@@ -130,6 +130,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.Explicit:
       case MetaField.AddDate:
       case MetaField.ChangeDate:
+      case MetaField.PlayDate:
       case MetaField.FilePath:
       case MetaField.Grouping:
       case MetaField.Composer:

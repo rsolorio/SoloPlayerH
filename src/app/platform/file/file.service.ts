@@ -7,6 +7,8 @@ export abstract class FileService {
 
   abstract getBuffer(filePath: string): Promise<Buffer>;
 
+  abstract writeBuffer(filePath: string, buffer: Buffer): Promise<void>;
+
   abstract getFiles(directoryPaths: string[]): Observable<IFileInfo>;
 
   abstract getDirectories(directoryPath?: string): Promise<IFileInfo[]>;

@@ -177,6 +177,7 @@ export class Id3v2SourceService implements IDataSourceService {
         break;
       case MetaField.AddDate:
       case MetaField.ChangeDate:
+      case MetaField.PlayDate:
         const dates = this.metadataService.getValues<string>(propertyName, this.tags, true);
         if (dates?.length) {
           return dates.map(d => new Date(d));

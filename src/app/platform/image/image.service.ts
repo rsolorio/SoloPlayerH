@@ -193,7 +193,7 @@ export abstract class ImageService {
    * @param image The image to shrink
    * @param newSize The target size.
    */
-  public shrinkImage(image: IImage, newSize: number): Promise<string> {
+  public shrinkImageToDataUrl(image: IImage, newSize: number): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       try {
         const imageElement = new Image();
@@ -214,6 +214,13 @@ export abstract class ImageService {
       catch (err) {
         reject(err);
       }
+    });
+  }
+
+  public shrinkImageToBuffer(image: IImage, newSize: number): Promise<Buffer> {
+    return this.shrinkImageToDataUrl(image, newSize).then(dataUrl => {
+      const data = dataUrl.split(',')[1];
+      return Buffer.from(data);
     });
   }
 

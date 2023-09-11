@@ -72,7 +72,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
       // Assume that only file images might need shrinking (for now)
       if (this.image.srcType === ImageSrcType.FileUrl) {
         // A file url is the original source of the image which means it might need shrinking
-        this.imageService.shrinkImage(this.image, this.sourceImageMaxSize).then(newSrc => {
+        this.imageService.shrinkImageToDataUrl(this.image, this.sourceImageMaxSize).then(newSrc => {
           if (newSrc) {
             // Set src type first, since once we set the src this method will be fired again
             this.image.srcType = ImageSrcType.DataUrl;

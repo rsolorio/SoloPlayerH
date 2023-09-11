@@ -19,7 +19,19 @@ export class ImageElectronService extends ImageService {
     super(fileService, metadataService, utility);
   }
 
-  public async shrinkImage(image: IImage, size: number): Promise<string> {
+  public shrinkImageToDataUrl(image: IImage, size: number): Promise<string> {
+    return this.shrinkImageToNativeImage(image, size).then(nativeImage => {
+      return nativeImage.toDataURL();
+    });
+  }
+
+  public shrinkImageToBuffer(image: IImage, size: number): Promise<Buffer> {
+    return this.shrinkImageToNativeImage(image, size).then(nativeImage => {
+      return nativeImage.toJPEG(100);
+    });
+  }
+
+  private async shrinkImageToNativeImage(image: IImage, size: number): Promise<NativeImage> {
     let imageObj: NativeImage;
     if (image.srcType === ImageSrcType.DataUrl) {
       imageObj = nativeImage.createFromDataURL(image.src);
@@ -40,7 +52,7 @@ export class ImageElectronService extends ImageService {
       return null;
     }
 
-    return imageObj.resize({ width: newSize.width, height: newSize.height }).toDataURL();
+    return imageObj.resize({ width: newSize.width, height: newSize.height })
   }
 
   public async getScreenshot(delayMs?: number): Promise<string> {

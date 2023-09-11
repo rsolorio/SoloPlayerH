@@ -112,6 +112,8 @@ export enum MetaField {
   AddDate = 'addDate',
   /** Date. Id3v2 */
   ChangeDate = 'changeDate',
+  /** Date. Id3v2 */
+  PlayDate = 'playDate',
   /** String. Id3v2 */
   Language = 'language',
   /** String. Id3v2 */

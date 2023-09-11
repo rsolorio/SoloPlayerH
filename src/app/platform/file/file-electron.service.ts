@@ -19,6 +19,10 @@ export class FileElectronService extends FileService {
     return promises.readFile(filePath);
   }
 
+  writeBuffer(filePath: string, buffer: Buffer): Promise<void> {
+    return promises.writeFile(filePath, buffer);
+  }
+
   getText(filePath: string): Promise<string> {
     return promises.readFile(filePath, { encoding: 'utf8' }).then(data => {
       return this.removeBom(data.toString());
