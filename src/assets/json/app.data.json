@@ -1086,7 +1086,7 @@
         "name": "dbToId3Mappings",
         "type": "SongModel",
         "config": "",
-        "fields": "track,media,year,unSyncLyrics,album,albumSort,albumArtist,artistStylized,artist,ufId,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,owner,genre,subgenre,occasion,instrument,category,rating,playCount,performerCount,mood,language,favorite,live,explicit,addDate,changeDate,filePath,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,url,tempo,replayGain,subtitle,country,albumStylized,playHistory",
+        "fields": "track,media,year,unSyncLyrics,album,albumSort,albumArtist,artistStylized,artist,ufId,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,owner,genre,subgenre,occasion,instrument,category,rating,playCount,performerCount,mood,language,favorite,live,explicit,addDate,changeDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,url,tempo,replayGain,subtitle,country,albumStylized,playHistory",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,
@@ -1108,7 +1108,7 @@
     "dataMapping": [
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%,4) - %album%, %album%)\\$digits(%media%,2)-$digits(%track%,2) - %openParen%%title%%closeParen%.%ext%",
+        "source": "%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%,4) - %album%, %album%)\\$digits(%media%,2)-$digits(%track%,2) - %title%.%ext%",
         "destination": "filePath",
         "sequence": 1,
         "disabled": false,

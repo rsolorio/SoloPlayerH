@@ -43,6 +43,10 @@ export class SongModelSourceService implements IDataSourceService {
       return this.getDataFromMappings(mappings);
     }
     switch (propertyName) {
+      case MetaField.FileName:
+        const parts = this.inputData.filePath.split('\\');
+        const fileName = parts[parts.length - 1].replace('.' + this.inputData.fileExtension, '');
+        return [fileName];
       case MetaField.TrackNumber:
         return [this.inputData.trackNumber];
       case MetaField.MediaNumber:
@@ -187,6 +191,7 @@ export class SongModelSourceService implements IDataSourceService {
     result['track'] = 'trackNumber';
     result['title'] = 'name';
     result['ext'] = 'fileExtension';
+    result['file'] = 'fileName';
     return result;
   }
 

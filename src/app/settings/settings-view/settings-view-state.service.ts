@@ -509,7 +509,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
   private testExporter(): void {
     const criteria = new Criteria();
-    criteria.paging.pageSize = 20;
+    criteria.paging.pageSize = 1000;
     criteria.addSorting('addDate', CriteriaSortDirection.Descending);
     const config: IExportConfig = {
       profileId: SyncProfileId.DefaultExport,
