@@ -27,7 +27,10 @@ export class ImageElectronService extends ImageService {
 
   public shrinkImageToBuffer(image: IImage, size: number): Promise<Buffer> {
     return this.shrinkImageToNativeImage(image, size).then(nativeImage => {
-      return nativeImage.toJPEG(100);
+      if (nativeImage) {
+        return nativeImage.toJPEG(100);
+      }
+      return null;
     });
   }
 
@@ -52,7 +55,7 @@ export class ImageElectronService extends ImageService {
       return null;
     }
 
-    return imageObj.resize({ width: newSize.width, height: newSize.height })
+    return imageObj.resize({ width: newSize.width, height: newSize.height });
   }
 
   public async getScreenshot(delayMs?: number): Promise<string> {

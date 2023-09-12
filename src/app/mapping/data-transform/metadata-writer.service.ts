@@ -229,11 +229,11 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     const lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
     if (lyrics) {
-      tags.USLT = {
+      tags.USLT = [{
         language: 'eng',
-        descriptor: 'Lyrics',
+        descriptor: '',
         text: lyrics
-      };
+      }];
     }
 
     const language = this.first(metadata[MetaField.Language]);
@@ -341,8 +341,11 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     if (!filePath || !this.fileService.exists(filePath)) {
       return;
     }
-    const buffer = await this.imageService.shrinkImageToBuffer({
+    let buffer = await this.imageService.shrinkImageToBuffer({
       src: this.utility.fileToUrl(filePath), srcType: ImageSrcType.FileUrl }, 600);
+    if (!buffer) {
+      buffer = await this.fileService.getBuffer(filePath);
+    }
     pictures.push({
       format: MimeType.Jpg,
       type: type,

@@ -5,7 +5,7 @@ import { FileService } from 'src/app/platform/file/file.service';
 import { IAudioInfo, IIdentifierTag, IMemoTag, IPictureExt, IPopularimeterTag, IUrlTag } from 'src/app/platform/audio-metadata/audio-metadata.interface';
 import { IFileInfo, ITag } from 'music-metadata-browser';
 import { MetaField } from '../data-transform/data-transform.enum';
-import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
+import { MusicImageSourceType, MusicImageType, TagPrefix } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { IImageSource } from 'src/app/core/models/core.interface';
 import { MimeType } from 'src/app/core/models/core.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -101,7 +101,7 @@ export class Id3v2SourceService implements IDataSourceService {
       case MetaField.Instrument:
       case MetaField.Category:
         // TODO: for classifications split value using a separator and return the array of items
-        return this.metadataService.getValues<string>(propertyName, this.tags, true);
+        return this.metadataService.getValues<string>(propertyName, this.tags, TagPrefix.UserDefinedText);
       case MetaField.AlbumArtist:
         if (this.audioInfo.metadata.common.albumartist) {
           return [this.audioInfo.metadata.common.albumartist];
@@ -199,15 +199,23 @@ export class Id3v2SourceService implements IDataSourceService {
       case MetaField.AddDate:
       case MetaField.ChangeDate:
       case MetaField.PlayDate:
-        const dates = this.metadataService.getValues<string>(propertyName, this.tags, true);
+        const dates = this.metadataService.getValues<string>(propertyName, this.tags, TagPrefix.UserDefinedText);
         if (dates?.length) {
           return dates.map(d => new Date(d));
         }
         break;
       case MetaField.Language:
-        return this.metadataService.getValues<string>('TLAN', this.tags, true);
+        let language = this.metadataService.getValues<string>('TLAN', this.tags);
+        if (!language?.length) {
+          language = this.metadataService.getValues<string>('TLAN', this.tags, TagPrefix.UserDefinedText);
+        }
+        return language;
       case MetaField.Mood:
-        return this.metadataService.getValues<string>('TMOO', this.tags, true);
+        let mood = this.metadataService.getValues<string>('TMOO', this.tags);
+        if (!mood?.length) {
+          mood = this.metadataService.getValues<string>('TMOO', this.tags, TagPrefix.UserDefinedText);
+        }
+        return mood;
       case MetaField.Rating:
         if (this.audioInfo.metadata.common.rating && this.audioInfo.metadata.common.rating.length) {
           const result = [];
@@ -242,7 +250,7 @@ export class Id3v2SourceService implements IDataSourceService {
         }
         break;
       case MetaField.PerformerCount:
-        const performerCountText = this.metadataService.getValue<string>(propertyName, this.tags, true);
+        const performerCountText = this.metadataService.getValue<string>(propertyName, this.tags, TagPrefix.UserDefinedText);
         if (performerCountText) {
           const performerCount = parseInt(performerCountText, 10);
           if (performerCount > 0) {
@@ -251,9 +259,15 @@ export class Id3v2SourceService implements IDataSourceService {
         }
         break;
       case MetaField.Url:
-        const urlTags =  this.metadataService.getValues<IUrlTag>('WXXX', this.tags);
+        const urlTags = this.metadataService.getValues<IUrlTag>('', this.tags, TagPrefix.UserDefinedUrl);
         if (urlTags?.length && urlTags[0].url) {
           return [urlTags[0].url];
+        }
+        break;
+      case MetaField.VideoUrl:
+        const urlVideoTags = this.metadataService.getValues<IUrlTag>('Video', this.tags, TagPrefix.UserDefinedUrl);
+        if (urlVideoTags?.length && urlVideoTags[0].url) {
+          return [urlVideoTags[0].url];
         }
         break;
       case MetaField.SyncLyrics:
@@ -275,7 +289,7 @@ export class Id3v2SourceService implements IDataSourceService {
         break;
       case MetaField.Live:
       case MetaField.Favorite:
-        const booleanText = this.metadataService.getValue<string>(propertyName, this.tags, true);
+        const booleanText = this.metadataService.getValue<string>(propertyName, this.tags, TagPrefix.UserDefinedText);
         // Only return a value if exists
         if (booleanText) {
           return [this.utility.isTrue(booleanText)];
@@ -287,11 +301,11 @@ export class Id3v2SourceService implements IDataSourceService {
         }
         break;
       case MetaField.Explicit:
-        const advisoryText = this.metadataService.getValue<string>('iTunesAdvisory', this.tags, true);
+        const advisoryText = this.metadataService.getValue<string>('iTunesAdvisory', this.tags, TagPrefix.UserDefinedText);
         if (advisoryText) {
           return [this.utility.isTrue(advisoryText)];
         }
-        const explicitText = this.metadataService.getValue<string>(propertyName, this.tags, true);
+        const explicitText = this.metadataService.getValue<string>(propertyName, this.tags, TagPrefix.UserDefinedText);
         if (explicitText) {
           return [this.utility.isTrue(explicitText)];
         }

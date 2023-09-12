@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IAudioMetadata, IPicture, ITag, parseBuffer } from 'music-metadata-browser';
 import { IImage } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { AttachedPictureType, MusicImageType } from './audio-metadata.enum';
+import { AttachedPictureType, MusicImageType, TagPrefix } from './audio-metadata.enum';
 import { IAudioInfo, IPictureExt } from './audio-metadata.interface';
 import { ImageSrcType, MimeType } from 'src/app/core/models/core.enum';
 
@@ -72,19 +72,19 @@ export class AudioMetadataService {
     return tags.filter(t => t.id.toUpperCase().startsWith(prefix));
   }
 
-  public getValue<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T {
-    const values = this.getValues<T>(tagId, tags, isUserDefined);
+  public getValue<T>(tagId: string, tags: ITag[], prefix: TagPrefix = TagPrefix.None): T {
+    const values = this.getValues<T>(tagId, tags, prefix);
     if (values && values.length) {
       return values[0];
     }
     return null;
   }
 
-  public getValues<T>(tagId: string, tags: ITag[], isUserDefined?: boolean): T[] {
+  public getValues<T>(tagId: string, tags: ITag[], prefix: TagPrefix = TagPrefix.None): T[] {
     const result: T[] = [];
 
     if (tags && tags.length) {
-      const actualTagId = isUserDefined ? 'TXXX:' + tagId.toUpperCase() : tagId.toUpperCase();
+      const actualTagId = prefix + tagId.toUpperCase();
       for (const tag of tags) {
         if (tag.id.toUpperCase() === actualTagId) {
           const value = tag.value as T;

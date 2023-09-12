@@ -133,6 +133,8 @@ export enum MetaField {
   /** String. Id3v2 */
   Url = 'url',
   /** String. Id3v2 */
+  VideoUrl = 'videoUrl',
+  /** String. Id3v2 */
   SyncLyrics = 'syncLyrics',
   /** String. Id3v2 */
   UnSyncLyrics = 'unSyncLyrics',

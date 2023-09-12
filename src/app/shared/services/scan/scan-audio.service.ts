@@ -698,6 +698,7 @@ export class ScanAudioService {
     song.vbr = this.first(metadata[MetaField.Vbr]);
     song.fileSize = this.first(metadata[MetaField.FileSize]);
     song.infoUrl = this.first(metadata[MetaField.Url]);
+    song.videoUrl = this.first(metadata[MetaField.VideoUrl]);
 
     this.processImage(song.id, metadata, MetaField.SingleImage);
     return song;

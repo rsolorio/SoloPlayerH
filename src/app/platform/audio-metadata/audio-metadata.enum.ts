@@ -43,3 +43,9 @@ export enum AttachedPictureType {
   ArtistLogo = 'Band/artist logotype',
   PublisherLogo = 'Publisher/Studio logotype'
 }
+
+export enum TagPrefix {
+  None = '',
+  UserDefinedText = 'TXXX:',
+  UserDefinedUrl = 'WXXX:'
+}
