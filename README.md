@@ -112,6 +112,9 @@ All standard entities have three main fields:
 - name
   - the title of the song
   - ID3 mapping: title
+- cleanName
+  - name without brackets info, if any
+  - auto calculated
 - titleSort
   - Value used to sort the track in a list
   - ID3 mapping: TSOT
@@ -122,6 +125,9 @@ All standard entities have three main fields:
 - externalId
   - unique identifier from an external source
   - ID3 mapping: UFID
+- originalSongId
+  - if the song is a cover, this is the id of the original song
+  - set by the user
 - trackNumber
   - number of the track in the album
   - ID3 mapping: track
@@ -137,6 +143,15 @@ All standard entities have three main fields:
 - composer
   - song composer
   - ID3 mapping: composer
+- composerSort
+  - song composer sort
+  - ID3 mapping: composer sort
+- originalArtist
+  - original artist
+- originalAlbum
+  - original album
+- originalReleaseYear
+  - original release year
 - comment
   - song comments
   - ID3 mapping: comment

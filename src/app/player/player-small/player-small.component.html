@@ -8,7 +8,7 @@
       </td>
       <!-- Info -->
       <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">
-        <span class="sp-text-medium">{{song.name}}</span>
+        <span class="sp-text-medium">{{song.cleanName}}</span>
         <span *ngIf="song.playCount > 0" class="sp-text-tiny sp-play-count">&nbsp;{{song.playCount}}</span>
         <br>
         <span class="sp-text-small text-muted">{{song.primaryArtistName}} · {{song.primaryAlbumName}}</span>

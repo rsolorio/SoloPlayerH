@@ -20,7 +20,7 @@
     [ngClass]="[item.recentIcon.icon, item.recentIcon.styleClass]"
     [title]="item.recentIcon.tooltip"></i>
     <!-- Title -->
-    <span class="sp-main-text sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.name}}</span>
+    <span class="sp-main-text sp-text-medium sp-no-select" [ngClass]="{ 'sp-color-primary': item.playerStatus === PlayerSongStatus.Playing }">{{item.cleanName}}</span>
     <!-- Other Indicators -->
     <span *ngIf="songAttributesVisible" class="sp-text-medium">
       <!-- 

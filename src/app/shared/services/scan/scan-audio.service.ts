@@ -537,13 +537,18 @@ export class ScanAudioService {
     if (!song.name) {
       song.name = this.first(metadata[MetaField.FileName]);
     }
+
+
     // Clean file name from brackets
     // TODO: use a module option to perform this action
     const brackets = this.utilities.matchBrackets(song.name);
     if (brackets?.length) {
       for (const bracket of brackets) {
-        song.name = song.name.replace(bracket, '').trim();
+        song.cleanName = song.name.replace(bracket, '').trim();
       }
+    }
+    else {
+      song.cleanName = song.name;
     }
 
     song.subtitle = this.first(metadata[MetaField.Subtitle]);
@@ -578,6 +583,17 @@ export class ScanAudioService {
     if (composerSort) {
       song.composerSort = composerSort;
     }
+    const originalArtist = this.first(metadata[MetaField.OriginalArtist]);
+    if (originalArtist) {
+      song.originalArtist = originalArtist;
+    }
+    const originalAlbum = this.first(metadata[MetaField.OriginalAlbum]);
+    if (originalAlbum) {
+      song.originalAlbum = originalAlbum;
+    }
+    const originalReleaseYear = this.first(metadata[MetaField.OriginalReleaseYear]);
+    song.originalReleaseYear = originalReleaseYear ? originalReleaseYear : 0;
+
     const comment = this.first(metadata[MetaField.Comment]);
     if (comment) {
       song.comment = comment;

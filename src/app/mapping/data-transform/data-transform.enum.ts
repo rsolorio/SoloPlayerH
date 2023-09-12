@@ -84,6 +84,8 @@ export enum MetaField {
   UfId = 'ufId',
   /** String. Id3v2, Id3v1 */
   Title = 'title',
+  /** String. */
+  CleanTitle = 'cleanTitle',
   /** String. None. */
   Subtitle = 'subtitle',
   /** String. Id3v2 */
@@ -102,6 +104,12 @@ export enum MetaField {
   Comment = 'comment',
   /** String. Id3v2 */
   Copyright = 'copyright',
+  /** String. Id3v2 */
+  OriginalArtist = 'originalArtist',
+  /** String. Id3v2 */
+  OriginalAlbum = 'originalAlbum',
+  /** Number. Id3v2 */
+  OriginalReleaseYear = 'originalReleaseYear',
   /** String. FileInfo */
   Contributor = 'contributor',
   /** String. FileInfo */

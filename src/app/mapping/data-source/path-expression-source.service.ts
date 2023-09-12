@@ -45,6 +45,10 @@ export class PathExpressionSourceService implements IDataSourceService {
     return entity;
   }
 
+  public hasData(): boolean {
+    return true;
+  }
+
   public async get(propertyName: string): Promise<any[]> {
     if (!this.matchInfo || !this.matchInfo.groups) {
       return [];

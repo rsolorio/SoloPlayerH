@@ -29,7 +29,7 @@ export abstract class DataTransformServiceBase<TInput, TOutput> implements IData
    * Sets the value of the metadata based on the specified fields using the specified data source.
    */
   protected async setValues(metadata: KeyValues, dataSource: IDataSourceService, fields: string[]): Promise<void> {
-    if (!fields || !fields.length) {
+    if (!fields || !fields.length || !dataSource.hasData()) {
       return;
     }
     for (const field of fields) {

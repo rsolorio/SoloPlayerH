@@ -55,11 +55,17 @@ export class Id3v2SourceService implements IDataSourceService {
     return entity;
   }
 
+  public hasData(): boolean {
+    // The issue with this data source is that it provides to types of data in the same source:
+    // 1. audio tags
+    // 2. audio technical info
+    // Even if there's no tags we still need to retrieve the tech info
+    return true;
+  }
+
   /**
    * Gets the value of the specified property.
    * @param propertyName The name of the metadata property to retrieve.
-   * @param isDynamic If true, the property will not be considered part of the MetaField enum
-   * and it will be looked as a custom tag.
    */
   public async get(propertyName: string): Promise<any[]> {
     switch (propertyName) {
@@ -158,6 +164,21 @@ export class Id3v2SourceService implements IDataSourceService {
       case MetaField.ComposerSort:
         if (this.audioInfo.metadata.common.composersort) {
           return [this.audioInfo.metadata.common.composersort];
+        }
+        break;
+      case MetaField.OriginalArtist:
+        if (this.audioInfo.metadata.common.originalartist) {
+          return [this.audioInfo.metadata.common.originalartist];
+        }
+        break;
+      case MetaField.OriginalAlbum:
+        if (this.audioInfo.metadata.common.originalalbum) {
+          return [this.audioInfo.metadata.common.originalalbum];
+        }
+        break;
+      case MetaField.OriginalReleaseYear:
+        if (this.audioInfo.metadata.common.originalyear) {
+          return [this.audioInfo.metadata.common.originalyear];
         }
         break;
       case MetaField.Comment:

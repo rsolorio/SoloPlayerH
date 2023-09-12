@@ -14,6 +14,7 @@ export interface ISongModel extends IListItemModel {
   fileSize: number;
   fileExtension: string;
   // Song info
+  cleanName: string;
   trackNumber: number;
   mediaNumber: number;
   releaseYear: number;
@@ -60,6 +61,7 @@ export interface ISongModel extends IListItemModel {
 export interface ISongFullModel extends ISongModel {
   // Ids
   externalId: string;
+  originalSongId: string;
   // Song info
   titleSort: string;
   subtitle: string;
@@ -67,6 +69,9 @@ export interface ISongFullModel extends ISongModel {
   grouping: string;
   composer: string;
   composerSort: string;
+  originalArtist: string;
+  originalAlbum: string;
+  originalReleaseYear: number;
   comment: string;
   infoUrl: string;
   videoUrl: string;

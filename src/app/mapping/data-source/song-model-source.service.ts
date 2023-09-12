@@ -36,6 +36,10 @@ export class SongModelSourceService implements IDataSourceService {
     return entity;
   }
 
+  public hasData(): boolean {
+    return true;
+  }
+
   public async get(propertyName: string): Promise<any[]> {
     const mappings = this.getMappings(propertyName);
     if (mappings?.length) {
@@ -98,6 +102,8 @@ export class SongModelSourceService implements IDataSourceService {
         return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.Artist);
       case MetaField.Title:
         return [this.inputData.name];
+      case MetaField.CleanTitle:
+        return [this.inputData.cleanName];
       case MetaField.ArtistType:
         return [this.inputData.primaryArtistType];
       case MetaField.UnSyncLyrics:
@@ -135,6 +141,9 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.Grouping:
       case MetaField.Composer:
       case MetaField.ComposerSort:
+      case MetaField.OriginalArtist:
+      case MetaField.OriginalAlbum:
+      case MetaField.OriginalReleaseYear:
       case MetaField.TitleSort:
       case MetaField.Comment:
       case MetaField.Seconds:

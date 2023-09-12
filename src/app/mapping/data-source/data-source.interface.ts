@@ -3,6 +3,7 @@ import { ISyncProfileParsed } from "src/app/shared/models/sync-profile-model.int
 
 export interface IDataSourceService {
   get(propertyName: string): Promise<any[]>;
+  hasData(): boolean;
   init(input: any, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed>;
 }
 

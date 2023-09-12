@@ -3,7 +3,7 @@ import { ISongExtendedModel, ISongModel } from "../models/song-model.interface";
 import { SongBaseEntity } from "./song-base.entity";
 
 export const songViewBaseSelect = `
-SELECT song.id, song.name, song.hash,
+SELECT song.id, song.name, song.cleanName, song.hash,
 song.primaryAlbumId, song.filePath, song.fileExtension, song.fileSize,
 song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.rating, song.playCount,
 song.performerCount, song.genre, song.mood, song.language, song.lyrics,
@@ -51,6 +51,8 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   fileSize: number;
   // Song info
+  @ViewColumn()
+  cleanName: string;
   @ViewColumn()
   trackNumber: number;
   @ViewColumn()
@@ -112,11 +114,12 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
 }
 
 export const songExtendedViewSelect = `
-SELECT song.id, song.name, song.hash, song.primaryAlbumId, song.externalId,
+SELECT song.id, song.name, song.cleanName, song.hash, song.primaryAlbumId, song.externalId, song.originalSongId,
 song.filePath, song.fileExtension, song.fileSize,
 song.titleSort, song.subtitle, song.featuring, song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade,
 song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.language,
-song.lyrics, song.grouping, song.composer, song.composerSort, song.comment, song.infoUrl, song.videoUrl,
+song.lyrics, song.grouping, song.composer, song.composerSort, song.comment,
+song.originalArtist, song.OriginalAlbum, song.OriginalReleaseYear, song.infoUrl, song.videoUrl,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
 song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.primaryArtistId,
@@ -130,6 +133,8 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   @ViewColumn()
   externalId: string;
   @ViewColumn()
+  originalSongId: string;
+  @ViewColumn()
   titleSort: string;
   @ViewColumn()
   subtitle: string;
@@ -141,6 +146,12 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   composer: string;
   @ViewColumn()
   composerSort: string;
+  @ViewColumn()
+  originalArtist: string;
+  @ViewColumn()
+  originalAlbum: string;
+  @ViewColumn()
+  originalReleaseYear: number;
   @ViewColumn()
   comment: string;
   @ViewColumn()

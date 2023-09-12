@@ -9,6 +9,8 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   primaryAlbumId: string;
   @Column({ nullable: true })
   externalId: string;
+  @Column({ nullable: true })
+  originalSongId: string;
   // File info
   @Column({ unique: true })
   filePath: string;
@@ -17,6 +19,8 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column()
   fileSize: number;
   // Song info
+  @Column()
+  cleanName: string;
   @Column()
   titleSort: string;
   @Column({ nullable: true })
@@ -51,6 +55,12 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   composer: string;
   @Column({ nullable: true })
   composerSort: string;
+  @Column({ nullable: true })
+  originalArtist: string;
+  @Column({ nullable: true })
+  originalAlbum: string;
+  @Column()
+  originalReleaseYear: number;
   @Column({ nullable: true })
   comment: string;
   @Column({ nullable: true })

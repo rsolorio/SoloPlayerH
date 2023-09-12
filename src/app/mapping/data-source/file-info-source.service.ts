@@ -61,6 +61,11 @@ export class FileInfoSourceService implements IDataSourceService {
     return entity;
   }
 
+  public hasData(): boolean {
+    // this always has data because the input data is the source
+    return true;
+  }
+
   public async get(propertyName: string): Promise<any[]> {
     if (!this.inputData) {
       return null;

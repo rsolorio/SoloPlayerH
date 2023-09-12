@@ -78,7 +78,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   public async process(input: ISongModel): Promise<any> {
-    // 1. Get the metadata
+    // 1. Get the metadata (the writer also works as reader)
     const metadata = await this.getData(input);
     // 2. Create the file
     const filePath = this.first(metadata[MetaField.FilePath]);
