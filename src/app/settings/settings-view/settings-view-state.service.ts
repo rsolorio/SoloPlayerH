@@ -503,8 +503,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
   }
 
   private async test(): Promise<void> {
-    this.logFileMetadata();
-    //this.testExporter();
+    //this.logFileMetadata();
+    this.testExporter();
   }
 
   private testExporter(): void {

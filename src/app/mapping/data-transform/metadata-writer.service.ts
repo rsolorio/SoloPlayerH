@@ -290,7 +290,18 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
     ]));
 
-    //tags.WXXX = this.createUserDefinedUrls(metadata, []);
+    const urls: IUserDefinedUrl[] = [];
+    const url = this.first(metadata[MetaField.Url]);
+    if (url) {
+      urls.push({ description: '', url: url });
+    }
+    const videoUrl = this.first(metadata[MetaField.VideoUrl]);
+    if (videoUrl) {
+      urls.push({ description: 'Video', url: videoUrl });
+    }
+    if (urls.length) {
+      tags.WXXX = urls;
+    }
 
     const pictures: IAttachedPicture[] = [];
     await this.addPicture(pictures, this.first(metadata[MetaField.AlbumImage]), AttachedPictureType.Front, 'Front');
@@ -321,17 +332,6 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       const values = metadata[property];
       if (values?.length) {
         result.push({ description: property, text: values.join(',')})
-      }
-    }
-    return result;
-  }
-
-  private createUserDefinedUrls(metadata: KeyValues, properties: string[]): IUserDefinedUrl[] {
-    const result: IUserDefinedUrl[] = [];
-    for (const property of properties) {
-      const value = this.first(metadata[property]);
-      if (value) {
-        result.push({ description: property, url: value.toString() });
       }
     }
     return result;
