@@ -260,6 +260,9 @@ export class UtilityService {
     return TimeAgo.Today;
   }
 
+  /**
+   * Converts the input date to the format: yyyy-MM-dd with the specified separator.
+   */
   public toReadableDate(date: Date, dateSeparator?: string): string {
     const yearText = date.toLocaleString('default', { year: 'numeric'});
     const monthText = date.toLocaleString('default', { month: '2-digit'});
@@ -271,22 +274,26 @@ export class UtilityService {
     return `${yearText}${dateSeparator}${monthText}${dateSeparator}${dayText}`;
   }
 
+  /**
+   * Converts the input date to the format: yyyy-MM-dd, HH:mm:ss AM
+   */
   public toReadableDateAndTime(date: Date, dateSeparator?: string): string {
     const readableDate = this.toReadableDate(date, dateSeparator);
     return `${readableDate}, ${date.toLocaleTimeString()}`;
   }
 
   /**
-   * Converts the specified date to a single number format, example: 20230130163559
+   * Converts the specified date to a single number format, example: 20230130-163559000
    */
-  public toDateTimeStamp(date: Date): string {
+  public toDateTimeStamp(date: Date, separator: string = ''): string {
     const year = date.getFullYear().toString();
     const month = this.enforceDigits(date.getMonth(), 2);
     const day = this.enforceDigits(date.getDay(), 2);
     const hour = this.enforceDigits(date.getHours(), 2);
     const minute = this.enforceDigits(date.getMinutes(), 2);
     const second = this.enforceDigits(date.getSeconds(), 2);
-    return year + month + day + hour + minute + second;
+    const millisecond = this.enforceDigits(date.getMilliseconds(), 3);
+    return `${year}${separator}${month}${separator}${day}-${hour}${separator}${minute}${separator}${second}${separator}${millisecond}`;
   }
 
   /**

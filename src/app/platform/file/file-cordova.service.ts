@@ -16,7 +16,15 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
-  writeBuffer(filePath: string, buffer: Buffer): Promise<void> {
+  writeBuffer(filePath: string, content: Buffer): Promise<void> {
+    return null;
+  }
+
+  writeText(filePath: string, content: string): Promise<void> {
+    return null;
+  }
+
+  createDirectory(directoryPath: string): Promise<void> {
     return null;
   }
 
@@ -54,6 +62,10 @@ export class FileCordovaService extends FileService {
 
   public getParentPath(path: string): string {
     return null;
+  }
+
+  getRelativePath(sourcePath: string, destinationPath: string): string {
+    return null
   }
 
   public getParentDir(path?: string): Promise<IFileInfo> {

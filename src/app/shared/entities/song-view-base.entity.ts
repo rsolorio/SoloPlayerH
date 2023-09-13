@@ -14,7 +14,7 @@ artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
 `;
 
 export const songViewBaseJoins =`
-FROM %songTable%
+FROM %songTable% AS song
 INNER JOIN album
 ON song.primaryAlbumId = album.id
 INNER JOIN artist

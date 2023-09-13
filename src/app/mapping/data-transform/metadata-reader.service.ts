@@ -26,7 +26,7 @@ import { MetaField } from './data-transform.enum';
 @Injectable({
   providedIn: 'root'
 })
-export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, KeyValues> {
+export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, IFileInfo, KeyValues> {
 
   constructor(
     private log: LogService,

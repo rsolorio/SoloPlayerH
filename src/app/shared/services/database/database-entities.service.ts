@@ -22,6 +22,7 @@ import { ModuleOptionId } from './database.seed';
 import { ISyncProfileParsed } from '../../models/sync-profile-model.interface';
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
+import { PartyRelationType } from '../../models/music.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -159,7 +160,25 @@ export class DatabaseEntitiesService {
     return this.db.getList(PlaylistSongViewEntity, criteria);
   }
 
-  public async export(): Promise<any> {
+  /**
+   * Gets a list of artistId/songId/artistName records where the relation type is
+   * Featuring or Contributor or Singer.
+   */
+  public getNonPrimaryRelations(): Promise<any> {
+    // TODO: create interface or entity for this query
+    const nonPrimaryRelationsQuery = `
+      SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName
+      FROM partyRelation
+      INNER JOIN artist
+      ON partyRelation.relatedId = artist.id
+      WHERE relationTypeId = '${PartyRelationType.Featuring}'
+      OR relationTypeId = '${PartyRelationType.Contributor}'
+      OR relationTypeId = '${PartyRelationType.Singer}'
+    `;
+    return this.db.run(nonPrimaryRelationsQuery);
+  }
+
+  public async exportColorSelectionData(): Promise<any> {
     const result: any = {};
     const images = await RelatedImageEntity.findBy({ colorSelection: Not(IsNull()) });
     result['relatedImage'] = images.map(i => {

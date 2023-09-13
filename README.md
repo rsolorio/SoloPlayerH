@@ -345,6 +345,8 @@ This is a list of key dependencies in the project.
   - The base font icon library.
 - [music-metadata-browser](https://www.npmjs.com/package/music-metadata-browser)
   - The library used to retrieve all audio metadata information.
+- [mp3tag.js] (https://mp3tag.js.org/)
+  - Library used to save Id3v2.4 metadata
 - [primeng](https://primeng.org/setup)
   - The component library that provides some special functionality.
     - Context/dropdown menus

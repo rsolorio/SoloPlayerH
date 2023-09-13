@@ -155,7 +155,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             descriptions: ['Export data into a json file.'],
             action: setting => {
               setting.running = true;
-              this.entities.export().then(data => {
+              this.entities.exportColorSelectionData().then(data => {
                 this.utility.downloadJson(data, 'sp-backup.json');
                 setting.running = false;
               });
@@ -509,13 +509,18 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
   private testExporter(): void {
     const criteria = new Criteria();
-    criteria.paging.pageSize = 100;
+    criteria.paging.pageSize = 500;
     criteria.addSorting('addDate', CriteriaSortDirection.Descending);
     const config: IExportConfig = {
       profileId: SyncProfileId.DefaultExport,
-      directories: ['J:\\Test']
+      directories: ['J:\\Test'],
+      criteria: criteria,
+      playlistConfig: {
+        playlistFormat: 'm3u',
+        playlistDirectory: 'Playlists'
+      }
     };
-    this.exporter.copyAndTag(config).then(() => {
+    this.exporter.run(config).then(() => {
       console.log('done');
     });
   }

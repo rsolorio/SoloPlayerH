@@ -1,4 +1,5 @@
-import { ISongExtendedModel, ISongModel } from "../../models/song-model.interface";
+import { KeyValueGen } from "src/app/core/models/core.interface";
+import { ISongExtendedModel } from "../../models/song-model.interface";
 import { Criteria } from "../criteria/criteria.class";
 
 export interface IExportConfig {
@@ -9,8 +10,18 @@ export interface IExportConfig {
   criteria?: Criteria;
   songs?: ISongExtendedModel[];
   songExportEnabled?: boolean;
-  playlistsEnabled?: boolean;
-  smartlistsEnabled?: boolean;
-  autolistsEnabled?: boolean;
+  playlistConfig?: IPlaylistExportConfig;
   flat?: boolean; // This is maybe part of the mapping?
+}
+
+export interface IPlaylistExportConfig {
+  playlistsDisabled?: boolean;
+  smartlistsDisabled?: boolean;
+  autolistsDisabled?: boolean;
+  playlistFormat?: string;
+  playlistPrefix?: string;
+  /** Name of the directory to place the playlists; */
+  playlistDirectory?: string;
+  fileMappings?: KeyValueGen<string>;
+  playlistAbsolutePath?: boolean;
 }

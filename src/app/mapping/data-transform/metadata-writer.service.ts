@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as Mp3Tag from 'mp3tag.js';
 import { DataTransformServiceBase } from './data-transform-service-base.class';
 import { IDataSourceService } from '../data-source/data-source.interface';
 import { KeyValues } from 'src/app/core/models/core.interface';
@@ -9,9 +10,11 @@ import { SongModelSourceService } from '../data-source/song-model-source.service
 import { FileService } from 'src/app/platform/file/file.service';
 import { MetaField } from './data-transform.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import * as Mp3Tag from 'mp3tag.js';
 import { ImageSrcType, MimeType } from 'src/app/core/models/core.enum';
 import { ImageService } from 'src/app/platform/image/image.service';
+import { IMetadataWriterOutput } from './data-transform.interface';
+import { LogService } from 'src/app/core/services/log/log.service';
+import { LogLevel } from 'src/app/core/services/log/log.enum';
 
 interface IUserDefinedText {
   description: string;
@@ -66,9 +69,10 @@ enum AttachedPictureType {
 @Injectable({
   providedIn: 'root'
 })
-export class MetadataWriterService extends DataTransformServiceBase<ISongModel, any> {
+export class MetadataWriterService extends DataTransformServiceBase<ISongModel, ISongModel, IMetadataWriterOutput> {
 
   constructor(
+    private log: LogService,
     private fileService: FileService,
     private utility: UtilityService,
     private imageService: ImageService,
@@ -77,16 +81,22 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     super(entities);
   }
 
-  public async process(input: ISongModel): Promise<any> {
+  public async process(input: ISongModel): Promise<IMetadataWriterOutput> {
     // 1. Get the metadata (the writer also works as reader)
-    const metadata = await this.getData(input);
-    // 2. Create the file
-    const filePath = this.first(metadata[MetaField.FilePath]);
-    await this.fileService.copyFile(input.filePath, filePath);
-    // 3. Write metadata
-    await this.writeMetadata(filePath, metadata);
-    // TODO: this should return a log of the file save process
-    return metadata;
+    const result: IMetadataWriterOutput = {
+      metadata: await this.getData(input),
+      sourcePath: input.filePath,
+      destinationPath: null
+    };
+
+    result.destinationPath = this.first(result.metadata[MetaField.FilePath]);
+    if (!this.fileService.exists(result.destinationPath)) {
+      // 2. Create the file
+      await this.fileService.copyFile(result.sourcePath, result.destinationPath);
+      // 3. Write metadata
+      await this.writeMetadata(result.destinationPath, result.metadata);
+    }
+    return result;
   }
 
   protected async getData(input: ISongModel): Promise<KeyValues> {
@@ -113,7 +123,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
   private async writeMetadata(filePath: string, metadata: KeyValues): Promise<void> {
     const buffer = await this.fileService.getBuffer(filePath);
-    const mp3Tag = new Mp3Tag(buffer, true);
+    const mp3Tag = new Mp3Tag(buffer, this.log.level === LogLevel.Verbose);
     // This will initialize the tags object even if the file has no tags
     mp3Tag.read();
     mp3Tag.tags.v2 = await this.setupV2Tags(metadata);

@@ -7,7 +7,9 @@ export abstract class FileService {
 
   abstract getBuffer(filePath: string): Promise<Buffer>;
 
-  abstract writeBuffer(filePath: string, buffer: Buffer): Promise<void>;
+  abstract writeBuffer(filePath: string, content: Buffer): Promise<void>;
+
+  abstract writeText(filePath: string, content: string): Promise<void>;
 
   abstract getFiles(directoryPaths: string[]): Observable<IFileInfo>;
 
@@ -21,6 +23,8 @@ export abstract class FileService {
 
   abstract getAbsolutePath(locationPath: string, endPath: string): string;
 
+  abstract getRelativePath(sourcePath: string, destinationPath: string): string;
+
   abstract getFileInfo(path: string): Promise<IFileInfo>;
 
   abstract exists(path: string): boolean;
@@ -28,6 +32,8 @@ export abstract class FileService {
   abstract copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>;
 
   abstract runCommand(command: string): Promise<any>;
+
+  abstract createDirectory(directoryPath: string): Promise<void>;
 
   removeBom(value: string): string {
     // 0xFEFF = 65279

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { promises, existsSync } from 'fs';
-import { join, resolve, extname, parse } from 'path';
+import { join, resolve, extname, parse, relative } from 'path';
 import { exec } from 'child_process';
 import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
@@ -19,8 +19,16 @@ export class FileElectronService extends FileService {
     return promises.readFile(filePath);
   }
 
-  writeBuffer(filePath: string, buffer: Buffer): Promise<void> {
-    return promises.writeFile(filePath, buffer);
+  writeBuffer(filePath: string, content: Buffer): Promise<void> {
+    return promises.writeFile(filePath, content);
+  }
+
+  writeText(filePath: string, content: string): Promise<void> {
+    return promises.writeFile(filePath, content, { encoding: 'utf8' });
+  }
+
+  async createDirectory(directoryPath: string): Promise<void> {
+    await promises.mkdir(directoryPath, { recursive: true });
   }
 
   getText(filePath: string): Promise<string> {
@@ -142,6 +150,10 @@ export class FileElectronService extends FileService {
 
   getAbsolutePath(locationPath: string, endPath: string): string {
     return resolve(locationPath, endPath);
+  }
+
+  getRelativePath(sourcePath: string, destinationPath: string): string {
+    return relative(sourcePath, destinationPath);
   }
 
   runCommand(command: string): Promise<string> {

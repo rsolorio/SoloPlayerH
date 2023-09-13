@@ -21,7 +21,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 @Injectable({
   providedIn: 'root'
 })
-export class MetadataNetWriterService extends DataTransformServiceBase<ISongModel, any> {
+export class MetadataNetWriterService extends DataTransformServiceBase<ISongModel, ISongModel, any> {
 
   constructor(
     private fileService: FileService,

@@ -4,7 +4,7 @@ import { KeyValues } from "src/app/core/models/core.interface";
 import { ISyncProfileParsed } from "src/app/shared/models/sync-profile-model.interface";
 import { DatabaseEntitiesService } from "src/app/shared/services/database/database-entities.service";
 
-export abstract class DataTransformServiceBase<TInput, TOutput> implements IDataTransformService {
+export abstract class DataTransformServiceBase<TProcessInput, TDataInput, TProcessOutput> implements IDataTransformService {
   protected syncProfile: ISyncProfileParsed;
   protected sources: IDataSourceParsed[];
 
@@ -19,9 +19,9 @@ export abstract class DataTransformServiceBase<TInput, TOutput> implements IData
     });
   }
 
-  public abstract process(input: TInput): Promise<TOutput>;
+  public abstract process(input: TProcessInput): Promise<TProcessOutput>;
 
-  protected abstract getData(input: TInput): Promise<KeyValues>;
+  protected abstract getData(input: TDataInput): Promise<KeyValues>;
 
   protected abstract getService(dataSourceType: string): IDataSourceService;
 

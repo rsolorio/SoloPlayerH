@@ -2,10 +2,13 @@ import { Injectable } from '@angular/core';
 import { IExportConfig } from './export.interface';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { DatabaseService } from '../database/database.service';
-import { FilterEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
-import { ISongModel } from '../../models/song-model.interface';
+import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
+import { ISongExtendedModel, ISongModel } from '../../models/song-model.interface';
 import { SyncProfileId } from '../database/database.seed';
 import {
+  SongExpExtendedByArtistViewEntity,
+  SongExpExtendedByClassificationViewEntity,
+  SongExpExtendedViewEntity,
   SongExtendedByArtistViewEntity,
   SongExtendedByClassificationViewEntity,
   SongExtendedByPlaylistViewEntity,
@@ -14,133 +17,122 @@ import {
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { PartyRelationType } from '../../models/music.enum';
 import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
+import { PlaylistWriterService } from 'src/app/mapping/data-transform/playlist-writer.service';
 
 /**
  * Service to copy audio and playlist files to other locations.
- * The export service will do one thing: export audio files and playlists based on configuration.
+ * The export service will: export audio files and playlists based on configuration.
  * The configuration will be associated to a sync profile record.
  * The export service will have the responsibility of getting the list of song records to process based on config.
  * It will use a file writer to copy and tag the audio file; the writer will be initialized with the profile id,
  * and probably with some more info (like the destination directory); it will load all data sources associated, in this case, only one, the Song Row data source;
  * the export service will iterate each song row, pass it to the writer which will get the metadata (KeyValues), and use it to create the file with the proper tags in the proper location;
  * the mappings in the SongRow data source will determine how the KeyValues object is used to save the tags.
- * The export service now needs to determine three more actions: playlists, smartlists, autolists.
- * The export service will use the playlist writer; and pass location, playlist type, to initialize the writer.
- * The playlist writer will also use a SongRow data source but with less fields.
- * The export service will export playlists only if all songs were exported.
- * if so, it will iterate each playlist and use the playlist writer;
- * for each playlist, the writer will be loaded/initialized (which will create the playlist file in memory), then each song record passed to the writer will add
- * the track; once the playlist tracks are added, the playlist file should be created in the proper location. Call some kind of finalization process to actually save the file.
- * Do the same for filters, get the name, get the tracks (using the regular songview or the song temp), and use the writer.
- * Do the same for auto, get the name, get the tracks, use the writer.
  */
 @Injectable({
   providedIn: 'root'
 })
 export class ExportService {
-
+  private config: IExportConfig;
   constructor(
     private db: DatabaseService,
-    //private writer: MetadataNetWriterService,
     private writer: MetadataWriterService,
+    private playlistWriter: PlaylistWriterService,
     private entities: DatabaseEntitiesService) { }
 
   /**
-   * Configurations:
-   * 0. Empty folder, or real sync add/replace/remove (profile config)
-   * 2. Copy All? (data source config)
-   * 3a. Copy all: yes
-   * 3a1. Export playlists? If so, specify playlist directory, playlist format (profile config)
-   * 3a2. Export smartlists as playlists (profile config)
-   * 3b: Copy all: no
-   * 3b1. Select data to export: playlist, filter? list of artists? current song list (criteria), Max songs. (data source config)
-   * 3b2. Export smartlists as playlists
-   * 3b3. Auto playlists (profile config)
-   * 4. Flat file structure or follow existing structure?
-   * 4. Select/update mappings? How to choose other mappings without changing existing ones.
-   * 5. Save results in profile, Sync history?
+   * Runs the export process in the following steps:
+   * 1. Determine which songs will be exported
+   * 2. Copy songs from the source to the destination
+   * 3. Update songs metadata based on the database and mapping info
+   * 4. Export filters as playlist files
+   * 5. Export auto filters as playlist files
+   * 6. Export playlists as playlist files
    */
-  public async copyAndTag(configOverride?: IExportConfig): Promise<void> {
+  public async run(configOverride?: IExportConfig): Promise<void> {
+    // TODO: empty folder before running, or real sync add/replace/remove
+    // TODO: Max songs to export in each playlist
+    // TODO: flat structure
+    // TODO: report progress / fire events
     // In theory a writer should only have one data source
     const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultExport);
-    let config = syncProfile.config as IExportConfig;
     if (configOverride) {
       syncProfile.directories = configOverride.directories;
-      config = configOverride;
+      syncProfile.config = Object.assign(syncProfile ? syncProfile : {}, configOverride);
     }
-
-    // Cache for getting classification data
-    const nonPrimaryRelationsQuery = `
-      SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName
-      FROM partyRelation
-      INNER JOIN artist
-      ON partyRelation.relatedId = artist.id
-      WHERE relationTypeId = '${PartyRelationType.Featuring}'
-      OR relationTypeId = '${PartyRelationType.Contributor}'
-      OR relationTypeId = '${PartyRelationType.Singer}'
-    `;
-    // TODO: create interface or entity for this query
-    syncProfile.nonPrimaryRelations = await this.db.run(nonPrimaryRelationsQuery);
+    syncProfile.config.playlistConfig = syncProfile.config.playlistConfig ? syncProfile.config.playlistConfig : {};
+    this.config = syncProfile.config;
+    
+    // Cache for getting classification data which will be used by the data source
+    syncProfile.nonPrimaryRelations = await this.entities.getNonPrimaryRelations();
     syncProfile.classifications = await ValueListEntryEntity.findBy({ isClassification: true });
 
     await this.writer.init(syncProfile);
-    await this.prepareSongs(config);
+    await this.prepareSongs();
 
-    for (const song of config.songs) {
-      await this.writer.process(song);
+    // EXPORT TO SONG FILES
+    this.config.playlistConfig.fileMappings = {};
+    for (const song of this.config.songs) {
+      // This process must return a mapping between the original path and the new path
+      const result = await this.writer.process(song);
+      this.config.playlistConfig.fileMappings[result.sourcePath] = result.destinationPath;
     }
 
-    // Another data source? We need a data source to get data from SongTemp/or regular views table for filters (and auto playlists) to export
-    // This data source also needs the config object
-    // This data source processes a playlist id or a filter id
-    // Export also needs the config to determine where the playlists will be exported
+    // EXPORT TO PLAYLIST FILES
+    await this.playlistWriter.init(syncProfile);
+
+    if (!this.config.playlistConfig.smartlistsDisabled) {
+      await this.exportFilters();
+    }
+    if (!this.config.playlistConfig.autolistsDisabled) {
+
+    }
+    if (!this.config.playlistConfig.playlistsDisabled && !this.config.songExportEnabled) {
+      // Exporting playlist entities is not supported if only a subset of the songs is being used
+      await this.exportPlaylists();
+    }
   }
 
   /**
    * Sets up the songs in the config object based on the specified criteria and fills the SongExport table if needed.
    */
-  private async prepareSongs(config: IExportConfig): Promise<void> {
-    if (!config.songs) {
-      if (config.playlistId && !config.criteria) {
-        config.criteria = new Criteria('Playlist Search');
-        config.criteria.searchCriteria.push(new CriteriaItem('playlistId', config.playlistId));
+  private async prepareSongs(): Promise<void> {
+    if (!this.config.songs) {
+      if (this.config.playlistId && !this.config.criteria) {
+        this.config.criteria = new Criteria('Playlist Search');
+        this.config.criteria.searchCriteria.push(new CriteriaItem('playlistId', this.config.playlistId));
       }
-      if (config.filterId && !config.criteria) {
-        const filter = await FilterEntity.findOneBy({ id: config.filterId });
-        config.criteria = await this.entities.getCriteriaFromFilter(filter);
+      if (this.config.filterId && !this.config.criteria) {
+        const filter = await FilterEntity.findOneBy({ id: this.config.filterId });
+        this.config.criteria = await this.entities.getCriteriaFromFilter(filter);
       }
 
-      if (config.criteria) {
-        if (config.criteria.hasComparison(false, 'playlistId')) {
-          config.songs = await this.db.getList(SongExtendedByPlaylistViewEntity, config.criteria);
+      if (this.config.criteria) {
+        if (this.config.criteria.hasComparison(false, 'playlistId')) {
+          this.config.songs = await this.db.getList(SongExtendedByPlaylistViewEntity, this.config.criteria);
         }
-        else if (config.criteria.hasComparison(false, 'classificationId')) {
-          config.songs = await this.db.getList(SongExtendedByClassificationViewEntity, config.criteria);
+        else if (this.config.criteria.hasComparison(false, 'classificationId')) {
+          this.config.songs = await this.db.getList(SongExtendedByClassificationViewEntity, this.config.criteria);
         }
-        else if (config.criteria.hasComparison(false, 'artistId')) {
-          config.songs = await this.db.getList(SongExtendedByArtistViewEntity, config.criteria);
+        else if (this.config.criteria.hasComparison(false, 'artistId')) {
+          this.config.songs = await this.db.getList(SongExtendedByArtistViewEntity, this.config.criteria);
         }
         else {
-          config.songs = await this.db.getList(SongExtendedViewEntity, config.criteria);
+          this.config.songs = await this.db.getList(SongExtendedViewEntity, this.config.criteria);
         }
       }
     }
 
-    if (config.songs) {
-      await this.fillSongExport(config.songs);
-      config.songExportEnabled = true;
-      // TODO: redirect song view, song artist view, song classification view to use the songTemp entity
-      // Whenever getList is called we just need to use the SongTempEntity instead of the views
+    if (this.config.songs) {
+      // Songs at this point must be moved to the export table
+      // so other criteria filters can apply only to this subset
+      await this.fillSongExport(this.config.songs);
+      this.config.songExportEnabled = true;
       return;
     }
 
-    // Any songs before this point must be moved to a temporary table
-    // so other criteria or filters can only apply to this subset
-    // getList: song view -> song/album/artist, song artist view -> song/album/artist/partyRelation, song classification view -> song/album/artist/songClassification
-    // getList: song view table
-
     // Send all songs
-    config.songs = await SongExtendedViewEntity.find();
+    this.config.songs = await SongExtendedViewEntity.find();
   }
 
   private async fillSongExport(songs: ISongModel[]): Promise<void> {
@@ -151,5 +143,52 @@ export class ExportService {
       songTempData.push(songTemp);
     }
     await this.db.bulkInsert(SongExportEntity, songTempData);
+  }
+
+  private async exportPlaylists(): Promise<void> {
+    const playlists = await PlaylistEntity.find();
+    for (const playlist of playlists) {
+      const criteria = new Criteria(playlist.name);
+      criteria.searchCriteria.push(new CriteriaItem('playlistId', playlist.id));
+      criteria.addSorting('sequence');
+      this.exportCriteriaAsPlaylist(criteria, this.config.songExportEnabled);
+    }
+  }
+
+  private async exportFilters(): Promise<void> {
+    const filters = await FilterEntity.find();
+    for (const filter of filters) {
+      const criteria = await this.entities.getCriteriaFromFilter(filter);
+      this.exportCriteriaAsPlaylist(criteria, this.config.songExportEnabled);
+    }
+  }
+
+  private async exportCriteriaAsPlaylist(criteria: Criteria, isSubset: boolean): Promise<void> {
+    let tracks: ISongExtendedModel[];
+    if (criteria.hasComparison(false, 'classificationId')) {
+      tracks = await this.db.getList(
+        isSubset ? SongExpExtendedByClassificationViewEntity : SongExtendedByClassificationViewEntity, criteria);
+    }
+    else if (criteria.hasComparison(false, 'artistId')) {
+      tracks = await this.db.getList(
+        isSubset ? SongExpExtendedByArtistViewEntity : SongExtendedByArtistViewEntity, criteria);
+    }
+    else if (criteria.hasComparison(false, 'playlistId')) {
+      tracks = await this.db.getList(
+        isSubset ? SongExtendedByPlaylistViewEntity : SongExtendedViewEntity, criteria);
+    }
+    else {
+      tracks = await this.db.getList(
+        isSubset ? SongExpExtendedViewEntity : SongExtendedViewEntity, criteria);
+    }
+    if (tracks?.length) {
+      // This config is only for passing the playlist name and the tracks
+      const input: IExportConfig = {
+        profileId: '',
+        criteria: criteria,
+        songs: tracks
+      };
+      await this.playlistWriter.process(input);
+    }
   }
 }
