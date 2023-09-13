@@ -20,6 +20,7 @@ import { PlaylistWriterService } from 'src/app/mapping/data-transform/playlist-w
 import { KeyValueGen } from 'src/app/core/models/core.interface';
 import { CriteriaComparison } from '../criteria/criteria.enum';
 import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
+import { ValueLists } from '../database/database.lists';
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -54,7 +55,6 @@ export class ExportService {
    */
   public async run(configOverride?: IExportConfig): Promise<void> {
     // TODO: empty folder before running, or real sync add/replace/remove
-    // TODO: Max songs to export in each playlist
     // TODO: flat structure
     // TODO: report progress / fire events
     // In theory a writer should only have one data source
@@ -167,6 +167,10 @@ export class ExportService {
   }
 
   private async exportCriteriaAsPlaylist(namePrefix: string, criteria: Criteria, isSubset: boolean): Promise<void> {
+    // Override the number of results with the max number of tracks
+    if (this.config.playlistConfig?.maxCount) {
+      criteria.paging.pageSize = this.config.playlistConfig.maxCount;
+    }
     let tracks: ISongExtendedModel[];
     if (criteria.hasComparison(false, 'classificationId')) {
       tracks = await this.db.getList(
@@ -185,21 +189,19 @@ export class ExportService {
         isSubset ? SongExpExtendedViewEntity : SongExtendedViewEntity, criteria);
     }
     if (tracks?.length) {
-      // This config is only for passing the playlist name and the tracks
-      const input: IExportConfig = {
-        profileId: '',
-        criteria: criteria,
-        songs: tracks,
-        playlistConfig: this.config.playlistConfig
-      };
-      input.playlistConfig.playlistPrefix = namePrefix;
-      await this.playlistWriter.process(input);
+      await this.processPlaylist(tracks, criteria, namePrefix);
     }
   }
 
   private async exportAutolists(): Promise<void> {
     //await this.createDecadeByLanguagePlaylists();
     await this.createAddYearPlaylists();
+    await this.createBestByDecadePlaylists();
+    // TODO: use the value list table to get the list of types
+    await this.createClassificationTypePlaylists('Subgenre', ValueLists.Subgenre.id);
+    await this.createClassificationTypePlaylists('Instrument', ValueLists.Instrument.id);
+    await this.createClassificationTypePlaylists('Category', ValueLists.Category.id);
+    await this.createClassificationTypePlaylists('Occasion', ValueLists.Occasion.id);
   }
 
   private async createDecadeByLanguagePlaylists(): Promise<void> {
@@ -223,25 +225,52 @@ export class ExportService {
     await this.createIteratorPlaylists([columnQuery], 'Added', '%addYear%');
   }
 
-  private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string): Promise<void> {
+  private async createBestByDecadePlaylists(): Promise<void> {
+    const valuesCriteria = new Criteria();
+    valuesCriteria.paging.distinct = true;
+    const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'releaseDecade' }};
+    const extraCriteriaItem = new CriteriaItem('rating', 5);
+    await this.createIteratorPlaylists([columnQuery], 'Best', '%releaseDecade%\'s', [extraCriteriaItem]);
+  }
+
+  private async createClassificationTypePlaylists(prefix: string, classificationTypeId: string): Promise<void> {
+    const classifications = await ValueListEntryEntity.findBy({ valueListTypeId: classificationTypeId });
+    for (const classification of classifications) {
+      await this.createClassificationPlaylists(prefix, classification.name, classification.id);
+    }
+  }
+
+  private async createClassificationPlaylists(prefix: string, playlistName: string, classificationId: string): Promise<void> {
+    const criteria = new Criteria(playlistName);
+    criteria.paging.distinct = true;
+    criteria.searchCriteria.push(new CriteriaItem('classificationId', classificationId));
+    await this.exportCriteriaAsPlaylist(prefix, criteria, this.config.songExportEnabled);
+  }
+
+  private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string, extraCriteria?: CriteriaItem[]): Promise<void> {
     const options: IResultsIteratorOptions<SongExtendedViewEntity> = {
       entity: SongExtendedViewEntity,
       queries: queries,
+      extraCriteria: extraCriteria,
       onResult: async (valuesObj: KeyValueGen<any>, items: SongExtendedViewEntity[]) => {
         if (items?.length) {
           const playlistPrefix = this.parser.parse({ expression: prefixExpression, context: valuesObj });
           const playlistName = this.parser.parse({ expression: nameExpression, context: valuesObj });
-          const input: IExportConfig = {
-            profileId: '',
-            criteria: new Criteria(playlistName),
-            songs: items,
-            playlistConfig: this.config.playlistConfig
-          };
-          input.playlistConfig.playlistPrefix = playlistPrefix;
-          await this.playlistWriter.process(input);
+          await this.processPlaylist(items, new Criteria(playlistName), playlistPrefix);
         }
       }
     };
     await this.db.searchResultsIterator(options);
+  }
+
+  private async processPlaylist(tracks: ISongExtendedModel[], criteria: Criteria, prefix: string): Promise<void> {
+    const input: IExportConfig = {
+      profileId: '',
+      criteria: criteria, // The criteria here is only for passing the name of the playlist
+      songs: tracks,
+      playlistConfig: this.config.playlistConfig // This passes the general configuration
+    };
+    input.playlistConfig.prefix = prefix; // We override the prefix
+    await this.playlistWriter.process(input);
   }
 }

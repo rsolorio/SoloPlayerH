@@ -84,8 +84,13 @@ interface IBulkInfo {
   bulkSize: number;
 }
 
+/**
+ * Specifies a column expression and an alias if needed for reference.
+ */
 export interface IColumnExpression {
+  /** The expression can be the name of the column alone or name with an alias like: columnName AS myColumn. */
   expression: string;
+  /** If the expression contains an alias, this should refer to the alias used in the expression. */
   alias?: string;
 }
 
@@ -93,8 +98,12 @@ export interface IColumnExpression {
  * Exposes properties used to perform a query and get results selecting only one column.
  */
 export interface IColumnQuery {
+  /** This is the initial criteria used to get a list of values to be used by the search. */
   criteria: Criteria;
+  /** This property specifies the column that will be selected to get the values. */
   columnExpression: IColumnExpression;
+  /** This is an optional comparison that can be used when building the final criteria. */
+  comparison?: CriteriaComparison;
 }
 
 export interface IResultsIteratorOptions<T extends ObjectLiteral> {
@@ -106,6 +115,8 @@ export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   chunkSize?: number;
   /** The entity that will be used to query and get results. */
   entity: EntityTarget<T>;
+  /** List of criteria items to be added to the criteria recently built. */
+  extraCriteria?: CriteriaItem[];
   /**
    * Callback that is fired when a result is resolved.
    * The first argument is the object that contains the values used to perform the search.
@@ -408,7 +419,7 @@ export class DatabaseService {
 
   public async getColumnValues(entity: EntityTarget<any>, criteria: Criteria, columnExpression: IColumnExpression): Promise<any[]> {
     const repo = this.dataSource.getRepository(entity);
-    const columnName = columnExpression.alias ? columnExpression.alias : columnExpression.expression;
+    const columnName = this.getColumnName(columnExpression);
     // TODO: instead of ignoring all columns, directly create the select statement using the column expression
     let columnNameFound = false;
     // Ignore columns
@@ -449,7 +460,7 @@ export class DatabaseService {
     // Gather results from all queries
     for (const query of options.queries) {
       const objectResults = await this.getColumnValues(options.entity, query.criteria, query.columnExpression);
-      const columnName = query.columnExpression.alias ? query.columnExpression.alias : query.columnExpression.expression;
+      const columnName = this.getColumnName(query.columnExpression);
       // Convert objects to raw values
       const valueResults = objectResults.map(obj => obj[columnName]);
       queryResultCollection.items.push({
@@ -472,6 +483,9 @@ export class DatabaseService {
             criteria.searchCriteria.push(new CriteriaItem(columnName, valuesObj[columnName]));
           }
         });
+        if (options.extraCriteria?.length) {
+          options.extraCriteria.forEach(item => criteria.searchCriteria.push(item));
+        }
       }
       // The criteria can be null if it comes from the onBuildCriteria;
       // if that's the case it means we don't want to process it so skip it
@@ -866,5 +880,9 @@ export class DatabaseService {
       return `${entityAlias}.${columnName}`;
     }
     return columnName;
+  }
+
+  private getColumnName(expression: IColumnExpression): string {
+    return expression.alias ? expression.alias : expression.expression;
   }
 }

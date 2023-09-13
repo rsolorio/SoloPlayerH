@@ -15,16 +15,28 @@ export interface IExportConfig {
 }
 
 export interface IPlaylistExportConfig {
+  /** If playlist entities should be exported as playlist files. */
   playlistsDisabled?: boolean;
+  /** If filter entities should be exported as playlist files. */
   smartlistsDisabled?: boolean;
+  /** If auto playlists should run to generate playlist files. */
   autolistsDisabled?: boolean;
-  playlistFormat?: string;
-  playlistPrefix?: string;
-  playlistNameSeparator?: string;
+  /** The playlist format (the file extension) */
+  format?: string;
+  /** A text to be prepended to the name of the playlist. */
+  prefix?: string;
+  /** The separator between the prefix and the name of the playlist, if any. */
+  nameSeparator?: string;
   /** Name of the directory to place the playlists. */
-  playlistDirectory?: string;
+  directory?: string;
   /** Full directory path where playlist will be stored. */
-  playlistPath?: string;
+  path?: string;
+  /** A list of key/value items that identify the original and the new file path of a song. */
   fileMappings?: KeyValueGen<string>;
-  playlistAbsolutePath?: boolean;
+  /** If an absolute path should be used as reference in the playlist file; if off, it will use a relative path. */
+  absolutePathEnabled?: boolean;
+  /** The minimum number of tracks to create a playlist. */
+  minCount?: number;
+  /** The maximum number of tracks to include in a playlist. */
+  maxCount?: number;
 }

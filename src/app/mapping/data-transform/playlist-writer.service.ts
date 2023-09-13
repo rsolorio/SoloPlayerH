@@ -29,22 +29,29 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
 
   public async process(input: IExportConfig): Promise<void> {
     this.config = input.playlistConfig;
+    // Setup defaults
+    this.config.minCount = this.config.minCount ? this.config.minCount : 10;
+    this.config.maxCount = this.config.maxCount ? this.config.maxCount : 1000;
+    // Do not go any further if we don't have enough items
+    if (input.songs.length < this.config.minCount) {
+      return;
+    }
     // Prepare directory path if needed
-    if (!this.config.playlistPath) {
-      this.config.playlistPath = this.rootPath;
-      if (this.config.playlistDirectory) {
-        this.config.playlistPath = this.config.playlistPath.endsWith('\\') ? this.config.playlistPath : this.config.playlistPath + '\\';
-        this.config.playlistPath += this.config.playlistDirectory;
-        await this.fileService.createDirectory(this.config.playlistPath);
+    if (!this.config.path) {
+      this.config.path = this.rootPath;
+      if (this.config.directory) {
+        this.config.path = this.config.path.endsWith('\\') ? this.config.path : this.config.path + '\\';
+        this.config.path += this.config.directory;
+        await this.fileService.createDirectory(this.config.path);
       }
     }
-    this.config.playlistPath = this.config.playlistPath.endsWith('\\') ? this.config.playlistPath : this.config.playlistPath + '\\';
+    this.config.path = this.config.path.endsWith('\\') ? this.config.path : this.config.path + '\\';
     // Prepare file name
     let fileName: string;
     if (input.criteria?.name) {
-      if (input.playlistConfig?.playlistPrefix) {
-        const separator = input.playlistConfig.playlistNameSeparator ? input.playlistConfig.playlistNameSeparator : '';
-        fileName = `${input.playlistConfig?.playlistPrefix}${separator} ${input.criteria?.name}`;
+      if (input.playlistConfig?.prefix) {
+        const separator = input.playlistConfig.nameSeparator ? input.playlistConfig.nameSeparator : '';
+        fileName = `${input.playlistConfig?.prefix}${separator} ${input.criteria?.name}`;
       }
       else {
         fileName = input.criteria.name;
@@ -55,9 +62,9 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     }
 
     // Prepare playlist file path
-    const format = this.config.playlistFormat.toLowerCase();
+    const format = this.config.format.toLowerCase();
     const extension = '.' + format;
-    const filePath = this.config.playlistPath + fileName + extension;
+    const filePath = this.config.path + fileName + extension;
 
     if (this.fileService.exists(filePath)) {
       return;
@@ -65,11 +72,12 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
 
     // TODO: use getData and mappings to setup playlist info
     let fileLines: string[];
+    const slicedSongs = input.songs.slice(0, this.config.maxCount);
     if (format === 'pls') {
-      fileLines = this.createPls(input.songs);
+      fileLines = this.createPls(slicedSongs);
     }
     else if (format === 'm3u') {
-      fileLines = this.createM3u(input.songs);
+      fileLines = this.createM3u(slicedSongs);
     }
 
     if (fileLines.length) {
@@ -121,9 +129,9 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
   private resolvePath(song: ISongModel): string {
     // Replace the source path with the destination path
     song.filePath = this.config.fileMappings[song.filePath];
-    if (this.config.playlistAbsolutePath) {
+    if (this.config.absolutePathEnabled) {
       return song.filePath;
     }
-    return this.fileService.getRelativePath(this.config.playlistPath, song.filePath);
+    return this.fileService.getRelativePath(this.config.path, song.filePath);
   }
 }

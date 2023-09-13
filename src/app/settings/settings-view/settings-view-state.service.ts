@@ -515,9 +515,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       profileId: SyncProfileId.DefaultExport,
       directories: ['J:\\Test'],
       playlistConfig: {
-        playlistFormat: 'm3u',
-        playlistDirectory: 'Playlists',
-        playlistNameSeparator: '›'
+        format: 'm3u',
+        directory: 'Playlists',
+        nameSeparator: '›'
       }
     };
     this.exporter.run(config).then(() => {
