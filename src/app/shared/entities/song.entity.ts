@@ -93,6 +93,8 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column()
   addDate: Date;
   @Column()
+  addYear: number;
+  @Column()
   changeDate: Date;
   @Column({ nullable: true })
   playDate: Date;

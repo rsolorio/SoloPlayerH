@@ -29,8 +29,10 @@ ON album.primaryArtistId = artist.id
  * favorite, live, explicit, addDate, playDate, primaryAlbumName, primaryArtistId,
  * primaryArtistName, primaryArtistStylized.
  * Excluded fields:
- * externalId, titleSort, subtitle, featuring, grouping, composer, composerSort, comment,
- * infoUrl, videoUrl, replayGain, tempo, changeDate, replaceDate
+ * externalId, cleanName, titleSort, subtitle, featuring, grouping, composer, composerSort,
+ * primaryAlbumSort, primaryAlbumStylized, primaryAlbumType, country, primaryArtistSort, primaryArtistType,
+ * originalArtist, originalAlbum, originalReleaseYear, comment,
+ * infoUrl, videoUrl, replayGain, tempo, addYear, changeDate, replaceDate
  */
 export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   // Base entity
@@ -119,9 +121,9 @@ song.filePath, song.fileExtension, song.fileSize,
 song.titleSort, song.subtitle, song.featuring, song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade,
 song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.language,
 song.lyrics, song.grouping, song.composer, song.composerSort, song.comment,
-song.originalArtist, song.OriginalAlbum, song.OriginalReleaseYear, song.infoUrl, song.videoUrl,
+song.originalArtist, song.originalAlbum, song.originalReleaseYear, song.infoUrl, song.videoUrl,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
-song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate, song.replaceDate,
+song.favorite, song.live, song.explicit, song.addDate, song.addYear, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.primaryArtistId,
 artist.country, artist.name AS primaryArtistName, artist.artistSort AS primaryArtistSort, artist.artistStylized AS primaryArtistStylized, artist.artistType AS primaryArtistType
 `;
@@ -162,6 +164,8 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   replayGain: number;
   @ViewColumn()
   tempo: number;
+  @ViewColumn()
+  addYear: number;
   @ViewColumn()
   changeDate: Date;
   @ViewColumn()

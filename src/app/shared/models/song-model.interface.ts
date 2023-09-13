@@ -79,6 +79,7 @@ export interface ISongFullModel extends ISongModel {
   replayGain: number;
   tempo: number;
   // Dates
+  addYear: number;
   changeDate: Date;
   replaceDate: Date;
 }

@@ -163,6 +163,9 @@ All standard entities have three main fields:
   - Full timestamp describing when the song was added to the collection
   - ID3 mapping: custom TXXX:AddDate
   - Fallback: file creation date
+- addYear
+  - The year when the song was added to the collection
+  - This is automatically calculated based on the addDate
 - changeDate
   - Full timestamp describing when the song's metadata or information was updated
   - ID3 mapping: custom TXXX:ChangeDate

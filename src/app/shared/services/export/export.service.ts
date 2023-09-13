@@ -154,7 +154,7 @@ export class ExportService {
       const criteria = new Criteria(playlist.name);
       criteria.searchCriteria.push(new CriteriaItem('playlistId', playlist.id));
       criteria.addSorting('sequence');
-      this.exportCriteriaAsPlaylist('List', criteria, this.config.songExportEnabled);
+      await this.exportCriteriaAsPlaylist('List', criteria, this.config.songExportEnabled);
     }
   }
 
@@ -162,7 +162,7 @@ export class ExportService {
     const filters = await FilterEntity.find();
     for (const filter of filters) {
       const criteria = await this.entities.getCriteriaFromFilter(filter);
-      this.exportCriteriaAsPlaylist('Filter', criteria, this.config.songExportEnabled);
+      await this.exportCriteriaAsPlaylist('Filter', criteria, this.config.songExportEnabled);
     }
   }
 
@@ -198,7 +198,8 @@ export class ExportService {
   }
 
   private async exportAutolists(): Promise<void> {
-    await this.createDecadeByLanguagePlaylists();
+    //await this.createDecadeByLanguagePlaylists();
+    await this.createAddYearPlaylists();
   }
 
   private async createDecadeByLanguagePlaylists(): Promise<void> {
@@ -208,12 +209,18 @@ export class ExportService {
 
     const languageCriteria = new Criteria();
     languageCriteria.paging.distinct = true;
-    languageCriteria.addSorting('language');
 
     await this.createIteratorPlaylists([
       { criteria: decadeCriteria, columnExpression: { expression: 'releaseDecade' } },
       { criteria: languageCriteria, columnExpression: { expression: 'language' } }],
       '%releaseDecade%\'s', '%language%');
+  }
+
+  private async createAddYearPlaylists(): Promise<void> {
+    const criteria = new Criteria();
+    criteria.paging.distinct = true;
+    const columnQuery: IColumnQuery = { criteria: criteria, columnExpression: { expression: 'addYear' }};
+    await this.createIteratorPlaylists([columnQuery], 'Added', '%addYear%');
   }
 
   private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string): Promise<void> {

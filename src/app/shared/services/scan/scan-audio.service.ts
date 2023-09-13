@@ -618,6 +618,7 @@ export class ScanAudioService {
     }
     // Set dates in db
     song.addDate = addDate;
+    song.addYear = addDate.getFullYear();
     song.changeDate = changeDate;
     // TODO: Set dates in file
 
@@ -627,6 +628,7 @@ export class ScanAudioService {
       song.language = this.unknownValue;
     }
 
+    // TODO: add mood to value list entry if it doesn't exist
     song.mood = this.first(metadata[MetaField.Mood]);
     if (!song.mood) {
       song.mood = this.unknownValue;
