@@ -514,10 +514,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     const config: IExportConfig = {
       profileId: SyncProfileId.DefaultExport,
       directories: ['J:\\Test'],
-      criteria: criteria,
       playlistConfig: {
         playlistFormat: 'm3u',
-        playlistDirectory: 'Playlists'
+        playlistDirectory: 'Playlists',
+        playlistNameSeparator: '›'
       }
     };
     this.exporter.run(config).then(() => {

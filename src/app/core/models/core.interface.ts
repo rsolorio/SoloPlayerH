@@ -5,6 +5,8 @@ import { ImageSrcType } from "./core.enum";
 export type KeyValueGen<TKey> = { [key: string]: TKey };
 /** A generic key/value pair where the key is the indexed property and the value is a list of items. */
 export type KeyValuesGen<TKey> = { [key: string]: TKey[] };
+/** A key/value pair where the key and the value are strings. */
+export type KeyValue = KeyValueGen<string>;
 /** A key/value pair where the key is the indexed property and the value is a list of items. */
 export type KeyValues = KeyValuesGen<any>;
 

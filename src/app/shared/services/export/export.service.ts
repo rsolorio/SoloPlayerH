@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IExportConfig } from './export.interface';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService, IResultsIteratorOptions } from '../database/database.service';
 import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
 import { ISongExtendedModel, ISongModel } from '../../models/song-model.interface';
 import { SyncProfileId } from '../database/database.seed';
@@ -15,9 +15,10 @@ import {
   SongExtendedViewEntity
 } from '../../entities/song-extended-view.entity';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
-import { PartyRelationType } from '../../models/music.enum';
 import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
 import { PlaylistWriterService } from 'src/app/mapping/data-transform/playlist-writer.service';
+import { KeyValueGen, KeyValues } from 'src/app/core/models/core.interface';
+import { CriteriaComparison } from '../criteria/criteria.enum';
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -85,7 +86,7 @@ export class ExportService {
       await this.exportFilters();
     }
     if (!this.config.playlistConfig.autolistsDisabled) {
-
+      await this.exportAutolists();
     }
     if (!this.config.playlistConfig.playlistsDisabled && !this.config.songExportEnabled) {
       // Exporting playlist entities is not supported if only a subset of the songs is being used
@@ -151,7 +152,7 @@ export class ExportService {
       const criteria = new Criteria(playlist.name);
       criteria.searchCriteria.push(new CriteriaItem('playlistId', playlist.id));
       criteria.addSorting('sequence');
-      this.exportCriteriaAsPlaylist(criteria, this.config.songExportEnabled);
+      this.exportCriteriaAsPlaylist('List', criteria, this.config.songExportEnabled);
     }
   }
 
@@ -159,11 +160,11 @@ export class ExportService {
     const filters = await FilterEntity.find();
     for (const filter of filters) {
       const criteria = await this.entities.getCriteriaFromFilter(filter);
-      this.exportCriteriaAsPlaylist(criteria, this.config.songExportEnabled);
+      this.exportCriteriaAsPlaylist('Filter', criteria, this.config.songExportEnabled);
     }
   }
 
-  private async exportCriteriaAsPlaylist(criteria: Criteria, isSubset: boolean): Promise<void> {
+  private async exportCriteriaAsPlaylist(namePrefix: string, criteria: Criteria, isSubset: boolean): Promise<void> {
     let tracks: ISongExtendedModel[];
     if (criteria.hasComparison(false, 'classificationId')) {
       tracks = await this.db.getList(
@@ -186,9 +187,48 @@ export class ExportService {
       const input: IExportConfig = {
         profileId: '',
         criteria: criteria,
-        songs: tracks
+        songs: tracks,
+        playlistConfig: this.config.playlistConfig
       };
+      input.playlistConfig.playlistPrefix = namePrefix;
       await this.playlistWriter.process(input);
     }
+  }
+
+  private async exportAutolists(): Promise<void> {
+    await this.createDecadeByLanguagePlaylists();
+  }
+
+  private async createDecadeByLanguagePlaylists(): Promise<void> {
+    const decadeCriteria = new Criteria();
+    decadeCriteria.paging.distinct = true;
+    decadeCriteria.searchCriteria.push(new CriteriaItem('releaseDecade', 0, CriteriaComparison.NotEquals));
+
+    const languageCriteria = new Criteria();
+    languageCriteria.paging.distinct = true;
+    languageCriteria.addSorting('language');
+
+    const options: IResultsIteratorOptions<SongExtendedViewEntity> = {
+      entity: SongExtendedViewEntity,
+      queries: [
+        { criteria: decadeCriteria, columnExpression: { expression: 'releaseDecade' } },
+        { criteria: languageCriteria, columnExpression: { expression: 'language' } }
+      ],
+      onResult: async (valuesObj: KeyValueGen<any>, items: SongExtendedViewEntity[]) => {
+        console.log(valuesObj);
+        if (items?.length) {
+          // This config is only for passing the playlist name and the tracks
+          const input: IExportConfig = {
+            profileId: '',
+            criteria: new Criteria(valuesObj['language'].toString()),
+            songs: items,
+            playlistConfig: this.config.playlistConfig
+          };
+          input.playlistConfig.playlistPrefix = valuesObj['releaseDecade'].toString() + '\'s';
+          await this.playlistWriter.process(input);
+        }
+      }
+    };
+    await this.db.searchResultsIterator(options);
   }
 }

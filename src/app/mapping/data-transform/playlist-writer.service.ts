@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.interface';
 import { DataTransformServiceBase } from './data-transform-service-base.class';
-import { IExportConfig } from 'src/app/shared/services/export/export.interface';
+import { IExportConfig, IPlaylistExportConfig } from 'src/app/shared/services/export/export.interface';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { KeyValues } from 'src/app/core/models/core.interface';
 import { IDataSourceService } from '../data-source/data-source.interface';
@@ -13,9 +13,9 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
   providedIn: 'root'
 })
 export class PlaylistWriterService extends DataTransformServiceBase<IExportConfig, ISongModel, any> {
-  private playlistDirectoryPath: string;
-  /** Configuration that comes from the exporter service. */
-  private config: IExportConfig;
+  private rootPath: string;
+  /** Current input configuration from the process method. */
+  private config: IPlaylistExportConfig;
   constructor(
     private entities: DatabaseEntitiesService,
     private fileService: FileService,
@@ -24,31 +24,44 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
   }
 
   public async init(profile: ISyncProfileParsed): Promise<void> {
-    this.config = profile.config;
-    // Prepare directory path
-    this.playlistDirectoryPath = profile.directories[0];
-    if (this.config.playlistConfig.playlistDirectory) {
-      this.playlistDirectoryPath = this.playlistDirectoryPath.endsWith('\\') ? this.playlistDirectoryPath : this.playlistDirectoryPath + '\\';
-      this.playlistDirectoryPath += this.config.playlistConfig.playlistDirectory;
-      this.fileService.createDirectory(this.playlistDirectoryPath);
-    }
-    this.playlistDirectoryPath = this.playlistDirectoryPath.endsWith('\\') ? this.playlistDirectoryPath : this.playlistDirectoryPath + '\\';
+    this.rootPath = profile.directories[0];
   }
 
   public async process(input: IExportConfig): Promise<void> {
+    this.config = input.playlistConfig;
+    // Prepare directory path if needed
+    if (!this.config.playlistPath) {
+      this.config.playlistPath = this.rootPath;
+      if (this.config.playlistDirectory) {
+        this.config.playlistPath = this.config.playlistPath.endsWith('\\') ? this.config.playlistPath : this.config.playlistPath + '\\';
+        this.config.playlistPath += this.config.playlistDirectory;
+        await this.fileService.createDirectory(this.config.playlistPath);
+      }
+    }
+    this.config.playlistPath = this.config.playlistPath.endsWith('\\') ? this.config.playlistPath : this.config.playlistPath + '\\';
     // Prepare file name
     let fileName: string;
     if (input.criteria?.name) {
-      fileName = input.criteria.name;
+      if (input.playlistConfig?.playlistPrefix) {
+        const separator = input.playlistConfig.playlistNameSeparator ? input.playlistConfig.playlistNameSeparator : '';
+        fileName = `${input.playlistConfig?.playlistPrefix}${separator} ${input.criteria?.name}`;
+      }
+      else {
+        fileName = input.criteria.name;
+      }
     }
     else {
       fileName = `Playlist ` + this.utility.toDateTimeStamp(new Date());
     }
 
-    // Prepare file path
-    const format = this.config.playlistConfig.playlistFormat.toLowerCase();
+    // Prepare playlist file path
+    const format = this.config.playlistFormat.toLowerCase();
     const extension = '.' + format;
-    const filePath = this.playlistDirectoryPath + fileName + extension;
+    const filePath = this.config.playlistPath + fileName + extension;
+
+    if (this.fileService.exists(filePath)) {
+      return;
+    }
 
     // TODO: use getData and mappings to setup playlist info
     let fileLines: string[];
@@ -107,10 +120,10 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
 
   private resolvePath(song: ISongModel): string {
     // Replace the source path with the destination path
-    song.filePath = this.config.playlistConfig.fileMappings[song.filePath];
-    if (this.config.playlistConfig.playlistAbsolutePath) {
+    song.filePath = this.config.fileMappings[song.filePath];
+    if (this.config.playlistAbsolutePath) {
       return song.filePath;
     }
-    return this.fileService.getRelativePath(this.playlistDirectoryPath, song.filePath);
+    return this.fileService.getRelativePath(this.config.playlistPath, song.filePath);
   }
 }

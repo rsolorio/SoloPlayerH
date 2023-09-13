@@ -66,7 +66,7 @@ import { HttpClient } from '@angular/common/http';
 import { ComposerViewEntity } from '../../entities/composer-view.entity';
 import { DatabaseLookupService } from './database-lookup.service';
 import { RelativeDateService } from '../relative-date/relative-date.service';
-import { ICollection, IKeyValuePair, KeyValues } from 'src/app/core/models/core.interface';
+import { ICollection, IKeyValuePair, KeyValueGen } from 'src/app/core/models/core.interface';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
 
 interface IBulkInfo {
@@ -105,11 +105,11 @@ export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   /** If you are  looking to split the result on smaller chunks you can use this value to specify the number of items for each chunk. */
   chunkSize?: number;
   /** The entity that will be used to query and get results. */
-  entity: EntityTarget<T>
+  entity: EntityTarget<T>;
   /** Callback that is fired when a result is resolved. */
-  onResult: (valuesObj: KeyValues, items: T[]) => Promise<void>;
+  onResult: (valuesObj: KeyValueGen<any>, items: T[]) => Promise<void>;
   /** Callback for overriding the logic that creates the criteria for each combination of values. */
-  onBuildCriteria?: (valuesObj: KeyValues) => Criteria;
+  onBuildCriteria?: (valuesObj: KeyValueGen<any>) => Criteria;
 }
 
 /**
@@ -454,7 +454,7 @@ export class DatabaseService {
       });
     }
 
-    this.combine({}, queryResultCollection.items, async valuesObj => {
+    await this.combine({}, queryResultCollection.items, async valuesObj => {
       let criteria: Criteria;
       if (options.onBuildCriteria) {
         criteria = options.onBuildCriteria(valuesObj);
@@ -502,7 +502,7 @@ export class DatabaseService {
    * Recursive routine that combines results from different queries and fires a callback for each combination.
    */
   private async combine(
-    valuesObj: KeyValues,
+    valuesObj: KeyValueGen<any>,
     queryResults: IKeyValuePair<string, any[]>[],
     onCombination: (valuesObj: any) => Promise<void>
   ): Promise<void> {
@@ -550,10 +550,7 @@ export class DatabaseService {
     let hasColumns = false;
     for (const column of columns) {
       if (!criteria.ignoredInSelect(column.databaseName)) {
-        let columnName = column.databaseName;
-        if (entityAlias) {
-          columnName = `${entityAlias}.${column.databaseName}`;
-        }
+        const columnName = this.buildColumnName(column.databaseName, entityAlias);
         if (hasColumns) {
           queryBuilder.addSelect(columnName);
         }
@@ -572,7 +569,7 @@ export class DatabaseService {
   }
 
   private buildWhere<T>(
-    queryBuilder: SelectQueryBuilder<T>, entityName: string, criteria: Criteria
+    queryBuilder: SelectQueryBuilder<T>, entityAlias: string, criteria: Criteria
   ): SelectQueryBuilder<T> {
     const allCriteria = [criteria.systemCriteria, criteria.breadcrumbCriteria, criteria.userCriteria, criteria.searchCriteria, criteria.quickCriteria];
     let hasWhere = false;
@@ -584,10 +581,10 @@ export class DatabaseService {
       if (whereCriteria.length) {
         if (hasWhere) {
           // All criteria will be joined with the AND operator since all criteria must be used to get the results
-          queryBuilder = queryBuilder.andWhere(this.createFirstLevelBrackets(entityName, whereCriteria));
+          queryBuilder = queryBuilder.andWhere(this.createFirstLevelBrackets(entityAlias, whereCriteria));
         }
         else {
-          queryBuilder = queryBuilder.where(this.createFirstLevelBrackets(entityName, whereCriteria));
+          queryBuilder = queryBuilder.where(this.createFirstLevelBrackets(entityAlias, whereCriteria));
           hasWhere = true;
         }
       }
@@ -606,7 +603,8 @@ export class DatabaseService {
         if (criteriaItem.comparison === CriteriaComparison.IsNull || criteriaItem.comparison === CriteriaComparison.IsNotNull) {
           // Ignore column values for these operators
           whereBrackets = new Brackets(qb => {
-            qb.where(`${entityAlias}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text}`);
+            const columnName = this.buildColumnName(criteriaItem.columnName, entityAlias);
+            qb.where(`${columnName} ${this.comparison(criteriaItem.comparison).text}`);
           });
         }
         else {
@@ -635,25 +633,26 @@ export class DatabaseService {
   /**
    * Creates the second level where expression that consists of multiple values from one column joined together.
    */
-  private createSecondLevelBrackets(entityName: string, criteriaItem: CriteriaItem): Brackets {
+  private createSecondLevelBrackets(entityAlias: string, criteriaItem: CriteriaItem): Brackets {
     const brackets = new Brackets(qb2 => {
       if (criteriaItem.isRelativeDate) {
-        this.buildWhereForRelativeDate(qb2, entityName, criteriaItem);
+        this.buildWhereForRelativeDate(qb2, entityAlias, criteriaItem);
       }
       else {
-        this.buildWhereForColumnValues(qb2, entityName, criteriaItem);
+        this.buildWhereForColumnValues(qb2, entityAlias, criteriaItem);
       }
     });
     return brackets;
   }
 
-  private buildWhereForColumnValues(builder: WhereExpressionBuilder, entityName: string, criteriaItem: CriteriaItem): void {
+  private buildWhereForColumnValues(builder: WhereExpressionBuilder, entityAlias: string, criteriaItem: CriteriaItem): void {
     // Typeorm requires unique parameters even if the column is the same
     let hasWhere = false;
     for (const valuePair of criteriaItem.columnValues) {
       this.parameterIndex++;
       const parameterName = criteriaItem.columnName + this.parameterIndex.toString();
-      const where = `${entityName}.${criteriaItem.columnName} ${this.comparison(criteriaItem.comparison).text} :${parameterName}`;
+      const columnName = this.buildColumnName(criteriaItem.columnName, entityAlias);
+      const where = `${columnName} ${this.comparison(criteriaItem.comparison).text} :${parameterName}`;
       const parameter = {};
       parameter[parameterName] = valuePair.value;
       if (hasWhere) {
@@ -675,32 +674,33 @@ export class DatabaseService {
     const expression = this.relativeDateService.createExpression(expressionText);
     if (this.relativeDateService.isValid(expression)) {
       const dateRange = this.relativeDateService.parse(expression);
+      const columnName = this.buildColumnName(criteriaItem.columnName, entityAlias);
       switch (criteriaItem.comparison) {
         // This will match the whole period
         case CriteriaComparison.Equals:
-          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
-          builder = builder.andWhere(`${entityAlias}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} >= :fromDate`, { fromDate: dateRange.from });
+          builder = builder.andWhere(`${columnName} <= :toDate`, { toDate: dateRange.to });
           break;
         // This wil match any date outside the period
         case CriteriaComparison.NotEquals:
-          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
-          builder = builder.andWhere(`${entityAlias}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} < :fromDate`, { fromDate: dateRange.from });
+          builder = builder.andWhere(`${columnName} > :toDate`, { toDate: dateRange.to });
           break;
         // This will match dates before the start of the period
         case CriteriaComparison.LessThan:
-          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} < :fromDate`, { fromDate: dateRange.from });
+          builder = builder.where(`${columnName} < :fromDate`, { fromDate: dateRange.from });
           break;
         // This will match dates from the period and older
         case CriteriaComparison.LessThanOrEqualTo:
-          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} <= :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} <= :toDate`, { toDate: dateRange.to });
           break;
         // This will match dates after the end of the period
         case CriteriaComparison.GreaterThan:
-          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} > :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} > :toDate`, { toDate: dateRange.to });
           break;
         // This will match dates from the period and newer
         case CriteriaComparison.GreaterThanOrEqualTo:
-          builder = builder.where(`${entityAlias}.${criteriaItem.columnName} >= :fromDate`, { fromDate: dateRange.from });
+          builder = builder.where(`${columnName} >= :fromDate`, { fromDate: dateRange.from });
           break;
       }
     }
@@ -718,13 +718,13 @@ export class DatabaseService {
       criteriaItem.sortSequence > 0 &&
       criteriaItem.sortDirection !== CriteriaSortDirection.Alternate);
     this.utilities.sort(orderByCriteria, 'sortSequence').forEach(orderByItem => {
-      const column = `${entityAlias}.${orderByItem.columnName}`;
+      const columnName = this.buildColumnName(orderByItem.columnName, entityAlias);
       const order = orderByItem.sortDirection === CriteriaSortDirection.Ascending ? 'ASC' : 'DESC';
       if (hasOrderBy) {
-        queryBuilder = queryBuilder.addOrderBy(column, order);
+        queryBuilder = queryBuilder.addOrderBy(columnName, order);
       }
       else {
-        queryBuilder = queryBuilder.orderBy(column, order);
+        queryBuilder = queryBuilder.orderBy(columnName, order);
         hasOrderBy = true;
       }
     });
@@ -855,5 +855,12 @@ export class DatabaseService {
       }
     }
     return entityInstance as T;
+  }
+
+  private buildColumnName(columnName: string, entityAlias?: string): string {
+    if (entityAlias) {
+      return `${entityAlias}.${columnName}`;
+    }
+    return columnName;
   }
 }

@@ -20,8 +20,11 @@ export interface IPlaylistExportConfig {
   autolistsDisabled?: boolean;
   playlistFormat?: string;
   playlistPrefix?: string;
-  /** Name of the directory to place the playlists; */
+  playlistNameSeparator?: string;
+  /** Name of the directory to place the playlists. */
   playlistDirectory?: string;
+  /** Full directory path where playlist will be stored. */
+  playlistPath?: string;
   fileMappings?: KeyValueGen<string>;
   playlistAbsolutePath?: boolean;
 }
