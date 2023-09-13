@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IExportConfig } from './export.interface';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
-import { DatabaseService, IResultsIteratorOptions } from '../database/database.service';
+import { DatabaseService, IColumnQuery, IResultsIteratorOptions } from '../database/database.service';
 import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
 import { ISongExtendedModel, ISongModel } from '../../models/song-model.interface';
 import { SyncProfileId } from '../database/database.seed';
@@ -17,8 +17,9 @@ import {
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
 import { PlaylistWriterService } from 'src/app/mapping/data-transform/playlist-writer.service';
-import { KeyValueGen, KeyValues } from 'src/app/core/models/core.interface';
+import { KeyValueGen } from 'src/app/core/models/core.interface';
 import { CriteriaComparison } from '../criteria/criteria.enum';
+import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -39,6 +40,7 @@ export class ExportService {
     private db: DatabaseService,
     private writer: MetadataWriterService,
     private playlistWriter: PlaylistWriterService,
+    private parser: ScriptParserService,
     private entities: DatabaseEntitiesService) { }
 
   /**
@@ -208,23 +210,27 @@ export class ExportService {
     languageCriteria.paging.distinct = true;
     languageCriteria.addSorting('language');
 
+    await this.createIteratorPlaylists([
+      { criteria: decadeCriteria, columnExpression: { expression: 'releaseDecade' } },
+      { criteria: languageCriteria, columnExpression: { expression: 'language' } }],
+      '%releaseDecade%\'s', '%language%');
+  }
+
+  private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string): Promise<void> {
     const options: IResultsIteratorOptions<SongExtendedViewEntity> = {
       entity: SongExtendedViewEntity,
-      queries: [
-        { criteria: decadeCriteria, columnExpression: { expression: 'releaseDecade' } },
-        { criteria: languageCriteria, columnExpression: { expression: 'language' } }
-      ],
+      queries: queries,
       onResult: async (valuesObj: KeyValueGen<any>, items: SongExtendedViewEntity[]) => {
-        console.log(valuesObj);
         if (items?.length) {
-          // This config is only for passing the playlist name and the tracks
+          const playlistPrefix = this.parser.parse({ expression: prefixExpression, context: valuesObj });
+          const playlistName = this.parser.parse({ expression: nameExpression, context: valuesObj });
           const input: IExportConfig = {
             profileId: '',
-            criteria: new Criteria(valuesObj['language'].toString()),
+            criteria: new Criteria(playlistName),
             songs: items,
             playlistConfig: this.config.playlistConfig
           };
-          input.playlistConfig.playlistPrefix = valuesObj['releaseDecade'].toString() + '\'s';
+          input.playlistConfig.playlistPrefix = playlistPrefix;
           await this.playlistWriter.process(input);
         }
       }

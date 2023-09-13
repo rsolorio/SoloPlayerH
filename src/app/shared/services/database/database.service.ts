@@ -84,7 +84,7 @@ interface IBulkInfo {
   bulkSize: number;
 }
 
-interface IColumnExpression {
+export interface IColumnExpression {
   expression: string;
   alias?: string;
 }
@@ -92,7 +92,7 @@ interface IColumnExpression {
 /**
  * Exposes properties used to perform a query and get results selecting only one column.
  */
-interface IColumnQuery {
+export interface IColumnQuery {
   criteria: Criteria;
   columnExpression: IColumnExpression;
 }
@@ -106,7 +106,11 @@ export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   chunkSize?: number;
   /** The entity that will be used to query and get results. */
   entity: EntityTarget<T>;
-  /** Callback that is fired when a result is resolved. */
+  /**
+   * Callback that is fired when a result is resolved.
+   * The first argument is the object that contains the values used to perform the search.
+   * The second argument is the result of the search.
+   */
   onResult: (valuesObj: KeyValueGen<any>, items: T[]) => Promise<void>;
   /** Callback for overriding the logic that creates the criteria for each combination of values. */
   onBuildCriteria?: (valuesObj: KeyValueGen<any>) => Criteria;
