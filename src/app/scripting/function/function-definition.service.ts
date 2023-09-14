@@ -85,6 +85,7 @@ export class FunctionDefinitionService {
     this.functions.push({
       name: 'digits',
       syntax: '$digits(x,y)',
+      description: 'Returns x with at least the number of digits specified in y.',
       fn: args => {
         const x = args[0];
         const y = args[1];
@@ -97,6 +98,7 @@ export class FunctionDefinitionService {
     this.functions.push({
       name: 'int',
       syntax: '$int(x)',
+      description: 'Parses x to integer.',
       fn: args => {
         const x = args[0];
         return parseInt(x.toString(), 10);

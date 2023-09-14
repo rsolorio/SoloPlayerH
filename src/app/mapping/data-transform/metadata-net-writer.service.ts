@@ -49,7 +49,7 @@ export class MetadataNetWriterService extends DataTransformServiceBase<ISongMode
       if (source.service) {
         const initResult = await source.service.init(input, source, this.syncProfile);
         if (!initResult.error) {
-          await this.setValues(result, source.service, source.fieldArray);
+          await this.setValuesAndMappings(result, source);
         }
       }
     }

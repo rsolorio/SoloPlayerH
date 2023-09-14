@@ -21,7 +21,7 @@ A playlist is a static list of tracks selected by the user. A playlist and its s
 A smartlist (smart playlist) is a dynamic list of tracks based on criteria created by the user. Criteria are saved in the database, but not the list of tracks. Every time a smart list is executed the result might be different. All information provided by the user and tags (rating, play count, mood, language, grouping, bpm, etc) on a song can be used to build smartlists.
 
 ### Playlist Support
-The application has the ability to import playlists from these file types:
+The application has the ability to import/export playlists for these file types:
 - PLS
 - M3U
 
@@ -36,10 +36,10 @@ Each list view offers multiple sorting options.
 - Id3v2 read/write
 - Multi genres
   - Multiple tags
-  - One tag separated by a character
+  - One tag separated by a configurable character
 - Multiple artists
   - Multiple tags
-  - One tag separated by a character
+  - One tag separated by a configurable character
 - Single album artist
 - Multiple covers
 - Language
@@ -232,9 +232,6 @@ All standard entities have three main fields:
   - ID3 mapping: WXXX
 - videoUrl
   - A url that refers to a video of the track
-- TODO: coverSongId, popularity
-
-
 ### Album table
 - primaryArtistId
 - releaseYear
@@ -348,7 +345,7 @@ This is a list of key dependencies in the project.
   - The base font icon library.
 - [music-metadata-browser](https://www.npmjs.com/package/music-metadata-browser)
   - The library used to retrieve all audio metadata information.
-- [mp3tag.js] (https://mp3tag.js.org/)
+- [mp3tag.js](https://mp3tag.js.org/)
   - Library used to save Id3v2.4 metadata
 - [primeng](https://primeng.org/setup)
   - The component library that provides some special functionality.

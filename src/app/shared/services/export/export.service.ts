@@ -94,6 +94,8 @@ export class ExportService {
       // Exporting playlist entities is not supported if only a subset of the songs is being used
       await this.exportPlaylists();
     }
+
+    // TODO: cleanup the Export Song table, since it was just needed for this process
   }
 
   /**

@@ -31,6 +31,7 @@ export class ScriptParserService {
     result['space'] = ' ';
     result['openParen'] = '(';
     result['closeParen'] = ')';
+    result['empty'] = '';
     return result;
   }
 }

@@ -20,6 +20,7 @@ export class PlaceholderService {
    * Assumes the expression represents the placeholder pattern.
    */
   public getToken(info: IParseInformation): any {
+    // TODO: log when token values are not found
     const placeholderName = info.expression.replace(new RegExp(this.limiter, 'g'), '');
     if (info.mappings) {
       const mapping = info.mappings[placeholderName];
@@ -40,20 +41,21 @@ export class PlaceholderService {
         // This is the case where the placeholder fully matches the expression
         // so return the value in the original data type instead of converting to string
         const placeholderValue = this.getToken({ expression: placeholderMatches[0], context: info.context, mappings: info.mappings });
-        if (placeholderValue !== undefined && placeholderValue !== null) {
-          return placeholderValue;
+        if (placeholderValue === undefined || placeholderValue === null) {
+          // Returning an empty string is easier to handle
+          return '';
         }
-        // Leave the placeholder since we did not find a value
-        return parsedExpression;
+        return placeholderValue;
       }
       else {
         for (const placeholderMatch of placeholderMatches) {
           const placeholderValue = this.getToken({ expression: placeholderMatch, context: info.context, mappings: info.mappings });
-          if (placeholderValue !== undefined && placeholderValue !== null) {
-            parsedExpression = parsedExpression.replace(placeholderMatch, placeholderValue.toString());
+          if (placeholderValue === undefined || placeholderValue === null) {
+            // Just remove the placeholder to represent that there's no value
+            parsedExpression = parsedExpression.replace(placeholderMatch, '');
           }
           else {
-            // Leave the placeholder there if no value was found
+            parsedExpression = parsedExpression.replace(placeholderMatch, placeholderValue.toString());
           }
         }
       }

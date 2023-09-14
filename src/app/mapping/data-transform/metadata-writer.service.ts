@@ -15,6 +15,7 @@ import { ImageService } from 'src/app/platform/image/image.service';
 import { IMetadataWriterOutput } from './data-transform.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
+import { appName } from 'src/app/app-exports';
 
 interface IUserDefinedText {
   description: string;
@@ -70,7 +71,6 @@ enum AttachedPictureType {
   providedIn: 'root'
 })
 export class MetadataWriterService extends DataTransformServiceBase<ISongModel, ISongModel, IMetadataWriterOutput> {
-
   constructor(
     private log: LogService,
     private fileService: FileService,
@@ -82,20 +82,28 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   public async process(input: ISongModel): Promise<IMetadataWriterOutput> {
-    // 1. Get the metadata (the writer also works as reader)
+    // 1. Get only the filePath metadata to determine if we need to keep getting the rest of the metadata
+    const values = await this.getFieldData(input, MetaField.FilePath);
+    const destinationPath = this.first(values);
+
     const result: IMetadataWriterOutput = {
-      metadata: await this.getData(input),
+      metadata: null,
       sourcePath: input.filePath,
-      destinationPath: null
+      destinationPath: destinationPath
     };
 
-    result.destinationPath = this.first(result.metadata[MetaField.FilePath]);
-    if (!this.fileService.exists(result.destinationPath)) {
-      // 2. Create the file
-      await this.fileService.copyFile(result.sourcePath, result.destinationPath);
-      // 3. Write metadata
-      await this.writeMetadata(result.destinationPath, result.metadata);
+    if (this.fileService.exists(destinationPath)) {
+      result.metadata = {};
+      result.metadata[MetaField.FilePath] = values;
+      return result;
     }
+
+    // 2. Get the data
+    result.metadata = await this.getData(input);
+    // 3. Create the file
+    await this.fileService.copyFile(result.sourcePath, result.destinationPath);
+    // 4. Write metadata
+    await this.writeMetadata(result.destinationPath, result.metadata);
     return result;
   }
 
@@ -105,7 +113,20 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       if (source.service) {
         const initResult = await source.service.init(input, source, this.syncProfile);
         if (!initResult.error) {
-          await this.setValues(result, source.service, source.fieldArray);
+          await this.setValuesAndMappings(result, source);
+        }
+      }
+    }
+    return result;
+  }
+
+  protected async getFieldData(input: ISongModel, field: MetaField): Promise<any[]> {
+    let result: any[] = [];
+    for (const source of this.sources) {
+      if (source.service) {
+        const initResult = await source.service.init(input, source, this.syncProfile);
+        if (!initResult.error && !result.length) {
+          result = await source.service.get(field);
         }
       }
     }
@@ -279,7 +300,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const ufId = this.first(metadata[MetaField.UfId]);
     if (ufId) {
       tags.UFID = [{
-        ownerId: 'SoloPlayer',
+        ownerId: appName,
         id: Buffer.from(ufId)
       }];
     }
@@ -290,15 +311,17 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     //   tags.PCNT = playCount;
     // }
 
-    //Include playCount and rating because it is not currently supported by the library
-    const udTexts = this.createUserDefinedTexts(metadata, [
-      MetaField.AddDate, MetaField.ChangeDate, MetaField.PlayDate, MetaField.PerformerCount,
-      MetaField.ArtistType, MetaField.Country, MetaField.AlbumType, MetaField.Favorite, MetaField.Live,
-      MetaField.Explicit, MetaField.PlayHistory, MetaField.PlayCount, MetaField.Rating
-    ]);
-    tags.TXXX = udTexts.concat(this.createUserDefineLists(metadata, [
+    const udTexts = this.createUserDefineLists(metadata, [
       MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
-    ]));
+    ]);
+
+    const userDefinedFields = metadata[MetaField.UserDefinedField];
+    if (userDefinedFields?.length) {
+      tags.TXXX = udTexts.concat(this.createUserDefinedTexts(metadata, userDefinedFields));
+    }
+    else {
+      tags.TXXX = udTexts;
+    }
 
     const urls: IUserDefinedUrl[] = [];
     const url = this.first(metadata[MetaField.Url]);
@@ -330,7 +353,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     for (const property of properties) {
       const value = this.first(metadata[property]);
       if (value) {
-        result.push({ description: property, text: value.toString() });
+        result.push({ description: this.utility.toProperCase(property), text: value.toString() });
       }
     }
     return result;

@@ -184,12 +184,15 @@ export enum MetaField {
   TagFullyParsed = 'tagFullyParsed',
   /** String. Id3v2 */
   Owner = 'owner',
-  /** */
+  /** String. */
   PlayHistory = 'playHistory',
+  /** String. */
+  UserDefinedField = 'userDefinedField',
   /** String. Id3v2. Scan. */
   Error = 'error',
   /** Boolean. Scan. */
   Ignored = 'ignored',
   /** ScanFileMode. None. */
   FileMode = 'fileMode'
+  /**  */
 }

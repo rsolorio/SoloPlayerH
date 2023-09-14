@@ -21,3 +21,5 @@ export function fisherYatesShuffle(items: any[]): void {
     items[randomIndex] = lastItem;
   }
 }
+
+export const appName = 'SoloPlayer';

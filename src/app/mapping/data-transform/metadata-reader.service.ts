@@ -52,11 +52,8 @@ export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, I
           // TODO: continueOnError for other data sources
           return result;
         }
-        if (source?.mappings?.length) {
-          // TODO: custom mapping and tags
-        }
         else {
-          await this.setValues(result, source.service, source.fieldArray);
+          await this.setValuesAndMappings(result, source);
         }
       }
       else {

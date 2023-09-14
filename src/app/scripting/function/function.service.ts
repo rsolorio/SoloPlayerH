@@ -52,8 +52,8 @@ export class FunctionService {
         result.context[functionResult.uniqueName] = functionResult.value;
       }
       else {
-        // Return a placeholder %null%; the intent is to let the user know the function did not return any values.
-        result.expression = result.expression.replace(fullFunctionExpression, '%null%');
+        // Just remove the placeholder indicating that it doesn't have any value
+        result.expression = result.expression.replace(fullFunctionExpression, '');
       }
       // Last step is to look for more functions
       functionMatches = result.expression.match(functionRegExp);

@@ -13,6 +13,8 @@ export class DataMappingEntity extends BaseEntity {
   @Column()
   sequence: number;
   @Column()
+  userDefined: boolean;
+  @Column()
   disabled: boolean;
   @Column()
   system: boolean;

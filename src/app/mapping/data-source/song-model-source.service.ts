@@ -9,6 +9,7 @@ import { KeyValueGen } from 'src/app/core/models/core.interface';
 import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.interface';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
+import { appName } from 'src/app/app-exports';
 
 /**
  * A data source that retrieves information from a ISongModel object.
@@ -111,7 +112,7 @@ export class SongModelSourceService implements IDataSourceService {
         return [this.inputData.lyrics];
       case MetaField.Owner:
         // TODO: a module option?
-        return ['rsolorio'];
+        return [appName];
       case MetaField.Genre:
         return this.getClassifications(this.inputData.id, ValueLists.Genre.id);
       case MetaField.Subgenre:
@@ -190,7 +191,7 @@ export class SongModelSourceService implements IDataSourceService {
   /**
    * Prepares a mapping object that defines the name of the placeholders that can be used
    * for the mapping scripts. This is a way to use easier/shorter names instead of the 
-   * real names of the source (in this case the ISongModel).
+   * real names of the source (in this case the ISongExtendedModel).
    */
   private setupScriptingPlaceholders(): KeyValueGen<string> {
     const result: KeyValueGen<string> = {};
@@ -202,6 +203,8 @@ export class SongModelSourceService implements IDataSourceService {
     result['title'] = 'name';
     result['ext'] = 'fileExtension';
     result['file'] = 'fileName';
+    result['albumType'] = 'primaryAlbumType';
+    result['artistType'] = 'primaryArtistType';
     return result;
   }
 

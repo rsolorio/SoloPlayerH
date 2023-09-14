@@ -1111,6 +1111,7 @@
         "source": "%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%,4) - %album%, %album%)\\$digits(%media%,2)-$digits(%track%,2) - %title%.%ext%",
         "destination": "filePath",
         "sequence": 1,
+        "userDefined": false,
         "disabled": false,
         "system": true
       },
@@ -1119,6 +1120,7 @@
         "source": "$digits(%year%,4)-%album%-$digits(%media%,2)-$digits(%track%,2)-%title%",
         "destination": "titleSort",
         "sequence": 1,
+        "userDefined": false,
         "disabled": false,
         "system": true
       },
@@ -1127,6 +1129,7 @@
         "source": "$digits(%year%,4)-%album%",
         "destination": "albumSort",
         "sequence": 1,
+        "userDefined": false,
         "disabled": false,
         "system": true
       },
@@ -1135,22 +1138,142 @@
         "source": "hello world!",
         "destination": "comment",
         "sequence": 1,
+        "userDefined": false,
         "disabled": false,
         "system": true
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "rsolorio2",
+        "source": "rsolorio",
         "destination": "owner",
         "sequence": 1,
+        "userDefined": false,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "CD %media%",
+        "destination": "grouping",
+        "sequence": 1,
+        "userDefined": false,
         "disabled": false,
         "system": true
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%addDate%",
-        "destination": "custom_addDate",
+        "destination": "addDate",
         "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$if(%playDate%,%playDate%,%empty%)",
+        "destination": "playDate",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%changeDate%",
+        "destination": "changeDate",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%performerCount%",
+        "destination": "performerCount",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%artistType%",
+        "destination": "artistType",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%country%",
+        "destination": "country",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%albumType%",
+        "destination": "albumType",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%favorite%",
+        "destination": "favorite",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%live%",
+        "destination": "live",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%explicit%",
+        "destination": "explicit",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$if(%playHistory%,%playHistory%,%empty%)",
+        "destination": "playHistory",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%playCount%",
+        "destination": "playCount",
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": true
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%rating%",
+        "destination": "rating",
+        "sequence": 1,
+        "userDefined": true,
         "disabled": false,
         "system": true
       }

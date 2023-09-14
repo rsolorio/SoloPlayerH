@@ -100,7 +100,6 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
       <br>
       <!-- Artists -->
       <ng-container *ngIf="song.primaryArtistId !== EntityId.ArtistVarious">
-        <!-- TODO: show male/female icon depending on artist type -->
         <i [ngClass]="AppAttributeIcons.ArtistName" class="sp-text-large" [ngStyle]="palette.secondary.cssColor"></i>
         <span
         class="sp-text-large"
