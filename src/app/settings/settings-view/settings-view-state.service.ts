@@ -13,20 +13,14 @@ import { AppRoute } from 'src/app/app-routes';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { ScanService } from 'src/app/shared/services/scan/scan.service';
-import { FileService } from 'src/app/platform/file/file.service';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { AudioMetadataService } from 'src/app/platform/audio-metadata/audio-metadata.service';
-import { MimeType } from 'src/app/core/models/core.enum';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { IScanItemInfo } from 'src/app/shared/services/scan/scan.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
-import { ExportService } from 'src/app/shared/services/export/export.service';
-import { IExportConfig } from 'src/app/shared/services/export/export.interface';
-import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
-import { CriteriaSortDirection } from 'src/app/shared/services/criteria/criteria.enum';
+import { AppTestService } from 'src/app/app-test';
 
 @Injectable({
   providedIn: 'root'
@@ -41,10 +35,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private browserService: FileBrowserService,
     private dialog: DialogService,
     private scanner: ScanService,
-    private fileService: FileService,
     private log: LogService,
-    private metadataService: AudioMetadataService,
-    private exporter: ExportService,
+    private tester: AppTestService,
     private events: EventsService)
   {
     this.subscribeToScanEvents();
@@ -324,7 +316,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             dataType: 'text',
             descriptions: ['Action for testing purposes.'],
             action: () => {
-              this.onTest();
+              this.tester.test();
             }
           }
         ]
@@ -484,44 +476,5 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       syncProfile.directories.forEach(d => browserModel.selectedItems.push({ id: d, name: '', canBeRendered: false}));
     }
     this.browserService.browse(browserModel);
-  }
-
-  private async logFileMetadata(): Promise<void> {
-    const selectedFiles = this.dialog.openFileDialog();
-    if (selectedFiles && selectedFiles.length) {
-      const fileInfo = await this.fileService.getFileInfo(selectedFiles[0]);
-      const buffer = await this.fileService.getBuffer(fileInfo.path);
-      const audioInfo = await this.metadataService.getMetadata(buffer, MimeType.Mp3, true);
-      // As warning to bypass the default log config
-      this.log.warn('File info.', fileInfo);
-      this.log.warn('Audio info.', audioInfo);
-    }
-  }
-
-  onTest(): void {
-    this.test();
-  }
-
-  private async test(): Promise<void> {
-    //this.logFileMetadata();
-    this.testExporter();
-  }
-
-  private testExporter(): void {
-    const criteria = new Criteria();
-    criteria.paging.pageSize = 500;
-    criteria.addSorting('addDate', CriteriaSortDirection.Descending);
-    const config: IExportConfig = {
-      profileId: SyncProfileId.DefaultExport,
-      directories: ['J:\\Test'],
-      playlistConfig: {
-        format: 'm3u',
-        directory: 'Playlists',
-        nameSeparator: '›'
-      }
-    };
-    this.exporter.run(config).then(() => {
-      console.log('done');
-    });
   }
 }
