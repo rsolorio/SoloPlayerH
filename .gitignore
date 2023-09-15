@@ -50,3 +50,6 @@ Thumbs.db
 main.js
 solo-player.db
 solo-player.db-journal
+
+# User files
+user.data.json

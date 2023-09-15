@@ -40,7 +40,8 @@ export enum ModuleOptionId {
   LongPlaySongThreshold = 'b160a72f-da26-4690-ac07-ae17957a9fdd',
   IgnoreNumericGenres = '3f4b56c7-167c-4807-afc2-1b6460b7822d',
   ListViewLimit = '05543fcf-c0fe-4608-8187-41c68e4bd1c3',
-  MinimumAudioDuration = '0cad8c29-3af4-41c2-b10b-8a9ec7832f30'
+  MinimumAudioDuration = '0cad8c29-3af4-41c2-b10b-8a9ec7832f30',
+  DefaultExportProfile = '834eab3b-c672-4518-80c8-22b59c1d678a'
 }
 
 export enum SyncProfileId {

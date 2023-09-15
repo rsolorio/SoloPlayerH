@@ -4,7 +4,6 @@ import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { DatabaseService, IColumnQuery, IResultsIteratorOptions } from '../database/database.service';
 import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
 import { ISongExtendedModel, ISongModel } from '../../models/song-model.interface';
-import { SyncProfileId } from '../database/database.seed';
 import {
   SongExpExtendedByArtistViewEntity,
   SongExpExtendedByClassificationViewEntity,
@@ -18,7 +17,7 @@ import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
 import { PlaylistWriterService } from 'src/app/mapping/data-transform/playlist-writer.service';
 import { KeyValueGen } from 'src/app/core/models/core.interface';
-import { CriteriaComparison } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaSortDirection } from '../criteria/criteria.enum';
 import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
 import { ValueLists } from '../database/database.lists';
 
@@ -53,15 +52,15 @@ export class ExportService {
    * 5. Export auto filters as playlist files
    * 6. Export playlists as playlist files
    */
-  public async run(configOverride?: IExportConfig): Promise<void> {
+  public async run(exportProfileId: string, configOverride?: IExportConfig): Promise<void> {
     // TODO: empty folder before running, or real sync add/replace/remove
     // TODO: flat structure
     // TODO: report progress / fire events
     // In theory a writer should only have one data source
-    const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultExport);
+    const syncProfile = await this.entities.getSyncProfile(exportProfileId);
     if (configOverride) {
       syncProfile.directories = configOverride.directories;
-      syncProfile.config = Object.assign(syncProfile ? syncProfile : {}, configOverride);
+      syncProfile.config = Object.assign(syncProfile.config ? syncProfile.config : {}, configOverride);
     }
     syncProfile.config.playlistConfig = syncProfile.config.playlistConfig ? syncProfile.config.playlistConfig : {};
     this.config = syncProfile.config;
@@ -110,6 +109,11 @@ export class ExportService {
       if (this.config.filterId && !this.config.criteria) {
         const filter = await FilterEntity.findOneBy({ id: this.config.filterId });
         this.config.criteria = await this.entities.getCriteriaFromFilter(filter);
+      }
+      if (this.config.lastAddedCount && !this.config.criteria) {
+        this.config.criteria = new Criteria('Last Added');
+        this.config.criteria.paging.pageSize = this.config.lastAddedCount;
+        this.config.criteria.addSorting('addDate', CriteriaSortDirection.Descending);
       }
 
       if (this.config.criteria) {
@@ -267,7 +271,6 @@ export class ExportService {
 
   private async processPlaylist(tracks: ISongExtendedModel[], criteria: Criteria, prefix: string): Promise<void> {
     const input: IExportConfig = {
-      profileId: '',
       criteria: criteria, // The criteria here is only for passing the name of the playlist
       songs: tracks,
       playlistConfig: this.config.playlistConfig // This passes the general configuration

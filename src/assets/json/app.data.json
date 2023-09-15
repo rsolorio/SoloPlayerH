@@ -1,5 +1,5 @@
 {
-  "tables": {
+  "inserts": {
     "artist": [
       {
         "id": "85904485-14b3-4d3c-a5ef-f9277e38c480",
@@ -153,6 +153,16 @@
         "multipleValues": false,
         "system": false,
         "values": "60"
+      },
+      {
+        "id": "834eab3b-c672-4518-80c8-22b59c1d678a",
+        "name": "Default Export Profile",
+        "moduleName": "Music",
+        "description": "The default export configuration that will be used for export actions.",
+        "valueEditorType": "table",
+        "multipleValues": false,
+        "system": true,
+        "values": "\"5021cccd-eafc-46ae-b521-f075dda9e105\""
       }
     ],
     "relatedImage": [
@@ -1081,24 +1091,12 @@
         "system": true
       },
       {
-        "id": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "id": "445219eb-7134-45bb-8476-bbdff6cafe48",
         "profileId": "5021cccd-eafc-46ae-b521-f075dda9e105",
-        "name": "dbToId3Mappings",
+        "name": "Default Export DataSource and Mappings",
         "type": "SongModel",
         "config": "",
-        "fields": "track,media,year,unSyncLyrics,album,albumSort,albumArtist,artistStylized,artist,ufId,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,cleanTitle,artistType,owner,genre,subgenre,occasion,instrument,category,rating,playCount,performerCount,mood,language,favorite,live,explicit,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,originalArtist,originalAlbum,originalReleaseYear,titleSort,albumArtistSort,comment,seconds,url,tempo,replayGain,subtitle,country,albumStylized,playHistory",
-        "customMapping": true,
-        "sequence": 1,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "id": "07766c67-2ac9-4562-85e3-86186a3bea08",
-        "profileId": "5021cccd-eafc-46ae-b521-f075dda9e105",
-        "name": "dbToPlaylists",
-        "type": "SongModel",
-        "config": "",
-        "fields": "",
+        "fields": "track,media,year,album,albumSort,albumArtist,artistStylized,artist,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,genre,rating,playCount,mood,language,favorite,live,explicit,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,subtitle,country,albumStylized",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,
@@ -1107,173 +1105,11 @@
     ],
     "dataMapping": [
       {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "dataSourceId": "445219eb-7134-45bb-8476-bbdff6cafe48",
         "source": "%rootPath%\\%language%\\%genre%\\%artist%\\$if(%year%,$digits(%year%,4) - %album%, %album%)\\$digits(%media%,2)-$digits(%track%,2) - %title%.%ext%",
         "destination": "filePath",
         "sequence": 1,
         "userDefined": false,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$digits(%year%,4)-%album%-$digits(%media%,2)-$digits(%track%,2)-%title%",
-        "destination": "titleSort",
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$digits(%year%,4)-%album%",
-        "destination": "albumSort",
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "hello world!",
-        "destination": "comment",
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "rsolorio",
-        "destination": "owner",
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "CD %media%",
-        "destination": "grouping",
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%addDate%",
-        "destination": "addDate",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$if(%playDate%,%playDate%,%empty%)",
-        "destination": "playDate",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%changeDate%",
-        "destination": "changeDate",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%performerCount%",
-        "destination": "performerCount",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%artistType%",
-        "destination": "artistType",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%country%",
-        "destination": "country",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%albumType%",
-        "destination": "albumType",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%favorite%",
-        "destination": "favorite",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%live%",
-        "destination": "live",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%explicit%",
-        "destination": "explicit",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$if(%playHistory%,%playHistory%,%empty%)",
-        "destination": "playHistory",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%playCount%",
-        "destination": "playCount",
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": true
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%rating%",
-        "destination": "rating",
-        "sequence": 1,
-        "userDefined": true,
         "disabled": false,
         "system": true
       }
@@ -1285,7 +1121,8 @@
         "filterCriteriaId": "923ed06a-442c-4ebd-8441-6f698d1e916a",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "Favorites",
@@ -1293,7 +1130,8 @@
         "filterCriteriaId": "25423af4-ff82-45ad-8f20-8533ee124f94",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "Lyrics",
@@ -1301,7 +1139,8 @@
         "filterCriteriaId": "82abf992-2675-4229-b477-e45a375c226d",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "Multiple performers",
@@ -1309,7 +1148,8 @@
         "filterCriteriaId": "c87d2605-bc6a-4ddd-85d2-84c89d0ebab7",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "Never played",
@@ -1317,7 +1157,8 @@
         "filterCriteriaId": "94b89290-28d9-49a8-8f3e-31a0cbad3e96",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "New releases",
@@ -1325,7 +1166,8 @@
         "filterCriteriaId": "aad2b962-0208-4c26-bfa8-80ab38411ea5",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "History",
@@ -1333,7 +1175,8 @@
         "filterCriteriaId": "24f9822b-8612-4820-a238-0b3a38357956",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "Top Played",
@@ -1341,7 +1184,8 @@
         "filterCriteriaId": "56e82fef-194d-4900-9154-1628471c17df",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       },
       {
         "name": "Top Rated",
@@ -1349,7 +1193,8 @@
         "filterCriteriaId": "e92be678-a068-4465-bb28-258a0a9327d5",
         "transformAlgorithm": 0,
         "favorite": false,
-        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d"
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
       }
     ],
     "filterCriteria": [

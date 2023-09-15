@@ -14,4 +14,6 @@ export class FilterEntity extends ListItemEntity implements IFilterModel {
   favorite: boolean;
   @Column()
   filterTypeId: string;
+  @Column()
+  sync: boolean;
 }

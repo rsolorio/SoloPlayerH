@@ -3,8 +3,8 @@ import { ISongExtendedModel } from "../../models/song-model.interface";
 import { Criteria } from "../criteria/criteria.class";
 
 export interface IExportConfig {
-  profileId: string;
   directories?: string[];
+  lastAddedCount?: number;
   filterId?: string;
   playlistId?: string;
   criteria?: Criteria;

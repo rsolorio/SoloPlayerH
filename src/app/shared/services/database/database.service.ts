@@ -244,8 +244,13 @@ export class DatabaseService {
       this.log.info('Default data already exists.');
       return;
     }
-    const data = await this.getDefaultData();
-    await this.insertDefaultData(data);
+    const defaultData = await this.getJsonData('app.data');
+    await this.insertData(defaultData);
+    const userData = await this.getJsonData('user.data');
+    if (userData) {
+      await this.insertData(userData);
+      await this.updateData(userData);
+    }
     this.log.info('Default data initialized.');
   }
 
@@ -253,8 +258,17 @@ export class DatabaseService {
     return this.dataSource.entityMetadatas.find(m => m.givenTableName === name);
   }
 
-  private async insertDefaultData(defaultDataObj: object): Promise<void> {
-    const tables = defaultDataObj['tables'];
+  /**
+   * Inserts data into the database.
+   * The input object should have the following format:
+   * { "inserts": { "tableName": [{ "columnName": columnValue }] } }
+   * Columns with the name: // are ignored since they are considered "json comments".
+   * All "id" columns are auto populated with a new guid, unless they already have a value.
+   * All "hash" columns are auto populated based on the "name" column, unless they already value a value.
+   * All required columns must have a value.
+   */
+  private async insertData(defaultDataObj: object): Promise<void> {
+    const tables = defaultDataObj['inserts'];
     if (!tables) {
       return;
     }
@@ -289,6 +303,49 @@ export class DatabaseService {
   private async bulkInsertFromTable(tableName: string, entities: any[]): Promise<void> {
     const m = this.findEntityMetadata(tableName);
     await this.bulkInsert(m.target, entities);
+  }
+
+  /**
+   * Updates existing data.
+   * The input object should have the following format:
+   * { "updates": { "tableName": [{ "id": "some-id", "columnName": columnValue }] } }
+   * The id column is used to find the record to update; if the id is not available, it will use the name to find a match.
+   * Columns with the name: // are ignored since they are considered "json comments".
+   * Id columns are not updated.
+   * Any other column can be updated.
+   */
+  private async updateData(defaultDataObj: object): Promise<void> {
+    const tables = defaultDataObj['updates'];
+    if (!tables) {
+      return;
+    }
+
+    for (const tableName of Object.keys(tables)) {
+      const entityMetadata = this.findEntityMetadata(tableName);
+      const targetClass = entityMetadata.target;
+      const rows = tables[tableName];
+      for (const row of rows) {
+        let recordToUpdate: any;
+        // We will query by id or name
+        if (row['id']) {
+          recordToUpdate = await targetClass['findOneBy']({ id: row['id'] });
+        }
+        else if (row['name']) {
+          recordToUpdate = await targetClass['findOneBy']({ name: row['name'] });
+        }
+
+        if (recordToUpdate) {
+          for (const columnName of Object.keys(row)) {
+            // Ignore comments and do not update ids
+            if (columnName === '//' || columnName === 'id') {
+              continue;
+            }
+            recordToUpdate[columnName] = row[columnName];
+          }
+          await recordToUpdate.save();
+        }
+      }
+    }
   }
 
   // END - DB INIT ////////////////////////////////////////////////////////////////////////////////
@@ -846,9 +903,9 @@ export class DatabaseService {
     };
   }
 
-  private getDefaultData(): Promise<object> {
+  private getJsonData(fileName: string): Promise<object> {
     return new Promise<object>(resolve => {
-      const fileUrl = 'assets/json/app.data.json';
+      const fileUrl = `assets/json/${fileName}.json`;
       this.http.get(fileUrl).subscribe(data => {
         resolve(data);
       }, () => {
