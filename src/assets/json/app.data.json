@@ -332,7 +332,7 @@
       {
         "//": "MOOD",
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "No Mood",
+        "name": "Unknown",
         "isClassification": false,
         "sequence": 1
       },

@@ -104,10 +104,18 @@ export class FileElectronService extends FileService {
     let info: IFileInfo;
     try {
       // Stats
-      // atime: access time, the last time the file was read
-      // mtime: modified time, the last time the contents of the file were modified
-      // ctime: changed time, the last time the metadata related to the file was changed
-      // birthtime: the time of the creation of the file
+      // atime
+      // - access time, the last time the file was read
+      // - c#: FileInfo.LastAccessTime
+      // mtime
+      // - modified time, the last time the contents of the file were modified
+      // - c#: FileInfo.LastWriteTime
+      // ctime
+      // - changed time, the last time the metadata related to the file was changed
+      // - c#: FileInfo.LastWriteTime
+      // birthtime
+      // - the time of the creation of the file
+      // - c#: FileInfo.CreationTime
       const fileStat = await promises.stat(path);
       info = {
         isDirectory: fileStat.isDirectory(),

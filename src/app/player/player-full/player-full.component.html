@@ -86,7 +86,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
   </tr>
   <!-- Song Info -->
   <tr class="sp-tr-song-info">
-    <td colspan="3" class="sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
+    <td colspan="3" class="sp-td-song-info sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
       <i *ngIf="song.explicit" [ngClass]="AppAttributeIcons.Explicit" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <i [ngClass]="AppAttributeIcons.SongName" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
@@ -194,7 +194,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
                   <i
                   class="mdi sp-cursor-pointer"
                   (click)="onMoodClick(song)"
-                  [ngClass]="song.mood && song.mood !== 'No Mood' ? AppAttributeIcons.MoodOn : AppAttributeIcons.MoodOff"></i>
+                  [ngClass]="song.mood && song.mood !== 'Unknown' ? AppAttributeIcons.MoodOn : AppAttributeIcons.MoodOff"></i>
                 </td>
                 <!-- Favorite icon -->
                 <td>

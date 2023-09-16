@@ -18,6 +18,11 @@
   text-align: center;
 }
 
+.sp-td-song-info {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 .sp-play-count {
   // Setting the align to super will not work properly because the text is smaller than the rest,
   // so making it 'super' will locate the text on a super position, but relative to its size. For this case
