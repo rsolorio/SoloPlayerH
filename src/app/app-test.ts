@@ -36,13 +36,13 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    await this.testExporter();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
     //await this.readArtist();
     //await this.readPlaylists();
     //await this.readPlaylistSong();
+    await this.testExporter();
   }
 
   private testExporter(): void {

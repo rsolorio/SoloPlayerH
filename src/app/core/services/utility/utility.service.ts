@@ -388,6 +388,17 @@ export class UtilityService {
   }
 
   /**
+   * Converts date to .net ticks.
+   */
+  public toTicks(value: Date): number {
+    // the number of .net ticks at the unix epoch
+    const epochTicks = 621355968000000000;
+    // there are 10000 .net ticks per millisecond
+    const ticksPerMillisecond = 10000;
+    return epochTicks + (value.getTime() * ticksPerMillisecond);
+  }
+
+  /**
    * Ensures the given value has at least the number of specified digits.
    * If the value is 0 and the digits is 0 then it will return an empty string.
    * @param value The value to format
