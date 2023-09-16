@@ -18,7 +18,10 @@ export class ValueLists {
   static PlaylistGroup = {
     id: 'f8ce02a9-a951-4142-a66c-acc81a040053',
     entries: {
-      Default: '042901e6-66da-4d4e-89ea-ae40ab98f7ab'
+      Default: {
+        id: '042901e6-66da-4d4e-89ea-ae40ab98f7ab',
+        name: 'Default'
+      }
     }
   };
   static FilterType = {
@@ -31,29 +34,47 @@ export class ValueLists {
   static AlbumType = {
     id: '6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f',
     entries: {
-      LP: 'c613d1e5-f7b1-4533-92a8-7d57b7906daf'
+      LP: {
+        id: 'c613d1e5-f7b1-4533-92a8-7d57b7906daf',
+        name: 'LP'
+      }
     }
   };
   static ArtistType = {
     id: '5582c562-53c5-4937-af3c-f285ee2cc696',
     entries: {
-      Unknown: '9f0b9c29-5d9b-4086-897a-1b69fc243afc'
+      Unknown: {
+        id: '9f0b9c29-5d9b-4086-897a-1b69fc243afc',
+        name: 'Unknown'
+      }
     }
   };
   static Gender = {
     id: '98270b93-5181-4971-a9b7-140d8f60e081',
     entries: {
-      Unknown: 'a6016ac9-6235-4df2-aed8-d0ec69351137'
+      Unknown: {
+        id: 'a6016ac9-6235-4df2-aed8-d0ec69351137',
+        name: 'Unknown'
+      }
     }
   };
   static Country = {
     id: '794fb6f0-6fe1-4afe-99e9-3976e1b748a5',
     entries: {
-      Unknown: '77aad7f2-044e-4fb1-aed8-65cde38077a4'
+      Unknown: {
+        id: '77aad7f2-044e-4fb1-aed8-65cde38077a4',
+        name: 'Unknown'
+      }
     }
   };
   static Mood = {
-    id: '4f9cbc6b-a841-47a5-8c4d-11197337e95e'
+    id: '4f9cbc6b-a841-47a5-8c4d-11197337e95e',
+    entries: {
+      Unknown: {
+        id: 'b16fc5e7-1c6d-66b9-9cd8-1ca5112b1442',
+        name: 'Unknown'
+      }
+    }
   };
   static PlaylistType = {
     id: '41c17123-ba0a-43ea-bc32-39b3b6d4ed52'
@@ -74,6 +95,12 @@ export class ValueLists {
     id: '9442c907-1e72-4c54-9c1d-d0c731a604af'
   };
   static Language = {
-    id: '65c31ee4-fbba-4086-b4eb-5fa6b2a499f7'
+    id: '65c31ee4-fbba-4086-b4eb-5fa6b2a499f7',
+    entries: {
+      Unknown: {
+        id: 'a1cce2a5-bb02-aa46-693a-76ad7788cd00',
+        name: 'Unknown'
+      }
+    }
   };
 }

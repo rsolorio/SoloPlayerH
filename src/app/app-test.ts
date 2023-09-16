@@ -181,6 +181,8 @@ export class AppTestService {
       }
       song.hasChanges = true;
       song.favorite = row['Favorite'];
+      song.live = row['Live'];
+      song.explicit = row['Explicit'];
       song.rating = parseInt(row['Rating'].toString());
       song.playCount = row['PlayCount'];
       if (row['PlayDate']) {
@@ -224,7 +226,7 @@ export class AppTestService {
       }
     }
 
-    await this.db.bulkUpdate(SongEntity, songs.filter(s => s.hasChanges), ['favorite', 'rating', 'playCount', 'playDate', 'mood']);
+    await this.db.bulkUpdate(SongEntity, songs.filter(s => s.hasChanges), ['favorite', 'rating', 'playCount', 'playDate', 'mood', 'live', 'explicit']);
     console.log('done');
   }
 
@@ -367,7 +369,7 @@ export class AppTestService {
         playlist.favorite = false;
         playlist.imported = false;
         playlist.changeDate = new Date();
-        playlist.groupId = ValueLists.PlaylistGroup.entries.Default;
+        playlist.grouping = ValueLists.PlaylistGroup.entries.Default.name;
         playlist.id = id;
         playlist.name = name;
         playlist.hash = this.lookup.hashPlaylist(playlist.name);

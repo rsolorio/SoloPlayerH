@@ -258,7 +258,7 @@ All standard entities have three main fields:
 ### Playlist table
 - description
 - favorite
-- groupId
+- grouping
   - A field for categorization/grouping purposes
 - changeDate
 

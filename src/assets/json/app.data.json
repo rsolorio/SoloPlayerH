@@ -331,6 +331,7 @@
       },
       {
         "//": "MOOD",
+        "id": "b16fc5e7-1c6d-66b9-9cd8-1ca5112b1442",
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
         "name": "Unknown",
         "isClassification": false,
@@ -841,6 +842,7 @@
         "sequence": 7
       },
       {
+        "id": "a1cce2a5-bb02-aa46-693a-76ad7788cd00",
         "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
         "name": "Unknown",
         "isClassification": true,

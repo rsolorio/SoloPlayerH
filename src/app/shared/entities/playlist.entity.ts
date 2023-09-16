@@ -11,7 +11,7 @@ export class PlaylistEntity extends ListItemEntity implements IPlaylistModel {
   @Column()
   imported: boolean;
   @Column()
-  groupId: string;
+  grouping: string;
   @Column()
   changeDate: Date;
 

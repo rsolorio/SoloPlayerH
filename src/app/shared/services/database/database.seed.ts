@@ -49,3 +49,15 @@ export enum SyncProfileId {
   DefaultPlaylistImport = '2b5878c0-3bcb-46f6-9c0d-c0d5a5049655',
   DefaultExport = '5021cccd-eafc-46ae-b521-f075dda9e105'
 }
+
+export enum ArtistName {
+  Unknown = 'Unknown'
+}
+
+export enum AlbumName {
+  Unknown = 'Unknown'
+}
+
+export enum ImageName {
+  Unknown = 'Unknown'
+}

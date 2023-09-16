@@ -64,7 +64,7 @@ export class ScanPlaylistsService {
     playlist.name = name;
     playlist.favorite = false;
     playlist.imported = true;
-    playlist.groupId = ValueLists.PlaylistGroup.entries.Default;
+    playlist.grouping = ValueLists.PlaylistGroup.entries.Default.name;
     playlist.changeDate = new Date();
     playlist.hash = this.lookupService.hashPlaylist(playlist.name);
     await playlist.save();

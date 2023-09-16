@@ -124,7 +124,7 @@ export class AddToPlaylistComponent implements OnInit {
       newPlaylist.hash = this.lookup.hashPlaylist(name);
       newPlaylist.favorite = false;
       newPlaylist.imported = false;
-      newPlaylist.groupId = ValueLists.PlaylistGroup.entries.Default;
+      newPlaylist.grouping = ValueLists.PlaylistGroup.entries.Default.name;
       newPlaylist.changeDate = new Date();
       await newPlaylist.save();
 

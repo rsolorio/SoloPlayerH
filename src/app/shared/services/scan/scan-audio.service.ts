@@ -25,7 +25,7 @@ import { ValueLists } from '../database/database.lists';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { ISyncSongInfo } from './scan.interface';
 import { In, Not } from 'typeorm';
-import { EntityId, ModuleOptionId, SyncProfileId } from '../database/database.seed';
+import { AlbumName, ArtistName, EntityId, ImageName, ModuleOptionId, SyncProfileId } from '../database/database.seed';
 import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { PartyRelationType } from '../../models/music.enum';
@@ -59,8 +59,6 @@ enum ScanFileMode {
   providedIn: 'root'
 })
 export class ScanAudioService {
-
-  private unknownValue = 'Unknown';
   private scanMode: ScanFileMode;
   private songToProcess: SongEntity;
   /** List of classification types that will be processed. */
@@ -422,7 +420,7 @@ export class ScanAudioService {
     if (!artistName) {
       artistName = this.first(metadata[MetaField.Artist]);
       if (!artistName) {
-        artistName = this.unknownValue;
+        artistName = ArtistName.Unknown
       }
     }
 
@@ -432,16 +430,16 @@ export class ScanAudioService {
     const artistSort = this.first(metadata[MetaField.AlbumArtistSort]);
 
     const newArtist = this.createArtist(artistName, artistSort, artistStylized);
-    newArtist.artistType = artistType ? this.registerValueListEntry(artistType, ValueLists.ArtistType.id, this.existingArtistTypes) : this.unknownValue;
-    newArtist.country = country ? this.registerValueListEntry(country, ValueLists.Country.id, this.existingCountries) : this.unknownValue;
+    newArtist.artistType = artistType ? this.registerValueListEntry(artistType, ValueLists.ArtistType.id, this.existingArtistTypes) : ValueLists.ArtistType.entries.Unknown.name;
+    newArtist.country = country ? this.registerValueListEntry(country, ValueLists.Country.id, this.existingCountries) : ValueLists.Country.entries.Unknown.name;
 
     const existingArtist = this.lookupService.findArtist(newArtist.name, this.existingArtists);
     if (existingArtist) {
-      if (existingArtist.artistType === this.unknownValue && existingArtist.artistType !== newArtist.artistType) {
+      if (existingArtist.artistType === ValueLists.ArtistType.entries.Unknown.name && existingArtist.artistType !== newArtist.artistType) {
         existingArtist.artistType = newArtist.artistType;
         this.setChangesIfNotNew(existingArtist);
       }
-      if (existingArtist.country === this.unknownValue && existingArtist.country !== newArtist.country) {
+      if (existingArtist.country === ValueLists.Country.entries.Unknown.name && existingArtist.country !== newArtist.country) {
         existingArtist.country = newArtist.country;
         this.setChangesIfNotNew(existingArtist);
       }
@@ -465,7 +463,7 @@ export class ScanAudioService {
     const newAlbum = new AlbumEntity();
     newAlbum.name = this.first(metadata[MetaField.Album]);
     if (!newAlbum.name) {
-      newAlbum.name = this.unknownValue;
+      newAlbum.name = AlbumName.Unknown;
     }
 
     const year = this.first(metadata[MetaField.Year]);
@@ -510,8 +508,7 @@ export class ScanAudioService {
     newAlbum.primaryArtistId = artist.id;
     newAlbum.releaseDecade = this.utilities.getDecade(newAlbum.releaseYear);
     const albumType = this.first(metadata[MetaField.AlbumType]);
-    // TODO: Get it from the value list table
-    newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : 'LP';
+    newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP.name;
     newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
@@ -625,13 +622,13 @@ export class ScanAudioService {
     // TODO: add language to value list entry if it doesn't exist
     song.language = this.first(metadata[MetaField.Language]);
     if (!song.language) {
-      song.language = this.unknownValue;
+      song.language = ValueLists.Language.entries.Unknown.name;
     }
 
     // TODO: add mood to value list entry if it doesn't exist
     song.mood = this.first(metadata[MetaField.Mood]);
     if (!song.mood) {
-      song.mood = this.unknownValue;
+      song.mood = ValueLists.Mood.entries.Unknown.name;
     }
 
     // Rating
@@ -755,7 +752,7 @@ export class ScanAudioService {
       }
     }
 
-    return this.unknownValue;
+    return ImageName.Unknown;
   }
 
   private processArtists(metadata: KeyValues, splitSymbols: string[]): ArtistEntity[] {
@@ -836,9 +833,9 @@ export class ScanAudioService {
     artist.favorite = false;
     // Most of the artists are vocal
     artist.vocal = true;
-    artist.artistType = this.unknownValue;
-    artist.artistGender = this.unknownValue;
-    artist.country = this.unknownValue;
+    artist.artistType = ValueLists.ArtistType.entries.Unknown.name;
+    artist.artistGender = ValueLists.Gender.entries.Unknown.name;
+    artist.country = ValueLists.Country.entries.Unknown.name;
     artist.hash = this.lookupService.hashArtist(artistName);
     return artist;
   }
