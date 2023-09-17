@@ -42,7 +42,8 @@ export class AppTestService {
     //await this.readArtist();
     //await this.readPlaylists();
     //await this.readPlaylistSong();
-    await this.testExporter();
+    //await this.testExporter();
+    await this.updatePlayCount();
   }
 
   private testExporter(): void {
@@ -411,5 +412,36 @@ export class AppTestService {
     }
     await this.db.bulkInsert(PlaylistSongEntity, playlistSongs);
     console.log('done');
+  }
+
+  private async updatePlayCount(): Promise<void> {
+    const songs = await SongEntity.find();
+    let songsWithMissingHistory = 0;
+    let songsWithMoreThanOneMissingHistory = 0;
+    for (const song of songs) {
+      const playRecords = await PlayHistoryEntity.findBy({ songId: song.id });
+      if (playRecords.length > song.playCount) {
+        song.playCount = playRecords.length;
+        await song.save();
+        console.log('Song updated with more play count: ' + song.filePath);
+      }
+      else if (playRecords.length < song.playCount) {
+        songsWithMissingHistory++;
+        // Should we actually do something here?
+        // Ideas: whatever date we use, add a second difference between each new record
+        // 1- Epoch date (1970-01-01)
+        // 2- File creation date
+        const dif = song.playCount - playRecords.length;
+        if (dif > 1) {
+          songsWithMoreThanOneMissingHistory++;
+        }
+      }
+    }
+    if (songsWithMissingHistory) {
+      console.log('Songs with missing history: ' + songsWithMissingHistory);
+    }
+    if (songsWithMoreThanOneMissingHistory) {
+      console.log('Songs with more than one missing history: ' + songsWithMoreThanOneMissingHistory);
+    }
   }
 }

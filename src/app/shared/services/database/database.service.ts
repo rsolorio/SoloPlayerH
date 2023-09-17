@@ -400,7 +400,7 @@ export class DatabaseService {
     const response: InsertResult[] = [];
     const bulkInfo = this.getBulkSize(entity, values);
     if (!bulkInfo || !bulkInfo.bulkSize) {
-      this.log.warn('Empty bulk, aborting bulk insert.');
+      this.log.info('Empty bulk, aborting bulk insert.');
       return [];
     }
     // Clone the array to prevent altering the original argument
@@ -427,7 +427,7 @@ export class DatabaseService {
     // all columns in the entity to determine the bulk size.
     const bulkInfo = this.getBulkSize(entity, values);
     if (!bulkInfo || !bulkInfo.bulkSize) {
-      this.log.warn('Empty bulk, aborting bulk update.');
+      this.log.info('Empty bulk, aborting bulk update.');
       return [];
     }
     // Clone the array to prevent altering the original argument

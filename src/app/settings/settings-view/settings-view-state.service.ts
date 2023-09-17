@@ -398,6 +398,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         if (processResult.result.songDeletedRecords.length) {
           syncMessage += ` Deleted: ${processResult.result.songDeletedRecords.length}.`;
         }
+        if (processResult.result.ignoredFiles.length) {
+          syncMessage += ` Ignored: ${processResult.result.ignoredFiles.length}`;
+        }
 
         const setting = this.findSetting('syncAudioFiles');
         if (setting) {

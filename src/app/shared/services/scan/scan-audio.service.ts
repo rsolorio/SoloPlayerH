@@ -1215,7 +1215,7 @@ export class ScanAudioService {
     }
     // This will put the string between quotes (needed for the command) and also escape backslashes (needed for the command)
     let command = JSON.stringify(filePath);
-    command += ' setAddDate ' + this.utility.toTicks(addDate);
+    command += ' setAddDate ' + this.utility.toTicks(addDate, true);
     const result = await this.fileService.runCommand(`"${utilityFilePath}" ${command}`);
     this.log.info(result);
   }
