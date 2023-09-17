@@ -164,7 +164,7 @@ export class DatabaseEntitiesService {
    * Gets a list of artistId/songId/artistName records where the relation type is
    * Featuring or Contributor or Singer.
    */
-  public getNonPrimaryRelations(): Promise<any> {
+  public getNonPrimaryRelations(): Promise<any[]> {
     // TODO: create interface or entity for this query
     const nonPrimaryRelationsQuery = `
       SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName
@@ -176,6 +176,20 @@ export class DatabaseEntitiesService {
       OR relationTypeId = '${PartyRelationType.Singer}'
     `;
     return this.db.run(nonPrimaryRelationsQuery);
+  }
+
+  public getAssociatedArtists(): Promise<any[]> {
+    const associatedArtistsQuery = `
+      SELECT associatedArtist.name AS associatedArtistName, primaryArtist.name AS primaryArtistName, partyRelation.relationTypeId
+      FROM partyRelation
+      INNER JOIN artist AS primaryArtist
+      ON partyRelation.artistId = primaryArtist.id
+      INNER JOIN artist AS associatedArtist
+      ON partyRelation.relatedId = associatedArtist.id
+      WHERE relationTypeId = '${PartyRelationType.Singer}'
+      OR relationTypeId = '${PartyRelationType.Contributor}'
+    `;
+    return this.db.run(associatedArtistsQuery);
   }
 
   public async exportColorSelectionData(): Promise<any> {

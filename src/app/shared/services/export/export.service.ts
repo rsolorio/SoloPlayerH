@@ -173,6 +173,9 @@ export class ExportService {
     }
   }
 
+  /**
+   * Uses the specified criteria to get a list of songs which will be exported as a playlist file.
+   */
   private async exportCriteriaAsPlaylist(namePrefix: string, criteria: Criteria, isSubset: boolean): Promise<void> {
     // Override the number of results with the max number of tracks
     if (this.config.playlistConfig?.maxCount) {
@@ -202,6 +205,9 @@ export class ExportService {
     }
   }
 
+  /**
+   * Exports pre-defined criteria as playlist files.
+   */
   private async exportAutolists(): Promise<void> {
     //await this.createDecadeByLanguagePlaylists();
     await this.createAddYearPlaylists();

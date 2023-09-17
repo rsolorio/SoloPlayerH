@@ -21,6 +21,8 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 
 @Component({
   selector: 'sp-artist-list',
@@ -143,7 +145,8 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService,
     private entities: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
-    private sidebarHostService: SideBarHostStateService
+    private sidebarHostService: SideBarHostStateService,
+    private options: DatabaseOptionsService,
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoute.AlbumArtists);
@@ -163,31 +166,19 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         action: (menuItem, param) => {
           const artist = param as IArtistModel;
           if (artist) {
-            this.showEntity(albumRoute, artist);
+            this.navigateTo(albumRoute, artist);
           }
         }
       });
     }
 
-    const songRoute = appRoutes[AppRoute.Songs];
     this.listModel.itemMenuList.push({
       caption: 'Artist Songs',
       icon: 'mdi-music-box-outline mdi',
       action: (menuItem, param) => {
         const artist = param as IArtistModel;
           if (artist) {
-            this.showEntity(songRoute, artist);
-          }
-      }
-    });
-
-    this.listModel.itemMenuList.push({
-      caption: 'Associated Songs',
-      icon: 'mdi-music-box-multiple-outline mdi',
-      action: (menuItem, param) => {
-        const artist = param as IArtistModel;
-          if (artist) {
-            this.showAssociatedSongs(songRoute, artist);
+            this.navigateTo(appRoutes[AppRoute.Songs], artist);
           }
       }
     });
@@ -205,10 +196,16 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private onArtistClick(artist: IArtistModel): void {
     if (this.isAlbumArtist) {
-      this.showEntity(appRoutes[AppRoute.Albums], artist);
+      this.navigateTo(appRoutes[AppRoute.Albums], artist);
     }
     else {
-      this.showEntity(appRoutes[AppRoute.Songs], artist);
+      const includeAssociatedArtists = this.options.getBoolean(ModuleOptionId.IncludeAssociatedArtistSongs);
+      if (includeAssociatedArtists) {
+        this.showAssociatedSongs(artist);
+      }
+      else {
+        this.navigateTo(appRoutes[AppRoute.Songs], artist);
+      }
     }
   }
 
@@ -221,14 +218,20 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     this.entities.setFavoriteArtist(artist.id, artist.favorite);
   }
 
-  private showEntity(routeInfo: IAppRouteInfo, artist: IArtistModel): void {
+  /**
+   * Navigates to the specified route using the artist as criteria.
+   */
+  private navigateTo(routeInfo: IAppRouteInfo, artist: IArtistModel): void {
     this.addBreadcrumb(artist);
     // No specific criteria, breadcrumbs will be automatically taken by the new entity
-    const criteria = new Criteria('Search Results');
-    this.navigation.forward(routeInfo.route, { criteria: criteria });
+    this.navigation.forward(routeInfo.route, { criteria: new Criteria('Search Results') });
   }
 
-  private async showAssociatedSongs(routeInfo: IAppRouteInfo, artist: IArtistModel): Promise<void> {
+  /**
+   * Creates the default breadcrumb and then adds associated artists (contributors and singers)
+   * to the criteria before navigating to the song list.
+   */
+  private async showAssociatedSongs(artist: IArtistModel): Promise<void> {
     const newBreadcrumb = this.addBreadcrumb(artist);
     const relations = await PartyRelationEntity.findBy({ relatedId: artist.id, relationTypeId: In([PartyRelationType.Contributor, PartyRelationType.Singer])});
     if (relations && relations.length) {
@@ -240,7 +243,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         });
       }
     }
-    this.navigation.forward(routeInfo.route, { criteria: new Criteria('Search Results') });
+    this.navigation.forward(appRoutes[AppRoute.Songs].route, { criteria: new Criteria('Search Results') });
   }
 
   private createBreadcrumb(artist: IArtistModel): IBreadcrumbModel {
@@ -264,6 +267,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         });
       }
     }
+
     return {
       icon: this.isAlbumArtist ? AppEntityIcons.AlbumArtist : AppEntityIcons.Artist,
       criteriaItem: criteriaItem,
@@ -284,7 +288,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
   private openQuickFilterPanel(): void {
     const chips = this.entities.getQuickFiltersForArtists(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(chips, 'Album Artists', 'mdi-account-badge mdi');
+    const model = this.entities.getQuickFilterPanelModel(chips, 'Album Artists', AppEntityIcons.AlbumArtist);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       for (const valuePair of okResult.items) {

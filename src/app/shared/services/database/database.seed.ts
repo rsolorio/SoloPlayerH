@@ -41,7 +41,8 @@ export enum ModuleOptionId {
   IgnoreNumericGenres = '3f4b56c7-167c-4807-afc2-1b6460b7822d',
   ListViewLimit = '05543fcf-c0fe-4608-8187-41c68e4bd1c3',
   MinimumAudioDuration = '0cad8c29-3af4-41c2-b10b-8a9ec7832f30',
-  DefaultExportProfile = '834eab3b-c672-4518-80c8-22b59c1d678a'
+  DefaultExportProfile = '834eab3b-c672-4518-80c8-22b59c1d678a',
+  IncludeAssociatedArtistSongs = '1cf0024d-d5c1-46a8-b89c-06d61c25cd95'
 }
 
 export enum SyncProfileId {
