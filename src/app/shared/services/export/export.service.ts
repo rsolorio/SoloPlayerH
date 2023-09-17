@@ -7,6 +7,7 @@ import { ISongExtendedModel, ISongModel } from '../../models/song-model.interfac
 import {
   SongExpExtendedByArtistViewEntity,
   SongExpExtendedByClassificationViewEntity,
+  SongExpExtendedByPlaylistViewEntity,
   SongExpExtendedViewEntity,
   SongExtendedByArtistViewEntity,
   SongExtendedByClassificationViewEntity,
@@ -187,8 +188,10 @@ export class ExportService {
         isSubset ? SongExpExtendedByArtistViewEntity : SongExtendedByArtistViewEntity, criteria);
     }
     else if (criteria.hasComparison(false, 'playlistId')) {
+      // In theory, playlists should only exported if all songs are being exported (isSubset=false),
+      // but we are supporting filtering by playlistId in both cases just in case
       tracks = await this.db.getList(
-        isSubset ? SongExtendedByPlaylistViewEntity : SongExtendedViewEntity, criteria);
+        isSubset ? SongExpExtendedByPlaylistViewEntity : SongExtendedByPlaylistViewEntity, criteria);
     }
     else {
       tracks = await this.db.getList(

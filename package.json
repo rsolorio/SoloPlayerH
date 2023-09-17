@@ -36,7 +36,7 @@
     "bootstrap": "^4.6.2",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
-    "mp3tag.js": "^3.4.2",
+    "mp3tag.js": "^3.6.0",
     "music-metadata-browser": "^2.5.9",
     "object-hash": "^3.0.0",
     "primeicons": "^1.0.0",

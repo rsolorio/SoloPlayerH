@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as Mp3Tag from 'mp3tag.js';
 import { DataTransformServiceBase } from './data-transform-service-base.class';
 import { IDataSourceService } from '../data-source/data-source.interface';
 import { KeyValues } from 'src/app/core/models/core.interface';
@@ -16,6 +15,7 @@ import { IMetadataWriterOutput } from './data-transform.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
 import { appName } from 'src/app/app-exports';
+const MP3Tag = require('mp3tag.js');
 
 interface IUserDefinedText {
   description: string;
@@ -144,18 +144,18 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
   private async writeMetadata(filePath: string, metadata: KeyValues): Promise<void> {
     const buffer = await this.fileService.getBuffer(filePath);
-    const mp3Tag = new Mp3Tag(buffer, this.log.level === LogLevel.Verbose);
+    const mp3Tag = new MP3Tag(buffer, this.log.level === LogLevel.Verbose);
     // This will initialize the tags object even if the file has no tags
     mp3Tag.read();
     mp3Tag.tags.v2 = await this.setupV2Tags(metadata);
     // Save to v2.4
-    mp3Tag.save({ id3v2: { version: 4 } });
+    mp3Tag.save({ id3v2: { include: undefined, unsynch: undefined, padding: undefined, version: 4 } });
     if (mp3Tag.error) {
       console.error(mp3Tag.error);
     }
     else {
       mp3Tag.read();
-      await this.fileService.writeBuffer(filePath, mp3Tag.buffer);
+      await this.fileService.writeBuffer(filePath, mp3Tag.buffer as Buffer);
     }
   }
 
@@ -305,11 +305,20 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }];
     }
 
-    // const playCount = this.first(metadata[MetaField.PlayCount]);
-    // if (playCount) {
-    //   // This is not supported
-    //   tags.PCNT = playCount;
-    // }
+    const playCount = this.first(metadata[MetaField.PlayCount]);
+    if (playCount) {
+      tags.PCNT = playCount.toString();
+    }
+
+    const rating = this.first(metadata[MetaField.Rating]);
+    if (rating) {
+      tags.POPM = [{
+        // TODO: use module option
+        email: appName,
+        rating: this.convert5To255(rating),
+        counter: playCount ? playCount : 0
+      }];
+    }
 
     const udTexts = this.createUserDefineLists(metadata, [
       MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument

@@ -42,8 +42,8 @@ export class AppTestService {
     //await this.readArtist();
     //await this.readPlaylists();
     //await this.readPlaylistSong();
-    //await this.testExporter();
-    await this.updatePlayCount();
+    await this.testExporter();
+    //await this.updatePlayCount();
   }
 
   private testExporter(): void {

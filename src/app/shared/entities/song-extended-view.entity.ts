@@ -42,10 +42,10 @@ export class SongExtendedByClassificationViewEntity extends SongExtendedViewBase
 @ViewEntity({
   name: 'songExtendedByPlaylist',
   expression: `
-  ${songExtendedViewSelect}, songClassification.classificationId AS classificationId
+  ${songExtendedViewSelect}, playlistSong.playlistId, playlistSong.songId, playlistSong.sequence
   ${songViewBaseJoins.replace('%songTable%', 'song')}
-  INNER JOIN songClassification
-  ON song.id = songClassification.songId
+  INNER JOIN playlistSong
+  ON song.id = playlistSong.songId
 `})
 export class SongExtendedByPlaylistViewEntity extends SongExtendedViewBaseEntity {
   @ViewColumn()
@@ -95,10 +95,10 @@ export class SongExpExtendedByClassificationViewEntity extends SongExtendedViewB
 @ViewEntity({
   name: 'songExpExtendedByPlaylist',
   expression: `
-  ${songExtendedViewSelect}, songClassification.classificationId AS classificationId
+  ${songExtendedViewSelect}, playlistSong.playlistId, playlistSong.songId, playlistSong.sequence
   ${songViewBaseJoins.replace('%songTable%', 'songExport')}
-  INNER JOIN songClassification
-  ON song.id = songClassification.songId
+  INNER JOIN playlistSong
+  ON song.id = playlistSong.songId
 `})
 export class SongExpExtendedByPlaylistViewEntity extends SongExtendedViewBaseEntity {
   @ViewColumn()
