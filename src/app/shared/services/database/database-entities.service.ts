@@ -359,25 +359,30 @@ export class DatabaseEntitiesService {
     result.paging.distinct = filterCriteria.distinct;
     result.paging.pageSize = filterCriteria.limit;
     result.random = filterCriteria.random;
+
     for (const filterCriteriaItem of filterCriteriaItems) {
-      const criteriaItem = new CriteriaItem(filterCriteriaItem.columnName);
-      criteriaItem.id = filterCriteriaItem.id;
+      // Find existing criteria item
+      let criteriaItem = result.searchCriteria.find(i => i.columnName === filterCriteriaItem.columnName);
+      if (!criteriaItem) {
+        criteriaItem = new CriteriaItem(filterCriteriaItem.columnName);
+        criteriaItem.id = filterCriteriaItem.id;
+        criteriaItem.comparison = filterCriteriaItem.comparison;
+        criteriaItem.valuesOperator = filterCriteriaItem.valuesOperator;
+        criteriaItem.expressionOperator = filterCriteriaItem.expressionOperator;
+        criteriaItem.sortDirection = filterCriteriaItem.sortDirection;
+        criteriaItem.sortSequence = filterCriteriaItem.sortSequence;
+        criteriaItem.ignoreInSelect = filterCriteriaItem.ignoreInSelect;
+        criteriaItem.isRelativeDate = filterCriteriaItem.isRelativeDate;
+        if (filterCriteriaItem.displayName) {
+          criteriaItem.displayName = filterCriteriaItem.displayName;
+        }
+        if (filterCriteriaItem.displayValue) {
+          criteriaItem.displayValue = filterCriteriaItem.displayValue;
+        }
+      }
       if (filterCriteriaItem.columnValue) {
         criteriaItem.columnValues.push({ value: filterCriteriaItem.columnValue});
-      }
-      criteriaItem.comparison = filterCriteriaItem.comparison;
-      criteriaItem.valuesOperator = filterCriteriaItem.valuesOperator;
-      criteriaItem.expressionOperator = filterCriteriaItem.expressionOperator;
-      criteriaItem.sortDirection = filterCriteriaItem.sortDirection;
-      criteriaItem.sortSequence = filterCriteriaItem.sortSequence;
-      criteriaItem.ignoreInSelect = filterCriteriaItem.ignoreInSelect;
-      criteriaItem.isRelativeDate = filterCriteriaItem.isRelativeDate;
-      if (filterCriteriaItem.displayName) {
-        criteriaItem.displayName = filterCriteriaItem.displayName;
-      }
-      if (filterCriteriaItem.displayValue) {
-        criteriaItem.displayValue = filterCriteriaItem.displayValue;
-      }
+      }      
 
       // We assume search and sorting criteria about the same field come
       // in different criteria items.

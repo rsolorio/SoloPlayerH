@@ -731,9 +731,22 @@ export class DatabaseService {
       const parameter = {};
       parameter[parameterName] = valuePair.value;
       if (hasWhere) {
-        // The OR operator is for conditions using the same column
-        // TODO: when all values are using "NOT EQUALS" the operator should be AND; maybe a valuesOperator property?
-        builder = builder.orWhere(where, parameter);
+        if (criteriaItem.valuesOperator === CriteriaJoinOperator.Auto) {
+          // when all values are using "NOT EQUALS" the operator should be AND
+          if (criteriaItem.comparison === CriteriaComparison.NotEquals) {
+            builder = builder.andWhere(where, parameter);
+          }
+          // For anything else use OR
+          else {
+            builder = builder.orWhere(where, parameter);
+          }
+        }
+        else if (criteriaItem.valuesOperator === CriteriaJoinOperator.And) {
+          builder = builder.andWhere(where, parameter);
+        }
+        else if (criteriaItem.valuesOperator === CriteriaJoinOperator.Or) {
+          builder = builder.orWhere(where, parameter);
+        }
       }
       else {
         builder = builder.where(where, parameter);
