@@ -233,9 +233,17 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
    */
   private async showAssociatedSongs(artist: IArtistModel): Promise<void> {
     const newBreadcrumb = this.addBreadcrumb(artist);
-    const relations = await PartyRelationEntity.findBy({ relatedId: artist.id, relationTypeId: In([PartyRelationType.Contributor, PartyRelationType.Singer])});
-    if (relations && relations.length) {
-      const relatedArtists = await ArtistEntity.findBy({ id: In(relations.map(r => r.artistId)) });
+    // When you select a band, also show music from its associated singers
+    const singers = await PartyRelationEntity.findBy({ artistId: artist.id, relationTypeId: PartyRelationType.Singer });
+    let associatedArtistIds = singers.map(s => s.relatedId);
+
+    // When you select an artist, also show music where the artist is contributors with other artists
+    const contributors = await PartyRelationEntity.findBy({ relatedId: artist.id, relationTypeId: PartyRelationType.Contributor });
+    associatedArtistIds = associatedArtistIds.concat(contributors.map(c => c.artistId));
+
+    // Add artists to the breadcrumbs
+    if (associatedArtistIds.length) {
+      const relatedArtists = await ArtistEntity.findBy({ id: In(this.utility.removeDuplicates(associatedArtistIds)) });
       for (const relatedArtist of relatedArtists) {
         newBreadcrumb.criteriaItem.columnValues.push({
           value: relatedArtist.id,
@@ -243,6 +251,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         });
       }
     }
+
     this.navigation.forward(appRoutes[AppRoute.Songs].route, { criteria: new Criteria('Search Results') });
   }
 

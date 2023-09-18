@@ -1203,7 +1203,7 @@
         "name": "Top Rated",
         "description": "Tracks with top rating, random order",
         "filterCriteriaId": "e92be678-a068-4465-bb28-258a0a9327d5",
-        "transformAlgorithm": 0,
+        "transformAlgorithm": 1,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
         "sync": true
