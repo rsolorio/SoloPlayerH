@@ -45,8 +45,10 @@ export enum TimeAgo {
 }
 
 export enum MimeType {
+  Unknown = '',
   Jpg = 'image/jpeg',
-  Mp3 = 'audio/mpeg'
+  Mp3 = 'audio/mpeg',
+  Flac = 'audio/flac'
 }
 
 export enum Separator {

@@ -10,7 +10,7 @@ import { IRouteInfo, ISize } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
-import { TimeAgo } from '../../models/core.enum';
+import { MimeType, TimeAgo } from '../../models/core.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -614,6 +614,22 @@ export class UtilityService {
    */
   public fileToUrl(filePath: string): string {
     return 'file://' + this.preEncodeFilePath(filePath);
+  }
+
+
+  public getMimeType(extension: string): MimeType {
+    const ext = extension.toLowerCase();
+    switch (ext) {
+      case 'jpg':
+      case 'jpeg':
+        return MimeType.Jpg;
+      case 'mp3':
+        return MimeType.Mp3;
+      case 'flac':
+        return MimeType.Flac;
+      default:
+        return MimeType.Unknown;
+    }
   }
 
   public downloadUrl(url: string, fileName?: string): void {

@@ -5,7 +5,6 @@ import { DialogService } from "./platform/dialog/dialog.service";
 import { FileService } from "./platform/file/file.service";
 import { AudioMetadataService } from "./platform/audio-metadata/audio-metadata.service";
 import { LogService } from "./core/services/log/log.service";
-import { MimeType } from "./core/models/core.enum";
 import { DatabaseService } from "./shared/services/database/database.service";
 import { DatabaseEntitiesService } from "./shared/services/database/database-entities.service";
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
@@ -13,6 +12,7 @@ import { ArtistEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, So
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
+const MP3Tag = require('mp3tag.js');
 
 /**
  * This is a service for testing purposes only.
@@ -35,14 +35,14 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    //await this.logFileMetadata();
+    await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
     //await this.readArtist();
     //await this.readPlaylists();
     //await this.readPlaylistSong();
-    await this.testExporter();
+    //await this.testExporter();
     //await this.updatePlayCount();
   }
 
@@ -56,12 +56,17 @@ export class AppTestService {
   private async logFileMetadata(): Promise<void> {
     const selectedFiles = this.dialog.openFileDialog();
     if (selectedFiles && selectedFiles.length) {
+      // File info
       const fileInfo = await this.fileService.getFileInfo(selectedFiles[0]);
-      const buffer = await this.fileService.getBuffer(fileInfo.path);
-      const audioInfo = await this.metadataService.getMetadata(buffer, MimeType.Mp3, true);
-      // As warning to bypass the default log config
       this.log.warn('File info.', fileInfo);
-      this.log.warn('Audio info.', audioInfo);
+      const buffer = await this.fileService.getBuffer(fileInfo.path);
+      // Use music-metadata
+      const audioInfo = await this.metadataService.getMetadata(buffer, this.utility.getMimeType(fileInfo.extension.replace('.', '')), true);      
+      this.log.warn('music-metadata.', audioInfo);
+      // Use mp3tag
+      const mp3Tag = new MP3Tag(buffer, true);
+      mp3Tag.read();
+      this.log.warn('mp3tag.js', mp3Tag.tags);
     }
   }
 
