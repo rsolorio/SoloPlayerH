@@ -46,6 +46,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public AppPlayerIcons = AppPlayerIcons;
   public AppFeatureIcons = AppFeatureIcons;
   public AppAttributeIcons = AppAttributeIcons;
+  public AppActionIcons = AppActionIcons;
   public images: RelatedImageEntity[] = [];
   public selectedImageIndex = -1;
   public contributors: string;
