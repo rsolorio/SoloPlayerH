@@ -8,10 +8,11 @@ import { LogService } from "./core/services/log/log.service";
 import { DatabaseService } from "./shared/services/database/database.service";
 import { DatabaseEntitiesService } from "./shared/services/database/database-entities.service";
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
-import { ArtistEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, SongClassificationEntity, SongEntity, ValueListEntryEntity } from "./shared/entities";
+import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, SongClassificationEntity, SongEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
+import { IsNull } from "typeorm";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -44,6 +45,7 @@ export class AppTestService {
     //await this.readPlaylistSong();
     //await this.testExporter();
     //await this.updatePlayCount();
+    //await this.insertFilters();
   }
 
   private testExporter(): void {
@@ -448,5 +450,64 @@ export class AppTestService {
     if (songsWithMoreThanOneMissingHistory) {
       console.log('Songs with more than one missing history: ' + songsWithMoreThanOneMissingHistory);
     }
+  }
+
+  private async insertFilters(): Promise<void> {
+    // const dataToInsert: any = {
+    //   inserts: {
+    //     filter: [],
+    //     filterCriteria: [],
+    //     filterCriteriaItem: []
+    //   }
+    // };
+
+    // const data = await this.db.getJsonData('user.data');
+    // const tables = data['inserts'];
+
+    // const filterRows = tables['filter'];
+    // for (const row of filterRows) {
+    //   let filter: FilterEntity;
+    //   if (row['id']) {
+    //     filter = await FilterEntity.findOneBy({ id: row['id']})
+    //   }
+    //   else if (row['name']) {
+    //     filter = await FilterEntity.findOneBy({ name: row['name']})
+    //   }
+
+    //   if (!filter) {
+    //     dataToInsert.inserts.filter.push(row);
+    //   }
+    // }
+
+    // const filterCriteriaRows = tables['filterCriteria'];
+    // for (const row of filterCriteriaRows) {
+    //   let filterCriteria: FilterCriteriaEntity;
+    //   if (row['id']) {
+    //     filterCriteria = await FilterCriteriaEntity.findOneBy({ id: row['id']})
+    //   }
+    //   if (!filterCriteria) {
+    //     dataToInsert.inserts.filterCriteria.push(row);
+    //   }
+    // }
+
+    // const filterCriteriaItemRows = tables['filterCriteriaItem'];
+    // for (const row of filterCriteriaItemRows) {
+    //   let filterCriteriaItem: FilterCriteriaItemEntity;
+    //   if (row['columnName']) {
+    //     if (row['columnValue']) {
+    //       filterCriteriaItem = await FilterCriteriaItemEntity.findOneBy({
+    //         columnName: row['columnName'], columnValue: row['columnValue'].toString(), filterCriteriaId: row['filterCriteriaId'] })
+    //     }
+    //     else {
+    //       filterCriteriaItem = await FilterCriteriaItemEntity.findOneBy({ columnName: row['columnName'], columnValue: IsNull(), filterCriteriaId: row['filterCriteriaId'] })
+    //     }
+    //   }
+    //   if (!filterCriteriaItem) {
+    //     dataToInsert.inserts.filterCriteriaItem.push(row);
+    //   }
+    // }
+
+    // await this.db.insertData(dataToInsert);
+    console.log('done');
   }
 }

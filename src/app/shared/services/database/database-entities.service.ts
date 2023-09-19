@@ -359,10 +359,18 @@ export class DatabaseEntitiesService {
     result.paging.distinct = filterCriteria.distinct;
     result.paging.pageSize = filterCriteria.limit;
     result.random = filterCriteria.random;
+    result.transformAlgorithm = filter.transformAlgorithm;
 
     for (const filterCriteriaItem of filterCriteriaItems) {
       // Find existing criteria item
-      let criteriaItem = result.searchCriteria.find(i => i.columnName === filterCriteriaItem.columnName);
+      let criteriaItem: CriteriaItem;
+      if (filterCriteriaItem.sortSequence === 0) {
+        criteriaItem = result.searchCriteria.find(i => i.columnName === filterCriteriaItem.columnName);
+      }
+      else {
+        criteriaItem = result.sortingCriteria.find(i => i.columnName === filterCriteriaItem.columnName);
+      }
+      
       if (!criteriaItem) {
         criteriaItem = new CriteriaItem(filterCriteriaItem.columnName);
         criteriaItem.id = filterCriteriaItem.id;
@@ -379,18 +387,18 @@ export class DatabaseEntitiesService {
         if (filterCriteriaItem.displayValue) {
           criteriaItem.displayValue = filterCriteriaItem.displayValue;
         }
+
+        // We assume search and sorting criteria about the same field come
+        // in different criteria items.
+        if (criteriaItem.sortSequence > 0) {
+          result.sortingCriteria.push(criteriaItem);
+        }
+        else {
+          result.searchCriteria.push(criteriaItem);
+        }
       }
       if (filterCriteriaItem.columnValue) {
         criteriaItem.columnValues.push({ value: filterCriteriaItem.columnValue});
-      }      
-
-      // We assume search and sorting criteria about the same field come
-      // in different criteria items.
-      if (criteriaItem.sortSequence > 0) {
-        result.sortingCriteria.push(criteriaItem);
-      }
-      else {
-        result.searchCriteria.push(criteriaItem);
       }
     }
     return result;

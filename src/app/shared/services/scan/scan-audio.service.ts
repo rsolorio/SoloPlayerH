@@ -335,8 +335,10 @@ export class ScanAudioService {
       this.songToProcess.hasChanges = true;
     }
 
-    // Replaced?
+    /** Was the song file replaced with a different one? */
     let replaced = false;
+    // Use the following properties to determine if the file changed:
+    // seconds, bitrate, frequency, replayGain, fileSize
     let seconds = this.first(metadata[MetaField.Seconds]);
     if (seconds) {
       seconds = this.utility.round(seconds, 4);
@@ -375,7 +377,6 @@ export class ScanAudioService {
       replaced = true;
     }
 
-    // Add date
     let fileAddDate = this.first(metadata[MetaField.AddDate]);
     if (!fileAddDate) {
       fileAddDate = new Date();
@@ -384,8 +385,6 @@ export class ScanAudioService {
     if (!fileChangeDate) {
       fileChangeDate = new Date();
     }
-    // TODO: also use the metadata change date?
-
 
     // Add date should not be older than change date
     if (fileAddDate > fileChangeDate) {
@@ -402,15 +401,15 @@ export class ScanAudioService {
       this.log.warn('Setting older creation date for file: ' + this.songToProcess.filePath);
     }
 
-    if (this.songToProcess.hasChanges) {
-      this.songToProcess.changeDate = new Date();
-    }
-
     if (replaced) {
       this.songToProcess.replaceDate = new Date();
-      // We want to notify the process this file changed but prevent changing the changeDate
-      // if other properties didn't change so that's why we have this line after validating hasChanges
+      // If the file was replaced turn on the flag to save the new data,
+      // and also to update the changeDate
       this.songToProcess.hasChanges = true;
+    }
+
+    if (this.songToProcess.hasChanges) {
+      this.songToProcess.changeDate = new Date();
     }
 
     // Images

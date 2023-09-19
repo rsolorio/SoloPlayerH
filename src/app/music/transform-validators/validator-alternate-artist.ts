@@ -8,20 +8,18 @@ import { ListTransformValidatorBase } from "src/app/shared/services/list-transfo
  */
 export class ValidatorAlternateArtist extends ListTransformValidatorBase<ISongModel> {
 
-  private previousArtistId: string;
-
-  protected get canBeReset(): boolean {
-    return false;
-  }
+  private previousArtistIds: string[] = [];
 
   /** Returns "true" if the artist is different than the previous artist; returns "false" otherwise. */
   protected innerValidate(item: ISongModel): boolean {
-    var currentArtistId = item.primaryArtistId;
-
-    if (this.previousArtistId !== currentArtistId) {
-      this.previousArtistId = currentArtistId;
+    if (!this.previousArtistIds.includes(item.primaryArtistId)) {
+      this.previousArtistIds.push(item.primaryArtistId);
       return true;
     }
     return false;
+  }
+
+  protected innerReset(): void {
+    this.previousArtistIds = [];
   }
 }

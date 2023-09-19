@@ -38,6 +38,7 @@ export interface ISongModel extends IListItemModel {
   explicit: boolean;
   // Dates
   addDate: Date;
+  changeDate: Date;
   playDate: Date;
 
   // Join info

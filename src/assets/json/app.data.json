@@ -1132,7 +1132,7 @@
     ],
     "filter": [
       {
-        "name": "Recently added",
+        "name": "Recently Added",
         "description": "Last 300 tracks added",
         "filterCriteriaId": "923ed06a-442c-4ebd-8441-6f698d1e916a",
         "transformAlgorithm": 0,
@@ -1159,7 +1159,7 @@
         "sync": true
       },
       {
-        "name": "Multiple performers",
+        "name": "Multiple Performers",
         "description": "Tracks with more than one performer, random order",
         "filterCriteriaId": "c87d2605-bc6a-4ddd-85d2-84c89d0ebab7",
         "transformAlgorithm": 0,
@@ -1168,7 +1168,7 @@
         "sync": true
       },
       {
-        "name": "Never played",
+        "name": "Never Played",
         "description": "300 tracks without play count, random order",
         "filterCriteriaId": "94b89290-28d9-49a8-8f3e-31a0cbad3e96",
         "transformAlgorithm": 0,
@@ -1177,7 +1177,7 @@
         "sync": true
       },
       {
-        "name": "New releases",
+        "name": "New Releases",
         "description": "Last 300 tracks released",
         "filterCriteriaId": "aad2b962-0208-4c26-bfa8-80ab38411ea5",
         "transformAlgorithm": 0,

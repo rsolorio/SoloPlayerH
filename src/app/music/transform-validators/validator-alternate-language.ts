@@ -18,6 +18,7 @@ export class ValidatorAlternateLanguage extends ListTransformValidatorBase<ISong
   protected innerValidate(item: ISongModel): boolean {
     var currentLanguage = item.language;
 
+    // TODO: validate against a list of languages (like the artist validator) instead of just one
     if (this.previousLanguage !== currentLanguage) {
       this.previousLanguage = currentLanguage;
       return true;

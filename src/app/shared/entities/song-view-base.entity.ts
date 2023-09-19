@@ -8,7 +8,7 @@ song.primaryAlbumId, song.filePath, song.fileExtension, song.fileSize,
 song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.rating, song.playCount,
 song.performerCount, song.genre, song.mood, song.language, song.lyrics,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr,
-song.favorite, song.live, song.explicit, song.addDate, song.playDate,
+song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate,
 album.name AS primaryAlbumName, album.primaryArtistId AS primaryArtistId,
 artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
 `;
@@ -99,6 +99,8 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   addDate: Date;
   @ViewColumn()
+  changeDate: Date;
+  @ViewColumn()
   playDate: Date;
   // Join info  
   @ViewColumn()
@@ -166,8 +168,6 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   tempo: number;
   @ViewColumn()
   addYear: number;
-  @ViewColumn()
-  changeDate: Date;
   @ViewColumn()
   replaceDate: Date;
   @ViewColumn()
