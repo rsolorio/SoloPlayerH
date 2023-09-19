@@ -543,18 +543,21 @@
       },
       {
         "//": "SUBGENRE",
+        "id": "382c8a82-628b-d0d2-f372-8a0fec71b1fb",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Acoustic",
         "isClassification": true,
         "sequence": 1
       },
       {
+        "id": "ac5e9051-e6b5-d5ca-4a51-711ecee047bb",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Ballad",
         "isClassification": true,
         "sequence": 2
       },
       {
+        "id": "03f8f463-bd8d-42da-19df-312059d75d6b",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Banda",
         "isClassification": true,
@@ -884,6 +887,7 @@
         "sequence": 3
       },
       {
+        "id": "655130cd-5cb4-bbe2-5aa0-ae9299ba600e",
         "valueListTypeId": "1eacb5b1-6438-4d41-aa1e-80b10c051fc4",
         "name": "Christmas",
         "isClassification": true,
@@ -1335,6 +1339,19 @@
         "displayValue": "0"
       },
       {
+        "filterCriteriaId": "94b89290-28d9-49a8-8f3e-31a0cbad3e96",
+        "columnName": "addDate",
+        "comparison": 0,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 0,
+        "sortSequence": 1,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Sort By",
+        "displayValue": "Add Date"
+      },
+      {
         "filterCriteriaId": "aad2b962-0208-4c26-bfa8-80ab38411ea5",
         "columnName": "releaseYear",
         "comparison": 0,
@@ -1385,7 +1402,21 @@
         "ignoreInSelect": false,
         "isRelativeDate": false,
         "displayName": "Sort By",
-        "displayValue": "Play Date Desc"
+        "displayValue": "Play Date"
+      },
+      {
+        "filterCriteriaId": "56e82fef-194d-4900-9154-1628471c17df",
+        "columnName": "playCount",
+        "columnValue": 0,
+        "comparison": 3,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 0,
+        "sortSequence": 0,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Play Count",
+        "displayValue": "0"
       },
       {
         "filterCriteriaId": "56e82fef-194d-4900-9154-1628471c17df",
@@ -1398,7 +1429,7 @@
         "ignoreInSelect": false,
         "isRelativeDate": false,
         "displayName": "Sort By",
-        "displayValue": "Play Count Desc"
+        "displayValue": "Play Count"
       },
       {
         "filterCriteriaId": "e92be678-a068-4465-bb28-258a0a9327d5",
