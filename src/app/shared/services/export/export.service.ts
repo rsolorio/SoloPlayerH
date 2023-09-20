@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IExportConfig } from './export.interface';
 import { DatabaseEntitiesService } from '../database/database-entities.service';
 import { DatabaseService, IColumnQuery, IResultsIteratorOptions } from '../database/database.service';
-import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
+import { FilterEntity, PlaylistEntity, SongExportEntity, SongViewEntity, ValueListEntryEntity } from '../../entities';
 import { ISongExtendedModel, ISongModel } from '../../models/song-model.interface';
 import {
   SongExpExtendedByArtistViewEntity,
@@ -209,9 +209,21 @@ export class ExportService {
    * Exports pre-defined criteria as playlist files.
    */
   private async exportAutolists(): Promise<void> {
+    // These playlists can be configured in the database
+    await this.exportIteratorPlaylists();
+    // These playlists can only be implemented in code
+    await this.exportHardcodedPlaylists();
+  }
+
+  private async exportIteratorPlaylists(): Promise<void> {
     //await this.createDecadeByLanguagePlaylists();
     await this.createAddYearPlaylists();
     await this.createBestByDecadePlaylists();
+    await this.createMoodPlaylists();
+  }
+
+  private async exportHardcodedPlaylists(): Promise<void> {
+    await this.createRandomPlaylists();
     // TODO: use the value list table to get the list of types
     await this.createClassificationTypePlaylists('Subgenre', ValueLists.Subgenre.id);
     await this.createClassificationTypePlaylists('Instrument', ValueLists.Instrument.id);
@@ -248,6 +260,14 @@ export class ExportService {
     await this.createIteratorPlaylists([columnQuery], 'Best', '%releaseDecade%\'s', [extraCriteriaItem]);
   }
 
+  private async createMoodPlaylists(): Promise<void> {
+    const valuesCriteria = new Criteria();
+    valuesCriteria.paging.distinct = true;
+    valuesCriteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown', CriteriaComparison.NotEquals));
+    const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'mood' }};
+    await this.createIteratorPlaylists([columnQuery], 'Mood', '%mood%');
+  }
+
   private async createClassificationTypePlaylists(prefix: string, classificationTypeId: string): Promise<void> {
     const classifications = await ValueListEntryEntity.findBy({ valueListTypeId: classificationTypeId });
     for (const classification of classifications) {
@@ -258,7 +278,9 @@ export class ExportService {
   private async createClassificationPlaylists(prefix: string, playlistName: string, classificationId: string): Promise<void> {
     const criteria = new Criteria(playlistName);
     criteria.paging.distinct = true;
-    criteria.searchCriteria.push(new CriteriaItem('classificationId', classificationId));
+    const criteriaItem = new CriteriaItem('classificationId', classificationId);
+    criteriaItem.ignoreInSelect = true;
+    criteria.searchCriteria.push(criteriaItem);
     await this.exportCriteriaAsPlaylist(prefix, criteria, this.config.songExportEnabled);
   }
 
@@ -286,5 +308,28 @@ export class ExportService {
     };
     input.playlistConfig.prefix = prefix; // We override the prefix
     await this.playlistWriter.process(input);
+  }
+
+  private async createRandomPlaylists(): Promise<void> {
+    // Number of songs to be retrieved by the query
+    const totalSongCount = 1000;
+    // How long each playlist will be
+    const playlistSongCount = 200;
+
+    const criteria = new Criteria();
+    criteria.paging.pageSize = totalSongCount;
+    criteria.random = true;
+
+    criteria.searchCriteria.push(new CriteriaItem('rating', 4, CriteriaComparison.LessThan));
+    criteria.searchCriteria.push(new CriteriaItem('playCount', 0));
+    criteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown'));
+
+    const tracks = await this.db.getList(SongExtendedViewEntity, criteria);
+    let playlistIndex = 0;
+    while (tracks.length) {
+      playlistIndex++;
+      const subset = tracks.splice(0, playlistSongCount);
+      await this.processPlaylist(subset, new Criteria(`Unplayed #${playlistIndex}`), 'Random');
+    }
   }
 }
