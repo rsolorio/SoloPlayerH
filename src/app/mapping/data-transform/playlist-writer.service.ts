@@ -12,7 +12,7 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 @Injectable({
   providedIn: 'root'
 })
-export class PlaylistWriterService extends DataTransformServiceBase<IExportConfig, ISongModel, any> {
+export class PlaylistWriterService extends DataTransformServiceBase<IExportConfig, ISongModel, boolean> {
   private rootPath: string;
   /** Current input configuration from the process method. */
   private config: IPlaylistExportConfig;
@@ -27,14 +27,14 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     this.rootPath = profile.directories[0];
   }
 
-  public async process(input: IExportConfig): Promise<void> {
+  public async process(input: IExportConfig): Promise<boolean> {
     this.config = input.playlistConfig;
     // Setup defaults
     this.config.minCount = this.config.minCount ? this.config.minCount : 10;
     this.config.maxCount = this.config.maxCount ? this.config.maxCount : 1000;
     // Do not go any further if we don't have enough items
     if (input.songs.length < this.config.minCount) {
-      return;
+      return false;
     }
     // Prepare directory path if needed
     if (!this.config.path) {
@@ -67,7 +67,7 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     const filePath = this.config.path + fileName + extension;
 
     if (this.fileService.exists(filePath)) {
-      return;
+      return false;
     }
 
     // TODO: use getData and mappings to setup playlist info
@@ -80,9 +80,12 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
       fileLines = this.createM3u(slicedSongs);
     }
 
-    if (fileLines.length) {
-      await this.fileService.writeText(filePath, fileLines.join('\n'));
+    if (!fileLines.length) {
+      return false;
     }
+
+    await this.fileService.writeText(filePath, fileLines.join('\n'));
+    return true;
   }
 
   protected getData(input: ISongModel): Promise<KeyValues> {

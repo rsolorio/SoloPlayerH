@@ -40,3 +40,13 @@ export interface IPlaylistExportConfig {
   /** The maximum number of tracks to include in a playlist. */
   maxCount?: number;
 }
+
+export interface IExportResult {
+  directoryPath: string;
+  directoryName: string;
+  totalFileCount: number;
+  finalFileCount: number;
+  smartlistCount: number;
+  autolistCount: number;
+  playlistCount: number;
+}

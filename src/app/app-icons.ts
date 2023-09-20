@@ -116,7 +116,8 @@ export enum AppActionIcons {
   Export = 'mdi-application-export mdi',
   ImportToDb = 'mdi-database-import mdi',
   ExportFromDb = 'mdi-database-export mdi',
-  LevelUp = 'mdi-arrow-up-right-bold mdi'
+  LevelUp = 'mdi-arrow-up-right-bold mdi',
+  Config = 'mdi-tools mdi'
 }
 
 export enum AppPlayerIcons {

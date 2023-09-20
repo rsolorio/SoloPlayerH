@@ -21,6 +21,9 @@ import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { AppTestService } from 'src/app/app-test';
+import { ExportService } from 'src/app/shared/services/export/export.service';
+import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
+import { IExportResult } from 'src/app/shared/services/export/export.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +40,11 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private scanner: ScanService,
     private log: LogService,
     private tester: AppTestService,
-    private events: EventsService)
+    private events: EventsService,
+    private exporter: ExportService)
   {
     this.subscribeToScanEvents();
+    this.subscribeToExportEvents();
   }
 
   public getState(): ISettingCategory[] {
@@ -125,6 +130,74 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       setting.disabled = true;
       setting.running = true;
       setting.dynamicText = `Track added: ${scanTrackInfo.progress} - ${scanTrackInfo.item.name} - ${scanTrackInfo.item.duration}`;
+    });
+  }
+
+  private subscribeToExportEvents(): void {
+    this.events.onEvent<IMetadataWriterOutput>(AppEvent.ExportAudioFileEnd).subscribe(exportAudioResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.descriptions[0] = 'Exporting tracks to...';
+      setting.dynamicText = exportAudioResult.destinationPath;
+    });
+    this.events.onEvent<IExportResult>(AppEvent.ExportSmartlistsStart).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.descriptions[0] = 'Exporting smartlists to...';
+      setting.dynamicText = 'Path: ' + exportResult.directoryPath;
+      if (exportResult.directoryName) {
+        setting.dynamicText += '. Folder: ' + exportResult.directoryName;
+      }
+    });
+    this.events.onEvent<IExportResult>(AppEvent.ExportAutolistsStart).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.descriptions[0] = 'Exporting autolists...';
+      setting.dynamicText = 'Path: ' + exportResult.directoryPath;
+      if (exportResult.directoryName) {
+        setting.dynamicText += '. Folder: ' + exportResult.directoryName;
+      }
+    });
+    this.events.onEvent<IExportResult>(AppEvent.ExportPlaylistsStart).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.descriptions[0] = 'Exporting playlists...';
+      setting.dynamicText = 'Path: ' + exportResult.directoryPath;
+      if (exportResult.directoryName) {
+        setting.dynamicText += '. Folder: ' + exportResult.directoryName;
+      }
+    });
+    this.events.onEvent<IExportResult>(AppEvent.ExportEnd).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      let resultMessage = '';
+      resultMessage += `Processed files: ${exportResult.totalFileCount}.`;
+      resultMessage += ` Exported files: ${exportResult.finalFileCount}.`;
+      resultMessage += ` Exported playlists: ${exportResult.playlistCount}.`;
+      resultMessage += ` Exported smartlists: ${exportResult.smartlistCount}.`;
+      resultMessage += ` Exported autolists: ${exportResult.autolistCount}.`;
+      setting.disabled = false;
+      setting.running = false;
+      setting.descriptions[0] = 'Exporting process done.';
+      setting.dynamicText = resultMessage;
     });
   }
 
@@ -255,6 +328,33 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
                 setting.warningText = 'Unable to start scan. Please select the playlist directory first.';
               }
             }
+          }
+        ]
+      },
+      {
+        name: 'Export',
+        settings: [
+          {
+            id: 'exportLibrary',
+            name: 'Export Library',
+            icon: AppActionIcons.Export,
+            dataType: 'text',
+            descriptions: [
+              'Click here to export your library.'
+            ],
+            action: setting => {
+              const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
+              this.exporter.run(exportProfileId).then(() => {
+                console.log('done');
+              });
+            }
+          },
+          {
+            id: '',
+            name: 'Export Configuration',
+            icon: AppActionIcons.Config,
+            dataType: 'text',
+            descriptions: ['Click here to configure the export process.']
           }
         ]
       },

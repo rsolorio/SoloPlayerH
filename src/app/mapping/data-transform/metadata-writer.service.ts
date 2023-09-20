@@ -95,6 +95,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     if (this.fileService.exists(destinationPath)) {
       result.metadata = {};
       result.metadata[MetaField.FilePath] = values;
+      result.skipped = true;
       return result;
     }
 

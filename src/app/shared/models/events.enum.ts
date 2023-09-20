@@ -25,6 +25,13 @@ export enum AppEvent {
   ScanAudioDbCleanupStart = 'SCAN_AUDIO_DB_CLEANUP_START',
   ScanPlaylistCreated = 'SCAN_PLAYLIST_CREATED',
   ScanTrackAdded = 'SCAN_TRACK_ADDED',
+  // Export
+  ExportAudioFileStart = 'EXPORT_AUDIO_FILE_START',
+  ExportAudioFileEnd = 'EXPORT_AUDIO_FILE_END',
+  ExportSmartlistsStart = 'EXPORT_SMART_LISTS_START',
+  ExportAutolistsStart = 'EXPORT_AUTO_LISTS_START',
+  ExportPlaylistsStart = 'EXPORT_PLAY_LISTS_START',
+  ExportEnd = 'EXPORT_END',
   // DB
   DbInitialized = 'DB_INITIALIZED'
 }
