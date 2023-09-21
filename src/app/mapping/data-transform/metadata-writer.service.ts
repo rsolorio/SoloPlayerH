@@ -194,12 +194,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.TPE2 = albumArtist;
     }
 
-    // const albumArtistSort = this.first(metadata[MetaField.AlbumArtistSort]);
-    // if (albumArtistSort) {
-    //   // This doesn't seem to be supported by the library
-    //   // Throws the error: Cannot ready properties of undefined (reading 'write')
-    //   tags.TSO2 = albumArtistSort;
-    // }
+    const albumArtistSort = this.first(metadata[MetaField.AlbumArtistSort]);
+    if (albumArtistSort) {
+      tags.TSO2 = albumArtistSort;
+    }
 
     const album = this.first(metadata[MetaField.Album]);
     if (album) {

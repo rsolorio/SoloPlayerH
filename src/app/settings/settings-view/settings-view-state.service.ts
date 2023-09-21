@@ -345,9 +345,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             ],
             action: setting => {
               const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
-              this.exporter.run(exportProfileId).then(() => {
-                console.log('done');
-              });
+              this.exporter.run(exportProfileId);
             }
           },
           {
