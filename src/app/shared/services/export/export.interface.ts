@@ -1,4 +1,4 @@
-import { KeyValueGen } from "src/app/core/models/core.interface";
+import { ITimePeriod, KeyValueGen } from "src/app/core/models/core.interface";
 import { ISongExtendedModel } from "../../models/song-model.interface";
 import { Criteria } from "../criteria/criteria.class";
 
@@ -49,4 +49,5 @@ export interface IExportResult {
   smartlistCount: number;
   autolistCount: number;
   playlistCount: number;
+  period?: ITimePeriod;
 }

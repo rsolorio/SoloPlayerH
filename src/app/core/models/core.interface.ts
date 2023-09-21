@@ -1,4 +1,3 @@
-import { ITimeSpan } from "../services/utility/utility.interface";
 import { ImageSrcType } from "./core.enum";
 
 /** A generic key/value pair where the key is the indexed property. */
@@ -41,6 +40,7 @@ export interface INumberRange {
 export interface IDateRange {
   from: Date;
   to: Date;
+  length?: number;
 }
 
 export interface IMonthRange {
@@ -48,6 +48,19 @@ export interface IMonthRange {
   fromYear: number;
   toMonth: number;
   toYear: number;
+}
+
+export interface ITimeSpan {
+  total?: number;
+  milliseconds?: number;
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+  days?: number;
+}
+
+export interface ITimePeriod extends IDateRange {
+  span: ITimeSpan;
 }
 
 /** Interface that provides a "selected" optional property. */
@@ -155,6 +168,6 @@ export interface IIconAction extends IIconActionGeneric<IIconAction, any> {
 }
 
 export interface IProcessDuration<TResult> {
-  time: ITimeSpan;
+  period: ITimePeriod;
   result: TResult;
 }

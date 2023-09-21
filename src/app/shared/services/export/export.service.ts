@@ -23,6 +23,8 @@ import { ScriptParserService } from 'src/app/scripting/script-parser/script-pars
 import { ValueLists } from '../database/database.lists';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from '../../models/events.enum';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { PeriodTimer } from 'src/app/core/models/timer.class';
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -46,7 +48,8 @@ export class ExportService {
     private playlistWriter: PlaylistWriterService,
     private parser: ScriptParserService,
     private entities: DatabaseEntitiesService,
-    private events: EventsService) { }
+    private events: EventsService,
+    private utility: UtilityService) { }
 
   public get isRunning(): boolean {
     return this.running;
@@ -63,6 +66,7 @@ export class ExportService {
    */
   public async run(exportProfileId: string, configOverride?: IExportConfig): Promise<void> {
     this.running = true;
+    const t = new PeriodTimer(this.utility);
     // TODO: empty folder before running, or real sync add/replace/remove
     // TODO: flat structure
     // In theory a writer should only have one data source
@@ -120,8 +124,9 @@ export class ExportService {
       this.events.broadcast(AppEvent.ExportPlaylistsStart, exportResult);
       exportResult.playlistCount = await this.exportPlaylists();
     }
-    // TODO: cleanup the Export Song table, since it was just needed for this process
+    exportResult.period = t.stop();
     this.events.broadcast(AppEvent.ExportEnd, exportResult);
+    // TODO: cleanup the Export Song table, since it was just needed for this process
     this.running = false;
   }
 

@@ -8,9 +8,9 @@ import { ScanAudioService } from './scan-audio.service';
 import { ScanPlaylistsService } from './scan-playlists.service';
 import { IProcessDuration } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { Milliseconds } from 'src/app/core/services/utility/utility.enum';
 import { PlaylistEntity, PlaylistSongEntity } from '../../entities';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { PeriodTimer } from 'src/app/core/models/timer.class';
 
 /**
  * Services for scanning files.
@@ -31,7 +31,7 @@ export class ScanService {
    * Scans files in the specified directories.
    */
   scan(folderPaths: string[], extension: string, scanId?: string): Promise<IProcessDuration<IFileInfo[]>> {
-    const startTime = new Date().getTime();
+    const t = new PeriodTimer(this.utility);
     return new Promise(resolve => {
       let fileCount = 0;
       const result: IFileInfo[] = [];
@@ -48,16 +48,14 @@ export class ScanService {
           }
         },
         complete: () => {
-          const endTime = new Date().getTime();
-          const timeSpan = this.utility.toTimeSpan(endTime - startTime, [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
-          resolve({ time: timeSpan, result: result });
+          resolve({ period: t.stop(), result: result });
         }
       });
     });
   }
 
   public async syncAudioFiles(files: IFileInfo[]): Promise<IProcessDuration<ISyncSongInfo>> {
-    const startTime = new Date().getTime();
+    const t = new PeriodTimer(this.utility);
     const result = await this.scanAudioService.beforeProcess();
     let fileCount = 0;
     for (const file of files) {
@@ -81,13 +79,11 @@ export class ScanService {
     result.songFinalCount = result.songAddedRecords.length + result.songUpdatedRecords.length + result.songSkippedRecords.length - result.songDeletedRecords.length;
     this.scanAudioService.cleanUpMemory();
 
-    const endTime = new Date().getTime();
-    const timeSpan = this.utility.toTimeSpan(endTime - startTime, [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
-    return { time: timeSpan, result: result };
+    return { period: t.stop(), result: result };
   }
 
   public async processPlaylistFiles(files: IFileInfo[]): Promise<IProcessDuration<any>> {
-    const startTime = new Date().getTime();
+    const t = new PeriodTimer(this.utility);
     let playlistCount = 0;
     for (const fileInfo of files) {
       await this.playlistScanService.processPlaylistFile(fileInfo,
@@ -101,8 +97,6 @@ export class ScanService {
           this.events.broadcast(AppEvent.ScanTrackAdded, info);
         });
     }
-    const endTime = new Date().getTime();
-    const timeSpan = this.utility.toTimeSpan(endTime - startTime, [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
-    return { time: timeSpan, result: null };
+    return { period: t.stop(), result: null };
   }
 }

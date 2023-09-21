@@ -198,6 +198,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       setting.running = false;
       setting.descriptions[0] = 'Exporting process done.';
       setting.dynamicText = resultMessage;
+      this.log.info('Export elapsed time: ' + this.utility.formatTimeSpan(exportResult.period.span), exportResult.period.span);
     });
   }
 
@@ -522,7 +523,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         // Before logging the sync info remove all metadata, since that could be a lot of information
         processResult.result.metadataResults = [];
         this.log.debug('Sync info:', processResult.result);
-        this.log.info('Elapsed time: ' + this.utility.formatTimeSpan(processResult.time), processResult.time);
+        this.log.info('Sync elapsed time: ' + this.utility.formatTimeSpan(processResult.period.span), processResult.period.span);
         this.refreshStatistics();
       });
     });
