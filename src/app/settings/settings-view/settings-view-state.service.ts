@@ -134,6 +134,16 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
   }
 
   private subscribeToExportEvents(): void {
+    this.events.onEvent(AppEvent.ExportStart).subscribe(() => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.descriptions[0] = 'Preparing export...';
+      setting.dynamicText = '';
+    });
     this.events.onEvent<IMetadataWriterOutput>(AppEvent.ExportAudioFileEnd).subscribe(exportAudioResult => {
       const setting = this.findSetting('exportLibrary');
       if (!setting) {

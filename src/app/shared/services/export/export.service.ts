@@ -66,6 +66,7 @@ export class ExportService {
    */
   public async run(exportProfileId: string, configOverride?: IExportConfig): Promise<void> {
     this.running = true;
+    this.events.broadcast(AppEvent.ExportStart);
     const t = new PeriodTimer(this.utility);
     // TODO: empty folder before running, or real sync add/replace/remove
     // TODO: flat structure

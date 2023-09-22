@@ -156,6 +156,17 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       mp3Tag.read();
       await this.fileService.writeBuffer(filePath, mp3Tag.buffer as Buffer);
     }
+
+    const changeDate = this.first(metadata[MetaField.ChangeDate]);
+    if (changeDate) {
+      // Write this info to the actual file
+      if (this.utility.isDate(changeDate)) {
+        await this.setFileChangeDate(filePath, changeDate);
+      }
+      else {
+        await this.setFileChangeDate(filePath, new Date(changeDate.toString()));
+      }
+    }
   }
 
   private async setupV2Tags(metadata: KeyValues): Promise<any> {
@@ -414,5 +425,21 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       return 204; // 4
     }
     return 255; // 5
+  }
+
+  private async setFileChangeDate(filePath: string, changeDate: Date): Promise<void> {
+    // This is a hack that uses a .net cmd file to update the creation date,
+    // since node doesn't support this.
+    const utilityFilePath = 'F:\\Code\\VS Online\\SoloSoft\\Bin46\\FileAttributeCmd.exe';
+    if (!this.fileService.exists(utilityFilePath)) {
+      return;
+    }
+    // This will put the string between quotes (needed for the command) and also escape backslashes (needed for the command)
+    let command = JSON.stringify(filePath);
+    command += ' setWriteDate ' + this.utility.toTicks(changeDate, true);
+    const result = await this.fileService.runCommand(`"${utilityFilePath}" ${command}`);
+    if (result.includes('error') || result.includes('exception')) {
+      this.log.warn('Error setting write date to file: ' + filePath, result);
+    }
   }
 }

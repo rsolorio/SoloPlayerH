@@ -31,7 +31,7 @@ export abstract class FileService {
 
   abstract copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>;
 
-  abstract runCommand(command: string): Promise<any>;
+  abstract runCommand(command: string): Promise<string>;
 
   abstract createDirectory(directoryPath: string): Promise<void>;
 
