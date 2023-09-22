@@ -4,7 +4,8 @@
   [ngClass]="{ 'sp-bg-primary-variant': menuItem.active, 'disabled': menuItem.disabled }"
   (click)="runMenuAction(menuItem)"
   class="sp-list-group-item sp-text-xlarge">
-    <i [ngClass]="menuItem.icon"></i>
+    <i *ngIf="menuItem.running" [ngClass]="AppActionIcons.Loading"></i>
+    <i *ngIf="!menuItem.running" [ngClass]="menuItem.icon"></i>
     <span>&nbsp;&nbsp;</span><span>{{menuItem.caption}}</span>
     <i *ngIf="menuItem.isNew" class="mdi mdi-vanish-quarter mdi-rotate-90 sp-sidebar-menu-notification"></i>
     <div *ngIf="menuItem.subtitle" class="sp-sidebar-menu-item-subtitle">{{menuItem.subtitle}}</div>

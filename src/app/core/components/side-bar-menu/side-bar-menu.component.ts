@@ -7,6 +7,7 @@ import { SideBarMenuStateService } from './side-bar-menu-state.service';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from '../../services/events/events.enum';
 import { ISideBarMenuModel } from './side-bar-menu-model.interface';
+import { AppActionIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-side-bar-menu',
@@ -14,7 +15,7 @@ import { ISideBarMenuModel } from './side-bar-menu-model.interface';
   styleUrls: ['./side-bar-menu.component.scss']
 })
 export class SideBarMenuComponent implements OnInit {
-
+  public AppActionIcons = AppActionIcons;
   public sidebarMenuModel: ISideBarMenuModel;
 
   constructor(

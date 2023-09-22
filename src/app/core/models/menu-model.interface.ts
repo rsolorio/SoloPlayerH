@@ -12,4 +12,5 @@ export interface IMenuModel extends IIconAction {
     route?: string;
     data?: any;
     items?: IMenuModel[];
+    running?: boolean;
 }
