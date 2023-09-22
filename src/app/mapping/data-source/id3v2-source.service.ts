@@ -20,7 +20,9 @@ export class Id3v2SourceService implements IDataSourceService {
 
   constructor(private metadataService: AudioMetadataService, private fileService: FileService, private utility: UtilityService) { }
 
-  public async init(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
+  public init(): void {}
+
+  public async setSource(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
     if (this.inputData && this.inputData.path === input.path) {
       return entity;
     }
@@ -67,7 +69,7 @@ export class Id3v2SourceService implements IDataSourceService {
    * Gets the value of the specified property.
    * @param propertyName The name of the metadata property to retrieve.
    */
-  public async get(propertyName: string): Promise<any[]> {
+  public async getData(propertyName: string): Promise<any[]> {
     switch (propertyName) {
       case MetaField.Artist:
         if (this.audioInfo.metadata.common.artists) {

@@ -14,7 +14,9 @@ export class PathExpressionSourceService implements IDataSourceService {
   protected regExpText: string;
   constructor(private utility: UtilityService) { }
 
-  public async init(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
+  public init(): void {}
+
+  public async setSource(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
     if (this.inputData && this.inputData.path === input.path && this.entityData.config === entity.config) {
       return entity;
     }
@@ -49,7 +51,7 @@ export class PathExpressionSourceService implements IDataSourceService {
     return true;
   }
 
-  public async get(propertyName: string): Promise<any[]> {
+  public async getData(propertyName: string): Promise<any[]> {
     if (!this.matchInfo || !this.matchInfo.groups) {
       return [];
     }

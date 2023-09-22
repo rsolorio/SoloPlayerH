@@ -242,7 +242,7 @@ export class ScanAudioService {
       };
     }
 
-    const metadata = await this.metadataReader.process(fileInfo);
+    const metadata = await this.metadataReader.run(fileInfo);
     metadata[MetaField.FileMode] = [this.scanMode];
 
     let errors = metadata[MetaField.Error];

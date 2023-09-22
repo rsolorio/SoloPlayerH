@@ -100,7 +100,7 @@ export class ExportService {
     for (const song of this.config.songs) {
       this.events.broadcast(AppEvent.ExportAudioFileStart, exportResult);
       // This process must return a mapping between the original path and the new path
-      const writeResult = await this.writer.process(song);
+      const writeResult = await this.writer.run(song);
       this.config.playlistConfig.fileMappings[writeResult.sourcePath] = writeResult.destinationPath;
       if (!writeResult.skipped) {
         exportResult.finalFileCount++;
@@ -366,7 +366,7 @@ export class ExportService {
       playlistConfig: this.config.playlistConfig // This passes the general configuration
     };
     input.playlistConfig.prefix = prefix; // We override the prefix
-    return this.playlistWriter.process(input);
+    return this.playlistWriter.run(input);
   }
 
   private async createRandomPlaylists(): Promise<number> {

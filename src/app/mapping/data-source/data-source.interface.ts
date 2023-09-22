@@ -2,9 +2,10 @@ import { DataMappingEntity } from "src/app/shared/entities";
 import { ISyncProfileParsed } from "src/app/shared/models/sync-profile-model.interface";
 
 export interface IDataSourceService {
-  get(propertyName: string): Promise<any[]>;
+  init(): void;
   hasData(): boolean;
-  init(input: any, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed>;
+  getData(propertyName: string): Promise<any[]>;
+  setSource(input: any, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed>;
 }
 
 export interface IDataSourceParsed {

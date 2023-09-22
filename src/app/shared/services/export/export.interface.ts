@@ -11,7 +11,6 @@ export interface IExportConfig {
   songs?: ISongExtendedModel[];
   songExportEnabled?: boolean;
   playlistConfig?: IPlaylistExportConfig;
-  flat?: boolean; // This is maybe part of the mapping?
 }
 
 export interface IPlaylistExportConfig {

@@ -37,7 +37,7 @@ export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, I
     super(entities);
   }
 
-  public process(input: IFileInfo): Promise<KeyValues> {
+  public run(input: IFileInfo): Promise<KeyValues> {
     return this.getData(input);
   }
 
@@ -46,7 +46,7 @@ export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, I
     const result: KeyValues = {};
     for (const source of this.sources) {
       if (source.service) {
-        const initResult = await source.service.init(input, source);
+        const initResult = await source.service.setSource(input, source);
         if (initResult.error) {
           result[MetaField.Error] = [initResult.error];
           // TODO: continueOnError for other data sources

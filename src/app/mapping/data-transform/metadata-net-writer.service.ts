@@ -31,7 +31,7 @@ export class MetadataNetWriterService extends DataTransformServiceBase<ISongMode
     super(entities);
   }
 
-  public async process(input: ISongModel): Promise<any> {
+  public async run(input: ISongModel): Promise<any> {
     // 1. Get the metadata
     const metadata = await this.getData(input);
     // 2. Create the file
@@ -47,7 +47,7 @@ export class MetadataNetWriterService extends DataTransformServiceBase<ISongMode
     const result: KeyValues = {};
     for (const source of this.sources) {
       if (source.service) {
-        const initResult = await source.service.init(input, source, this.syncProfile);
+        const initResult = await source.service.setSource(input, source, this.syncProfile);
         if (!initResult.error) {
           await this.setValuesAndMappings(result, source);
         }

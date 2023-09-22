@@ -22,7 +22,9 @@ export class FileInfoSourceService implements IDataSourceService {
   protected jsonInfo: IJsonInfo = {};
   constructor(private fileService: FileService) { }
 
-  public async init(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
+  public init(): void {}
+
+  public async setSource(input: IFileInfo, entity: IDataSourceParsed): Promise<IDataSourceParsed> {
     if (this.inputData && this.inputData.path === input.path) {
       return entity;
     }
@@ -66,7 +68,7 @@ export class FileInfoSourceService implements IDataSourceService {
     return true;
   }
 
-  public async get(propertyName: string): Promise<any[]> {
+  public async getData(propertyName: string): Promise<any[]> {
     if (!this.inputData) {
       return null;
     }

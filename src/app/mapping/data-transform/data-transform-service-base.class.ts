@@ -17,11 +17,15 @@ export abstract class DataTransformServiceBase<TProcessInput, TDataInput, TProce
     this.sources = await this.entityService.getDataSources(profile.id);
     this.sources.forEach(source => {
       source.service = this.getService(source.type);
+      if (source.service) {
+        source.service.init();
+      }
     });
   }
 
-  public abstract process(input: TProcessInput): Promise<TProcessOutput>;
+  public abstract run(input: TProcessInput): Promise<TProcessOutput>;
 
+  /** Used to get data from the data sources using the specified input. */
   protected abstract getData(input: TDataInput): Promise<KeyValues>;
 
   protected abstract getService(dataSourceType: string): IDataSourceService;
@@ -49,7 +53,7 @@ export abstract class DataTransformServiceBase<TProcessInput, TDataInput, TProce
             userDefinedFields.push(mapping.destination);
           }
           if (!metadata[mapping.destination]) {
-            metadata[mapping.destination] = await dataSource.service.get(mapping.destination);
+            metadata[mapping.destination] = await dataSource.service.getData(mapping.destination);
           }
         }
       }
@@ -66,7 +70,7 @@ export abstract class DataTransformServiceBase<TProcessInput, TDataInput, TProce
         metadata[field] = [];
       }
       if (!metadata[field].length) {
-        const values = await service.get(field);
+        const values = await service.getData(field);
         if (values && values.length) {
           metadata[field] = values;
         }

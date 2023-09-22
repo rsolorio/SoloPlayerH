@@ -3,7 +3,7 @@ import { ISyncProfileParsed } from "src/app/shared/models/sync-profile-model.int
 
 export interface IDataTransformService {
   init(profile: ISyncProfileParsed): Promise<void>;
-  process(item: any): Promise<any>;
+  run(item: any): Promise<any>;
 }
 
 export interface IMetadataWriterOutput {

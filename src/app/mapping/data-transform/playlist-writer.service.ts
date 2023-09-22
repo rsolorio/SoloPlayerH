@@ -27,7 +27,7 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     this.rootPath = profile.directories[0];
   }
 
-  public async process(input: IExportConfig): Promise<boolean> {
+  public async run(input: IExportConfig): Promise<boolean> {
     this.config = input.playlistConfig;
     // Setup defaults
     this.config.minCount = this.config.minCount ? this.config.minCount : 10;

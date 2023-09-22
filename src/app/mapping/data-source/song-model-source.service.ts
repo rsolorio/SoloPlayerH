@@ -24,9 +24,15 @@ export class SongModelSourceService implements IDataSourceService {
   private entityData: IDataSourceParsed;
   private syncProfileData: ISyncProfileParsed;
   private context: any;
+  private counter = 0;
   constructor(private utility: UtilityService, private parser: ScriptParserService) { }
 
-  public async init(input: ISongExtendedModel, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed> {
+  public init(): void {
+    this.counter = 0;
+  }
+
+  public async setSource(input: ISongExtendedModel, entity: IDataSourceParsed, syncProfile?: ISyncProfileParsed): Promise<IDataSourceParsed> {
+    this.counter++;
     if (this.inputData && this.inputData.filePath === input.filePath) {
       return entity;
     }
@@ -41,7 +47,7 @@ export class SongModelSourceService implements IDataSourceService {
     return true;
   }
 
-  public async get(propertyName: string): Promise<any[]> {
+  public async getData(propertyName: string): Promise<any[]> {
     const mappings = this.getMappings(propertyName);
     if (mappings?.length) {
       // Prefer user mappings over default mappings
@@ -216,6 +222,7 @@ export class SongModelSourceService implements IDataSourceService {
     // Destination path without the last backslash
     const destinationPath = this.syncProfileData.directories[0];
     context['rootPath'] = destinationPath.endsWith('\\') ? destinationPath.slice(0, -1) : destinationPath;
+    context['counter'] = this.counter;
     return context;
   }
 

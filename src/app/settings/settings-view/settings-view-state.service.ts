@@ -480,7 +480,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
   private onFolderScan(folderPaths: string[]): void {
     // Start scanning
-    this.scanner.scan(folderPaths, '.mp3', 'scanAudio').then(scanProcessResult => {
+    this.scanner.run(folderPaths, '.mp3', 'scanAudio').then(scanProcessResult => {
       // Start reading file metadata
       this.scanner.syncAudioFiles(scanProcessResult.result).then(processResult => {
         // At this point the process is done.
@@ -529,12 +529,12 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
   private onPlaylistScan(folderPaths: string[]): void {
     // Start scan process
-    this.scanner.scan(folderPaths, '.m3u', 'scanPlaylists').then(processResult => {
+    this.scanner.run(folderPaths, '.m3u', 'scanPlaylists').then(processResult => {
       let setting = this.findSetting('processPlaylists');
       if (setting) {
         setting.descriptions[1] = 'Playlist created: 0/' + processResult.result.length;
       }
-      this.scanner.processPlaylistFiles(processResult.result).then(() => {
+      this.scanner.syncPlaylistFiles(processResult.result).then(() => {
         // Find it again
         setting = this.findSetting('processPlaylists');
         if (setting) {

@@ -64,8 +64,6 @@ enum AttachedPictureType {
  * data sources have the responsibility of reading metadata and pass it to the writer.
  * Data sources support custom mapping.
  * This writer requires the mp3tag.js package.
- * I have made a fix to the mp3tag.js dist file to allow saving multiple frames:
- * textFrame function, use replaceAll instead of replace.
  */
 @Injectable({
   providedIn: 'root'
@@ -81,7 +79,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     super(entities);
   }
 
-  public async process(input: ISongModel): Promise<IMetadataWriterOutput> {
+  public async run(input: ISongModel): Promise<IMetadataWriterOutput> {
     // 1. Get only the filePath metadata to determine if we need to keep getting the rest of the metadata
     const values = await this.getFieldData(input, MetaField.FilePath);
     const destinationPath = this.first(values);
@@ -112,7 +110,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const result: KeyValues = {};
     for (const source of this.sources) {
       if (source.service) {
-        const initResult = await source.service.init(input, source, this.syncProfile);
+        const initResult = await source.service.setSource(input, source, this.syncProfile);
         if (!initResult.error) {
           await this.setValuesAndMappings(result, source);
         }
@@ -125,9 +123,9 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     let result: any[] = [];
     for (const source of this.sources) {
       if (source.service) {
-        const initResult = await source.service.init(input, source, this.syncProfile);
+        const initResult = await source.service.setSource(input, source, this.syncProfile);
         if (!initResult.error && !result.length) {
-          result = await source.service.get(field);
+          result = await source.service.getData(field);
         }
       }
     }

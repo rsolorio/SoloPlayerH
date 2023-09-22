@@ -30,7 +30,7 @@ export class ScanService {
   /**
    * Scans files in the specified directories.
    */
-  scan(folderPaths: string[], extension: string, scanId?: string): Promise<IProcessDuration<IFileInfo[]>> {
+  run(folderPaths: string[], extension: string, scanId?: string): Promise<IProcessDuration<IFileInfo[]>> {
     const t = new PeriodTimer(this.utility);
     return new Promise(resolve => {
       let fileCount = 0;
@@ -82,7 +82,7 @@ export class ScanService {
     return { period: t.stop(), result: result };
   }
 
-  public async processPlaylistFiles(files: IFileInfo[]): Promise<IProcessDuration<any>> {
+  public async syncPlaylistFiles(files: IFileInfo[]): Promise<IProcessDuration<any>> {
     const t = new PeriodTimer(this.utility);
     let playlistCount = 0;
     for (const fileInfo of files) {
