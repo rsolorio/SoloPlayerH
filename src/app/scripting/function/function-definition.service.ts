@@ -36,6 +36,7 @@ export class FunctionDefinitionService {
     this.orFunction();
     this.digitsFunction();
     this.intFunction();
+    this.noBracketsFunction();
   }
 
   private ifFunction(): void {
@@ -102,6 +103,25 @@ export class FunctionDefinitionService {
       fn: args => {
         const x = args[0];
         return parseInt(x.toString(), 10);
+      }
+    });
+  }
+
+  private noBracketsFunction(): void {
+    this.functions.push({
+      name: 'noBrackets',
+      syntax: '$noBrackets(x)',
+      description: 'Removes any content in x surrounded by brackets, including the brackets.',
+      fn: args => {
+        let x = args[0] as string;
+        const regexp = new RegExp('\\[(.*?)\\]', 'g');
+        const matches = x.match(regexp);
+        if (matches?.length) {
+          for (const match of matches) {
+            x = x.replace(match, '').trim();
+          }
+        }
+        return x;
       }
     });
   }
