@@ -171,7 +171,8 @@ export class SongModelSourceService implements IDataSourceService {
     return this.utility.sort(mappings, 'sequence');
   }
 
-  private getDataFromMappings(associatedMappings: DataMappingEntity[]): any[] {
+  private async getDataFromMappings(associatedMappings: DataMappingEntity[]): Promise<any[]> {
+    const predefinedMappings = this.setupScriptingPlaceholders();
     const groupedMappings = this.utility.groupByKey(associatedMappings, 'sequence');
     // Mappings with the same sequence will be included in the same result
     // If there are no results in a given sequence we will move to the next sequence to get results, and so on
@@ -180,11 +181,28 @@ export class SongModelSourceService implements IDataSourceService {
       const result: any[] = [];
       const groupMappings = groupedMappings[groupKey];
       for (const mapping of groupMappings) {
-        const value = this.parser.parse({
-          expression: mapping.source,
-          context: this.context,
-          mappings: this.setupScriptingPlaceholders() });
-        result.push(value);
+        // Hack to implement custom functions
+        switch (mapping.source) {
+          case '$getSingleImage()':
+            const singleImagePaths = await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
+            if (singleImagePaths?.length) {
+              result.push(singleImagePaths[0]);
+            }
+            break;
+          case '$getAlbumImage()':
+            const albumImagePaths = await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.Front);
+            if (albumImagePaths?.length) {
+              result.push(albumImagePaths[0]);
+            }
+            break;
+          default:
+            const value = this.parser.parse({
+              expression: mapping.source,
+              context: this.context,
+              mappings: predefinedMappings });
+            result.push(value);
+            break;
+        }
       }
       if (result.length) {
         // Stop iterating groups and return the result

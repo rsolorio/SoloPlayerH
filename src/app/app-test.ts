@@ -8,7 +8,7 @@ import { LogService } from "./core/services/log/log.service";
 import { DatabaseService } from "./shared/services/database/database.service";
 import { DatabaseEntitiesService } from "./shared/services/database/database-entities.service";
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
-import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, SongClassificationEntity, SongEntity, ValueListEntryEntity } from "./shared/entities";
+import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, SongClassificationEntity, SongEntity, SongExtendedViewEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
@@ -36,14 +36,14 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    //await this.logFileMetadata();
+    await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
     //await this.readArtist();
     //await this.readPlaylists();
     //await this.readPlaylistSong();
-    await this.testExporter();
+    //await this.testExporter();
     //await this.updatePlayCount();
     //await this.insertFilters();
   }
@@ -65,6 +65,8 @@ export class AppTestService {
       // Use music-metadata
       const audioInfo = await this.metadataService.getMetadata(buffer, this.utility.getMimeType(fileInfo.extension.replace('.', '')), true);      
       this.log.warn('music-metadata.', audioInfo);
+      console.log(audioInfo.metadata.common.title);
+      console.log(audioInfo.metadata.common.title.length);
       // Use mp3tag
       const mp3Tag = new MP3Tag(buffer, true);
       mp3Tag.read();

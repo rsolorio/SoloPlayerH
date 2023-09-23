@@ -201,24 +201,23 @@ export class ScanAudioService {
   }
 
   public setMode(fileInfo: IFileInfo): void {
+    // TODO: if lyrics file or images files changed also set update mode
     this.songToProcess = this.lookupService.findSong(fileInfo.path, this.existingSongs);
     if (this.songToProcess) {
       const fileAddTime = fileInfo.addDate.getTime();
       const dbAddTime = this.songToProcess.addDate.getTime();
-      const fileChangeTime = fileInfo.changeDate.getTime();
-      const dbChangeTime = this.songToProcess.changeDate.getTime();
-      // We need timestamps to use the equal operator with dates
-      if (fileAddTime === dbAddTime && fileChangeTime === dbChangeTime) {
+      if (fileAddTime === dbAddTime) {
         this.scanMode = ScanFileMode.Skip;
       }
-      // TODO: if lyrics file or images files changed also set update mode
       else {
-        // We are assuming the file was replaced or updated,
+        // If the add date changed, we are assuming the file was replaced or updated,
         // so we need to update the record with the new info
-        if (fileAddTime < dbAddTime || fileChangeTime < dbChangeTime) {
+        this.scanMode = ScanFileMode.Update;
+        
+        if (fileAddTime < dbAddTime) {
           // This should only happen if something deliberately updated the dates
           // to an older value, so just log it as warning
-          this.log.warn('Found file with older change date.', {
+          this.log.warn('Found file with older add date.', {
             filePath: fileInfo.path,
             fileAddDate: fileInfo.addDate,
             dbAddDate: this.songToProcess.addDate,
@@ -226,7 +225,7 @@ export class ScanAudioService {
             dbChangeDate: this.songToProcess.changeDate
           });
         }
-        this.scanMode = ScanFileMode.Update;
+        
       }
     }
     else {
@@ -377,21 +376,15 @@ export class ScanAudioService {
       replaced = true;
     }
 
-    let fileAddDate = this.first(metadata[MetaField.AddDate]);
+    let fileAddDate = this.first(metadata[MetaField.AddDate]) as Date;
     if (!fileAddDate) {
       fileAddDate = new Date();
     }
-    let fileChangeDate = this.first(metadata[MetaField.ChangeDate]);
-    if (!fileChangeDate) {
-      fileChangeDate = new Date();
-    }
+    const fileAddTime = fileAddDate.getTime();
+    const dbAddTime = this.songToProcess.addDate.getTime();
 
-    // Add date should not be older than change date
-    if (fileAddDate > fileChangeDate) {
-      fileAddDate = fileChangeDate;
-    }
     // If the file add date is older, use the file date
-    if (this.songToProcess.addDate > fileAddDate) {
+    if (dbAddTime > fileAddTime) {
       this.songToProcess.addDate = fileAddDate;
       this.songToProcess.hasChanges = true;
     }
@@ -606,23 +599,27 @@ export class ScanAudioService {
       song.grouping = grouping;
     }
 
-    // Get dates
-    let addDate = this.first(metadata[MetaField.AddDate]);
+    // Add Date
+    let addDate = this.first(metadata[MetaField.AddDate]) as Date;
     if (!addDate) {
       addDate = new Date();
     }
-    let changeDate = this.first(metadata[MetaField.ChangeDate]);
-    if (!changeDate) {
-      changeDate = new Date();
+    // We only use the change date to see which one is older
+    let changeDate = this.first(metadata[MetaField.ChangeDate]) as Date;
+    if (changeDate) {
+      const addTime = addDate.getTime();
+      const changeTime = changeDate.getTime();
+      if (addTime > changeTime) {
+        // Grab the oldest date as the add date
+        addDate = changeDate;
+      }
     }
-    // Grab the oldest date as the add date
-    if (addDate > changeDate) {
-      addDate = changeDate;
-    }
+    
     // Set dates in db
     song.addDate = addDate;
     song.addYear = addDate.getFullYear();
-    song.changeDate = changeDate;
+    // We are doing the change now
+    song.changeDate = new Date();
     // TODO: Set dates in file
 
     // TODO: add language to value list entry if it doesn't exist

@@ -4,12 +4,13 @@ import { Criteria } from "../criteria/criteria.class";
 
 export interface IExportConfig {
   directories?: string[];
-  lastAddedCount?: number;
+  /** If set, this will export the last x number of songs added to the library. */
+  lastAdded?: number;
   filterId?: string;
   playlistId?: string;
   criteria?: Criteria;
   songs?: ISongExtendedModel[];
-  songExportEnabled?: boolean;
+  exportTableEnabled?: boolean;
   playlistConfig?: IPlaylistExportConfig;
 }
 

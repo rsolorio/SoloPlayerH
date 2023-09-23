@@ -81,7 +81,6 @@ export class ExportService {
     this.events.broadcast(AppEvent.ExportStart);
     const t = new PeriodTimer(this.utility);
     // TODO: empty folder before running, or real sync add/replace/remove
-    // TODO: flat structure
     // In theory a writer should only have one data source
     const syncProfile = await this.entities.getSyncProfile(exportProfileId);
     if (configOverride) {
@@ -134,7 +133,7 @@ export class ExportService {
       this.events.broadcast(AppEvent.ExportAutolistsStart, exportResult);
       exportResult.autolistCount = await this.exportAutolists();
     }
-    if (!this.config.playlistConfig.playlistsDisabled && !this.config.songExportEnabled) {
+    if (!this.config.playlistConfig.playlistsDisabled && !this.config.exportTableEnabled) {
       // Exporting playlist entities is not supported if only a subset of the songs is being used
       this.events.broadcast(AppEvent.ExportPlaylistsStart, exportResult);
       exportResult.playlistCount = await this.exportPlaylists();
@@ -159,25 +158,16 @@ export class ExportService {
         const filter = await FilterEntity.findOneBy({ id: this.config.filterId });
         this.config.criteria = await this.entities.getCriteriaFromFilter(filter);
       }
-      if (this.config.lastAddedCount && !this.config.criteria) {
+      if (this.config.lastAdded && !this.config.criteria) {
         this.config.criteria = new Criteria('Last Added');
-        this.config.criteria.paging.pageSize = this.config.lastAddedCount;
+        this.config.criteria.paging.pageSize = this.config.lastAdded;
         this.config.criteria.addSorting('addDate', CriteriaSortDirection.Descending);
       }
 
       if (this.config.criteria) {
-        if (this.config.criteria.hasComparison(false, 'playlistId')) {
-          this.config.songs = await this.db.getList(SongExtendedByPlaylistViewEntity, this.config.criteria);
-        }
-        else if (this.config.criteria.hasComparison(false, 'classificationId')) {
-          this.config.songs = await this.db.getList(SongExtendedByClassificationViewEntity, this.config.criteria);
-        }
-        else if (this.config.criteria.hasComparison(false, 'artistId')) {
-          this.config.songs = await this.db.getList(SongExtendedByArtistViewEntity, this.config.criteria);
-        }
-        else {
-          this.config.songs = await this.db.getList(SongExtendedViewEntity, this.config.criteria);
-        }
+        // Let's make sure export is not enabled to get songs from the real tables
+        this.config.exportTableEnabled = false;
+        this.config.songs = await this.getSongs(this.config.criteria);
       }
     }
 
@@ -185,7 +175,8 @@ export class ExportService {
       // Songs at this point must be moved to the export table
       // so other criteria filters can apply only to this subset
       await this.fillSongExport(this.config.songs);
-      this.config.songExportEnabled = true;
+      // Now tell the queries to get data from the export table
+      this.config.exportTableEnabled = true;
       return;
     }
 
@@ -231,6 +222,19 @@ export class ExportService {
     return result;
   }
 
+  private async getSongs(criteria: Criteria): Promise<ISongExtendedModel[]> {
+    if (criteria.hasComparison(false, 'classificationId')) {
+      return this.db.getList(this.getSongViewEntity(SongViewType.Classification), criteria);
+    }
+    if (criteria.hasComparison(false, 'artistId')) {
+      return this.db.getList(this.getSongViewEntity(SongViewType.Artist), criteria);
+    }
+    if (criteria.hasComparison(false, 'playlistId')) {
+      return this.db.getList(this.getSongViewEntity(SongViewType.Playlist), criteria);
+    }
+    return this.db.getList(this.getSongViewEntity(SongViewType.Standard), criteria);
+  }
+
   /**
    * Uses the specified criteria to get a list of songs which will be exported as a playlist file.
    */
@@ -239,21 +243,7 @@ export class ExportService {
     if (this.config.playlistConfig?.maxCount) {
       criteria.paging.pageSize = this.config.playlistConfig.maxCount;
     }
-    let tracks: ISongExtendedModel[];
-    if (criteria.hasComparison(false, 'classificationId')) {
-      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Classification), criteria);
-    }
-    else if (criteria.hasComparison(false, 'artistId')) {
-      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Artist), criteria);
-    }
-    else if (criteria.hasComparison(false, 'playlistId')) {
-      // In theory, playlists should only exported if all songs are being exported (isSubset=false),
-      // but we are supporting filtering by playlistId in both cases just in case
-      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Playlist), criteria);
-    }
-    else {
-      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Standard), criteria);
-    }
+    let tracks = await this.getSongs(criteria);
     if (tracks?.length) {
       return this.processPlaylist(tracks, criteria, namePrefix);
     }
@@ -413,22 +403,22 @@ export class ExportService {
   private getSongViewEntity(viewType: SongViewType): EntityTarget<any> {
     switch (viewType) {
       case SongViewType.Standard:
-        if (this.config.songExportEnabled) {
+        if (this.config.exportTableEnabled) {
           return SongExpExtendedViewEntity;
         }
         return SongExtendedViewEntity;
       case SongViewType.Artist:
-        if (this.config.songExportEnabled) {
+        if (this.config.exportTableEnabled) {
           return SongExpExtendedByArtistViewEntity;
         }
         return SongExtendedByArtistViewEntity;
       case SongViewType.Classification:
-        if (this.config.songExportEnabled) {
+        if (this.config.exportTableEnabled) {
           return SongExpExtendedByClassificationViewEntity;
         }
         return SongExtendedByClassificationViewEntity;
       case SongViewType.Playlist:
-        if (this.config.songExportEnabled) {
+        if (this.config.exportTableEnabled) {
           return SongExpExtendedByPlaylistViewEntity;
         }
         return SongExtendedByPlaylistViewEntity;

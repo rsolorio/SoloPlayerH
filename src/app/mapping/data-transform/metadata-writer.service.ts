@@ -157,15 +157,11 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       await this.fileService.writeBuffer(filePath, mp3Tag.buffer as Buffer);
     }
 
-    const changeDate = this.first(metadata[MetaField.ChangeDate]);
+    // Setting the change date will only happen if the changeDate field is configured in the data source
+    const changeDate = this.first(metadata[MetaField.ChangeDate]) as Date;
     if (changeDate) {
       // Write this info to the actual file
-      if (this.utility.isDate(changeDate)) {
-        await this.setFileChangeDate(filePath, changeDate);
-      }
-      else {
-        await this.setFileChangeDate(filePath, new Date(changeDate.toString()));
-      }
+      await this.setFileChangeDate(filePath, changeDate);
     }
   }
 
