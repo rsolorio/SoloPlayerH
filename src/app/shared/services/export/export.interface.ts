@@ -12,6 +12,7 @@ export interface IExportConfig {
   songs?: ISongExtendedModel[];
   exportTableEnabled?: boolean;
   playlistConfig?: IPlaylistExportConfig;
+  mpegTag?: string;
 }
 
 export interface IPlaylistExportConfig {

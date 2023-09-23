@@ -24,3 +24,9 @@ export enum PartyRelationType {
   /** The composer of the song. */
   Composer = 'composerArtist|song'
 }
+
+export enum MpegTagVersion {
+  Id3v11 = 'Id3v1.1',
+  Id3v23 = 'Id3v2.3',
+  Id3v24 = 'Id3v2.4'
+}

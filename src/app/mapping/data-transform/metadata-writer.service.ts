@@ -15,6 +15,8 @@ import { IMetadataWriterOutput } from './data-transform.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
 import { appName } from 'src/app/app-exports';
+import { IExportConfig } from 'src/app/shared/services/export/export.interface';
+import { MpegTagVersion } from 'src/app/shared/models/music.enum';
 const MP3Tag = require('mp3tag.js');
 
 interface IUserDefinedText {
@@ -147,8 +149,16 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     // This will initialize the tags object even if the file has no tags
     mp3Tag.read();
     mp3Tag.tags.v2 = await this.setupV2Tags(metadata);
-    // Save to v2.4
-    mp3Tag.save({ id3v2: { include: undefined, unsynch: undefined, padding: undefined, version: 4 } });
+    const config = this.syncProfile.config as IExportConfig;
+    // Save to v2.3 by default, and also support v2.4
+    // TODO: save to v1.1
+    // TODO: save to other tag system if the file is not mp3
+    if (config?.mpegTag?.toLowerCase() === MpegTagVersion.Id3v24.toLowerCase()) {
+      mp3Tag.save({ id3v2: { include: undefined, unsynch: undefined, padding: undefined, version: 4 } });
+    }
+    else {
+      mp3Tag.save({ id3v2: { include: undefined, unsynch: undefined, padding: undefined, version: 3 } });
+    }
     if (mp3Tag.error) {
       console.error(mp3Tag.error);
     }
