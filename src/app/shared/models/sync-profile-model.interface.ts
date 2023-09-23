@@ -11,3 +11,8 @@ export interface ISyncProfileParsed {
   classifications?: ValueListEntryEntity[];
   nonPrimaryRelations?: any[];
 }
+
+export enum SyncType {
+  Import = 'import',
+  Export = 'export'
+}

@@ -1014,7 +1014,7 @@
       },
       {
         "id": "5021cccd-eafc-46ae-b521-f075dda9e105",
-        "name": "Default Export Configuration",
+        "name": "Default Export",
         "syncType": "export",
         "system": true
       }

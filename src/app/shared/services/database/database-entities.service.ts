@@ -19,7 +19,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { ValueLists } from './database.lists';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { ModuleOptionId } from './database.seed';
-import { ISyncProfileParsed } from '../../models/sync-profile-model.interface';
+import { ISyncProfileParsed, SyncType } from '../../models/sync-profile-model.interface';
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
 import { PartyRelationType } from '../../models/music.enum';
@@ -307,8 +307,7 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  public async getSyncProfile(id: string): Promise<ISyncProfileParsed> {
-    const entity = await SyncProfileEntity.findOneBy({ id: id });
+  private parseSyncProfile(entity: SyncProfileEntity): ISyncProfileParsed {
     return {
       id: entity.id,
       name: entity.name,
@@ -318,6 +317,18 @@ export class DatabaseEntitiesService {
       syncInfo: entity.syncInfo ? JSON.parse(entity.syncInfo) : null,
       syncDate: entity.syncDate
     };
+  }
+
+  public async getSyncProfiles(syncType: SyncType): Promise<ISyncProfileParsed[]> {
+    const result: ISyncProfileParsed[] = [];
+    const profiles = await SyncProfileEntity.findBy({ syncType: syncType });
+    profiles.forEach(p => result.push(this.parseSyncProfile(p)));
+    return result;
+  }
+
+  public async getSyncProfile(id: string): Promise<ISyncProfileParsed> {
+    const entity = await SyncProfileEntity.findOneBy({ id: id });
+    return this.parseSyncProfile(entity);
   }
 
   public async saveSyncProfile(data: ISyncProfileParsed): Promise<void> {

@@ -39,6 +39,10 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { DbColumn } from 'src/app/shared/services/database/database.columns';
+import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
+import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
+import { SyncType } from 'src/app/shared/models/sync-profile-model.interface';
+import { ExportService } from 'src/app/shared/services/export/export.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -204,6 +208,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private entities: DatabaseEntitiesService,
     private sidebarHostService: SideBarHostStateService,
     private addToPlaylistService: AddToPlaylistService,
+    private exporter: ExportService,
     private cd: ChangeDetectorRef
   ) {
     super();
@@ -364,6 +369,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
     navbarModel.menuList.push({ isSeparator: true });
 
     navbarModel.menuList.push({
+      caption: 'Export...',
+      icon: AppActionIcons.Export,
+      action: () => {
+        this.openFilterSelectionPanel();
+      }
+    });
+
+    navbarModel.menuList.push({
       caption: 'Screenshot',
       icon: AppActionIcons.Screenshot,
       action: () => {
@@ -486,7 +499,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     navbarState.rightIcons.find(i => i.id === 'quickFilterIcon').off = iconOff;
   }
 
-  public async openLanguageFilterPanel(): Promise<void> {
+  private async openLanguageFilterPanel(): Promise<void> {
     const breadcrumbs = this.breadcrumbService.getState().items;
     const languageBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Language);
     const languages = languageBreadcrumb?.criteriaItem?.columnValues?.length ? languageBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
@@ -528,7 +541,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.sidebarHostService.loadContent(model);
   }
 
-  public async openMoodFilterPanel(): Promise<void> {
+  private async openMoodFilterPanel(): Promise<void> {
     const breadcrumbs = this.breadcrumbService.getState().items;
     const moodBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Mood);
     const moods = moodBreadcrumb?.criteriaItem?.columnValues?.length ? moodBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
@@ -570,7 +583,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.sidebarHostService.loadContent(model);
   }
 
-  public async openDecadeFilterPanel(): Promise<void> {
+  private async openDecadeFilterPanel(): Promise<void> {
     const breadcrumbs = this.breadcrumbService.getState().items;
     const decadeBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Decade);
     const decades = decadeBreadcrumb?.criteriaItem?.columnValues?.length ? decadeBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
@@ -610,5 +623,36 @@ export class SongListComponent extends CoreComponent implements OnInit {
       }
     };
     this.sidebarHostService.loadContent(model);
+  }
+
+  private async openFilterSelectionPanel(): Promise<void> {
+    let exports  = await this.entities.getSyncProfiles(SyncType.Export);
+    exports = this.utility.sort(exports, 'name');
+    const items: IChipItem[] = [];
+    exports.forEach(exp => {
+      items.push({
+        caption: exp.name,
+        value: exp.id,
+        subText: exp.directories?.length ? exp.directories[0] : null
+      });
+    });
+    const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Export',
+      titleIcon: AppActionIcons.Export,
+      subTitle: 'Tracks: ' + this.spListBaseComponent.model.criteriaResult.items.length,
+      subTitleIcon: AppEntityIcons.Song,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.SingleOk,
+      items: items,
+      onOk: model => {
+        const selectedItems = model.items.filter(i => i.selected);
+        if (selectedItems.length) {
+          const profileId = selectedItems[0].value;
+          this.exporter.run(profileId, { criteria: this.spListBaseComponent.model.criteriaResult.criteria });
+        }
+      }
+    };
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 }

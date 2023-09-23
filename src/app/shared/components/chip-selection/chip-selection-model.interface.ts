@@ -2,8 +2,12 @@ import { ISideBarHostModel } from "src/app/core/components/side-bar-host/side-ba
 import { ISelectableValue } from "src/app/core/models/core.interface";
 
 export interface IChipItem extends ISelectableValue {
+  /** Icon to be displayed to the right of the text. */
   secondaryIcon?: string;
+  /** Icons to be displayed instead of text. */
   middleIcons?: string[];
+  /** Text to be displayed under the main text. */
+  subText?: string;
 }
 export interface IChipSelectionModel extends ISideBarHostModel {
   type: ChipSelectorType;

@@ -49,10 +49,6 @@ export class SideBarMenuStateService {
     return menuModel;
   }
 
-  private clear(): void {
-    this.state.items = [];
-  }
-
   /**
    * Populates the menu based on the specified route.
    * @param route The current route
@@ -73,6 +69,14 @@ export class SideBarMenuStateService {
       else {
         menu.active = false;
       }
+    }
+  }
+
+  public setRunning(route: AppRoute, running: boolean): void {
+    const routeInfo = appRoutes[route];
+    const item = this.state.items.find(i => i.route === routeInfo.route);
+    if (item) {
+      item.running = running;
     }
   }
 

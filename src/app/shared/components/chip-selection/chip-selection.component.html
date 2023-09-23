@@ -10,6 +10,7 @@
     <span *ngIf="!chipItem.middleIcons || !chipItem.middleIcons.length" class="sp-chip-text">
       <i *ngIf="chipItem.icon" [ngClass]="chipItem.icon">&nbsp;&nbsp;</i>
       <span>{{chipItem.caption}}</span>
+      <ng-container *ngIf="chipItem.subText"><br><span class="sp-text-small">{{chipItem.subText}}</span></ng-container>
     </span>
     <i *ngIf="chipItem.secondaryIcon" [ngClass]="chipItem.secondaryIcon" class="sp-float-right"></i>
   </div>

@@ -25,6 +25,16 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { AppEvent } from '../../models/events.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PeriodTimer } from 'src/app/core/models/timer.class';
+import { EntityTarget } from 'typeorm';
+import { SideBarMenuStateService } from 'src/app/core/components/side-bar-menu/side-bar-menu-state.service';
+import { AppRoute } from 'src/app/app-routes';
+
+enum SongViewType {
+  Standard,
+  Artist,
+  Classification,
+  Playlist
+}
 
 /**
  * Service to copy audio and playlist files to other locations.
@@ -49,6 +59,7 @@ export class ExportService {
     private parser: ScriptParserService,
     private entities: DatabaseEntitiesService,
     private events: EventsService,
+    private sidebarMenuService: SideBarMenuStateService,
     private utility: UtilityService) { }
 
   public get isRunning(): boolean {
@@ -66,6 +77,7 @@ export class ExportService {
    */
   public async run(exportProfileId: string, configOverride?: IExportConfig): Promise<void> {
     this.running = true;
+    this.sidebarMenuService.setRunning(AppRoute.Settings, true);
     this.events.broadcast(AppEvent.ExportStart);
     const t = new PeriodTimer(this.utility);
     // TODO: empty folder before running, or real sync add/replace/remove
@@ -73,7 +85,9 @@ export class ExportService {
     // In theory a writer should only have one data source
     const syncProfile = await this.entities.getSyncProfile(exportProfileId);
     if (configOverride) {
-      syncProfile.directories = configOverride.directories;
+      if (configOverride.directories?.length) {
+        syncProfile.directories = configOverride.directories;
+      }
       syncProfile.config = Object.assign(syncProfile.config ? syncProfile.config : {}, configOverride);
     }
     syncProfile.config.playlistConfig = syncProfile.config.playlistConfig ? syncProfile.config.playlistConfig : {};
@@ -128,6 +142,7 @@ export class ExportService {
     exportResult.period = t.stop();
     this.events.broadcast(AppEvent.ExportEnd, exportResult);
     // TODO: cleanup the Export Song table, since it was just needed for this process
+    this.sidebarMenuService.setRunning(AppRoute.Settings, false);
     this.running = false;
   }
 
@@ -195,7 +210,7 @@ export class ExportService {
       const criteria = new Criteria(playlist.name);
       criteria.searchCriteria.push(new CriteriaItem('playlistId', playlist.id));
       criteria.addSorting('sequence');
-      const playlistCreated = await this.exportCriteriaAsPlaylist('List', criteria, this.config.songExportEnabled);
+      const playlistCreated = await this.exportCriteriaAsPlaylist('List', criteria);
       if (playlistCreated) {
         result++;
       }
@@ -208,7 +223,7 @@ export class ExportService {
     const filters = await FilterEntity.find();
     for (const filter of filters) {
       const criteria = await this.entities.getCriteriaFromFilter(filter);
-      const playlistExported = await this.exportCriteriaAsPlaylist('Filter', criteria, this.config.songExportEnabled);
+      const playlistExported = await this.exportCriteriaAsPlaylist('Filter', criteria);
       if (playlistExported) {
         result++;
       }
@@ -219,29 +234,25 @@ export class ExportService {
   /**
    * Uses the specified criteria to get a list of songs which will be exported as a playlist file.
    */
-  private async exportCriteriaAsPlaylist(namePrefix: string, criteria: Criteria, isSubset: boolean): Promise<boolean> {
+  private async exportCriteriaAsPlaylist(namePrefix: string, criteria: Criteria): Promise<boolean> {
     // Override the number of results with the max number of tracks
     if (this.config.playlistConfig?.maxCount) {
       criteria.paging.pageSize = this.config.playlistConfig.maxCount;
     }
     let tracks: ISongExtendedModel[];
     if (criteria.hasComparison(false, 'classificationId')) {
-      tracks = await this.db.getList(
-        isSubset ? SongExpExtendedByClassificationViewEntity : SongExtendedByClassificationViewEntity, criteria);
+      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Classification), criteria);
     }
     else if (criteria.hasComparison(false, 'artistId')) {
-      tracks = await this.db.getList(
-        isSubset ? SongExpExtendedByArtistViewEntity : SongExtendedByArtistViewEntity, criteria);
+      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Artist), criteria);
     }
     else if (criteria.hasComparison(false, 'playlistId')) {
       // In theory, playlists should only exported if all songs are being exported (isSubset=false),
       // but we are supporting filtering by playlistId in both cases just in case
-      tracks = await this.db.getList(
-        isSubset ? SongExpExtendedByPlaylistViewEntity : SongExtendedByPlaylistViewEntity, criteria);
+      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Playlist), criteria);
     }
     else {
-      tracks = await this.db.getList(
-        isSubset ? SongExpExtendedViewEntity : SongExtendedViewEntity, criteria);
+      tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Standard), criteria);
     }
     if (tracks?.length) {
       return this.processPlaylist(tracks, criteria, namePrefix);
@@ -336,16 +347,16 @@ export class ExportService {
     const criteriaItem = new CriteriaItem('classificationId', classificationId);
     criteriaItem.ignoreInSelect = true;
     criteria.searchCriteria.push(criteriaItem);
-    return this.exportCriteriaAsPlaylist(prefix, criteria, this.config.songExportEnabled);
+    return this.exportCriteriaAsPlaylist(prefix, criteria);
   }
 
   private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string, extraCriteria?: CriteriaItem[]): Promise<number> {
     let result = 0;
-    const options: IResultsIteratorOptions<SongExtendedViewEntity> = {
-      entity: SongExtendedViewEntity,
+    const options: IResultsIteratorOptions<any> = {
+      entity: this.getSongViewEntity(SongViewType.Standard),
       queries: queries,
       extraCriteria: extraCriteria,
-      onResult: async (valuesObj: KeyValueGen<any>, items: SongExtendedViewEntity[]) => {
+      onResult: async (valuesObj: KeyValueGen<any>, items: any[]) => {
         if (items?.length) {
           const playlistPrefix = this.parser.parse({ expression: prefixExpression, context: valuesObj });
           const playlistName = this.parser.parse({ expression: nameExpression, context: valuesObj });
@@ -385,7 +396,7 @@ export class ExportService {
     criteria.searchCriteria.push(new CriteriaItem('playCount', 0));
     criteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown'));
 
-    const tracks = await this.db.getList(SongExtendedViewEntity, criteria);
+    const tracks = await this.db.getList(this.getSongViewEntity(SongViewType.Standard), criteria);
     let playlistIndex = 0;
     while (tracks.length) {
       playlistIndex++;
@@ -397,5 +408,31 @@ export class ExportService {
     }
 
     return result;
+  }
+
+  private getSongViewEntity(viewType: SongViewType): EntityTarget<any> {
+    switch (viewType) {
+      case SongViewType.Standard:
+        if (this.config.songExportEnabled) {
+          return SongExpExtendedViewEntity;
+        }
+        return SongExtendedViewEntity;
+      case SongViewType.Artist:
+        if (this.config.songExportEnabled) {
+          return SongExpExtendedByArtistViewEntity;
+        }
+        return SongExtendedByArtistViewEntity;
+      case SongViewType.Classification:
+        if (this.config.songExportEnabled) {
+          return SongExpExtendedByClassificationViewEntity;
+        }
+        return SongExtendedByClassificationViewEntity;
+      case SongViewType.Playlist:
+        if (this.config.songExportEnabled) {
+          return SongExpExtendedByPlaylistViewEntity;
+        }
+        return SongExtendedByPlaylistViewEntity;
+    }
+    return null;
   }
 }
