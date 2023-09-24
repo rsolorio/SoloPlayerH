@@ -75,6 +75,7 @@ export class DatabaseEntitiesService {
     const song = await SongEntity.findOneBy({ id: songData.id });
     song.playCount = songData.playCount;
     song.playDate = songData.playDate;
+    song.changeDate = new Date();
     await song.save();
     // Add play record
     const playRecord = new PlayHistoryEntity();
@@ -87,6 +88,7 @@ export class DatabaseEntitiesService {
   public async setFavoriteSong(songId: string, favorite: boolean): Promise<boolean> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.favorite = favorite;
+    song.changeDate = new Date();
     await song.save();
     return favorite;
   }
@@ -122,18 +124,27 @@ export class DatabaseEntitiesService {
   public async setRating(songId: string, rating: number): Promise<void> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.rating = rating;
+    song.changeDate = new Date();
     await song.save();
   }
 
   public async setLive(songId: string, live: boolean): Promise<void> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.live = live;
+    song.changeDate = new Date();
     await song.save();
   }
 
   public async setMood(songId: string, mood: string): Promise<void> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.mood = mood;
+    song.changeDate = new Date();
+    await song.save();
+  }
+
+  public async setChangeDate(songId: string): Promise<void> {
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.changeDate = new Date();
     await song.save();
   }
 

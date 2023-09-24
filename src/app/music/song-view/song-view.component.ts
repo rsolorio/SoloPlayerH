@@ -343,6 +343,7 @@ export class SongViewComponent implements OnInit {
     else {
       await SongClassificationEntity.delete({ songId: this.entityEditorModel.data['song_id'], classificationId: valuePair.value})
     }
+    await this.entityService.setChangeDate(this.entityEditorModel.data['song_id']);
   }
 
   private findFieldByProperty(propertyName: string): IEntityFieldModel {
