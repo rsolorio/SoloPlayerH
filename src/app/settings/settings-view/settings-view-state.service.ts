@@ -24,6 +24,8 @@ import { AppTestService } from 'src/app/app-test';
 import { ExportService } from 'src/app/shared/services/export/export.service';
 import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
 import { IExportResult } from 'src/app/shared/services/export/export.interface';
+import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
+import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-storage.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +43,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private log: LogService,
     private tester: AppTestService,
     private events: EventsService,
+    private storage: LocalStorageService,
     private exporter: ExportService)
   {
     this.subscribeToScanEvents();
@@ -408,15 +411,33 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         ]
       },
       {
-        name: 'Debug',
+        name: 'Developer Options',
         settings: [
           {
             name: 'Dev Tools',
-            icon: AppActionIcons.Debug,
+            icon: AppActionIcons.Code,
             dataType: 'text',
             descriptions: ['Open developer tools.'],
             action: () => {
               this.dialog.openDevTools();
+            }
+          },
+          {
+            id: 'debugMode',
+            name: 'Debug',
+            icon: AppActionIcons.Debug,
+            dataType: 'boolean',
+            secondaryIcon: {
+              icon: AppAttributeIcons.SwitchOn + ' sp-color-primary',
+              off: !this.storage.getByKey(LocalStorageKeys.DebugMode),
+              offIcon: AppAttributeIcons.SwitchOff
+            },
+            descriptions: ['Click here to turn on or off debug mode.'],
+            action: setting => {
+              setting.running = true;
+              this.storage.setByKey(LocalStorageKeys.DebugMode, setting.secondaryIcon.off);
+              setting.secondaryIcon.off = !setting.secondaryIcon.off;
+              this.utility.reloadApp();
             }
           },
           {

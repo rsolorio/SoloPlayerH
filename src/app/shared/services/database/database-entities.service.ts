@@ -24,6 +24,8 @@ import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
 import { PartyRelationType } from '../../models/music.enum';
 import { FileService } from 'src/app/platform/file/file.service';
+import { LocalStorageService } from '../local-storage/local-storage.service';
+import { LocalStorageKeys } from '../local-storage/local-storage.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +37,7 @@ export class DatabaseEntitiesService {
     private db: DatabaseService,
     private options: DatabaseOptionsService,
     private fileService: FileService,
+    private storage: LocalStorageService,
     private sidebarHostService: SideBarHostStateService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
@@ -73,6 +76,11 @@ export class DatabaseEntitiesService {
   }
 
   public async updatePlayCount(songData: ISongModel): Promise<SongEntity> {
+    // This particular functionality will be disabled when debug is on.
+    const debugMode = this.storage.getByKey(LocalStorageKeys.DebugMode);
+    if (debugMode) {
+      return null;
+    }
     // Increase play count
     const song = await SongEntity.findOneBy({ id: songData.id });
     song.playCount = songData.playCount;

@@ -161,22 +161,6 @@ export class DatabaseService {
   public async initializeDatabase(): Promise<DataSource> {
     this.log.info('Initializing database...');
 
-    let logging: any;
-    switch (this.log.level) {
-      case LogLevel.Verbose:
-        logging = ['query', 'error', 'warn', 'schema', 'info', 'log'];
-        break;
-      case LogLevel.Info:
-        logging = ['error', 'warn', 'info'];
-        break;
-      case LogLevel.Warning:
-        logging = ['error', 'warn'];
-        break;
-      default:
-        logging = ['error'];
-        break;
-    }
-
     const options: DataSourceOptions = {
       type: 'sqlite',
       database: 'solo-player.db',
@@ -222,7 +206,7 @@ export class DatabaseService {
         SongExpExtendedByPlaylistViewEntity
       ],
       synchronize: true,
-      logging: logging
+      logging: this.getDbLogging()
     };
   
     this.dataSource = new DataSource(options);
@@ -954,5 +938,24 @@ export class DatabaseService {
 
   private getColumnName(expression: IColumnExpression): string {
     return expression.alias ? expression.alias : expression.expression;
+  }
+
+  private getDbLogging(): any {
+    let logging: any;
+    switch (this.log.level) {
+      case LogLevel.Verbose:
+        logging = ['query', 'error', 'warn', 'schema', 'info', 'log'];
+        break;
+      case LogLevel.Info:
+        logging = ['error', 'warn', 'info'];
+        break;
+      case LogLevel.Warning:
+        logging = ['error', 'warn'];
+        break;
+      default:
+        logging = ['error'];
+        break;
+    }
+    return logging;
   }
 }

@@ -123,6 +123,10 @@ export class UtilityService {
     return this.windowSize;
   }
 
+  public reloadApp(): void {
+    window.location.reload();
+  }
+
   public reloadRoute(): void {
     const currentUrl = this.router.url;
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {

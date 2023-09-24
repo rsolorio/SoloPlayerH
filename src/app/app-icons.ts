@@ -101,6 +101,7 @@ export enum AppActionIcons {
   DeleteData = 'mdi-database-remove mdi',
   SearchData = 'mdi-database-search mdi',
   Debug = 'mdi-bug mdi',
+  Code = 'mdi-file-code mdi',
   Test = 'mdi-test-tube mdi',
   AddToPlaylist = 'mdi-playlist-plus mdi',
   Loading = 'mdi-loading mdi-spin mdi',
