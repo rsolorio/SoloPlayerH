@@ -23,6 +23,7 @@ import { ISyncProfileParsed, SyncType } from '../../models/sync-profile-model.in
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
 import { PartyRelationType } from '../../models/music.enum';
+import { FileService } from 'src/app/platform/file/file.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,7 @@ export class DatabaseEntitiesService {
     private utilities: UtilityService,
     private db: DatabaseService,
     private options: DatabaseOptionsService,
+    private fileService: FileService,
     private sidebarHostService: SideBarHostStateService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
@@ -146,6 +148,29 @@ export class DatabaseEntitiesService {
     const song = await SongEntity.findOneBy({ id: songId });
     song.changeDate = new Date();
     await song.save();
+  }
+
+  public hasLyricsFile(song: ISongModel): boolean {
+    const lyricsFilePath = song.filePath.replace(song.fileExtension, 'txt');
+    return this.fileService.exists(lyricsFilePath);
+  }
+
+  public async consumeLyrics(songFilePath: string): Promise<string> {
+    // TODO: consolidate this logic with the one in the file info data source
+    const fileInfo = await this.fileService.getFileInfo(songFilePath);
+    const lyricsFilePath = fileInfo.path.replace(fileInfo.extension, '.txt');
+    if (this.fileService.exists(lyricsFilePath)) {
+      const lyrics = await this.fileService.getText(lyricsFilePath);
+      if (lyrics) {
+        const song = await SongEntity.findOneBy({ filePath: songFilePath });
+        if (song.lyrics !== lyrics) {
+          song.lyrics = lyrics;
+          await song.save();
+          return lyrics;
+        }
+      }
+    }
+    return null;
   }
 
   public getSongDetails(songId: string): Promise<any> {

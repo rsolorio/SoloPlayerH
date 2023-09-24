@@ -8,7 +8,6 @@ import { FileInfoSourceService } from '../data-source/file-info-source.service';
 import { PathExpressionSourceService } from '../data-source/path-expression-source.service';
 import { IDataSourceService } from '../data-source/data-source.interface';
 import { DataSourceType } from '../data-source/data-source.enum';
-import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { MetaField } from './data-transform.enum';
 
 /**
@@ -30,18 +29,17 @@ export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, I
 
   constructor(
     private log: LogService,
-    private entities: DatabaseEntitiesService,
     private id3v2Service: Id3v2SourceService,
     private fileInfoService: FileInfoSourceService,
     private pathExpressionService: PathExpressionSourceService) {
-    super(entities);
+    super();
   }
 
-  public run(input: IFileInfo): Promise<KeyValues> {
-    return this.getData(input);
+  public run(input: IFileInfo, fieldArrayOverride?: string[]): Promise<KeyValues> {
+    return this.getData(input, fieldArrayOverride);
   }
 
-  protected async getData(input: IFileInfo): Promise<KeyValues> {
+  protected async getData(input: IFileInfo, fieldArrayOverride?: string[]): Promise<KeyValues> {
     // All values for a given destination will be saved in an array
     const result: KeyValues = {};
     for (const source of this.sources) {
@@ -53,7 +51,7 @@ export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, I
           return result;
         }
         else {
-          await this.setValuesAndMappings(result, source);
+          await this.setValuesAndMappings(result, source, fieldArrayOverride);
         }
       }
       else {

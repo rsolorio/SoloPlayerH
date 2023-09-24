@@ -100,7 +100,8 @@ export class ExportService {
     syncProfile.nonPrimaryRelations = await this.entities.getNonPrimaryRelations();
     syncProfile.classifications = await ValueListEntryEntity.findBy({ isClassification: true });
 
-    await this.writer.init(syncProfile);
+    const dataSources = await this.entities.getDataSources(syncProfile.id);
+    await this.writer.init(syncProfile, dataSources);
     await this.prepareSongs();
 
     const exportResult: IExportResult = {
@@ -134,7 +135,7 @@ export class ExportService {
     exportResult.length = this.utility.secondsToHours(seconds);
 
     // EXPORT PLAYLIST FILES
-    await this.playlistWriter.init(syncProfile);
+    await this.playlistWriter.init(syncProfile, null);
 
     if (!this.config.playlistConfig.smartlistsDisabled) {
       this.events.broadcast(AppEvent.ExportSmartlistsStart, exportResult);

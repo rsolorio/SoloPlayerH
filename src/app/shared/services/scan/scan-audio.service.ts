@@ -120,7 +120,8 @@ export class ScanAudioService {
     // Prepare reader, clarify that classification types will be handled as dynamic fields
     // TODO: how to exclude class types already handled: Genre, Language
     const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
-    await this.metadataReader.init(syncProfile);
+    const dataSources = await this.entities.getDataSources(syncProfile.id);
+    await this.metadataReader.init(syncProfile, dataSources);
 
     const result: ISyncSongInfo = {
       songInitialCount: this.existingSongs.length,
@@ -200,14 +201,19 @@ export class ScanAudioService {
     }
   }
 
-  public setMode(fileInfo: IFileInfo): void {
+  private async setMode(fileInfo: IFileInfo): Promise<void> {
     // TODO: if lyrics file or images files changed also set update mode
     this.songToProcess = this.lookupService.findSong(fileInfo.path, this.existingSongs);
     if (this.songToProcess) {
       const fileAddTime = fileInfo.addDate.getTime();
       const dbAddTime = this.songToProcess.addDate.getTime();
       if (fileAddTime === dbAddTime) {
-        this.scanMode = ScanFileMode.Skip;
+        if (!this.songToProcess.lyrics && this.entities.hasLyricsFile(this.songToProcess)) {
+          this.scanMode = ScanFileMode.Update;
+        }
+        else {
+          this.scanMode = ScanFileMode.Skip;
+        }
       }
       else {
         // If the add date changed, we are assuming the file was replaced or updated,
@@ -234,6 +240,8 @@ export class ScanAudioService {
   }
 
   public async processAudioFile(fileInfo: IFileInfo): Promise<KeyValues> {
+    await this.setMode(fileInfo);
+
     if (this.scanMode === ScanFileMode.Skip) {
       return {
         [MetaField.FileMode]: [this.scanMode],
@@ -389,9 +397,12 @@ export class ScanAudioService {
       this.songToProcess.hasChanges = true;
     }
     // If the db date is older than the file date, update the file
-    else if (this.songToProcess.addDate < fileAddDate) {
+    else if (dbAddTime < fileAddTime) {
       await this.setFileAddDate(this.songToProcess.filePath, this.songToProcess.addDate);
-      this.log.warn('Setting older creation date for file: ' + this.songToProcess.filePath);
+      this.log.warn('Setting older creation date for file: ' + this.songToProcess.filePath, {
+        dbAddDate: this.songToProcess.addDate,
+        fileAddDate: fileAddDate
+      });
     }
 
     if (replaced) {

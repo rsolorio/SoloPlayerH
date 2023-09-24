@@ -1,4 +1,5 @@
 import { OnInit, Directive } from '@angular/core';
+import { In } from 'typeorm';
 
 import { IMenuModel } from '../core/models/menu-model.interface';
 import { PlayerOverlayStateService } from './player-overlay/player-overlay-state.service';
@@ -22,7 +23,6 @@ import { PlayerOverlayMode } from './player-overlay/player-overlay.enum';
 import { DatabaseEntitiesService } from '../shared/services/database/database-entities.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../shared/components/chip-selection/chip-selection-model.interface';
 import { PartyRelationType } from '../shared/models/music.enum';
-import { In } from 'typeorm';
 import { DatabaseOptionsService } from '../shared/services/database/database-options.service';
 import { ModuleOptionId } from '../shared/services/database/database.seed';
 import { IImagePreviewModel } from '../related-image/image-preview/image-preview-model.interface';

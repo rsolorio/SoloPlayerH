@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.interface';
 import { DataTransformServiceBase } from './data-transform-service-base.class';
 import { IExportConfig, IPlaylistExportConfig } from 'src/app/shared/services/export/export.interface';
-import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { KeyValues } from 'src/app/core/models/core.interface';
-import { IDataSourceService } from '../data-source/data-source.interface';
+import { IDataSourceParsed, IDataSourceService } from '../data-source/data-source.interface';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { FileService } from 'src/app/platform/file/file.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -17,13 +16,12 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
   /** Current input configuration from the process method. */
   private config: IPlaylistExportConfig;
   constructor(
-    private entities: DatabaseEntitiesService,
     private fileService: FileService,
     private utility: UtilityService) {
-    super(entities)
+    super()
   }
 
-  public async init(profile: ISyncProfileParsed): Promise<void> {
+  public async init(profile: ISyncProfileParsed, inputSources: IDataSourceParsed[]): Promise<void> {
     this.rootPath = profile.directories[0];
   }
 

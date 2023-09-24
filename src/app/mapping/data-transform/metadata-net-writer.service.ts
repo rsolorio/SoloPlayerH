@@ -3,7 +3,6 @@ import { DataTransformServiceBase } from './data-transform-service-base.class';
 import { IDataSourceService } from '../data-source/data-source.interface';
 import { KeyValues } from 'src/app/core/models/core.interface';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
-import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { DataSourceType } from '../data-source/data-source.enum';
 import { SongModelSourceService } from '../data-source/song-model-source.service';
 import { FileService } from 'src/app/platform/file/file.service';
@@ -26,9 +25,8 @@ export class MetadataNetWriterService extends DataTransformServiceBase<ISongMode
   constructor(
     private fileService: FileService,
     private utility: UtilityService,
-    private entities: DatabaseEntitiesService,
     private songModelSource: SongModelSourceService) {
-    super(entities);
+    super();
   }
 
   public async run(input: ISongModel): Promise<any> {

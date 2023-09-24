@@ -62,7 +62,6 @@ export class ScanService {
       fileCount++;
       const info: IScanItemInfo<IFileInfo> = { progress: fileCount, item: file, total: files.length };
       this.events.broadcast(AppEvent.ScanAudioFileStart, info);
-      this.scanAudioService.setMode(file);
       const metadata = await this.scanAudioService.processAudioFile(file);
       const ignoredData = metadata[MetaField.Ignored];
       if (ignoredData?.length && ignoredData[0]) {
