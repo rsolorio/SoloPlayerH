@@ -43,12 +43,14 @@ export interface IPlaylistExportConfig {
 }
 
 export interface IExportResult {
-  directoryPath: string;
-  directoryName: string;
+  rootPath: string;
+  playlistFolder: string;
   totalFileCount: number;
   finalFileCount: number;
   smartlistCount: number;
   autolistCount: number;
   playlistCount: number;
   period?: ITimePeriod;
+  size?: string;
+  length?: string;
 }

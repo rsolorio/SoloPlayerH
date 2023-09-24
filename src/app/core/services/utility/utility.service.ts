@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { IWindowSize, IWindowSizeChangedEvent } from './utility.interface';
-import { BreakpointMode, Milliseconds } from './utility.enum';
+import { BreakpointMode, Bytes, Milliseconds } from './utility.enum';
 import { BreakpointRanges } from './utility.class';
 import { EventsService } from '../../../core/services/events/events.service';
 import { CoreEvent } from '../../../core/services/events/events.enum';
@@ -225,6 +225,10 @@ export class UtilityService {
 
   public getCurrentRouteInfo(): IAppRouteInfo {
     return appRoutes[this.getCurrentRoute()];
+  }
+
+  public bytesTo(value: number, unit: Bytes): number {
+    return value / unit;
   }
 
   public isDate(value: any): boolean {

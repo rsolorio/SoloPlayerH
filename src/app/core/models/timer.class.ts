@@ -15,9 +15,9 @@ export class PeriodTimer {
 
   public stop(): ITimePeriod {
     this.period.to = new Date();
-    this.period.length = this.period.to.getTime() - this.period.from.getTime();
     this.period.span = this.utility.toTimeSpan(
-      this.period.length, [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
+      this.period.to.getTime() - this.period.from.getTime(),
+      [Milliseconds.Hour, Milliseconds.Minute, Milliseconds.Second]);
     return this.period;
   }
 }

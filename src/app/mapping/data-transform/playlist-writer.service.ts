@@ -40,12 +40,10 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     if (!this.config.path) {
       this.config.path = this.rootPath;
       if (this.config.directory) {
-        this.config.path = this.config.path.endsWith('\\') ? this.config.path : this.config.path + '\\';
-        this.config.path += this.config.directory;
+        this.config.path = this.fileService.combine(this.config.path, this.config.directory);
         await this.fileService.createDirectory(this.config.path);
       }
     }
-    this.config.path = this.config.path.endsWith('\\') ? this.config.path : this.config.path + '\\';
     // Prepare file name
     let fileName: string;
     if (input.criteria?.name) {
@@ -64,7 +62,7 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     // Prepare playlist file path
     const format = this.config.format.toLowerCase();
     const extension = '.' + format;
-    const filePath = this.config.path + fileName + extension;
+    const filePath = this.fileService.combine(this.config.path, fileName + extension);
 
     if (this.fileService.exists(filePath)) {
       return false;

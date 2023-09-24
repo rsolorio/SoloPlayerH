@@ -28,6 +28,8 @@ import { PeriodTimer } from 'src/app/core/models/timer.class';
 import { EntityTarget } from 'typeorm';
 import { SideBarMenuStateService } from 'src/app/core/components/side-bar-menu/side-bar-menu-state.service';
 import { AppRoute } from 'src/app/app-routes';
+import { Bytes } from 'src/app/core/services/utility/utility.enum';
+import { FileService } from 'src/app/platform/file/file.service';
 
 enum SongViewType {
   Standard,
@@ -52,6 +54,7 @@ enum SongViewType {
 export class ExportService {
   private config: IExportConfig;
   private running: boolean;
+  private syncFileName = 'SyncFile.txt';
   constructor(
     private db: DatabaseService,
     private writer: MetadataWriterService,
@@ -60,6 +63,7 @@ export class ExportService {
     private entities: DatabaseEntitiesService,
     private events: EventsService,
     private sidebarMenuService: SideBarMenuStateService,
+    private fileService: FileService,
     private utility: UtilityService) { }
 
   public get isRunning(): boolean {
@@ -100,8 +104,8 @@ export class ExportService {
     await this.prepareSongs();
 
     const exportResult: IExportResult = {
-      directoryPath: syncProfile.directories[0],
-      directoryName: this.config?.playlistConfig ? this.config.playlistConfig.directory : null,
+      rootPath: syncProfile.directories[0],
+      playlistFolder: this.config?.playlistConfig ? this.config.playlistConfig.directory : null,
       totalFileCount: this.config.songs.length,
       finalFileCount: 0,
       smartlistCount: 0,
@@ -110,6 +114,8 @@ export class ExportService {
     };
 
     // EXPORT SONG FILES
+    let bytes = 0;
+    let seconds = 0;
     this.config.playlistConfig.fileMappings = {};
     for (const song of this.config.songs) {
       this.events.broadcast(AppEvent.ExportAudioFileStart, exportResult);
@@ -117,10 +123,15 @@ export class ExportService {
       const writeResult = await this.writer.run(song);
       this.config.playlistConfig.fileMappings[writeResult.sourcePath] = writeResult.destinationPath;
       if (!writeResult.skipped) {
+        bytes += song.fileSize;
+        seconds += song.seconds;
         exportResult.finalFileCount++;
         this.events.broadcast(AppEvent.ExportAudioFileEnd, writeResult);
       }
     }
+    // Set the calculations
+    exportResult.size = this.utility.round(this.utility.bytesTo(bytes, Bytes.Gigabyte), 2).toString() + 'Gb';
+    exportResult.length = this.utility.secondsToHours(seconds);
 
     // EXPORT PLAYLIST FILES
     await this.playlistWriter.init(syncProfile);
@@ -139,6 +150,7 @@ export class ExportService {
       exportResult.playlistCount = await this.exportPlaylists();
     }
     exportResult.period = t.stop();
+    await this.saveSyncFile(exportResult);
     this.events.broadcast(AppEvent.ExportEnd, exportResult);
     // TODO: cleanup the Export Song table, since it was just needed for this process
     this.sidebarMenuService.setRunning(AppRoute.Settings, false);
@@ -424,5 +436,12 @@ export class ExportService {
         return SongExtendedByPlaylistViewEntity;
     }
     return null;
+  }
+
+  private async saveSyncFile(result: IExportResult): Promise<void> {
+    const filePath = this.fileService.combine(result.rootPath, this.syncFileName);
+    let fileContent = JSON.stringify(result, null, 2);
+    fileContent += '\n--------------------------------------------------\n'
+    await this.fileService.appendText(filePath, fileContent);
   }
 }

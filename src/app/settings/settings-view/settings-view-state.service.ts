@@ -162,9 +162,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       setting.disabled = true;
       setting.running = true;
       setting.descriptions[0] = 'Exporting smartlists to...';
-      setting.dynamicText = 'Path: ' + exportResult.directoryPath;
-      if (exportResult.directoryName) {
-        setting.dynamicText += '. Folder: ' + exportResult.directoryName;
+      setting.dynamicText = 'Path: ' + exportResult.rootPath;
+      if (exportResult.playlistFolder) {
+        setting.dynamicText += '. Folder: ' + exportResult.playlistFolder;
       }
     });
     this.events.onEvent<IExportResult>(AppEvent.ExportAutolistsStart).subscribe(exportResult => {
@@ -175,9 +175,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       setting.disabled = true;
       setting.running = true;
       setting.descriptions[0] = 'Exporting autolists...';
-      setting.dynamicText = 'Path: ' + exportResult.directoryPath;
-      if (exportResult.directoryName) {
-        setting.dynamicText += '. Folder: ' + exportResult.directoryName;
+      setting.dynamicText = 'Path: ' + exportResult.rootPath;
+      if (exportResult.playlistFolder) {
+        setting.dynamicText += '. Folder: ' + exportResult.playlistFolder;
       }
     });
     this.events.onEvent<IExportResult>(AppEvent.ExportPlaylistsStart).subscribe(exportResult => {
@@ -188,9 +188,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       setting.disabled = true;
       setting.running = true;
       setting.descriptions[0] = 'Exporting playlists...';
-      setting.dynamicText = 'Path: ' + exportResult.directoryPath;
-      if (exportResult.directoryName) {
-        setting.dynamicText += '. Folder: ' + exportResult.directoryName;
+      setting.dynamicText = 'Path: ' + exportResult.rootPath;
+      if (exportResult.playlistFolder) {
+        setting.dynamicText += '. Folder: ' + exportResult.playlistFolder;
       }
     });
     this.events.onEvent<IExportResult>(AppEvent.ExportEnd).subscribe(exportResult => {

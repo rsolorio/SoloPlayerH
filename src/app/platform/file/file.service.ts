@@ -11,6 +11,8 @@ export abstract class FileService {
 
   abstract writeText(filePath: string, content: string): Promise<void>;
 
+  abstract appendText(filePath: string, content: string): Promise<void>;
+
   abstract getFiles(directoryPaths: string[]): Observable<IFileInfo>;
 
   abstract getDirectories(directoryPath?: string): Promise<IFileInfo[]>;
@@ -34,6 +36,18 @@ export abstract class FileService {
   abstract runCommand(command: string): Promise<string>;
 
   abstract createDirectory(directoryPath: string): Promise<void>;
+
+  combine(...args: string[]): string {
+    const separator = '\\';
+    let result = ''
+    args.forEach(path => {
+      result += path;
+      if (!path.endsWith(separator)) {
+        result += separator;
+      }
+    });
+    return result;
+  }
 
   removeBom(value: string): string {
     // 0xFEFF = 65279

@@ -24,6 +24,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  appendText(filePath: string, content: string): Promise<void> {
+    return null;
+  }
+
   createDirectory(directoryPath: string): Promise<void> {
     return null;
   }
