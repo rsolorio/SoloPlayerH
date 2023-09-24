@@ -32,7 +32,7 @@
     "@angular/platform-browser-dynamic": "~11.2.14",
     "@angular/router": "~11.2.14",
     "@electron/remote": "^2.0.8",
-    "@mdi/font": "^7.0.96",
+    "@mdi/font": "^7.2.96",
     "bootstrap": "^4.6.2",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
