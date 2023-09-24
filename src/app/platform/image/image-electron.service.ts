@@ -21,7 +21,10 @@ export class ImageElectronService extends ImageService {
 
   public shrinkImageToDataUrl(image: IImage, size: number): Promise<string> {
     return this.shrinkImageToNativeImage(image, size).then(nativeImage => {
-      return nativeImage.toDataURL();
+      if (nativeImage) {
+        return nativeImage.toDataURL();
+      }
+      return null;
     });
   }
 
