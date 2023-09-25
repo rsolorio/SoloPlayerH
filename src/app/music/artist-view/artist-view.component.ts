@@ -79,6 +79,16 @@ export class ArtistViewComponent implements OnInit {
               onEdit: () => this.editCountry()
             }
           ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'artistGender',
+              icon: AppAttributeIcons.Gender,
+              label: 'Gender',
+              onEdit: () => this.editGender()
+            }
+          ]
         }
       ]
     };    
@@ -126,7 +136,7 @@ export class ArtistViewComponent implements OnInit {
         value: entry.name,
         caption: entry.name
       };
-      if (entry.id === this.entityEditorModel.data['artistType']) {
+      if (entry.name === this.entityEditorModel.data['artistType']) {
         valuePair.selected = true;
       }
       return valuePair;
@@ -159,7 +169,7 @@ export class ArtistViewComponent implements OnInit {
         value: entry.name,
         caption: entry.name
       };
-      if (entry.id === this.entityEditorModel.data['country']) {
+      if (entry.name === this.entityEditorModel.data['country']) {
         valuePair.selected = true;
       }
       return valuePair;
@@ -185,4 +195,36 @@ export class ArtistViewComponent implements OnInit {
     this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
+  private async editGender(): Promise<void> {
+    const entries = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Gender.id });
+    const values = entries.map(entry => {
+      const valuePair: ISelectableValue = {
+        value: entry.name,
+        caption: entry.name
+      };
+      if (entry.name === this.entityEditorModel.data['artistGender']) {
+        valuePair.selected = true;
+      }
+      return valuePair;
+    });
+    const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Gender',
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.SingleOk,
+      items: values,
+      onOk: model => {
+        const selectedValues = model.items.filter(value => value.selected);
+        const valuePair = selectedValues[0];
+        if (valuePair.value !== this.entityEditorModel.data['artistGender']) {
+          this.entityEditorModel.data['artistGender'] = valuePair.value;
+          ArtistEntity.findOneBy({ id: this.entityEditorModel.data['id']}).then(artist => {
+            artist.artistGender = valuePair.value;
+            artist.save();
+          });
+        }
+      }
+    };
+    this.sidebarHostService.loadContent(chipSelectionModel);
+  }
 }
