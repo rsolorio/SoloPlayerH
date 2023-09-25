@@ -1,6 +1,7 @@
 import { Column, Entity } from "typeorm";
 import { ListItemEntity } from "./base.entity";
 import { IFilterModel } from "../models/filter-model.interface";
+import { DateTransformer } from "./date-transformer";
 
 @Entity({name: 'filter'})
 export class FilterEntity extends ListItemEntity implements IFilterModel {
@@ -14,6 +15,8 @@ export class FilterEntity extends ListItemEntity implements IFilterModel {
   favorite: boolean;
   @Column()
   filterTypeId: string;
+  @Column({ nullable: true, transformer: new DateTransformer() })
+  accessDate: Date;
   @Column()
   sync: boolean;
 }

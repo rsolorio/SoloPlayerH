@@ -404,6 +404,12 @@ export class DatabaseEntitiesService {
     return result;
   }
 
+  public async updateFilterAccessDate(filterId: string): Promise<void> {
+    const filter = await FilterEntity.findOneBy({ id: filterId });
+    filter.accessDate = new Date();
+    await filter.save();
+  }
+
   public async getCriteriaFromFilter(filter: IFilterModel): Promise<Criteria> {
     const filterCriteria = await FilterCriteriaEntity.findOneBy({ id: filter.filterCriteriaId });
     const filterCriteriaItems = await FilterCriteriaItemEntity.findBy({ filterCriteriaId: filter.filterCriteriaId });
@@ -576,7 +582,8 @@ export class DatabaseEntitiesService {
       okDelay: 300,
       onChipClick: (selectionChanged, chipItem, model) => {
         const criteriaItems = chipItem.value as CriteriaItems;
-        if (selectionChanged) {          
+        // If the user clicked a new item, match the sort direction on all internal criteria items
+        if (selectionChanged) {
           // All criteria items must use the same sort direction
           if (criteriaItems && criteriaItems.length) {
             // Use the first item to determine the general sort direction
@@ -585,14 +592,16 @@ export class DatabaseEntitiesService {
             if (firstItem.sortDirection !== CriteriaSortDirection.Alternate) {
               // Remove all secondary icons
               model.items.forEach(i => i.secondaryIcon = null);
-              // Set default icon
-              chipItem.secondaryIcon = AppActionIcons.SortAscending;
+              // Set icon
+              chipItem.secondaryIcon = firstItem.sortDirection === CriteriaSortDirection.Ascending ?
+                AppActionIcons.SortAscending : AppActionIcons.SortDescending;
               // Make sure the sorting matches the icon          
-              criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
+              criteriaItems.forEach(i => i.sortDirection = firstItem.sortDirection);
             }
           }
           // The Ok action will be called automatically
         }
+        // If the user clicked the same sort, swap the sorting direction
         else {
           if (criteriaItems && criteriaItems[0] && criteriaItems[0].sortDirection === CriteriaSortDirection.Alternate) {
             // Don't do anything if the user is clicking a selected alternate sorting
@@ -747,6 +756,20 @@ export class DatabaseEntitiesService {
     this.addSortingChip(
       'sorting-changeDate', ['changeDate'],
       AppAttributeIcons.ChangeDate, 'Change Date', result, existingCriteria.sortingCriteria);    
+    return result;
+  }
+
+  public getSortingForFilters(existingCriteria: Criteria): IChipItem[] {
+    const result: IChipItem[] = [];
+    this.addSortingChip(
+      'sorting-filterName', ['name'],
+      AppEntityIcons.Smartlist, 'Name', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-favorite', ['favorite', 'accessDate', 'name'],
+      AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.sortingCriteria, CriteriaSortDirection.Descending);
+    this.addSortingChip(
+      'sorting-accessDate', ['accessDate'],
+      AppAttributeIcons.AccessDate, 'Access Date', result, existingCriteria.sortingCriteria, CriteriaSortDirection.Descending);
     return result;
   }
 

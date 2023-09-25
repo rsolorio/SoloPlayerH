@@ -57,6 +57,7 @@ export enum AppAttributeIcons {
   PlayCount = 'mdi-counter mdi',
   AddDate = 'mdi-calendar-plus mdi',
   ChangeDate = 'mdi-calendar-edit mdi',
+  AccessDate = 'mdi-calendar-cursor mdi',
   PlayDate = 'mdi-calendar-check mdi',
   ArtistType = 'mdi-account-tag mdi',
   Country = 'mdi-earth mdi',

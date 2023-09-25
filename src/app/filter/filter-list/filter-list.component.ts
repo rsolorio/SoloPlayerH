@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute } from 'src/app/app-routes';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFilterModel } from 'src/app/shared/models/filter-model.interface';
 import { FilterListBroadcastService } from './filter-list-broadcast.service';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
+import { Criteria, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppActionIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
 @Component({
   selector: 'sp-filter-list',
@@ -18,41 +18,49 @@ import { AppActionIcons } from 'src/app/app-icons';
   styleUrls: ['./filter-list.component.scss']
 })
 export class FilterListComponent extends CoreComponent implements OnInit {
-
-    // START - LIST MODEL
-    public listModel: IListBaseModel = {
-      listUpdatedEvent: AppEvent.FilterListUpdated,
-      itemMenuList: [
-        {
-          caption: 'Properties...',
-          icon: 'mdi-square-edit-outline mdi',
-          action: (menuItem, param) => {
-            const filter = param as IFilterModel;
-            if (filter) {
-              this.navigation.forward(AppRoute.Filters, { routeParams: [filter.id] });
-            }
+  @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
+  // START - LIST MODEL
+  public listModel: IListBaseModel = {
+    listUpdatedEvent: AppEvent.FilterListUpdated,
+    itemMenuList: [
+      {
+        caption: 'Properties...',
+        icon: 'mdi-square-edit-outline mdi',
+        action: (menuItem, param) => {
+          const filter = param as IFilterModel;
+          if (filter) {
+            this.navigation.forward(AppRoute.Filters, { routeParams: [filter.id] });
           }
         }
-      ],
-      criteriaResult: {
-        criteria: new Criteria('Search Results'),
-        items: []
-      },
-      rightIcons: [{
+      }
+    ],
+    criteriaResult: {
+      criteria: new Criteria('Search Results'),
+      items: []
+    },
+    rightIcons: [
+      {
         icon: AppActionIcons.Add,
         action: () => { }
-      }],
-      searchIconEnabled: true,
-      breadcrumbsEnabled: true,
-      broadcastService: this.broadcastService
-    };  
-    // END - LIST MODEL
+      },
+      {
+        id: 'sortIcon',
+        icon: AppActionIcons.Sort,
+        action: () => {
+          this.openSortingPanel();
+        }
+      }
+    ],
+    searchIconEnabled: true,
+    breadcrumbsEnabled: true,
+    broadcastService: this.broadcastService
+  };  
+  // END - LIST MODEL
 
   constructor(
     public broadcastService: FilterListBroadcastService,
-    private utility: UtilityService,
-    private db: DatabaseService,
     private navigation: NavigationService,
+    private sidebarHostService: SideBarHostStateService,
     private entities: DatabaseEntitiesService
   ) {
     super();
@@ -62,8 +70,10 @@ export class FilterListComponent extends CoreComponent implements OnInit {
   }
 
   public onItemContentClick(filter: IFilterModel): void {
-    this.entities.getCriteriaFromFilter(filter).then(criteria => {
-      this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+    this.entities.updateFilterAccessDate(filter.id).then(() => {
+      this.entities.getCriteriaFromFilter(filter).then(criteria => {
+        this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+      });
     });
   }
 
@@ -74,5 +84,26 @@ export class FilterListComponent extends CoreComponent implements OnInit {
     // will break the change detection cycle and the change will not be reflected in the UI
     filter.favorite = !filter.favorite;
     this.entities.setFavoriteFilter(filter.id, filter.favorite);
+  }
+
+  private openSortingPanel(): void {
+    const chips = this.entities.getSortingForFilters(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.entities.getSortingPanelModel(chips, 'Smartlists', AppEntityIcons.Smartlist);
+    model.onOk = okResult => {
+      const criteria = new Criteria(model.title);
+      // Keep quick criteria
+      criteria.quickCriteria = this.spListBaseComponent.model.criteriaResult.criteria.quickCriteria;
+      // Add sorting criteria, we only support one item
+      const chipItem = okResult.items.find(i => i.selected);
+      if (chipItem) {
+        const criteriaItems = chipItem.value as CriteriaItems;
+        criteria.sortingCriteria = criteriaItems;
+      }
+      else {
+        criteria.sortingCriteria = new CriteriaItems();
+      }
+      this.spListBaseComponent.send(criteria);
+    };
+    this.sidebarHostService.loadContent(model);
   }
 }

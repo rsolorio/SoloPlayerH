@@ -1,6 +1,7 @@
 import { Column, Entity } from "typeorm";
 import { IPlaylistModel } from "../models/playlist-model.interface";
 import { ListItemEntity } from "./base.entity";
+import { DateTransformer } from "./date-transformer";
 
 @Entity({name: 'playlist'})
 export class PlaylistEntity extends ListItemEntity implements IPlaylistModel {
@@ -12,7 +13,7 @@ export class PlaylistEntity extends ListItemEntity implements IPlaylistModel {
   imported: boolean;
   @Column()
   grouping: string;
-  @Column()
+  @Column({ transformer: new DateTransformer() })
   changeDate: Date;
 
   songCount: number;
