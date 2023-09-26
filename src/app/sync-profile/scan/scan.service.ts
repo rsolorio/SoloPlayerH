@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { AppEvent } from '../../models/events.enum';
-import { FileService } from '../../../platform/file/file.service';
+import { AppEvent } from '../../shared/models/events.enum';
+import { FileService } from '../../platform/file/file.service';
 import { IScanItemInfo, ISyncSongInfo } from './scan.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { ScanAudioService } from './scan-audio.service';
 import { ScanPlaylistsService } from './scan-playlists.service';
 import { IProcessDuration } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { PlaylistEntity, PlaylistSongEntity } from '../../entities';
+import { PlaylistEntity, PlaylistSongEntity } from '../../shared/entities';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { PeriodTimer } from 'src/app/core/models/timer.class';
 

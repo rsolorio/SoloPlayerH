@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.interface';
 import { DataTransformServiceBase } from './data-transform-service-base.class';
-import { IExportConfig, IPlaylistExportConfig } from 'src/app/shared/services/export/export.interface';
+import { IExportConfig, IPlaylistExportConfig } from 'src/app/sync-profile/export/export.interface';
 import { KeyValues } from 'src/app/core/models/core.interface';
 import { IDataSourceParsed, IDataSourceService } from '../data-source/data-source.interface';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';

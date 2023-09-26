@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { FileService } from 'src/app/platform/file/file.service';
-import { PlaylistEntity, PlaylistSongEntity, SongEntity } from '../../entities';
-import { DatabaseLookupService } from '../database/database-lookup.service';
+import { PlaylistEntity, PlaylistSongEntity, SongEntity } from '../../shared/entities';
+import { DatabaseLookupService } from '../../shared/services/database/database-lookup.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ValueLists } from '../database/database.lists';
-import { DatabaseService } from '../database/database.service';
+import { ValueLists } from '../../shared/services/database/database.lists';
+import { DatabaseService } from '../../shared/services/database/database.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 
 @Injectable({

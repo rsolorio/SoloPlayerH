@@ -1,5 +1,5 @@
 import { KeyValues } from "src/app/core/models/core.interface";
-import { SongEntity } from "../../entities";
+import { SongEntity } from "../../shared/entities";
 
 export interface IScanItemInfo<TItem> {
   progress: number;

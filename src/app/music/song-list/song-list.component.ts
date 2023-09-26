@@ -42,7 +42,7 @@ import { DbColumn } from 'src/app/shared/services/database/database.columns';
 import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { SyncType } from 'src/app/shared/models/sync-profile-model.interface';
-import { ExportService } from 'src/app/shared/services/export/export.service';
+import { ExportService } from 'src/app/sync-profile/export/export.service';
 
 @Component({
   selector: 'sp-song-list',

@@ -1,6 +1,6 @@
 import { ITimePeriod, KeyValueGen } from "src/app/core/models/core.interface";
-import { ISongExtendedModel } from "../../models/song-model.interface";
-import { Criteria } from "../criteria/criteria.class";
+import { ISongExtendedModel } from "../../shared/models/song-model.interface";
+import { Criteria } from "../../shared/services/criteria/criteria.class";
 
 export interface IExportConfig {
   directories?: string[];

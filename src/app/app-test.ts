@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ModuleOptionId } from "./shared/services/database/database.seed";
-import { ExportService } from "./shared/services/export/export.service";
+import { ExportService } from "./sync-profile/export/export.service";
 import { DialogService } from "./platform/dialog/dialog.service";
 import { FileService } from "./platform/file/file.service";
 import { AudioMetadataService } from "./platform/audio-metadata/audio-metadata.service";

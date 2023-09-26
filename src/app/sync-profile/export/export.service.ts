@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { IExportConfig, IExportResult } from './export.interface';
-import { DatabaseEntitiesService } from '../database/database-entities.service';
-import { DatabaseService, IColumnQuery, IResultsIteratorOptions } from '../database/database.service';
-import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../entities';
-import { ISongExtendedModel, ISongModel } from '../../models/song-model.interface';
+import { DatabaseEntitiesService } from '../../shared/services/database/database-entities.service';
+import { DatabaseService, IColumnQuery, IResultsIteratorOptions } from '../../shared/services/database/database.service';
+import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../shared/entities';
+import { ISongExtendedModel, ISongModel } from '../../shared/models/song-model.interface';
 import {
   SongExpExtendedByArtistViewEntity,
   SongExpExtendedByClassificationViewEntity,
@@ -13,16 +13,16 @@ import {
   SongExtendedByClassificationViewEntity,
   SongExtendedByPlaylistViewEntity,
   SongExtendedViewEntity
-} from '../../entities/song-extended-view.entity';
-import { Criteria, CriteriaItem } from '../criteria/criteria.class';
+} from '../../shared/entities/song-extended-view.entity';
+import { Criteria, CriteriaItem } from '../../shared/services/criteria/criteria.class';
 import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
 import { PlaylistWriterService } from 'src/app/mapping/data-transform/playlist-writer.service';
 import { KeyValueGen } from 'src/app/core/models/core.interface';
-import { CriteriaComparison, CriteriaSortDirection } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaSortDirection } from '../../shared/services/criteria/criteria.enum';
 import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
-import { ValueLists } from '../database/database.lists';
+import { ValueLists } from '../../shared/services/database/database.lists';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { AppEvent } from '../../models/events.enum';
+import { AppEvent } from '../../shared/models/events.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PeriodTimer } from 'src/app/core/models/timer.class';
 import { EntityTarget } from 'typeorm';

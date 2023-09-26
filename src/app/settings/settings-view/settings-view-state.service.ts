@@ -12,18 +12,18 @@ import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.in
 import { AppRoute } from 'src/app/app-routes';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
-import { ScanService } from 'src/app/shared/services/scan/scan.service';
+import { ScanService } from 'src/app/sync-profile/scan/scan.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { IScanItemInfo } from 'src/app/shared/services/scan/scan.interface';
+import { IScanItemInfo } from 'src/app/sync-profile/scan/scan.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { AppTestService } from 'src/app/app-test';
-import { ExportService } from 'src/app/shared/services/export/export.service';
+import { ExportService } from 'src/app/sync-profile/export/export.service';
 import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
-import { IExportResult } from 'src/app/shared/services/export/export.interface';
+import { IExportResult } from 'src/app/sync-profile/export/export.interface';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-storage.enum';
 

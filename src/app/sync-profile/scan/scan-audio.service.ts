@@ -13,25 +13,25 @@ import {
   SongClassificationEntity,
   SongEntity,
   ValueListEntryEntity
-} from '../../entities';
+} from '../../shared/entities';
 import { FileService } from 'src/app/platform/file/file.service';
 import { MetadataReaderService } from 'src/app/mapping/data-transform/metadata-reader.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { DatabaseService } from '../database/database.service';
-import { DatabaseOptionsService } from '../database/database-options.service';
-import { DatabaseLookupService } from '../database/database-lookup.service';
+import { DatabaseService } from '../../shared/services/database/database.service';
+import { DatabaseOptionsService } from '../../shared/services/database/database-options.service';
+import { DatabaseLookupService } from '../../shared/services/database/database-lookup.service';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { ValueLists } from '../database/database.lists';
+import { ValueLists } from '../../shared/services/database/database.lists';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { ISyncSongInfo } from './scan.interface';
 import { In, Not } from 'typeorm';
-import { AlbumName, ArtistName, EntityId, ImageName, ModuleOptionId, SyncProfileId } from '../database/database.seed';
-import { Criteria, CriteriaItem } from '../criteria/criteria.class';
+import { AlbumName, ArtistName, EntityId, ImageName, ModuleOptionId, SyncProfileId } from '../../shared/services/database/database.seed';
+import { Criteria, CriteriaItem } from '../../shared/services/criteria/criteria.class';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
-import { PartyRelationType } from '../../models/music.enum';
+import { PartyRelationType } from '../../shared/models/music.enum';
 import { IImageSource, KeyValues } from 'src/app/core/models/core.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
-import { DatabaseEntitiesService } from '../database/database-entities.service';
+import { DatabaseEntitiesService } from '../../shared/services/database/database-entities.service';
 
 enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */

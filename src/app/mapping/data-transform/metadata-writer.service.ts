@@ -14,7 +14,7 @@ import { IMetadataWriterOutput } from './data-transform.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
 import { appName } from 'src/app/app-exports';
-import { IExportConfig } from 'src/app/shared/services/export/export.interface';
+import { IExportConfig } from 'src/app/sync-profile/export/export.interface';
 import { MpegTagVersion } from 'src/app/shared/models/music.enum';
 const MP3Tag = require('mp3tag.js');
 
