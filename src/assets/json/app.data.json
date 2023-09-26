@@ -1000,22 +1000,26 @@
     "syncProfile": [
       {
         "id": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
-        "name": "Default Audio Import Configuration",
-        "description": "Profile that contains the data sources to read metadata from a song and save it to the database.",
+        "name": "Default Audio Import",
+        "description": "Default profile that contains the data sources to read metadata from a song and save it to the database.",
         "syncType": "import",
+        "defaultProfile": true,
         "system": true
       },
       {
         "id": "2b5878c0-3bcb-46f6-9c0d-c0d5a5049655",
-        "name": "Default Playlist Import Configuration",
-        "description": "Profile to specify the directory to look for playlist files.",
+        "name": "Default Playlist Import",
+        "description": "Default profile to specify the directory to look for playlist files.",
         "syncType": "import",
+        "defaultProfile": true,
         "system": true
       },
       {
         "id": "5021cccd-eafc-46ae-b521-f075dda9e105",
         "name": "Default Export",
+        "description": "Default export configuration.",
         "syncType": "export",
+        "defaultProfile": true,
         "system": true
       }
     ],

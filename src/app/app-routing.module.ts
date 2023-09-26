@@ -16,6 +16,8 @@ import { PlatformModule } from './platform/platform.module';
 import { FilterListComponent } from './filter/filter-list/filter-list.component';
 import { FilterModule } from './filter/filter.module';
 import { PlaylistModule } from './playlist/playlist.module';
+import { SyncProfileListComponent } from './sync-profile/sync-profile-list/sync-profile-list.component';
+import { SyncProfileModule } from './sync-profile/sync-profile.module';
 
 const routes: Routes = [
   { path: 'home', component: HomeViewComponent },
@@ -29,6 +31,7 @@ const routes: Routes = [
   { path: 'playlists', component: PlaylistListComponent },
   { path: 'filebrowser', component: FileBrowserComponent },
   { path: 'filters', component: FilterListComponent },
+  { path: 'syncprofiles', component: SyncProfileListComponent },
   { path: 'log', component: LogViewComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
@@ -41,6 +44,7 @@ const routes: Routes = [
     PlaylistModule,
     PlatformModule,
     SettingsModule,
+    SyncProfileModule,
     LogModule
   ],
   exports: [RouterModule]

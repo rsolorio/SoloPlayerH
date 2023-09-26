@@ -6,10 +6,10 @@ import { DatabaseOptionsService } from 'src/app/shared/services/database/databas
 import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppActionIcons, AppAttributeIcons, AppFeatureIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppFeatureIcons } from 'src/app/app-icons';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
-import { AppRoute } from 'src/app/app-routes';
+import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { ScanService } from 'src/app/sync-profile/scan/scan.service';
@@ -26,6 +26,7 @@ import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-trans
 import { IExportResult } from 'src/app/sync-profile/export/export.interface';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-storage.enum';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +45,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private tester: AppTestService,
     private events: EventsService,
     private storage: LocalStorageService,
+    private navigation: NavigationService,
     private exporter: ExportService)
   {
     this.subscribeToScanEvents();
@@ -263,10 +265,13 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         name: 'Audio Synchronization',
         settings: [
           {
-            name: 'Tag Mapping',
-            icon: AppFeatureIcons.TagMapping,
+            name: 'Profiles',
+            icon: AppEntityIcons.Sync,
             dataType: 'text',
-            descriptions: ['Configure the mapping between the audio tags and the database.']
+            descriptions: ['Configuration for all import/export tasks.'],
+            action: () => {
+              this.navigation.forward(appRoutes[AppRoute.SyncProfiles].route);
+            }
           },
           {
             id: 'audioDirectory',
@@ -280,7 +285,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             id: 'syncAudioFiles',
             name: 'Sync Audio Files',
-            icon: AppActionIcons.Sync,
+            icon: AppEntityIcons.Sync,
             dataType: 'text',
             action: async setting => {
               const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);

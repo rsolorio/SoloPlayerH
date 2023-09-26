@@ -16,5 +16,7 @@ export class SyncProfileEntity extends DbEntity {
   @Column({ nullable: true })
   syncInfo: string;
   @Column()
+  defaultProfile: boolean;
+  @Column()
   system: boolean;
 }

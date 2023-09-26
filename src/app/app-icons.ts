@@ -10,7 +10,8 @@ export enum AppEntityIcons {
   Instrument = 'mdi-guitar-acoustic mdi',
   Category = 'mdi-sticker-text mdi',
   Playlist = 'mdi-playlist-play mdi',
-  Smartlist = 'mdi-playlist-star mdi'
+  Smartlist = 'mdi-playlist-star mdi',
+  Sync = 'mdi-sync mdi'
 }
 
 export enum AppFeatureIcons {
@@ -77,7 +78,8 @@ export enum AppAttributeIcons {
   SwitchOff = 'mdi-toggle-switch-variant-off mdi',
   Selected = 'mdi-checkbox-outline mdi',
   Unselected = 'mdi-checkbox-blank-outline mdi',
-  Recent = 'mdi-history mdi'
+  Recent = 'mdi-history mdi',
+  Checked = 'mdi-check-circle mdi'
 }
 
 export enum AppActionIcons {
@@ -108,7 +110,6 @@ export enum AppActionIcons {
   AddToPlaylist = 'mdi-playlist-plus mdi',
   Loading = 'mdi-loading mdi-spin mdi',
   Alternate = 'mdi-shuffle-variant mdi',
-  Sync = 'mdi-sync mdi',
   Scan = 'mdi-magnify-scan mdi',
   Share = 'mdi-share-variant mdi',
   Download = 'mdi-download mdi',

@@ -1,1 +1,32 @@
-<p>sync-profile-list works!</p>
+<sp-list-base
+#spListBaseComponent
+[model]="listModel"
+[infoTemplate]="infoTemplate"
+[imageOverlayTemplate]="imageOverlayTemplate"
+(itemContentClick)="onItemContentClick($event)">
+  <ng-template #imageOverlayTemplate let-item="item">
+    <div class="sp-image-overlay sp-text-big-fixed sp-clickable">
+      <i *ngIf="item.syncType === 'import'" [ngClass]="AppActionIcons.Import"></i>
+      <i *ngIf="item.syncType === 'export'" [ngClass]="AppActionIcons.Export"></i>
+    </div>
+  </ng-template>
+  <ng-template #infoTemplate let-item="item">
+    <table class="sp-table sp-table-no-padding sp-table-support-overflow-ellipsis sp-full-height sp-full-width">
+      <tr>
+        <!-- Sync Info -->
+        <td class="sp-text-overflow-ellipsis">
+          <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
+          <i *ngIf="item.defaultProfile" [ngClass]="AppAttributeIcons.Checked" class="sp-title-icon sp-text-medium sp-color-primary"></i>
+          <br>
+          <ng-container *ngIf="item.description">
+            <i [ngClass]="AppAttributeIcons.Directory" class="sp-color-on-bg-low sp-text-small">&nbsp;&nbsp;</i>
+            <span class="sp-color-on-bg-low sp-text-small">{{getDirectories(item)}}</span>
+          </ng-container>
+        </td>
+        <td style="width: 40px;text-align: center;" class="sp-clickable">
+          <i class="mdi-flash mdi sp-text-xlarge"></i>
+        </td>
+      </tr>
+    </table>
+  </ng-template>
+</sp-list-base>

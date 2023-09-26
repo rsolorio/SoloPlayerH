@@ -8,7 +8,7 @@ import { NavigationService } from 'src/app/shared/services/navigation/navigation
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { Criteria, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 
@@ -19,6 +19,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 })
 export class FilterListComponent extends CoreComponent implements OnInit {
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
+  public AppAttributeIcons = AppAttributeIcons;
   // START - LIST MODEL
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.FilterListUpdated,

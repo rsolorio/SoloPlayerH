@@ -9,6 +9,7 @@ export enum AppEvent {
   PlaylistListUpdated = 'PLAYLIST_LIST_UPDATED',
   FilterListUpdated = 'FILTER_LIST_UPDATED',
   FileListUpdated = 'FILE_LIST_UPDATED',
+  SyncProfileListUpdated = 'SYNC_PROFILE_LIST_UPDATED',
   CriteriaApplied = 'CRITERIA_APPLIED',
   CriteriaCleared = 'CRITERIA_CLEARED',
   // Player

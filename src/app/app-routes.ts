@@ -24,7 +24,8 @@ export enum AppRoute {
   Settings = '/settings',
   Log = '/log',
   Queries = '/queries',
-  Files = '/filebrowser'
+  Files = '/filebrowser',
+  SyncProfiles = '/syncprofiles'
 }
 
 export const appRoutes: { [route: string]: IAppRouteInfo; } = {};
@@ -77,3 +78,6 @@ appRoutes[AppRoute.Queries] = { route: AppRoute.Queries,
 appRoutes[AppRoute.Files] = { route: AppRoute.Files,
   icon: AppAttributeIcons.Directory,
   name: 'Files' };
+appRoutes[AppRoute.SyncProfiles] = { route: AppRoute.SyncProfiles,
+  icon: AppEntityIcons.Sync,
+  name: 'Profiles' };
