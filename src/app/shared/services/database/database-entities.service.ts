@@ -352,15 +352,11 @@ export class DatabaseEntitiesService {
   }
 
   private parseSyncProfile(entity: SyncProfileEntity): ISyncProfileParsed {
-    return {
-      id: entity.id,
-      name: entity.name,
-      description: entity.description,
-      directories: entity.directories ? JSON.parse(entity.directories) : null,
-      config: entity.config ? JSON.parse(entity.config) : null,
-      syncInfo: entity.syncInfo ? JSON.parse(entity.syncInfo) : null,
-      syncDate: entity.syncDate
-    };
+    const result = entity as ISyncProfileParsed;
+    result.directoryArray = entity.directories ? JSON.parse(entity.directories) : null;
+    result.configObj = entity.config ? JSON.parse(entity.config) : null;
+    result.syncInfoObj = entity.syncInfo ? JSON.parse(entity.syncInfo) : null;
+    return result;
   }
 
   public async getSyncProfiles(syncType: SyncType): Promise<ISyncProfileParsed[]> {
@@ -377,9 +373,9 @@ export class DatabaseEntitiesService {
 
   public async saveSyncProfile(data: ISyncProfileParsed): Promise<void> {
     const syncProfile = await SyncProfileEntity.findOneBy({ id: data.id });
-    syncProfile.directories = data.directories ? JSON.stringify(data.directories) : null;
-    syncProfile.config = data.config ? JSON.stringify(data.config) : null;
-    syncProfile.syncInfo = data.syncInfo ? JSON.stringify(data.syncInfo) : null;
+    syncProfile.directories = data.directoryArray ? JSON.stringify(data.directoryArray) : null;
+    syncProfile.config = data.configObj ? JSON.stringify(data.configObj) : null;
+    syncProfile.syncInfo = data.syncInfoObj ? JSON.stringify(data.syncInfoObj) : null;
     syncProfile.syncDate = data.syncDate;
     await syncProfile.save();
   }

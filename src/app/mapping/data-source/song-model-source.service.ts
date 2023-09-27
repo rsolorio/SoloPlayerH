@@ -238,7 +238,7 @@ export class SongModelSourceService implements IDataSourceService {
   private getContext(): any {
     const context = Object.assign({}, this.inputData);
     // Destination path without the last backslash
-    const destinationPath = this.syncProfileData.directories[0];
+    const destinationPath = this.syncProfileData.directoryArray[0];
     context['rootPath'] = destinationPath.endsWith('\\') ? destinationPath.slice(0, -1) : destinationPath;
     context['counter'] = this.counter;
     return context;

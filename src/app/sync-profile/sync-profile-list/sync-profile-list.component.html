@@ -6,8 +6,8 @@
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #imageOverlayTemplate let-item="item">
     <div class="sp-image-overlay sp-text-big-fixed sp-clickable">
-      <i *ngIf="item.syncType === 'import'" [ngClass]="AppActionIcons.Import"></i>
-      <i *ngIf="item.syncType === 'export'" [ngClass]="AppActionIcons.Export"></i>
+      <i *ngIf="item.syncType === SyncType.ExportAll" [ngClass]="AppActionIcons.Export"></i>
+      <i *ngIf="item.syncType === SyncType.ImportAudio || item.syncType === SyncType.ImportPlaylists" [ngClass]="AppActionIcons.Import"></i>
     </div>
   </ng-template>
   <ng-template #infoTemplate let-item="item">
@@ -16,15 +16,11 @@
         <!-- Sync Info -->
         <td class="sp-text-overflow-ellipsis">
           <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
-          <i *ngIf="item.defaultProfile" [ngClass]="AppAttributeIcons.Checked" class="sp-title-icon sp-text-medium sp-color-primary"></i>
           <br>
           <ng-container *ngIf="item.description">
             <i [ngClass]="AppAttributeIcons.Directory" class="sp-color-on-bg-low sp-text-small">&nbsp;&nbsp;</i>
             <span class="sp-color-on-bg-low sp-text-small">{{getDirectories(item)}}</span>
           </ng-container>
-        </td>
-        <td style="width: 40px;text-align: center;" class="sp-clickable">
-          <i class="mdi-flash mdi sp-text-xlarge"></i>
         </td>
       </tr>
     </table>

@@ -18,3 +18,5 @@ export class DateTransformer implements ValueTransformer {
     return value;
   }
 }
+
+export const dateTransformer = new DateTransformer();

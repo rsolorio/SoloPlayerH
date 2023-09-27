@@ -1,8 +1,10 @@
 import { Column, Entity } from "typeorm";
 import { DbEntity } from "./base.entity";
+import { dateTransformer } from "./date-transformer";
+import { ISyncProfile } from "../models/sync-profile-model.interface";
 
 @Entity({name: 'syncProfile'})
-export class SyncProfileEntity extends DbEntity {
+export class SyncProfileEntity extends DbEntity implements ISyncProfile {
   @Column()
   syncType: string;
   @Column({ nullable: true })
@@ -13,10 +15,12 @@ export class SyncProfileEntity extends DbEntity {
   config: string;
   @Column({ nullable: true })
   syncDate: Date;
-  @Column({ nullable: true })
+  @Column({ nullable: true, transformer: dateTransformer })
   syncInfo: string;
   @Column()
   defaultProfile: boolean;
   @Column()
   system: boolean;
+
+  canBeRendered: boolean;
 }

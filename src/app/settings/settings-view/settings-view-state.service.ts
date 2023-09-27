@@ -289,12 +289,12 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             dataType: 'text',
             action: async setting => {
               const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
-              if (syncProfile.directories && syncProfile.directories.length) {
+              if (syncProfile.directoryArray && syncProfile.directoryArray.length) {
                 // If the drive to scan is idle, the scan process might take a time to start and fire events
                 // so disable the setting immediately
                 setting.running = true;
                 setting.disabled = true;
-                this.onFolderScan(syncProfile.directories);
+                this.onFolderScan(syncProfile.directoryArray);
               }
               else {
                 setting.warningText = 'Unable to start sync. Please select the audio directory first.';
@@ -338,10 +338,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             dataType: 'text',
             action: async setting => {
               const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
-              if (syncProfile.directories && syncProfile.directories.length) {
+              if (syncProfile.directoryArray && syncProfile.directoryArray.length) {
                 setting.running = true;
                 setting.disabled = true;
-                this.onPlaylistScan(syncProfile.directories);
+                this.onPlaylistScan(syncProfile.directoryArray);
               }
               else {
                 setting.warningText = 'Unable to start scan. Please select the playlist directory first.';
@@ -467,7 +467,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     const audioSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
     setting.descriptions = [
       ' Click here to set the sync directories for audio.',
-      `Directories: <br><span class="sp-color-primary">${(audioSyncProfile.directories?.length ? audioSyncProfile.directories.join('<br>') : '[Not Selected]')}</span>`
+      `Directories: <br><span class="sp-color-primary">${(audioSyncProfile.directoryArray?.length ? audioSyncProfile.directoryArray.join('<br>') : '[Not Selected]')}</span>`
     ];
 
     setting = this.findSetting('syncAudioFiles');
@@ -482,7 +482,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     const playlistSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
     setting.descriptions = [
       'Click here to set the scan directory for playlists',
-      `Directories: <br><span class="sp-color-primary">${(playlistSyncProfile.directories?.length ? playlistSyncProfile.directories.join('<br>') : '[Not Selected]')}</span>`
+      `Directories: <br><span class="sp-color-primary">${(playlistSyncProfile.directoryArray?.length ? playlistSyncProfile.directoryArray.join('<br>') : '[Not Selected]')}</span>`
     ];
 
     setting = this.findSetting('processPlaylists');
@@ -604,14 +604,14 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       onOk: async browserModel => {
         // save value in DB
         const syncProfile = await this.entities.getSyncProfile(syncProfileId);
-        syncProfile.directories = browserModel.selectedItems.map(v => v.id);
+        syncProfile.directoryArray = browserModel.selectedItems.map(v => v.id);
         await this.entities.saveSyncProfile(syncProfile);
         return true;
       }
     };
     const syncProfile = await this.entities.getSyncProfile(syncProfileId);
-    if (syncProfile.directories?.length) {
-      syncProfile.directories.forEach(d => browserModel.selectedItems.push({ id: d, name: '', canBeRendered: false}));
+    if (syncProfile.directoryArray?.length) {
+      syncProfile.directoryArray.forEach(d => browserModel.selectedItems.push({ id: d, name: '', canBeRendered: false}));
     }
     this.browserService.browse(browserModel);
   }

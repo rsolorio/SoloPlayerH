@@ -89,12 +89,12 @@ export class ExportService {
     const syncProfile = await this.entities.getSyncProfile(exportProfileId);
     if (configOverride) {
       if (configOverride.directories?.length) {
-        syncProfile.directories = configOverride.directories;
+        syncProfile.directoryArray = configOverride.directories;
       }
-      syncProfile.config = Object.assign(syncProfile.config ? syncProfile.config : {}, configOverride);
+      syncProfile.configObj = Object.assign(syncProfile.configObj ? syncProfile.configObj : {}, configOverride);
     }
-    syncProfile.config.playlistConfig = syncProfile.config.playlistConfig ? syncProfile.config.playlistConfig : {};
-    this.config = syncProfile.config;
+    syncProfile.configObj.playlistConfig = syncProfile.configObj.playlistConfig ? syncProfile.configObj.playlistConfig : {};
+    this.config = syncProfile.configObj;
     
     // Cache for getting classification data which will be used by the data source
     syncProfile.nonPrimaryRelations = await this.entities.getNonPrimaryRelations();
@@ -105,7 +105,7 @@ export class ExportService {
     await this.prepareSongs();
 
     const exportResult: IExportResult = {
-      rootPath: syncProfile.directories[0],
+      rootPath: syncProfile.directoryArray[0],
       playlistFolder: this.config?.playlistConfig ? this.config.playlistConfig.directory : null,
       totalFileCount: this.config.songs.length,
       finalFileCount: 0,

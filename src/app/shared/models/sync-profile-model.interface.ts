@@ -1,18 +1,26 @@
 import { ValueListEntryEntity } from "../entities";
+import { IListItemModel } from "./base-model.interface";
 
-export interface ISyncProfileParsed {
-  id: string;
-  name: string;
+export interface ISyncProfile extends IListItemModel {
   description: string;
-  directories: string[];
-  config: any;
-  syncInfo: any;
+  directories: string;
+  config: string;
   syncDate: Date;
+  syncInfo: string;
+  defaultProfile: boolean;
+  system: boolean;
+}
+
+export interface ISyncProfileParsed extends ISyncProfile {
+  directoryArray?: string[];
+  configObj?: any;
+  syncInfoObj?: any;
   classifications?: ValueListEntryEntity[];
   nonPrimaryRelations?: any[];
 }
 
 export enum SyncType {
-  Import = 'import',
-  Export = 'export'
+  ImportAudio = 'importAudio',
+  ImportPlaylists = 'importPlaylists',
+  ExportAll = 'exportAll'
 }

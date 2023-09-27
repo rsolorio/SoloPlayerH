@@ -22,7 +22,7 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
   }
 
   public async init(profile: ISyncProfileParsed, inputSources: IDataSourceParsed[]): Promise<void> {
-    this.rootPath = profile.directories[0];
+    this.rootPath = profile.directoryArray[0];
   }
 
   public async run(input: IExportConfig): Promise<boolean> {

@@ -626,14 +626,14 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private async openFilterSelectionPanel(): Promise<void> {
-    let exports  = await this.entities.getSyncProfiles(SyncType.Export);
+    let exports  = await this.entities.getSyncProfiles(SyncType.ExportAll);
     exports = this.utility.sort(exports, 'name');
     const items: IChipItem[] = [];
     exports.forEach(exp => {
       items.push({
         caption: exp.name,
         value: exp.id,
-        subText: exp.directories?.length ? exp.directories[0] : null
+        subText: exp.directoryArray?.length ? exp.directoryArray[0] : null
       });
     });
     const chipSelectionModel: IChipSelectionModel = {

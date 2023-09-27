@@ -1002,7 +1002,7 @@
         "id": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "Default Audio Import",
         "description": "Default profile that contains the data sources to read metadata from a song and save it to the database.",
-        "syncType": "import",
+        "syncType": "importAudio",
         "defaultProfile": true,
         "system": true
       },
@@ -1010,7 +1010,7 @@
         "id": "2b5878c0-3bcb-46f6-9c0d-c0d5a5049655",
         "name": "Default Playlist Import",
         "description": "Default profile to specify the directory to look for playlist files.",
-        "syncType": "import",
+        "syncType": "importPlaylists",
         "defaultProfile": true,
         "system": true
       },
@@ -1018,7 +1018,7 @@
         "id": "5021cccd-eafc-46ae-b521-f075dda9e105",
         "name": "Default Export",
         "description": "Default export configuration.",
-        "syncType": "export",
+        "syncType": "exportAll",
         "defaultProfile": true,
         "system": true
       }

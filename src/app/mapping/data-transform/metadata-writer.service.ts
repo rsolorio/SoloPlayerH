@@ -147,7 +147,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     // This will initialize the tags object even if the file has no tags
     mp3Tag.read();
     mp3Tag.tags.v2 = await this.setupV2Tags(metadata);
-    const config = this.syncProfile.config as IExportConfig;
+    const config = this.syncProfile.configObj as IExportConfig;
     // Save to v2.3 by default, and also support v2.4
     // TODO: save to v1.1
     // TODO: save to other tag system if the file is not mp3
