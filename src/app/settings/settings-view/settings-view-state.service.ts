@@ -27,6 +27,7 @@ import { LocalStorageService } from 'src/app/shared/services/local-storage/local
 import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-storage.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ISetting, ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
+import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -226,13 +227,11 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             id: 'statistics',
             name: 'Statistics',
-            icon: AppFeatureIcons.Statistics,
-            dataType: 'text'
+            icon: AppFeatureIcons.Statistics
           },
           {
             name: 'Export Data',
             icon: AppActionIcons.ExportData,
-            dataType: 'text',
             descriptions: ['Export data into a json file.'],
             action: setting => {
               setting.running = true;
@@ -245,7 +244,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Purge Database',
             icon: AppActionIcons.DeleteData,
-            dataType: 'text',
             descriptions: ['Deletes all data and recreates the database.'],
             action: setting => {
               setting.disabled = true;
@@ -267,7 +265,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Profiles',
             icon: AppEntityIcons.Sync,
-            dataType: 'text',
             descriptions: ['Configuration for all import/export tasks.'],
             action: () => {
               this.navigation.forward(appRoutes[AppRoute.SyncProfiles].route);
@@ -277,7 +274,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'audioDirectory',
             name: 'Audio Directory',
             icon: AppAttributeIcons.AudioDirectory,
-            dataType: 'text',
             action: () => {
               this.showFileBrowserAndSave(SyncProfileId.DefaultAudioImport);
             }
@@ -286,7 +282,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'syncAudioFiles',
             name: 'Sync Audio Files',
             icon: AppEntityIcons.Sync,
-            dataType: 'text',
             action: async setting => {
               const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
               if (syncProfile.directoryArray && syncProfile.directoryArray.length) {
@@ -304,7 +299,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Multiple Artists',
             icon: AppFeatureIcons.MultipleArtists,
-            dataType: 'text',
             descriptions: [
               'This feature will take artist tags and split every value by using separators. Click here to specify separators. Leave it empty to disable the feature.'
             ]
@@ -312,7 +306,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Multiple Genres',
             icon: AppFeatureIcons.MultipleGenres,
-            dataType: 'text',
             descriptions: [
               'This feature will take genre tags and split every value by using separators. Click here to specify separators. Leave it empty to disable the feature.'
             ]
@@ -326,7 +319,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'playlistDirectory',
             name: 'Playlist Directory',
             icon: AppAttributeIcons.PlaylistDirectory,
-            dataType: 'text',
             action: () => {
               this.showFileBrowserAndSave(SyncProfileId.DefaultPlaylistImport);
             }
@@ -335,7 +327,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'processPlaylists',
             name: 'Scan Playlist Files',
             icon: AppActionIcons.Scan,
-            dataType: 'text',
             action: async setting => {
               const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
               if (syncProfile.directoryArray && syncProfile.directoryArray.length) {
@@ -357,7 +348,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'exportLibrary',
             name: 'Export Library',
             icon: AppActionIcons.Export,
-            dataType: 'text',
             descriptions: [
               'Click here to export your library.'
             ],
@@ -370,7 +360,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: '',
             name: 'Export Configuration',
             icon: AppActionIcons.Config,
-            dataType: 'text',
             descriptions: ['Click here to configure the export process.']
           }
         ]
@@ -382,20 +371,14 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'multipleQuickFilters',
             name: 'Multiple Quick Filters',
             icon: AppFeatureIcons.MultipleFilters,
-            dataType: 'boolean',
-            secondaryIcon: {
-              icon: AppAttributeIcons.SwitchOn + ' sp-color-primary',
-              off: true,
-              offIcon: AppAttributeIcons.SwitchOff
-            },
+            editorType: SettingsEditorType.YesNo,
             descriptions: [
               'If turned off, the quick filter panel will allow to select one filter at a time; as soon as you click the filter the change will be applied.',
               'If turned on, the quick filter panel will allow to select multiple filters; you need to click OK to apply the changes.'
             ],
-            action: setting => {
-              this.options.saveBoolean(ModuleOptionId.AllowMultipleQuickFilters, setting.secondaryIcon.off).then(() => {
-                setting.secondaryIcon.off = !setting.secondaryIcon.off;
-              });
+            data: this.options.getBoolean(ModuleOptionId.AllowMultipleQuickFilters),
+            onChange: setting => {
+              this.options.saveBoolean(ModuleOptionId.AllowMultipleQuickFilters, setting.data);
             }
           }
         ]
@@ -407,7 +390,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             // TODO: this should not be displayed in cordova mode
             name: 'Small Form Factor',
             icon: AppFeatureIcons.Mobile,
-            dataType: 'text',
             descriptions: ['Resizes the window to a mobile form factor.'],
             action: () => {
               this.dialog.resizeWindow(this.utility.getSmallFormFactor());
@@ -421,7 +403,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Dev Tools',
             icon: AppActionIcons.Code,
-            dataType: 'text',
             descriptions: ['Open developer tools.'],
             action: () => {
               this.dialog.openDevTools();
@@ -431,24 +412,18 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'debugMode',
             name: 'Debug',
             icon: AppActionIcons.Debug,
-            dataType: 'boolean',
-            secondaryIcon: {
-              icon: AppAttributeIcons.SwitchOn + ' sp-color-primary',
-              off: !this.storage.getByKey(LocalStorageKeys.DebugMode),
-              offIcon: AppAttributeIcons.SwitchOff
-            },
             descriptions: ['Click here to turn on or off debug mode.'],
-            action: setting => {
+            editorType: SettingsEditorType.YesNo,
+            data: this.storage.getByKey(LocalStorageKeys.DebugMode),
+            onChange: setting => {
               setting.running = true;
-              this.storage.setByKey(LocalStorageKeys.DebugMode, setting.secondaryIcon.off);
-              setting.secondaryIcon.off = !setting.secondaryIcon.off;
+              this.storage.setByKey(LocalStorageKeys.DebugMode, setting.data);
               this.utility.reloadApp();
             }
           },
           {
             name: 'Test',
             icon: AppActionIcons.Test,
-            dataType: 'text',
             descriptions: ['Action for testing purposes.'],
             action: () => {
               this.tester.test();
@@ -492,10 +467,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     ];
     setting.dynamicText = '';
     setting.warningText = '';
-
-    setting = this.findSetting('multipleQuickFilters');
-    const multipleQuickFilters = this.options.getBoolean(ModuleOptionId.AllowMultipleQuickFilters);
-    setting.secondaryIcon.off = !multipleQuickFilters;
   }
 
   private async refreshStatistics(): Promise<void> {

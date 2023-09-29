@@ -11,6 +11,7 @@ export enum AppEntityIcons {
   Category = 'mdi-sticker-text mdi',
   Playlist = 'mdi-playlist-play mdi',
   Smartlist = 'mdi-playlist-star mdi',
+  Autolist = 'mdi-playlist-check mdi',
   Sync = 'mdi-sync mdi'
 }
 
@@ -76,10 +77,12 @@ export enum AppAttributeIcons {
   Contributor = 'mdi-account-supervisor mdi',
   SwitchOn = 'mdi-toggle-switch-variant mdi',
   SwitchOff = 'mdi-toggle-switch-variant-off mdi',
-  Selected = 'mdi-checkbox-outline mdi',
+  Selected = 'mdi-checkbox-marked mdi',
   Unselected = 'mdi-checkbox-blank-outline mdi',
   Recent = 'mdi-history mdi',
-  Checked = 'mdi-check-circle mdi'
+  Checked = 'mdi-check-circle mdi',
+  Minimum = 'mdi-arrow-collapse-down mdi',
+  Maximum = 'mdi-arrow-collapse-up mdi'
 }
 
 export enum AppActionIcons {

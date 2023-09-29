@@ -5,7 +5,7 @@ import { SyncProfileEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { SyncProfileListBroadcastService } from './sync-profile-list-broadcast.service';
-import { AppActionIcons, AppAttributeIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 import { AppRoute } from 'src/app/app-routes';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
@@ -14,6 +14,8 @@ import { ExportService } from '../export/export.service';
 import { ISyncProfile, SyncType } from 'src/app/shared/models/sync-profile-model.interface';
 import { ScanService } from '../scan/scan.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
+import { ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
+import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -25,6 +27,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
   public SyncType = SyncType;
   public AppActionIcons = AppActionIcons;
   public AppAttributeIcons = AppAttributeIcons;
+  public settingsModel: ISettingCategory[];
   // START - LIST MODEL
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.SyncProfileListUpdated,
@@ -71,7 +74,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
 
   public onItemContentClick(profile: ISyncProfile): void {
     if (profile.running) {
-      // Show the status panel
+      this.showSettings(profile);
     }
     else if (profile.directories) {
       // Just run it
@@ -104,7 +107,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     }
     else if (profile.syncType === SyncType.ExportAll) {
       // Open config panel and then run
-      this.exporter.run(profile.id);
+      this.showSettings(profile);
     }
   }
 
@@ -139,5 +142,74 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     const parsedProfile = this.entities.parseSyncProfile(profile);
     const scanResponse = await this.scanner.run(parsedProfile.directoryArray, '.m3u', 'scanPlaylists');
     const syncResponse = await this.scanner.syncPlaylistFiles(scanResponse.result);
+  }
+
+  private showSettings(profile: ISyncProfile): void {
+    const parsedProfile = this.entities.parseSyncProfile(profile);
+    this.settingsModel = [
+      {
+        name: profile.name,
+        settings: [
+          {
+            name: 'Directories',
+            icon: AppAttributeIcons.Directory,
+            descriptions: parsedProfile.directoryArray
+          },
+          {
+            name: 'Run',
+            icon: AppActionIcons.Run,
+            descriptions: ['Click here to start running the action.'],
+            action: () => {
+              this.exporter.run(profile.id);
+            }
+          },
+          {
+            name: 'Dedicated Playlist Folder',
+            icon: AppAttributeIcons.PlaylistDirectory,
+            descriptions: ['Dedicated folder for the playlist files.'],
+            editorType: SettingsEditorType.YesNo
+          },
+          {
+            name: 'Export Playlists',
+            icon: AppEntityIcons.Playlist,
+            descriptions: ['Whether or not playlists should be exported.'],
+            editorType: SettingsEditorType.YesNo
+          },
+          {
+            name: 'Export Smartlists',
+            icon: AppEntityIcons.Smartlist,
+            descriptions: ['Whether or not smartlists should be exported.'],
+            editorType: SettingsEditorType.YesNo
+          },
+          {
+            name: 'Export Autolists',
+            icon: AppEntityIcons.Autolist,
+            descriptions: ['Whether or not autolists should be exported.'],
+            editorType: SettingsEditorType.YesNo
+          },
+          {
+            name: 'Playlist Format',
+            icon: AppAttributeIcons.FileInfo,
+            descriptions: ['Select the playlist format to export.']
+          },
+          {
+            name: 'Last Songs Added',
+            icon: AppAttributeIcons.AddDate,
+            descriptions: ['This number represents the last songs added to the library that will be exported.']
+          },
+          {
+            name: 'Minimum Playlist Tracks',
+            icon: AppAttributeIcons.Minimum,
+            descriptions: ['The minimum number of tracks a playlist should have to be exported.']
+          },
+          {
+            name: 'Maximum Playlist Tracks',
+            icon: AppAttributeIcons.Maximum,
+            descriptions: ['The maximum number of tracks a playlist will have when exported.']
+          }
+        ]
+      }
+    ];
+    this.spListBaseComponent.model.showModal = true;
   }
 }

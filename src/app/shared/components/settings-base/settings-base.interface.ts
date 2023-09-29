@@ -1,10 +1,10 @@
-import { IIconAction, IIconActionGeneric } from "src/app/core/models/core.interface";
+import { IIconActionGeneric } from "src/app/core/models/core.interface";
 
 export interface ISetting extends IIconActionGeneric<ISetting, any> {
   /** Name of the setting displayed as header. */
   name: string;
   /** If this is an editable setting, the data type specifies how this data can be edited.*/
-  dataType: string;
+  editorType?: string;
   /** A list of texts supporting HTML format and with a medium size font. */
   descriptions?: string[];
   /** A list of texts supporting HTML format and with a large size font. */
@@ -19,8 +19,10 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   disabled?: boolean;
   /** If true this will displaying a running animation. */
   running?: boolean;
-  /** An icon that will be displayed to far right of the setting name. */
-  secondaryIcon?: IIconAction;
+  /** Data to be bound to the setting. */
+  data?: any;
+  /** Event to be fired if the data changed. */
+  onChange?: (setting: ISetting) => void;
 }
 
 export interface ISettingCategory {
