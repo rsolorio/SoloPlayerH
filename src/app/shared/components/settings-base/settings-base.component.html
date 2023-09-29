@@ -18,16 +18,16 @@
             <i *ngIf="setting.running" class="mdi-loading mdi-spin mdi">&nbsp;</i>
             <span>{{setting.name}}</span>
           </p>
-          <!-- Medium Descriptions -->
-          <p *ngFor="let description of setting.descriptions" class="sp-text-medium" [innerHtml]="description"></p>
-          <!-- Large Descriptions -->
-          <p *ngFor="let description of setting.descriptionsLargeSize" class="sp-text-large" [innerHtml]="description"></p>
-          <!-- Dynamic Text -->
-          <p *ngIf="setting.dynamicText" class="sp-text-medium sp-text-overflow-ellipsis" [innerText]="setting.dynamicText"></p>
-          <!-- Warning Text -->
-          <p *ngIf="setting.warningText" class="sp-text-medium sp-color-warning" [innerText]="setting.warningText"></p>
-          <!-- Error Text -->
-          <p *ngIf="setting.errorText" class="sp-text-medium sp-color-error" [innerText]="setting.errorText"></p>
+          <!-- Html -->
+          <p *ngIf="setting.textHtml" [innerHtml]="setting.textHtml"></p>
+          <!-- Regular -->
+          <p *ngFor="let text of setting.textRegular" class="sp-text-medium" [innerText]="text"></p>
+          <!-- Warning -->
+          <p *ngIf="setting.textWarning" class="sp-text-medium sp-color-warning" [innerText]="setting.textWarning"></p>
+          <!-- Error -->
+          <p *ngIf="setting.textError" class="sp-text-medium sp-color-error" [innerText]="setting.textError"></p>
+          <!-- Data -->
+          <p *ngFor="let text of setting.textData" class="sp-text-medium sp-color-primary" [innerText]="text"></p>
         </td>
         <td *ngIf="setting.editorType === EditorType.YesNo" class="sp-td-icon sp-text-xlarge sp-text-center">
           <i *ngIf="setting.data" [ngClass]="AppAttributeIcons.Selected" class="sp-color-primary"></i>

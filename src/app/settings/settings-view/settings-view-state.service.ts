@@ -68,9 +68,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         }
         setting.disabled = true;
         setting.running = true;
-        setting.descriptions[0] = 'Calculating file count...';
-        setting.descriptions[1] = `Files found: ${scanFileInfo.progress}`;
-        setting.dynamicText = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
+        setting.textRegular[0] = 'Calculating file count...';
+        setting.textRegular[1] = `Files found: ${scanFileInfo.progress}`;
+        setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
       }
       else if (scanFileInfo.scanId === 'scanPlaylists') {
         // Nothing to do for now
@@ -80,7 +80,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         }
         setting.disabled = true;
         setting.running = true;
-        setting.descriptions[0] = 'Scanning playlists...';
+        setting.textRegular[0] = 'Scanning playlists...';
       }
     });
 
@@ -91,9 +91,9 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Reading metadata...';
-      setting.descriptions[1] = `File ${scanFileInfo.progress} of ${scanFileInfo.total}`;
-      setting.dynamicText = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
+      setting.textRegular[0] = 'Reading metadata...';
+      setting.textRegular[1] = `File ${scanFileInfo.progress} of ${scanFileInfo.total}`;
+      setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
     });
 
     this.events.onEvent(AppEvent.ScanAudioDbSyncStart).subscribe(() => {
@@ -103,8 +103,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Synchronizing changes...';
-      setting.dynamicText = '';
+      setting.textRegular[0] = 'Synchronizing changes...';
+      setting.textRegular[1] = '';
     });
 
     this.events.onEvent(AppEvent.ScanAudioDbCleanupStart).subscribe(() => {
@@ -114,8 +114,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Cleaning up...';
-      setting.dynamicText = '';
+      setting.textRegular[0] = 'Cleaning up...';
+      setting.textRegular[1] = '';
     });
 
     this.events.onEvent<IScanItemInfo<PlaylistEntity>>(AppEvent.ScanPlaylistCreated).subscribe(scanPlaylistInfo => {
@@ -125,7 +125,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[1] = `Playlist created: ${scanPlaylistInfo.progress}/${scanPlaylistInfo.total}: ${scanPlaylistInfo.item.name}`;
+      setting.textRegular[1] = `Playlist created: ${scanPlaylistInfo.progress}/${scanPlaylistInfo.total}: ${scanPlaylistInfo.item.name}`;
     });
 
     this.events.onEvent<IScanItemInfo<IPlaylistSongModel>>(AppEvent.ScanTrackAdded).subscribe(scanTrackInfo => {
@@ -135,7 +135,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.dynamicText = `Track added: ${scanTrackInfo.progress} - ${scanTrackInfo.item.name} - ${scanTrackInfo.item.duration}`;
+      setting.textRegular[2] = `Track added: ${scanTrackInfo.progress} - ${scanTrackInfo.item.name} - ${scanTrackInfo.item.duration}`;
     });
   }
 
@@ -147,8 +147,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Preparing export...';
-      setting.dynamicText = '';
+      setting.textRegular[0] = 'Preparing export...';
     });
     this.events.onEvent<IMetadataWriterOutput>(AppEvent.ExportAudioFileEnd).subscribe(exportAudioResult => {
       const setting = this.findSetting('exportLibrary');
@@ -157,8 +156,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Exporting tracks to...';
-      setting.dynamicText = exportAudioResult.destinationPath;
+      setting.textRegular[0] = 'Exporting tracks to...';
+      setting.textRegular[1] = exportAudioResult.destinationPath;
     });
     this.events.onEvent<IExportResult>(AppEvent.ExportSmartlistsStart).subscribe(exportResult => {
       const setting = this.findSetting('exportLibrary');
@@ -167,10 +166,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Exporting smartlists to...';
-      setting.dynamicText = 'Path: ' + exportResult.rootPath;
+      setting.textRegular[0] = 'Exporting smartlists to...';
+      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
       if (exportResult.playlistFolder) {
-        setting.dynamicText += '. Folder: ' + exportResult.playlistFolder;
+        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
       }
     });
     this.events.onEvent<IExportResult>(AppEvent.ExportAutolistsStart).subscribe(exportResult => {
@@ -180,10 +179,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Exporting autolists...';
-      setting.dynamicText = 'Path: ' + exportResult.rootPath;
+      setting.textRegular[0] = 'Exporting autolists...';
+      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
       if (exportResult.playlistFolder) {
-        setting.dynamicText += '. Folder: ' + exportResult.playlistFolder;
+        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
       }
     });
     this.events.onEvent<IExportResult>(AppEvent.ExportPlaylistsStart).subscribe(exportResult => {
@@ -193,10 +192,10 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
       setting.disabled = true;
       setting.running = true;
-      setting.descriptions[0] = 'Exporting playlists...';
-      setting.dynamicText = 'Path: ' + exportResult.rootPath;
+      setting.textRegular[0] = 'Exporting playlists...';
+      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
       if (exportResult.playlistFolder) {
-        setting.dynamicText += '. Folder: ' + exportResult.playlistFolder;
+        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
       }
     });
     this.events.onEvent<IExportResult>(AppEvent.ExportEnd).subscribe(exportResult => {
@@ -212,8 +211,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       resultMessage += ` Exported autolists: ${exportResult.autolistCount}.`;
       setting.disabled = false;
       setting.running = false;
-      setting.descriptions[0] = 'Exporting process done.';
-      setting.dynamicText = resultMessage;
+      setting.textRegular[0] = 'Exporting process done.';
+      setting.textRegular[1] = resultMessage;
       this.log.info('Export elapsed time: ' + this.utility.formatTimeSpan(exportResult.period.span), exportResult.period.span);
     });
   }
@@ -232,7 +231,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Export Data',
             icon: AppActionIcons.ExportData,
-            descriptions: ['Export data into a json file.'],
+            textRegular: ['Export data into a json file.'],
             action: setting => {
               setting.running = true;
               this.entities.exportColorSelectionData().then(data => {
@@ -244,7 +243,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Purge Database',
             icon: AppActionIcons.DeleteData,
-            descriptions: ['Deletes all data and recreates the database.'],
+            textRegular: ['Deletes all data and recreates the database.'],
             action: setting => {
               setting.disabled = true;
               setting.running = true;
@@ -265,7 +264,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Profiles',
             icon: AppEntityIcons.Sync,
-            descriptions: ['Configuration for all import/export tasks.'],
+            textRegular: ['Configuration for all import/export tasks.'],
             action: () => {
               this.navigation.forward(appRoutes[AppRoute.SyncProfiles].route);
             }
@@ -292,21 +291,21 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
                 this.onFolderScan(syncProfile.directoryArray);
               }
               else {
-                setting.warningText = 'Unable to start sync. Please select the audio directory first.';
+                setting.textWarning = 'Unable to start sync. Please select the audio directory first.';
               }
             }
           },
           {
             name: 'Multiple Artists',
             icon: AppFeatureIcons.MultipleArtists,
-            descriptions: [
+            textRegular: [
               'This feature will take artist tags and split every value by using separators. Click here to specify separators. Leave it empty to disable the feature.'
             ]
           },
           {
             name: 'Multiple Genres',
             icon: AppFeatureIcons.MultipleGenres,
-            descriptions: [
+            textRegular: [
               'This feature will take genre tags and split every value by using separators. Click here to specify separators. Leave it empty to disable the feature.'
             ]
           }
@@ -335,7 +334,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
                 this.onPlaylistScan(syncProfile.directoryArray);
               }
               else {
-                setting.warningText = 'Unable to start scan. Please select the playlist directory first.';
+                setting.textWarning = 'Unable to start scan. Please select the playlist directory first.';
               }
             }
           }
@@ -348,7 +347,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'exportLibrary',
             name: 'Export Library',
             icon: AppActionIcons.Export,
-            descriptions: [
+            textRegular: [
               'Click here to export your library.'
             ],
             action: setting => {
@@ -360,7 +359,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: '',
             name: 'Export Configuration',
             icon: AppActionIcons.Config,
-            descriptions: ['Click here to configure the export process.']
+            textRegular: ['Click here to configure the export process.']
           }
         ]
       },
@@ -372,7 +371,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             name: 'Multiple Quick Filters',
             icon: AppFeatureIcons.MultipleFilters,
             editorType: SettingsEditorType.YesNo,
-            descriptions: [
+            textRegular: [
               'If turned off, the quick filter panel will allow to select one filter at a time; as soon as you click the filter the change will be applied.',
               'If turned on, the quick filter panel will allow to select multiple filters; you need to click OK to apply the changes.'
             ],
@@ -390,7 +389,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             // TODO: this should not be displayed in cordova mode
             name: 'Small Form Factor',
             icon: AppFeatureIcons.Mobile,
-            descriptions: ['Resizes the window to a mobile form factor.'],
+            textRegular: ['Resizes the window to a mobile form factor.'],
             action: () => {
               this.dialog.resizeWindow(this.utility.getSmallFormFactor());
             }
@@ -403,7 +402,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Dev Tools',
             icon: AppActionIcons.Code,
-            descriptions: ['Open developer tools.'],
+            textRegular: ['Open developer tools.'],
             action: () => {
               this.dialog.openDevTools();
             }
@@ -412,7 +411,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             id: 'debugMode',
             name: 'Debug',
             icon: AppActionIcons.Debug,
-            descriptions: ['Click here to turn on or off debug mode.'],
+            textRegular: ['Click here to turn on or off debug mode.'],
             editorType: SettingsEditorType.YesNo,
             data: this.storage.getByKey(LocalStorageKeys.DebugMode),
             onChange: setting => {
@@ -424,7 +423,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Test',
             icon: AppActionIcons.Test,
-            descriptions: ['Action for testing purposes.'],
+            textRegular: ['Action for testing purposes.'],
             action: () => {
               this.tester.test();
             }
@@ -440,33 +439,31 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
     let setting = this.findSetting('audioDirectory');
     const audioSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
-    setting.descriptions = [
+    setting.textRegular = [
       ' Click here to set the sync directories for audio.',
       `Directories: <br><span class="sp-color-primary">${(audioSyncProfile.directoryArray?.length ? audioSyncProfile.directoryArray.join('<br>') : '[Not Selected]')}</span>`
     ];
 
     setting = this.findSetting('syncAudioFiles');
-    setting.descriptions = [
+    setting.textRegular = [
       'Click here to start synchronizing audio files; new files will be added to the database; missing files will be deleted from the database.',
       'Files found: 0'
     ];
-    setting.dynamicText = '';
-    setting.warningText = '';
+    setting.textWarning = '';
 
     setting = this.findSetting('playlistDirectory');
     const playlistSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
-    setting.descriptions = [
+    setting.textRegular = [
       'Click here to set the scan directory for playlists',
       `Directories: <br><span class="sp-color-primary">${(playlistSyncProfile.directoryArray?.length ? playlistSyncProfile.directoryArray.join('<br>') : '[Not Selected]')}</span>`
     ];
 
     setting = this.findSetting('processPlaylists');
-    setting.descriptions = [
+    setting.textRegular = [
       'Click here to start scanning playlists.',
       'Playlists created: 0/0'
     ];
-    setting.dynamicText = '';
-    setting.warningText = '';
+    setting.textWarning = '';
   }
 
   private async refreshStatistics(): Promise<void> {
@@ -478,11 +475,13 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       const seconds = await this.entities.getSecondsSum();
       hours = this.utility.secondsToHours(seconds);
     }
-    setting.descriptionsLargeSize = [
-      `Tracks: <span class="sp-color-primary sp-font-family-digital">${songCount}</span>`,
-      `Playlists: <span class="sp-color-primary sp-font-family-digital">${playlistCount}</span>`,
-      `Playing time: <span class="sp-color-primary sp-font-family-digital">${hours}</span>`
-    ];
+    setting.textHtml = `
+      Tracks: <span class="sp-color-primary sp-font-family-digital">${songCount}</span>
+      <br>
+      Playlists: <span class="sp-color-primary sp-font-family-digital">${playlistCount}</span>
+      <br>
+      Playing time: <span class="sp-color-primary sp-font-family-digital">${hours}</span>
+    `;
   }
 
   private onFolderScan(folderPaths: string[]): void {
@@ -510,17 +509,16 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
         const setting = this.findSetting('syncAudioFiles');
         if (setting) {
-          setting.descriptions[0] = 'Click here to start synchronizing audio files.';
+          setting.textRegular[0] = 'Click here to start synchronizing audio files.';
           const errorFiles = processResult.result.metadataResults.filter(r => r[MetaField.Error].length);
           if (errorFiles.length) {
             syncMessage += ` Errors: ${errorFiles.length}.`;
-            setting.dynamicText = '';
-            setting.warningText = `Sync process done. ${syncMessage}`;
+            setting.textWarning = `Sync process done. ${syncMessage}`;
             this.log.debug('Sync failures', errorFiles);
           }
           // TODO: report ignored files
           else {
-            setting.dynamicText = `Sync process done. ${syncMessage}`;
+            setting.textRegular[1] = `Sync process done. ${syncMessage}`;
           }
           setting.running = false;
           setting.disabled = false;
@@ -539,15 +537,15 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     this.scanner.run(folderPaths, '.m3u', 'scanPlaylists').then(processResult => {
       let setting = this.findSetting('processPlaylists');
       if (setting) {
-        setting.descriptions[1] = 'Playlist created: 0/' + processResult.result.length;
+        setting.textRegular[1] = 'Playlist created: 0/' + processResult.result.length;
       }
       this.scanner.syncPlaylistFiles(processResult.result).then(() => {
         // Find it again
         setting = this.findSetting('processPlaylists');
         if (setting) {
           // Notify and enable back
-          setting.descriptions[0] = 'Click here to start scanning playlists.'
-          setting.dynamicText = 'Scan process done. No errors found.';
+          setting.textRegular[0] = 'Click here to start scanning playlists.'
+          setting.textRegular[2] = 'Scan process done. No errors found.';
           setting.running = false;
           setting.disabled = false;
         }

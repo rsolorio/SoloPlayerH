@@ -153,12 +153,12 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
           {
             name: 'Directories',
             icon: AppAttributeIcons.Directory,
-            descriptions: parsedProfile.directoryArray
+            textData: parsedProfile.directoryArray
           },
           {
             name: 'Run',
             icon: AppActionIcons.Run,
-            descriptions: ['Click here to start running the action.'],
+            textRegular: ['Click here to start running the action.'],
             action: () => {
               this.exporter.run(profile.id);
             }
@@ -166,46 +166,46 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
           {
             name: 'Dedicated Playlist Folder',
             icon: AppAttributeIcons.PlaylistDirectory,
-            descriptions: ['Dedicated folder for the playlist files.'],
+            textRegular: ['Dedicated folder for the playlist files.'],
             editorType: SettingsEditorType.YesNo
           },
           {
             name: 'Export Playlists',
             icon: AppEntityIcons.Playlist,
-            descriptions: ['Whether or not playlists should be exported.'],
+            textRegular: ['Whether or not playlists should be exported.'],
             editorType: SettingsEditorType.YesNo
           },
           {
             name: 'Export Smartlists',
             icon: AppEntityIcons.Smartlist,
-            descriptions: ['Whether or not smartlists should be exported.'],
+            textRegular: ['Whether or not smartlists should be exported.'],
             editorType: SettingsEditorType.YesNo
           },
           {
             name: 'Export Autolists',
             icon: AppEntityIcons.Autolist,
-            descriptions: ['Whether or not autolists should be exported.'],
+            textRegular: ['Whether or not autolists should be exported.'],
             editorType: SettingsEditorType.YesNo
           },
           {
             name: 'Playlist Format',
             icon: AppAttributeIcons.FileInfo,
-            descriptions: ['Select the playlist format to export.']
+            textRegular: ['Select the playlist format to export.']
           },
           {
             name: 'Last Songs Added',
             icon: AppAttributeIcons.AddDate,
-            descriptions: ['This number represents the last songs added to the library that will be exported.']
+            textRegular: ['This number represents the last songs added to the library that will be exported.']
           },
           {
             name: 'Minimum Playlist Tracks',
             icon: AppAttributeIcons.Minimum,
-            descriptions: ['The minimum number of tracks a playlist should have to be exported.']
+            textRegular: ['The minimum number of tracks a playlist should have to be exported.']
           },
           {
             name: 'Maximum Playlist Tracks',
             icon: AppAttributeIcons.Maximum,
-            descriptions: ['The maximum number of tracks a playlist will have when exported.']
+            textRegular: ['The maximum number of tracks a playlist will have when exported.']
           }
         ]
       }
