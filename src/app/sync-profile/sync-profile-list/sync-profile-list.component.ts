@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { SyncProfileEntity } from 'src/app/shared/entities';
@@ -11,8 +11,9 @@ import { AppRoute } from 'src/app/app-routes';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { ExportService } from '../export/export.service';
-import { SyncType } from 'src/app/shared/models/sync-profile-model.interface';
+import { ISyncProfile, SyncType } from 'src/app/shared/models/sync-profile-model.interface';
 import { ScanService } from '../scan/scan.service';
+import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -20,6 +21,7 @@ import { ScanService } from '../scan/scan.service';
   styleUrls: ['./sync-profile-list.component.scss']
 })
 export class SyncProfileListComponent extends CoreComponent implements OnInit {
+  @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public SyncType = SyncType;
   public AppActionIcons = AppActionIcons;
   public AppAttributeIcons = AppAttributeIcons;
@@ -67,11 +69,16 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public onItemContentClick(profile: SyncProfileEntity): void {
-    if (profile.directories) {
+  public onItemContentClick(profile: ISyncProfile): void {
+    if (profile.running) {
+      // Show the status panel
+    }
+    else if (profile.directories) {
+      // Just run it
       this.runProfile(profile);
     }
     else {
+      // Show the folder browser
       this.showFileBrowserAndSave(profile.id);
     }
   }
@@ -86,14 +93,17 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     return '[Not Selected]';
   }
 
-  private runProfile(profile: SyncProfileEntity): void {
+  private runProfile(profile: ISyncProfile): void {
     if (profile.syncType === SyncType.ImportAudio) {
-
+      // Don't ask for configuration, just run
+      this.importAudio(profile);
     }
     else if (profile.syncType === SyncType.ImportPlaylists) {
-
+      // Don't ask for configuration, just run
+      this.importPlaylists(profile);
     }
     else if (profile.syncType === SyncType.ExportAll) {
+      // Open config panel and then run
       this.exporter.run(profile.id);
     }
   }
@@ -118,13 +128,16 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     this.browserService.browse(browserModel);
   }
 
-  private async onAudioScan(profileId: string): Promise<void> {
-    const profile = await this.entities.getSyncProfile(profileId);
-    if (!profile.directoryArray?.length) {
-      return;
-    }
-
-    const scanResponse = await this.scanner.run(profile.directoryArray, '.mp3');
+  private async importAudio(profile: ISyncProfile): Promise<void> {
+    const parsedProfile = this.entities.parseSyncProfile(profile);
+    const scanResponse = await this.scanner.run(parsedProfile.directoryArray, '.mp3');
     const syncResponse = await this.scanner.syncAudioFiles(scanResponse.result);
+    // Log results
+  }
+
+  private async importPlaylists(profile: ISyncProfile): Promise<void> {
+    const parsedProfile = this.entities.parseSyncProfile(profile);
+    const scanResponse = await this.scanner.run(parsedProfile.directoryArray, '.m3u', 'scanPlaylists');
+    const syncResponse = await this.scanner.syncPlaylistFiles(scanResponse.result);
   }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { IStateService } from 'src/app/core/models/core.interface';
-import { ISetting, ISettingCategory } from './settings-model.interface';
 import { ModuleOptionId, SyncProfileId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
@@ -27,6 +26,7 @@ import { IExportResult } from 'src/app/sync-profile/export/export.interface';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-storage.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
+import { ISetting, ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
 
 @Injectable({
   providedIn: 'root'

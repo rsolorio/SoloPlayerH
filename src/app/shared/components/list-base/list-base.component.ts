@@ -38,8 +38,6 @@ import { AppActionIcons } from 'src/app/app-icons';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListBaseComponent extends CoreComponent implements OnInit {
-  @ViewChild('spModalHost', { read: ViewContainerRef, static: false }) public modalHostViewContainer: ViewContainerRef;
-
   @Output() public itemRender: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemAvatarClick: EventEmitter<IListItemModel> = new EventEmitter();
   @Output() public itemContentClick: EventEmitter<IListItemModel> = new EventEmitter();
@@ -47,6 +45,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   @Output() public listUpdated: EventEmitter<IListBaseModel> = new EventEmitter();
 
   @Input() infoTemplate: TemplateRef<any>;
+  @Input() modalTemplate: TemplateRef<any>;
   @Input() imageOverlayTemplate: TemplateRef<any>;
   @Input() public model: IListBaseModel = {
     listUpdatedEvent: null,

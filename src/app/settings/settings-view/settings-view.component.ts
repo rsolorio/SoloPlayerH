@@ -4,8 +4,8 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { ISetting, ISettingCategory } from './settings-model.interface';
 import { SettingsViewStateService } from './settings-view-state.service';
+import { ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
 
 @Component({
   selector: 'sp-settings-view',
@@ -53,11 +53,5 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
         icon: routeInfo.icon
       }
     });
-  }
-
-  public onSettingClick(setting: ISetting): void {
-    if (setting.action && !setting.disabled) {
-      setting.action(setting);
-    }
   }
 }

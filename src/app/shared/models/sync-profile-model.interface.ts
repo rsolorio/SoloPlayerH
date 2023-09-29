@@ -5,10 +5,12 @@ export interface ISyncProfile extends IListItemModel {
   description: string;
   directories: string;
   config: string;
+  syncType: string;
   syncDate: Date;
   syncInfo: string;
   defaultProfile: boolean;
   system: boolean;
+  running?: boolean;
 }
 
 export interface ISyncProfileParsed extends ISyncProfile {

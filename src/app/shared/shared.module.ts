@@ -22,6 +22,7 @@ import { ImageService } from '../platform/image/image.service';
 import { ImageElectronService } from '../platform/image/image-electron.service';
 import { EyeDropperDirective } from './directives/eye-dropper/eye-dropper.directive';
 import { EntityEditorComponent } from './components/entity-editor/entity-editor.component';
+import { SettingsBaseComponent } from './components/settings-base/settings-base.component';
 
 
 
@@ -38,7 +39,8 @@ import { EntityEditorComponent } from './components/entity-editor/entity-editor.
     RatingComponent,
     TextScrollerComponent,
     EyeDropperDirective,
-    EntityEditorComponent
+    EntityEditorComponent,
+    SettingsBaseComponent
   ],
   imports: [
     CommonModule,
@@ -56,7 +58,8 @@ import { EntityEditorComponent } from './components/entity-editor/entity-editor.
     RatingComponent,
     TextScrollerComponent,
     EyeDropperDirective,
-    EntityEditorComponent
+    EntityEditorComponent,
+    SettingsBaseComponent
   ],
   entryComponents: [ QuickSearchComponent ],
   providers: [ { provide: FileService, useClass: FileElectronService }, { provide: ImageService, useClass: ImageElectronService } ]

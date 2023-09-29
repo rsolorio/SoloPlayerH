@@ -2,6 +2,7 @@
 #spListBaseComponent
 [model]="listModel"
 [infoTemplate]="infoTemplate"
+[modalTemplate]="modalTemplate"
 [imageOverlayTemplate]="imageOverlayTemplate"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #imageOverlayTemplate let-item="item">
@@ -24,5 +25,8 @@
         </td>
       </tr>
     </table>
+  </ng-template>
+  <ng-template #modalTemplate>
+    Hello World
   </ng-template>
 </sp-list-base>

@@ -19,7 +19,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { ValueLists } from './database.lists';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { ModuleOptionId } from './database.seed';
-import { ISyncProfileParsed, SyncType } from '../../models/sync-profile-model.interface';
+import { ISyncProfile, ISyncProfileParsed, SyncType } from '../../models/sync-profile-model.interface';
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
 import { PartyRelationType } from '../../models/music.enum';
@@ -351,7 +351,7 @@ export class DatabaseEntitiesService {
     return result;
   }
 
-  private parseSyncProfile(entity: SyncProfileEntity): ISyncProfileParsed {
+  public parseSyncProfile(entity: ISyncProfile): ISyncProfileParsed {
     const result = entity as ISyncProfileParsed;
     result.directoryArray = entity.directories ? JSON.parse(entity.directories) : null;
     result.configObj = entity.config ? JSON.parse(entity.config) : null;
