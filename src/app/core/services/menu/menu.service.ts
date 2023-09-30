@@ -102,7 +102,6 @@ export class MenuService {
     const result: MenuItem[] = [];
     if (source && source.length) {
       source.forEach(item => {
-        const timeoutMs = item.actionTimeout ? item.actionTimeout : 0;
         const newItem: MenuItem = {
           id: item.id,
           label: item.caption,
@@ -113,15 +112,19 @@ export class MenuService {
           styleClass: item.styleClass,
           separator: item.isSeparator,
           command: () => {
-            // There are some cases where running the command (clicking the menu item)
-            // does not hide the menu. I'm giving a timeout to allow the menu to close before
-            // we actually execute the command. I've only seen the issue when clicking a facet
-            // to load more facets.
-            setTimeout(() => {
-              if (item.action) {
-                item.action(item, actionParam);
+            if (item.action) {
+              if (item.actionTimeout) {
+                // I'm giving a timeout to allow the menu to close before we actually execute the command
+                setTimeout(() => {
+                  item.action(item, actionParam);
+                }, item.actionTimeout);
               }
-            }, timeoutMs);
+              else {
+                item.action(item, actionParam);
+                // Not using a timeout causes the menu to stay visible, so we need to force it to close
+                this.hideSlideMenu();
+              }
+            }
           }
         };
 
