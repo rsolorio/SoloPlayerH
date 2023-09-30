@@ -17,6 +17,7 @@ import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base
 import { ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
 import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
 import { IExportConfig } from '../export/export.interface';
+import { IChipItem } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -161,7 +162,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
           {
             name: 'Run',
             icon: AppActionIcons.Run,
-            textRegular: ['Click here to start running the action.'],
+            textRegular: ['Click here to start running the export process.'],
             action: () => {
               this.exporter.run(profile.id);
             }
@@ -181,7 +182,15 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
               'If this value is greater than zero, exporting static playlists will be disabled.'],
             editorType: SettingsEditorType.Number,
             data: exportConfig.lastAdded,
-            textData: [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0']
+            textData: [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'],
+            beforePanelOpen: panelModel => {
+              panelModel['label'] = 'Last number of songs';
+            },
+            onChange: setting => {
+              exportConfig.lastAdded = setting.data;
+              setting.textData = [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'];
+              this.entities.saveSyncProfile(parsedProfile);
+            }
           },
           {
             name: 'Export Static Playlists',
@@ -232,22 +241,65 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             name: 'Playlist Format',
             icon: AppAttributeIcons.FileInfo,
             textRegular: ['Select the playlist format to export.'],
+            editorType: SettingsEditorType.List,
             data: exportConfig.playlistConfig.format,
-            textData: [exportConfig.playlistConfig.format.toUpperCase()]
+            textData: [exportConfig.playlistConfig.format.toUpperCase()],
+            beforePanelOpen: panelModel => {
+              const chipItemM3u: IChipItem = {
+                sequence: 1,
+                value: 'm3u',
+                caption: 'M3U'
+              };
+              if (chipItemM3u.value === exportConfig.playlistConfig.format) {
+                chipItemM3u.selected = true;
+              }
+              const chipItemPls: IChipItem = {
+                sequence: 2,
+                value: 'pls',
+                caption: 'PLS'
+              };
+              if (chipItemPls.value === exportConfig.playlistConfig.format) {
+                chipItemPls.selected = true;
+              }
+              panelModel['items'] = [chipItemM3u, chipItemPls];
+            },
+            onChange: setting => {
+              exportConfig.playlistConfig.format = setting.data;
+              setting.textData = [exportConfig.playlistConfig.format.toUpperCase()];
+              this.entities.saveSyncProfile(parsedProfile);
+            }
           },
           {
             name: 'Minimum Playlist Tracks',
             icon: AppAttributeIcons.Minimum,
             textRegular: ['The minimum number of tracks a playlist should have to be exported.'],
+            editorType: SettingsEditorType.Number,
             data: exportConfig.playlistConfig.minCount,
-            textData: [exportConfig.playlistConfig.minCount ? exportConfig.playlistConfig.minCount.toString() : '0']
+            textData: [exportConfig.playlistConfig.minCount ? exportConfig.playlistConfig.minCount.toString() : '0'],
+            beforePanelOpen: panelModel => {
+              panelModel['label'] = 'Minimum number of tracks';
+            },
+            onChange: setting => {
+              exportConfig.playlistConfig.minCount = setting.data;
+              setting.textData = [exportConfig.playlistConfig.minCount ? exportConfig.playlistConfig.minCount.toString() : '0'];
+              this.entities.saveSyncProfile(parsedProfile);
+            }
           },
           {
             name: 'Maximum Playlist Tracks',
             icon: AppAttributeIcons.Maximum,
             textRegular: ['The maximum number of tracks a playlist will have when exported.'],
+            editorType: SettingsEditorType.Number,
             data: exportConfig.playlistConfig.maxCount,
-            textData: [exportConfig.playlistConfig.maxCount ? exportConfig.playlistConfig.maxCount.toString() : '0']
+            textData: [exportConfig.playlistConfig.maxCount ? exportConfig.playlistConfig.maxCount.toString() : '0'],
+            beforePanelOpen: panelModel => {
+              panelModel['label'] = 'Maximum number of tracks';
+            },
+            onChange: setting => {
+              exportConfig.playlistConfig.maxCount = setting.data;
+              setting.textData = [exportConfig.playlistConfig.maxCount ? exportConfig.playlistConfig.maxCount.toString() : '0'];
+              this.entities.saveSyncProfile(parsedProfile);
+            }
           }
         ]
       }

@@ -1,7 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ISetting, ISettingCategory } from './settings-base.interface';
 import { SettingsEditorType } from './settings-base.enum';
-import { AppAttributeIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons } from 'src/app/app-icons';
+import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { IInputEditorModel } from '../input-editor/input-editor.interface';
+import { InputEditorComponent } from '../input-editor/input-editor.component';
+import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } from '../chip-selection/chip-selection-model.interface';
+import { ChipSelectionComponent } from '../chip-selection/chip-selection.component';
 
 @Component({
   selector: 'sp-settings-base',
@@ -12,7 +17,7 @@ export class SettingsBaseComponent implements OnInit {
   public EditorType = SettingsEditorType;
   public AppAttributeIcons = AppAttributeIcons;
   @Input() public model: ISettingCategory[] = [];
-  constructor() { }
+  constructor(private sidebarHostService: SideBarHostStateService) { }
 
   ngOnInit(): void {
   }
@@ -31,10 +36,52 @@ export class SettingsBaseComponent implements OnInit {
       }
     }
     else if (setting.editorType === SettingsEditorType.Number) {
-
+      this.openNumericEditorPanel(setting);
+    }
+    else if (setting.editorType === SettingsEditorType.List) {
+      this.openListEditorPanel(setting);
     }
   }
 
-  private openNumericEditorPanel(): void {}
+  private openNumericEditorPanel(setting: ISetting): void {
+    const model: IInputEditorModel = {
+      componentType: InputEditorComponent,
+      title: 'Edit',
+      titleIcon: AppActionIcons.Edit,
+      type: 'number',
+      value: setting.data,
+      label: '',
+      onOk: result => {
+        const inputResult = result as IInputEditorModel;
+        setting.data = inputResult.value;
+        setting.onChange(setting);
+      }
+    };
+    if (setting.beforePanelOpen) {
+      setting.beforePanelOpen(model);
+    }
+    this.sidebarHostService.loadContent(model);
+  }
+
+  private openListEditorPanel(setting: ISetting): void {
+    const model: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Edit',
+      titleIcon: AppActionIcons.Edit,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.Quick,
+      items: [],
+      onChipClick: (selectionChanged: boolean, chipItem: IChipItem) => {
+        if (selectionChanged) {
+          setting.data = chipItem.value;
+          setting.onChange(setting);
+        }
+      }
+    };
+    if (setting.beforePanelOpen) {
+      setting.beforePanelOpen(model);
+    }
+    this.sidebarHostService.loadContent(model);
+  }
 
 }

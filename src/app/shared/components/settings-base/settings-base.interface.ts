@@ -1,3 +1,4 @@
+import { ISideBarHostModel } from "src/app/core/components/side-bar-host/side-bar-host-model.interface";
 import { IIconActionGeneric } from "src/app/core/models/core.interface";
 
 export interface ISetting extends IIconActionGeneric<ISetting, any> {
@@ -23,6 +24,8 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   data?: any;
   /** Event to be fired if the data changed. */
   onChange?: (setting: ISetting) => void;
+  /** Event to be fired before opening a panel. */
+  beforePanelOpen?: (panelMode: ISideBarHostModel) => void;
 }
 
 export interface ISettingCategory {

@@ -1,0 +1,19 @@
+@import "../../../../styles-variables";
+
+.sp-input-editor-container {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.sp-input, .sp-input[type="number"] {
+  height: 34px;
+  border-radius: 0.25rem;
+  border: 1px solid $sp-color-on-background-low;
+  padding-left: 10px;
+  padding-right: 10px;
+  outline: none;
+}
+
+.sp-input-number {
+  text-align: right;
+}

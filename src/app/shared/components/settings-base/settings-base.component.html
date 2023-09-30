@@ -8,7 +8,7 @@
     <div
     *ngFor="let setting of settingCategory.settings"
     class="sp-setting sp-bg-04"
-    [ngClass]="{ 'sp-clickable': setting.action && !setting.disabled, 'sp-color-on-bg-low': setting.disabled }"
+    [ngClass]="{ 'sp-clickable': !setting.disabled && (setting.action || setting.editorType), 'sp-color-on-bg-low': setting.disabled }"
     (click)="onSettingClick(setting)">
       <table class="sp-table sp-table-no-padding"><tr>
         <td class="sp-full-width">
