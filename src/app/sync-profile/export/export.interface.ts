@@ -29,7 +29,9 @@ export interface IPlaylistExportConfig {
   /** The separator between the prefix and the name of the playlist, if any. */
   nameSeparator?: string;
   /** Name of the directory to place the playlists. */
-  directory?: string;
+  dedicatedDirectoryName?: string;
+  /** If playlist files should be save in the root folder instead of a dedicated folder. */
+  dedicatedDirectoryDisabled?: boolean;
   /** Full directory path where playlist will be stored. */
   path?: string;
   /** A list of key/value items that identify the original and the new file path of a song. */

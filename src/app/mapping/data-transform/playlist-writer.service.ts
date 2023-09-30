@@ -37,8 +37,9 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     // Prepare directory path if needed
     if (!this.config.path) {
       this.config.path = this.rootPath;
-      if (this.config.directory) {
-        this.config.path = this.fileService.combine(this.config.path, this.config.directory);
+      if (!this.config.dedicatedDirectoryDisabled) {
+        const folder = this.config.dedicatedDirectoryName ? this.config.dedicatedDirectoryName : 'Playlists';
+        this.config.path = this.fileService.combine(this.config.path, folder);
         await this.fileService.createDirectory(this.config.path);
       }
     }

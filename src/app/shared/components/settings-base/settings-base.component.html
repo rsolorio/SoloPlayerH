@@ -30,7 +30,7 @@
           <p *ngFor="let text of setting.textData" class="sp-text-medium sp-color-primary" [innerText]="text"></p>
         </td>
         <td *ngIf="setting.editorType === EditorType.YesNo" class="sp-td-icon sp-text-xlarge sp-text-center">
-          <i *ngIf="setting.data" [ngClass]="AppAttributeIcons.Selected" class="sp-color-primary"></i>
+          <i *ngIf="setting.data" [ngClass]="[AppAttributeIcons.Selected, setting.disabled ? '' : 'sp-color-primary']"></i>
           <i *ngIf="!setting.data" [ngClass]="AppAttributeIcons.Unselected"></i>
         </td>
       </tr></table>

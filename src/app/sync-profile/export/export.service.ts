@@ -106,7 +106,7 @@ export class ExportService {
 
     const exportResult: IExportResult = {
       rootPath: syncProfile.directoryArray[0],
-      playlistFolder: this.config?.playlistConfig ? this.config.playlistConfig.directory : null,
+      playlistFolder: this.config?.playlistConfig ? this.config.playlistConfig.dedicatedDirectoryName : null,
       totalFileCount: this.config.songs.length,
       finalFileCount: 0,
       smartlistCount: 0,

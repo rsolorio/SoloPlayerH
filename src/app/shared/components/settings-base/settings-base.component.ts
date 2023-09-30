@@ -30,6 +30,11 @@ export class SettingsBaseComponent implements OnInit {
         setting.onChange(setting);
       }
     }
+    else if (setting.editorType === SettingsEditorType.Number) {
+
+    }
   }
+
+  private openNumericEditorPanel(): void {}
 
 }
