@@ -270,32 +270,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             }
           },
           {
-            id: 'audioDirectory',
-            name: 'Audio Directory',
-            icon: AppAttributeIcons.AudioDirectory,
-            action: () => {
-              this.showFileBrowserAndSave(SyncProfileId.DefaultAudioImport);
-            }
-          },
-          {
-            id: 'syncAudioFiles',
-            name: 'Sync Audio Files',
-            icon: AppEntityIcons.Sync,
-            action: async setting => {
-              const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
-              if (syncProfile.directoryArray && syncProfile.directoryArray.length) {
-                // If the drive to scan is idle, the scan process might take a time to start and fire events
-                // so disable the setting immediately
-                setting.running = true;
-                setting.disabled = true;
-                this.onFolderScan(syncProfile.directoryArray);
-              }
-              else {
-                setting.textWarning = 'Unable to start sync. Please select the audio directory first.';
-              }
-            }
-          },
-          {
             name: 'Multiple Artists',
             icon: AppFeatureIcons.MultipleArtists,
             textRegular: [
@@ -351,8 +325,8 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
               'Click here to export your library.'
             ],
             action: setting => {
-              const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
-              this.exporter.run(exportProfileId);
+              //const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
+              //this.exporter.run(SyncProfileId.DefaultExport);
             }
           },
           {
@@ -437,21 +411,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
   public async updateState(): Promise<void> {
     this.refreshStatistics();
 
-    let setting = this.findSetting('audioDirectory');
-    const audioSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
-    setting.textRegular = [
-      ' Click here to set the sync directories for audio.',
-      `Directories: <br><span class="sp-color-primary">${(audioSyncProfile.directoryArray?.length ? audioSyncProfile.directoryArray.join('<br>') : '[Not Selected]')}</span>`
-    ];
-
-    setting = this.findSetting('syncAudioFiles');
-    setting.textRegular = [
-      'Click here to start synchronizing audio files; new files will be added to the database; missing files will be deleted from the database.',
-      'Files found: 0'
-    ];
-    setting.textWarning = '';
-
-    setting = this.findSetting('playlistDirectory');
+    let setting = this.findSetting('playlistDirectory');
     const playlistSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
     setting.textRegular = [
       'Click here to set the scan directory for playlists',
@@ -482,54 +442,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       <br>
       Playing time: <span class="sp-color-primary sp-font-family-digital">${hours}</span>
     `;
-  }
-
-  private onFolderScan(folderPaths: string[]): void {
-    // Start scanning
-    this.scanner.run(folderPaths, '.mp3', 'scanAudio').then(scanProcessResult => {
-      // Start reading file metadata
-      this.scanner.syncAudioFiles(scanProcessResult.result).then(processResult => {
-        // At this point the process is done.
-        let syncMessage = '';
-        if (processResult.result.songAddedRecords.length) {
-          syncMessage = `Added: ${processResult.result.songAddedRecords.length}.`;
-        }
-        if (processResult.result.songUpdatedRecords.length) {
-          syncMessage += ` Updated: ${processResult.result.songUpdatedRecords.length}.`;
-        }
-        if (processResult.result.songSkippedRecords.length) {
-          syncMessage += ` Skipped: ${processResult.result.songSkippedRecords.length}.`;
-        }
-        if (processResult.result.songDeletedRecords.length) {
-          syncMessage += ` Deleted: ${processResult.result.songDeletedRecords.length}.`;
-        }
-        if (processResult.result.ignoredFiles.length) {
-          syncMessage += ` Ignored: ${processResult.result.ignoredFiles.length}`;
-        }
-
-        const setting = this.findSetting('syncAudioFiles');
-        if (setting) {
-          setting.textRegular[0] = 'Click here to start synchronizing audio files.';
-          const errorFiles = processResult.result.metadataResults.filter(r => r[MetaField.Error].length);
-          if (errorFiles.length) {
-            syncMessage += ` Errors: ${errorFiles.length}.`;
-            setting.textWarning = `Sync process done. ${syncMessage}`;
-            this.log.debug('Sync failures', errorFiles);
-          }
-          // TODO: report ignored files
-          else {
-            setting.textRegular[1] = `Sync process done. ${syncMessage}`;
-          }
-          setting.running = false;
-          setting.disabled = false;
-        }
-        // Before logging the sync info remove all metadata, since that could be a lot of information
-        processResult.result.metadataResults = [];
-        this.log.debug('Sync info:', processResult.result);
-        this.log.info('Sync elapsed time: ' + this.utility.formatTimeSpan(processResult.period.span), processResult.period.span);
-        this.refreshStatistics();
-      });
-    });
   }
 
   private onPlaylistScan(folderPaths: string[]): void {

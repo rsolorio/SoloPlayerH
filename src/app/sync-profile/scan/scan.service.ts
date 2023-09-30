@@ -19,6 +19,7 @@ import { PeriodTimer } from 'src/app/core/models/timer.class';
   providedIn: 'root'
 })
 export class ScanService {
+  private audioSyncRunning: boolean;
   constructor(
     private fileService: FileService,
     private scanAudioService: ScanAudioService,
@@ -26,6 +27,10 @@ export class ScanService {
     private utility: UtilityService,
     private events: EventsService)
   { }
+
+  public get isAudioSyncRunning(): boolean {
+    return this.audioSyncRunning;
+  }
 
   /**
    * Scans files in the specified directories.
@@ -54,6 +59,14 @@ export class ScanService {
     });
   }
 
+  public async scanAndSyncAudio(folderPaths: string[], extension: string, scanId?: string): Promise<IProcessDuration<ISyncSongInfo>> {
+    this.audioSyncRunning = true;
+    const scanResponse = await this.run(folderPaths, extension, scanId);
+    const syncResponse = await this.syncAudioFiles(scanResponse.result);
+    this.audioSyncRunning = false;
+    return syncResponse;
+  }
+
   public async syncAudioFiles(files: IFileInfo[]): Promise<IProcessDuration<ISyncSongInfo>> {
     const t = new PeriodTimer(this.utility);
     const result = await this.scanAudioService.beforeProcess();
@@ -78,7 +91,13 @@ export class ScanService {
     result.songFinalCount = result.songAddedRecords.length + result.songUpdatedRecords.length + result.songSkippedRecords.length - result.songDeletedRecords.length;
     this.scanAudioService.cleanUpMemory();
 
-    return { period: t.stop(), result: result };
+    const processDuration: IProcessDuration<ISyncSongInfo> = {
+      period: t.stop(),
+      result: result
+    };
+
+    this.events.broadcast(AppEvent.ScanAudioEnd, processDuration);
+    return processDuration;
   }
 
   public async syncPlaylistFiles(files: IFileInfo[]): Promise<IProcessDuration<any>> {

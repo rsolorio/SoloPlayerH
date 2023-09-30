@@ -8,7 +8,6 @@ export interface ISyncProfile extends IListItemModel {
   syncType: string;
   syncDate: Date;
   syncInfo: string;
-  defaultProfile: boolean;
   system: boolean;
   running?: boolean;
 }

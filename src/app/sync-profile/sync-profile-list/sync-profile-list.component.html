@@ -17,6 +17,7 @@
         <!-- Sync Info -->
         <td class="sp-text-overflow-ellipsis">
           <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
+          <i *ngIf="item.running" [ngClass]="AppActionIcons.Loading" class="sp-color-primary sp-text-medium sp-title-icon"></i>
           <br>
           <ng-container *ngIf="item.description">
             <i [ngClass]="AppAttributeIcons.Directory" class="sp-color-on-bg-low sp-text-small">&nbsp;&nbsp;</i>

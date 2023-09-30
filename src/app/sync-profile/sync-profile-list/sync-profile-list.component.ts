@@ -5,7 +5,7 @@ import { SyncProfileEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { SyncProfileListBroadcastService } from './sync-profile-list-broadcast.service';
-import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppViewIcons } from 'src/app/app-icons';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 import { AppRoute } from 'src/app/app-routes';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
@@ -14,10 +14,16 @@ import { ExportService } from '../export/export.service';
 import { ISyncProfile, SyncType } from 'src/app/shared/models/sync-profile-model.interface';
 import { ScanService } from '../scan/scan.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
-import { ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
+import { ISetting, ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
 import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
 import { IExportConfig } from '../export/export.interface';
 import { IChipItem } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
+import { EventsService } from 'src/app/core/services/events/events.service';
+import { IScanItemInfo, ISyncSongInfo } from '../scan/scan.interface';
+import { IFileInfo } from 'src/app/platform/file/file.interface';
+import { IProcessDuration } from 'src/app/core/models/core.interface';
+import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -40,6 +46,14 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
         action: (menuItem, param) => {
           const syncProfile = param as SyncProfileEntity;
           this.showFileBrowserAndSave(syncProfile.id);
+        }
+      },
+      {
+        caption: 'Settings',
+        icon: AppViewIcons.Settings,
+        action: (menuItem, param) => {
+          const syncProfile = param as SyncProfileEntity;
+          this.showSettings(syncProfile);
         }
       },
       {
@@ -66,12 +80,109 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     private browserService: FileBrowserService,
     private exporter: ExportService,
     private scanner: ScanService,
+    private events: EventsService,
+    private log: LogService,
     private entities: DatabaseEntitiesService)
   {
     super();
   }
 
   ngOnInit(): void {
+  }
+
+  private subscribeToScanEvents(): void {
+    this.subs.sink = this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanFile).subscribe(scanFileInfo => {
+      if (scanFileInfo.scanId === 'scanAudio') {
+        const setting = this.findSetting('syncAudioFiles');
+        if (!setting) {
+          return;
+        }
+        setting.disabled = true;
+        setting.running = true;
+        setting.textRegular[0] = 'Calculating file count...';
+        setting.textRegular[1] = `Files found: ${scanFileInfo.progress}`;
+        setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
+      }
+      else if (scanFileInfo.scanId === 'scanPlaylists') {
+
+      }
+    });
+
+    this.subs.sink = this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanAudioFileStart).subscribe(scanFileInfo => {
+      const setting = this.findSetting('syncAudioFiles');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Reading metadata...';
+      setting.textRegular[1] = `File ${scanFileInfo.progress} of ${scanFileInfo.total}`;
+      setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
+    });
+
+    this.subs.sink = this.events.onEvent(AppEvent.ScanAudioDbSyncStart).subscribe(() => {
+      const setting = this.findSetting('syncAudioFiles');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Synchronizing changes...';
+      setting.textRegular[1] = '';
+      setting.textRegular[2] = '';
+    });
+
+    this.subs.sink = this.events.onEvent(AppEvent.ScanAudioDbCleanupStart).subscribe(() => {
+      const setting = this.findSetting('syncAudioFiles');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Cleaning up...';
+      setting.textRegular[1] = '';
+      setting.textRegular[2] = '';
+    });
+
+    this.subs.sink = this.events.onEvent<IProcessDuration<ISyncSongInfo>>(AppEvent.ScanAudioEnd).subscribe(processInfo => {
+      const setting = this.findSetting('syncAudioFiles');
+      if (!setting) {
+        return;
+      }
+
+      let syncMessage = '';
+      if (processInfo.result.songAddedRecords.length) {
+        syncMessage = `Added: ${processInfo.result.songAddedRecords.length}.`;
+      }
+      if (processInfo.result.songUpdatedRecords.length) {
+        syncMessage += ` Updated: ${processInfo.result.songUpdatedRecords.length}.`;
+      }
+      if (processInfo.result.songSkippedRecords.length) {
+        syncMessage += ` Skipped: ${processInfo.result.songSkippedRecords.length}.`;
+      }
+      if (processInfo.result.songDeletedRecords.length) {
+        syncMessage += ` Deleted: ${processInfo.result.songDeletedRecords.length}.`;
+      }
+      if (processInfo.result.ignoredFiles.length) {
+        syncMessage += ` Ignored: ${processInfo.result.ignoredFiles.length}`;
+      }
+      
+      setting.textRegular[0] = 'Click here to start synchronizing audio files.';
+      const errorFiles = processInfo.result.metadataResults.filter(r => r[MetaField.Error].length);
+      if (errorFiles.length) {
+        syncMessage += ` Errors: ${errorFiles.length}.`;
+        setting.textWarning = `Sync process done. ${syncMessage}`;
+        this.log.debug('Sync failures', errorFiles);
+      }
+      // TODO: report ignored files
+      else {
+        setting.textRegular[1] = `Sync process done. ${syncMessage}`;
+      }
+      setting.textRegular[2] = '';
+
+      setting.disabled = false;
+      setting.running = false;
+    });
   }
 
   public onItemContentClick(profile: ISyncProfile): void {
@@ -98,18 +209,15 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     return '[Not Selected]';
   }
 
-  private runProfile(profile: ISyncProfile): void {
+  private async runProfile(profile: ISyncProfile): Promise<void> {
     if (profile.syncType === SyncType.ImportAudio) {
-      // Don't ask for configuration, just run
-      this.importAudio(profile);
+      await this.importAudio(profile);
     }
     else if (profile.syncType === SyncType.ImportPlaylists) {
-      // Don't ask for configuration, just run
-      this.importPlaylists(profile);
+      await this.importPlaylists(profile);
     }
     else if (profile.syncType === SyncType.ExportAll) {
-      // Open config panel and then run
-      this.showSettings(profile);
+      await this.exportAudio(profile);
     }
   }
 
@@ -134,22 +242,55 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
   }
 
   private async importAudio(profile: ISyncProfile): Promise<void> {
+    profile.running = true;
     const parsedProfile = this.entities.parseSyncProfile(profile);
-    const scanResponse = await this.scanner.run(parsedProfile.directoryArray, '.mp3');
-    const syncResponse = await this.scanner.syncAudioFiles(scanResponse.result);
+    const syncResponse = await this.scanner.scanAndSyncAudio(parsedProfile.directoryArray, '.mp3', 'scanAudio');
+    profile.running = false;
     // Log results
   }
 
   private async importPlaylists(profile: ISyncProfile): Promise<void> {
+    profile.running = true;
     const parsedProfile = this.entities.parseSyncProfile(profile);
     const scanResponse = await this.scanner.run(parsedProfile.directoryArray, '.m3u', 'scanPlaylists');
     const syncResponse = await this.scanner.syncPlaylistFiles(scanResponse.result);
+    profile.running = false;
+  }
+
+  private async exportAudio(profile: ISyncProfile): Promise<void> {
+    profile.running = true;
+    await this.exporter.run(profile.id);
+    profile.running = false;
   }
 
   private showSettings(profile: ISyncProfile): void {
     if (profile.syncType === SyncType.ExportAll) {
       this.showExportSettings(profile);
     }
+    else if (profile.syncType === SyncType.ImportAudio) {
+      this.showImportAudioSettings(profile);
+    }
+  }
+
+  private showImportAudioSettings(profile: ISyncProfile): void {
+    this.settingsModel = [
+      {
+        name: profile.name,
+        settings: [
+          {
+            id: 'syncAudioFiles',
+            name: 'Run',
+            icon: AppActionIcons.Run,
+            textRegular: ['Click here to start the import audio process.'],
+            action: () => {
+              this.importAudio(profile);
+            }
+          }
+        ]
+      }
+    ];
+    this.spListBaseComponent.model.showModal = true;
+    this.subscribeToScanEvents();
   }
 
   private showExportSettings(profile: ISyncProfile): void {
@@ -305,5 +446,20 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       }
     ];
     this.spListBaseComponent.model.showModal = true;
+  }
+
+  private refreshScanAudioStatus(profile: ISyncProfile): void {
+    profile.running = this.scanner.isAudioSyncRunning;
+  }
+
+  private findSetting(id: string): ISetting {
+    for (const settingCategory of this.settingsModel) {
+      for (const setting of settingCategory.settings) {
+        if (setting.id === id) {
+          return setting;
+        }
+      }
+    }
+    return null;
   }
 }

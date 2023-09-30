@@ -18,8 +18,6 @@ export class SyncProfileEntity extends DbEntity implements ISyncProfile {
   @Column({ nullable: true, transformer: dateTransformer })
   syncInfo: string;
   @Column()
-  defaultProfile: boolean;
-  @Column()
   system: boolean;
 
   canBeRendered: boolean;

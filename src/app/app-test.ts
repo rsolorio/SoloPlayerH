@@ -49,10 +49,10 @@ export class AppTestService {
   }
 
   private testExporter(): void {
-    const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
-    this.exporter.run(exportProfileId).then(() => {
-      console.log('done');
-    });
+    // const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
+    // this.exporter.run(exportProfileId).then(() => {
+    //   console.log('done');
+    // });
   }
 
   private async logFileMetadata(): Promise<void> {
