@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { SlideMenu } from 'primeng/slidemenu';
 import { IMenuModel } from '../../models/menu-model.interface';
+import { AppAttributeIcons } from 'src/app/app-icons';
 
 /**
  * Helper service for handling interactions with the PrimeNg menus.
@@ -129,10 +130,10 @@ export class MenuService {
         };
 
         if (item.active === true) {
-          newItem.icon = 'mdi mdi-check-box-outline';
+          newItem.icon = AppAttributeIcons.Selected;
         }
         else if (item.active === false) {
-          newItem.icon = 'mdi mdi-checkbox-blank-outline';
+          newItem.icon = AppAttributeIcons.Unselected;
         }
 
         if (item.items) {

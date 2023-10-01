@@ -5,22 +5,14 @@ import { DatabaseOptionsService } from 'src/app/shared/services/database/databas
 import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppFeatureIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppEntityIcons, AppFeatureIcons } from 'src/app/app-icons';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
-import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 import { AppRoute, appRoutes } from 'src/app/app-routes';
-import { FileBrowserService } from 'src/app/platform/file-browser/file-browser.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
-import { ScanService } from 'src/app/sync-profile/scan/scan.service';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { IScanItemInfo } from 'src/app/sync-profile/scan/scan.interface';
-import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppEvent } from 'src/app/shared/models/events.enum';
-import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { AppTestService } from 'src/app/app-test';
-import { ExportService } from 'src/app/sync-profile/export/export.service';
 import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
 import { IExportResult } from 'src/app/sync-profile/export/export.interface';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
@@ -39,104 +31,18 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private utility: UtilityService,
     private entities: DatabaseEntitiesService,
     private db: DatabaseService,
-    private browserService: FileBrowserService,
     private dialog: DialogService,
-    private scanner: ScanService,
     private log: LogService,
     private tester: AppTestService,
     private events: EventsService,
     private storage: LocalStorageService,
-    private navigation: NavigationService,
-    private exporter: ExportService)
+    private navigation: NavigationService)
   {
-    this.subscribeToScanEvents();
     this.subscribeToExportEvents();
   }
 
   public getState(): ISettingCategory[] {
     return this.state;
-  }
-
-  private subscribeToScanEvents(): void {
-    this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanFile).subscribe(scanFileInfo => {
-      // This can be scanning audio files or playlist files.
-      if (scanFileInfo.scanId === 'scanAudio') {
-        const setting = this.findSetting('syncAudioFiles');
-        // By the time this is running the component might have been disposed and the object does not exist anymore
-        if (!setting) {
-          return;
-        }
-        setting.disabled = true;
-        setting.running = true;
-        setting.textRegular[0] = 'Calculating file count...';
-        setting.textRegular[1] = `Files found: ${scanFileInfo.progress}`;
-        setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
-      }
-      else if (scanFileInfo.scanId === 'scanPlaylists') {
-        // Nothing to do for now
-        const setting = this.findSetting('processPlaylists');
-        if (!setting) {
-          return;
-        }
-        setting.disabled = true;
-        setting.running = true;
-        setting.textRegular[0] = 'Scanning playlists...';
-      }
-    });
-
-    this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanAudioFileStart).subscribe(scanFileInfo => {
-      const setting = this.findSetting('syncAudioFiles');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Reading metadata...';
-      setting.textRegular[1] = `File ${scanFileInfo.progress} of ${scanFileInfo.total}`;
-      setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
-    });
-
-    this.events.onEvent(AppEvent.ScanAudioDbSyncStart).subscribe(() => {
-      const setting = this.findSetting('syncAudioFiles');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Synchronizing changes...';
-      setting.textRegular[1] = '';
-    });
-
-    this.events.onEvent(AppEvent.ScanAudioDbCleanupStart).subscribe(() => {
-      const setting = this.findSetting('syncAudioFiles');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Cleaning up...';
-      setting.textRegular[1] = '';
-    });
-
-    this.events.onEvent<IScanItemInfo<PlaylistEntity>>(AppEvent.ScanPlaylistCreated).subscribe(scanPlaylistInfo => {
-      const setting = this.findSetting('processPlaylists');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[1] = `Playlist created: ${scanPlaylistInfo.progress}/${scanPlaylistInfo.total}: ${scanPlaylistInfo.item.name}`;
-    });
-
-    this.events.onEvent<IScanItemInfo<IPlaylistSongModel>>(AppEvent.ScanTrackAdded).subscribe(scanTrackInfo => {
-      const setting = this.findSetting('processPlaylists');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[2] = `Track added: ${scanTrackInfo.progress} - ${scanTrackInfo.item.name} - ${scanTrackInfo.item.duration}`;
-    });
   }
 
   private subscribeToExportEvents(): void {
@@ -286,35 +192,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         ]
       },
       {
-        name: 'Playlist Scanner',
-        settings: [
-          {
-            id: 'playlistDirectory',
-            name: 'Playlist Directory',
-            icon: AppAttributeIcons.PlaylistDirectory,
-            action: () => {
-              this.showFileBrowserAndSave(SyncProfileId.DefaultPlaylistImport);
-            }
-          },
-          {
-            id: 'processPlaylists',
-            name: 'Scan Playlist Files',
-            icon: AppActionIcons.Scan,
-            action: async setting => {
-              const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
-              if (syncProfile.directoryArray && syncProfile.directoryArray.length) {
-                setting.running = true;
-                setting.disabled = true;
-                this.onPlaylistScan(syncProfile.directoryArray);
-              }
-              else {
-                setting.textWarning = 'Unable to start scan. Please select the playlist directory first.';
-              }
-            }
-          }
-        ]
-      },
-      {
         name: 'Export',
         settings: [
           {
@@ -444,28 +321,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     `;
   }
 
-  private onPlaylistScan(folderPaths: string[]): void {
-    // Start scan process
-    this.scanner.run(folderPaths, '.m3u', 'scanPlaylists').then(processResult => {
-      let setting = this.findSetting('processPlaylists');
-      if (setting) {
-        setting.textRegular[1] = 'Playlist created: 0/' + processResult.result.length;
-      }
-      this.scanner.syncPlaylistFiles(processResult.result).then(() => {
-        // Find it again
-        setting = this.findSetting('processPlaylists');
-        if (setting) {
-          // Notify and enable back
-          setting.textRegular[0] = 'Click here to start scanning playlists.'
-          setting.textRegular[2] = 'Scan process done. No errors found.';
-          setting.running = false;
-          setting.disabled = false;
-        }
-        this.refreshStatistics();
-      });
-    });
-  }
-
   private findSetting(id: string): ISetting {
     for (const settingCategory of this.state) {
       for (const setting of settingCategory.settings) {
@@ -475,25 +330,5 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
     }
     return null;
-  }
-
-  private async showFileBrowserAndSave(syncProfileId: string): Promise<void> {
-    // The onOk callback will be executed on the browser component
-    const browserModel: IFileBrowserModel = {
-      selectedItems: [],
-      backRoute: AppRoute.Settings,
-      onOk: async browserModel => {
-        // save value in DB
-        const syncProfile = await this.entities.getSyncProfile(syncProfileId);
-        syncProfile.directoryArray = browserModel.selectedItems.map(v => v.id);
-        await this.entities.saveSyncProfile(syncProfile);
-        return true;
-      }
-    };
-    const syncProfile = await this.entities.getSyncProfile(syncProfileId);
-    if (syncProfile.directoryArray?.length) {
-      syncProfile.directoryArray.forEach(d => browserModel.selectedItems.push({ id: d, name: '', canBeRendered: false}));
-    }
-    this.browserService.browse(browserModel);
   }
 }

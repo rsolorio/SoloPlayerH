@@ -19,7 +19,8 @@ import { PeriodTimer } from 'src/app/core/models/timer.class';
   providedIn: 'root'
 })
 export class ScanService {
-  private audioSyncRunning: boolean;
+  private audioSyncRunning = false;
+  private playlistSyncRunning = false;
   constructor(
     private fileService: FileService,
     private scanAudioService: ScanAudioService,
@@ -30,6 +31,10 @@ export class ScanService {
 
   public get isAudioSyncRunning(): boolean {
     return this.audioSyncRunning;
+  }
+
+  public get isPlaylistSyncRunning(): boolean {
+    return this.playlistSyncRunning;
   }
 
   /**
@@ -67,7 +72,15 @@ export class ScanService {
     return syncResponse;
   }
 
-  public async syncAudioFiles(files: IFileInfo[]): Promise<IProcessDuration<ISyncSongInfo>> {
+  public async scanAndSyncPlaylists(folderPaths: string[], extension: string, scanId?: string): Promise<IProcessDuration<any>> {
+    this.playlistSyncRunning = true;
+    const scanResponse = await this.run(folderPaths, extension, scanId);
+    const syncResponse = await this.syncPlaylistFiles(scanResponse.result);
+    this.playlistSyncRunning = false;
+    return syncResponse;
+  }
+
+  private async syncAudioFiles(files: IFileInfo[]): Promise<IProcessDuration<ISyncSongInfo>> {
     const t = new PeriodTimer(this.utility);
     const result = await this.scanAudioService.beforeProcess();
     let fileCount = 0;
@@ -100,7 +113,7 @@ export class ScanService {
     return processDuration;
   }
 
-  public async syncPlaylistFiles(files: IFileInfo[]): Promise<IProcessDuration<any>> {
+  private async syncPlaylistFiles(files: IFileInfo[]): Promise<IProcessDuration<any>> {
     const t = new PeriodTimer(this.utility);
     let playlistCount = 0;
     for (const fileInfo of files) {
@@ -115,6 +128,11 @@ export class ScanService {
           this.events.broadcast(AppEvent.ScanTrackAdded, info);
         });
     }
-    return { period: t.stop(), result: null };
+    const processDuration: IProcessDuration<any> = {
+      period: t.stop(),
+      result: null
+    };
+    this.events.broadcast(AppEvent.ScanPlaylistEnd, processDuration);
+    return processDuration;
   }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
-import { SyncProfileEntity } from 'src/app/shared/entities';
+import { PlaylistEntity, SyncProfileEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { SyncProfileListBroadcastService } from './sync-profile-list-broadcast.service';
@@ -24,6 +24,7 @@ import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { IProcessDuration } from 'src/app/core/models/core.interface';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -90,22 +91,20 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  private subscribeToScanEvents(): void {
+  private subscribeToImportAudioEvents(): void {
     this.subs.sink = this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanFile).subscribe(scanFileInfo => {
-      if (scanFileInfo.scanId === 'scanAudio') {
-        const setting = this.findSetting('syncAudioFiles');
-        if (!setting) {
-          return;
-        }
-        setting.disabled = true;
-        setting.running = true;
-        setting.textRegular[0] = 'Calculating file count...';
-        setting.textRegular[1] = `Files found: ${scanFileInfo.progress}`;
-        setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
+      if (scanFileInfo.scanId !== 'scanAudio') {
+        return;
       }
-      else if (scanFileInfo.scanId === 'scanPlaylists') {
-
+      const setting = this.findSetting('syncAudioFiles');
+      if (!setting) {
+        return;
       }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Calculating file count...';
+      setting.textRegular[1] = `Files found: ${scanFileInfo.progress}`;
+      setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
     });
 
     this.subs.sink = this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanAudioFileStart).subscribe(scanFileInfo => {
@@ -185,6 +184,55 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     });
   }
 
+  private subscribeToImportPlaylistEvents(): void {
+    this.subs.sink = this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanFile).subscribe(scanFileInfo => {
+      if (scanFileInfo.scanId !== 'scanPlaylists') {
+        return;
+      }
+      const setting = this.findSetting('processPlaylists');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Scanning playlists...';
+    });
+
+    this.subs.sink = this.events.onEvent<IScanItemInfo<PlaylistEntity>>(AppEvent.ScanPlaylistCreated).subscribe(scanPlaylistInfo => {
+      const setting = this.findSetting('processPlaylists');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[1] = `Playlist created: ${scanPlaylistInfo.progress}/${scanPlaylistInfo.total}: ${scanPlaylistInfo.item.name}`;
+    });
+
+    this.subs.sink = this.events.onEvent<IScanItemInfo<IPlaylistSongModel>>(AppEvent.ScanTrackAdded).subscribe(scanTrackInfo => {
+      const setting = this.findSetting('processPlaylists');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[2] = `Track added: ${scanTrackInfo.progress} - ${scanTrackInfo.item.name} - ${scanTrackInfo.item.duration}`;
+    });
+
+    this.subs.sink = this.events.onEvent<IProcessDuration<ISyncSongInfo>>(AppEvent.ScanPlaylistEnd).subscribe(() => {
+      const setting = this.findSetting('processPlaylists');
+      if (!setting) {
+        return;
+      }
+      
+      setting.textRegular[0] = 'Click here to start scanning playlists.';
+      setting.textRegular[1] = 'Scan process done. No errors found.';
+      setting.textRegular[2] = '';
+
+      setting.disabled = false;
+      setting.running = false;
+    });
+  }
+
   public onItemContentClick(profile: ISyncProfile): void {
     if (profile.running) {
       this.showSettings(profile);
@@ -252,9 +300,9 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
   private async importPlaylists(profile: ISyncProfile): Promise<void> {
     profile.running = true;
     const parsedProfile = this.entities.parseSyncProfile(profile);
-    const scanResponse = await this.scanner.run(parsedProfile.directoryArray, '.m3u', 'scanPlaylists');
-    const syncResponse = await this.scanner.syncPlaylistFiles(scanResponse.result);
+    const syncResponse = await this.scanner.scanAndSyncPlaylists(parsedProfile.directoryArray, '.m3u', 'scanPlaylists');
     profile.running = false;
+    // Log results
   }
 
   private async exportAudio(profile: ISyncProfile): Promise<void> {
@@ -269,6 +317,9 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     }
     else if (profile.syncType === SyncType.ImportAudio) {
       this.showImportAudioSettings(profile);
+    }
+    else if (profile.syncType === SyncType.ImportPlaylists) {
+      this.showImportPlaylistsSettings(profile);
     }
   }
 
@@ -290,7 +341,12 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       }
     ];
     this.spListBaseComponent.model.showModal = true;
-    this.subscribeToScanEvents();
+    this.subscribeToImportAudioEvents();
+  }
+
+  private showImportPlaylistsSettings(profile: ISyncProfile): void {
+    // id: processPlaylists
+    this.subscribeToImportPlaylistEvents();
   }
 
   private showExportSettings(profile: ISyncProfile): void {

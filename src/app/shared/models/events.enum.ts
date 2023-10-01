@@ -27,6 +27,7 @@ export enum AppEvent {
   ScanAudioEnd = 'SCAN_AUDIO_END',
   ScanPlaylistCreated = 'SCAN_PLAYLIST_CREATED',
   ScanTrackAdded = 'SCAN_TRACK_ADDED',
+  ScanPlaylistEnd = 'SCAN_PLAYLIST_END',
   // Export
   ExportStart = 'EXPORT_START',
   ExportAudioFileStart = 'EXPORT_AUDIO_FILE_START',
