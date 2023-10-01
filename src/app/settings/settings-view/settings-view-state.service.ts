@@ -9,12 +9,7 @@ import { AppActionIcons, AppEntityIcons, AppFeatureIcons } from 'src/app/app-ico
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
-import { LogService } from 'src/app/core/services/log/log.service';
-import { EventsService } from 'src/app/core/services/events/events.service';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { AppTestService } from 'src/app/app-test';
-import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
-import { IExportResult } from 'src/app/sync-profile/export/export.interface';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-storage.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -32,95 +27,14 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private entities: DatabaseEntitiesService,
     private db: DatabaseService,
     private dialog: DialogService,
-    private log: LogService,
     private tester: AppTestService,
-    private events: EventsService,
     private storage: LocalStorageService,
     private navigation: NavigationService)
   {
-    this.subscribeToExportEvents();
   }
 
   public getState(): ISettingCategory[] {
     return this.state;
-  }
-
-  private subscribeToExportEvents(): void {
-    this.events.onEvent(AppEvent.ExportStart).subscribe(() => {
-      const setting = this.findSetting('exportLibrary');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Preparing export...';
-    });
-    this.events.onEvent<IMetadataWriterOutput>(AppEvent.ExportAudioFileEnd).subscribe(exportAudioResult => {
-      const setting = this.findSetting('exportLibrary');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Exporting tracks to...';
-      setting.textRegular[1] = exportAudioResult.destinationPath;
-    });
-    this.events.onEvent<IExportResult>(AppEvent.ExportSmartlistsStart).subscribe(exportResult => {
-      const setting = this.findSetting('exportLibrary');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Exporting smartlists to...';
-      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
-      if (exportResult.playlistFolder) {
-        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
-      }
-    });
-    this.events.onEvent<IExportResult>(AppEvent.ExportAutolistsStart).subscribe(exportResult => {
-      const setting = this.findSetting('exportLibrary');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Exporting autolists...';
-      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
-      if (exportResult.playlistFolder) {
-        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
-      }
-    });
-    this.events.onEvent<IExportResult>(AppEvent.ExportPlaylistsStart).subscribe(exportResult => {
-      const setting = this.findSetting('exportLibrary');
-      if (!setting) {
-        return;
-      }
-      setting.disabled = true;
-      setting.running = true;
-      setting.textRegular[0] = 'Exporting playlists...';
-      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
-      if (exportResult.playlistFolder) {
-        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
-      }
-    });
-    this.events.onEvent<IExportResult>(AppEvent.ExportEnd).subscribe(exportResult => {
-      const setting = this.findSetting('exportLibrary');
-      if (!setting) {
-        return;
-      }
-      let resultMessage = '';
-      resultMessage += `Processed files: ${exportResult.totalFileCount}.`;
-      resultMessage += ` Exported files: ${exportResult.finalFileCount}.`;
-      resultMessage += ` Exported playlists: ${exportResult.playlistCount}.`;
-      resultMessage += ` Exported smartlists: ${exportResult.smartlistCount}.`;
-      resultMessage += ` Exported autolists: ${exportResult.autolistCount}.`;
-      setting.disabled = false;
-      setting.running = false;
-      setting.textRegular[0] = 'Exporting process done.';
-      setting.textRegular[1] = resultMessage;
-      this.log.info('Export elapsed time: ' + this.utility.formatTimeSpan(exportResult.period.span), exportResult.period.span);
-    });
   }
 
   /** Creates the list of settings. */
@@ -157,7 +71,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
                 this.options.init().then(() => {
                   setting.running = false;
                   setting.disabled = false;
-                  this.updateState();
                 });
               });
             }
@@ -170,7 +83,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           {
             name: 'Profiles',
             icon: AppEntityIcons.Sync,
-            textRegular: ['Configuration for all import/export tasks.'],
+            textRegular: ['Configuration and execution for all import/export tasks.'],
             action: () => {
               this.navigation.forward(appRoutes[AppRoute.SyncProfiles].route);
             }
@@ -188,29 +101,6 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             textRegular: [
               'This feature will take genre tags and split every value by using separators. Click here to specify separators. Leave it empty to disable the feature.'
             ]
-          }
-        ]
-      },
-      {
-        name: 'Export',
-        settings: [
-          {
-            id: 'exportLibrary',
-            name: 'Export Library',
-            icon: AppActionIcons.Export,
-            textRegular: [
-              'Click here to export your library.'
-            ],
-            action: setting => {
-              //const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
-              //this.exporter.run(SyncProfileId.DefaultExport);
-            }
-          },
-          {
-            id: '',
-            name: 'Export Configuration',
-            icon: AppActionIcons.Config,
-            textRegular: ['Click here to configure the export process.']
           }
         ]
       },
@@ -286,21 +176,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
 
   /** Update settings values. */
   public async updateState(): Promise<void> {
-    this.refreshStatistics();
-
-    let setting = this.findSetting('playlistDirectory');
-    const playlistSyncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultPlaylistImport);
-    setting.textRegular = [
-      'Click here to set the scan directory for playlists',
-      `Directories: <br><span class="sp-color-primary">${(playlistSyncProfile.directoryArray?.length ? playlistSyncProfile.directoryArray.join('<br>') : '[Not Selected]')}</span>`
-    ];
-
-    setting = this.findSetting('processPlaylists');
-    setting.textRegular = [
-      'Click here to start scanning playlists.',
-      'Playlists created: 0/0'
-    ];
-    setting.textWarning = '';
+    await this.refreshStatistics();
   }
 
   private async refreshStatistics(): Promise<void> {

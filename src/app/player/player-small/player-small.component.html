@@ -7,7 +7,7 @@
         <img [src]="song.image.src ? song.image.src : song.image.defaultSrc" class="sp-table-loading-image sp-full-height sp-full-width">
       </td>
       <!-- Info -->
-      <td class="sp-player-td-info sp-cursor-pointer sp-text-overflow-ellipsis" (click)="onSongInfoClick()">
+      <td class="sp-player-td-info sp-text-overflow-ellipsis" [ngClass]="{ 'sp-cursor-pointer': model.playerList.hasTrack() }" (click)="onSongInfoClick()">
         <span class="sp-text-medium">{{song.cleanName}}</span>
         <span *ngIf="song.playCount > 0" class="sp-text-tiny sp-play-count">&nbsp;{{song.playCount}}</span>
         <br>

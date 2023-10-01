@@ -16,7 +16,7 @@ import { ScanService } from '../scan/scan.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { ISetting, ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
 import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
-import { IExportConfig } from '../export/export.interface';
+import { IExportConfig, IExportResult } from '../export/export.interface';
 import { IChipItem } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { IScanItemInfo, ISyncSongInfo } from '../scan/scan.interface';
@@ -25,6 +25,9 @@ import { IProcessDuration } from 'src/app/core/models/core.interface';
 import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
+import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -83,6 +86,8 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     private scanner: ScanService,
     private events: EventsService,
     private log: LogService,
+    private utility: UtilityService,
+    private navbarService: NavBarStateService,
     private entities: DatabaseEntitiesService)
   {
     super();
@@ -233,6 +238,89 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     });
   }
 
+  private subscribeToExportEvents(): void {
+    this.subs.sink = this.events.onEvent(AppEvent.ExportStart).subscribe(() => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Preparing export...';
+    });
+
+    this.subs.sink = this.events.onEvent<IMetadataWriterOutput>(AppEvent.ExportAudioFileEnd).subscribe(exportAudioResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Exporting tracks to...';
+      setting.textRegular[1] = exportAudioResult.destinationPath;
+    });
+
+    this.subs.sink = this.events.onEvent<IExportResult>(AppEvent.ExportSmartlistsStart).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Exporting smartlists to...';
+      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
+      if (exportResult.playlistFolder) {
+        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
+      }
+    });
+
+    this.subs.sink = this.events.onEvent<IExportResult>(AppEvent.ExportAutolistsStart).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Exporting autolists...';
+      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
+      if (exportResult.playlistFolder) {
+        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
+      }
+    });
+
+    this.subs.sink = this.events.onEvent<IExportResult>(AppEvent.ExportPlaylistsStart).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      setting.disabled = true;
+      setting.running = true;
+      setting.textRegular[0] = 'Exporting playlists...';
+      setting.textRegular[1] = 'Path: ' + exportResult.rootPath;
+      if (exportResult.playlistFolder) {
+        setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
+      }
+    });
+
+    this.subs.sink = this.events.onEvent<IExportResult>(AppEvent.ExportEnd).subscribe(exportResult => {
+      const setting = this.findSetting('exportLibrary');
+      if (!setting) {
+        return;
+      }
+      let resultMessage = '';
+      resultMessage += `Processed files: ${exportResult.totalFileCount}.`;
+      resultMessage += ` Exported files: ${exportResult.finalFileCount}.`;
+      resultMessage += ` Exported playlists: ${exportResult.playlistCount}.`;
+      resultMessage += ` Exported smartlists: ${exportResult.smartlistCount}.`;
+      resultMessage += ` Exported autolists: ${exportResult.autolistCount}.`;
+      setting.disabled = false;
+      setting.running = false;
+      setting.textRegular[0] = 'Exporting process done.';
+      setting.textRegular[1] = resultMessage;
+      this.log.info('Export elapsed time: ' + this.utility.formatTimeSpan(exportResult.period.span), exportResult.period.span);
+    });
+  }
+
   public onItemContentClick(profile: ISyncProfile): void {
     if (profile.running) {
       this.showSettings(profile);
@@ -324,6 +412,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
   }
 
   private showImportAudioSettings(profile: ISyncProfile): void {
+    this.subscribeToImportAudioEvents();
     this.settingsModel = [
       {
         name: profile.name,
@@ -340,23 +429,40 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
         ]
       }
     ];
-    this.spListBaseComponent.model.showModal = true;
-    this.subscribeToImportAudioEvents();
+    this.showModal(profile);
   }
 
   private showImportPlaylistsSettings(profile: ISyncProfile): void {
     // id: processPlaylists
     this.subscribeToImportPlaylistEvents();
+    this.settingsModel = [];
+    this.showModal(profile);
   }
 
   private showExportSettings(profile: ISyncProfile): void {
+    this.subscribeToExportEvents();
     const parsedProfile = this.entities.parseSyncProfile(profile);
     const exportConfig = parsedProfile.configObj as IExportConfig;
     this.settingsModel = [
       {
-        name: profile.name,
+        name: 'General',
         settings: [
           {
+            name: 'Go Back',
+            icon: AppActionIcons.Back,
+            textRegular: ['Go back to the list of profiles.'],
+            action: () => {
+              const navbarModel = this.navbarService.getState();
+              navbarModel.title = 'Profiles';
+              navbarModel.leftIcon = {
+                icon: AppEntityIcons.Sync
+              };
+              navbarModel.rightIcons.find(i => i.id === 'searchIcon').hidden = false;
+              this.spListBaseComponent.model.showModal = false;
+            }
+          },
+          {
+            id: 'exportLibrary',
             name: 'Run',
             icon: AppActionIcons.Run,
             textRegular: ['Click here to start running the export process.'],
@@ -388,7 +494,12 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
               setting.textData = [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'];
               this.entities.saveSyncProfile(parsedProfile);
             }
-          },
+          }
+        ]
+      },
+      {
+        name: 'Playlist Settings',
+        settings: [
           {
             name: 'Export Static Playlists',
             icon: AppEntityIcons.Playlist,
@@ -501,7 +612,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
         ]
       }
     ];
-    this.spListBaseComponent.model.showModal = true;
+    this.showModal(profile);
   }
 
   private refreshScanAudioStatus(profile: ISyncProfile): void {
@@ -517,5 +628,15 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  private showModal(profile: ISyncProfile): void {
+    const navbarModel = this.navbarService.getState();
+    navbarModel.title = profile.name;
+    navbarModel.leftIcon = {
+      icon: profile.syncType === SyncType.ExportAll ? AppActionIcons.Export : AppActionIcons.Import
+    };
+    navbarModel.rightIcons.find(i => i.id === 'searchIcon').hidden = true;
+    this.spListBaseComponent.model.showModal = true;
   }
 }
