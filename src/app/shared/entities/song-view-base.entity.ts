@@ -1,7 +1,7 @@
 import { ViewColumn } from "typeorm";
 import { ISongExtendedModel, ISongModel } from "../models/song-model.interface";
 import { SongBaseEntity } from "./song-base.entity";
-import { DateTransformer } from "./date-transformer";
+import { dateTransformer } from "./date-transformer";
 
 export const songViewBaseSelect = `
 SELECT song.id, song.name, song.cleanName, song.hash,
@@ -97,11 +97,11 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   explicit: boolean;
   // Dates
-  @ViewColumn({ transformer: new DateTransformer() })
+  @ViewColumn({ transformer: dateTransformer })
   addDate: Date;
-  @ViewColumn({ transformer: new DateTransformer() })
+  @ViewColumn({ transformer: dateTransformer })
   changeDate: Date;
-  @ViewColumn({ transformer: new DateTransformer() })
+  @ViewColumn({ transformer: dateTransformer })
   playDate: Date;
   // Join info  
   @ViewColumn()
@@ -169,7 +169,7 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   tempo: number;
   @ViewColumn()
   addYear: number;
-  @ViewColumn({ transformer: new DateTransformer() })
+  @ViewColumn({ transformer: dateTransformer })
   replaceDate: Date;
   @ViewColumn()
   country: string;
