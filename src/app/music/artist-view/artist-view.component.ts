@@ -145,7 +145,7 @@ export class ArtistViewComponent implements OnInit {
       componentType: ChipSelectionComponent,
       title: 'Artist Type',
       displayMode: ChipDisplayMode.Block,
-      type: ChipSelectorType.SingleOk,
+      type: ChipSelectorType.Quick,
       items: values,
       onOk: model => {
         const selectedValues = model.items.filter(value => value.selected);
@@ -178,7 +178,7 @@ export class ArtistViewComponent implements OnInit {
       componentType: ChipSelectionComponent,
       title: 'Country',
       displayMode: ChipDisplayMode.Block,
-      type: ChipSelectorType.SingleOk,
+      type: ChipSelectorType.Quick,
       items: values,
       onOk: model => {
         const selectedValues = model.items.filter(value => value.selected);
@@ -211,7 +211,7 @@ export class ArtistViewComponent implements OnInit {
       componentType: ChipSelectionComponent,
       title: 'Gender',
       displayMode: ChipDisplayMode.Block,
-      type: ChipSelectorType.SingleOk,
+      type: ChipSelectorType.Quick,
       items: values,
       onOk: model => {
         const selectedValues = model.items.filter(value => value.selected);
