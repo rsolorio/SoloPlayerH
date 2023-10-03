@@ -20,7 +20,7 @@ export enum AppFeatureIcons {
   MultipleGenres = 'mdi-tag-multiple mdi',
   MultipleFilters = 'mdi-filter-multiple mdi',
   Statistics = 'mdi-chart-bar mdi',
-  TagMapping = 'mdi-tag-check mdi',
+  TagMapping = 'mdi-tag-arrow-right mdi',
   Mobile = 'mdi-cellphone mdi'
 }
 

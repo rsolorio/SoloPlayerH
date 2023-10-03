@@ -5,7 +5,7 @@ import { PlaylistEntity, SyncProfileEntity } from 'src/app/shared/entities';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { SyncProfileListBroadcastService } from './sync-profile-list-broadcast.service';
-import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppViewIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppFeatureIcons, AppViewIcons } from 'src/app/app-icons';
 import { IFileBrowserModel } from 'src/app/platform/file-browser/file-browser.interface';
 import { AppRoute } from 'src/app/app-routes';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
@@ -28,6 +28,8 @@ import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.in
 import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { settings } from 'cluster';
+import { MpegTagVersion } from 'src/app/shared/models/music.enum';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -254,10 +256,13 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      const pathParts = exportAudioResult.destinationPath.split('\\');
+      const fileName = pathParts[pathParts.length - 1];
       setting.disabled = true;
       setting.running = true;
-      setting.textRegular[0] = 'Exporting tracks to...';
-      setting.textRegular[1] = exportAudioResult.destinationPath;
+      setting.textRegular[0] = `Exporting track ${exportAudioResult.count} to...`;
+      setting.textRegular[1] = exportAudioResult.destinationPath.replace(fileName, '');
+      setting.textRegular[2] = fileName;
     });
 
     this.subs.sink = this.events.onEvent<IExportResult>(AppEvent.ExportSmartlistsStart).subscribe(exportResult => {
@@ -272,6 +277,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (exportResult.playlistFolder) {
         setting.textRegular[1] += '. Folder: ' + exportResult.playlistFolder;
       }
+      setting.textRegular[2] = '';
     });
 
     this.subs.sink = this.events.onEvent<IExportResult>(AppEvent.ExportAutolistsStart).subscribe(exportResult => {
@@ -494,6 +500,29 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
               setting.textData = [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'];
               this.entities.saveSyncProfile(parsedProfile);
             }
+          },
+          {
+            name: 'Mpeg Tag Version',
+            icon: AppFeatureIcons.TagMapping,
+            textRegular: ['The ID3 tag version to be used when writing the audio metadata. This setting only applies to mp3 files.'],
+            editorType: SettingsEditorType.List,
+            textData: [exportConfig.mpegTag],
+            beforePanelOpen: panelModel => {
+              const chipItem1: IChipItem = { sequence: 1, value: MpegTagVersion.Id3v23, caption: MpegTagVersion.Id3v23 };
+              if (chipItem1.value === exportConfig.mpegTag) {
+                chipItem1.selected = true;
+              }
+              const chipItem2: IChipItem = { sequence: 2, value: MpegTagVersion.Id3v24, caption: MpegTagVersion.Id3v24 };
+              if (chipItem2.value === exportConfig.mpegTag) {
+                chipItem2.selected = true;
+              }
+              panelModel['items'] = [chipItem1, chipItem2];
+            },
+            onChange: setting => {
+              exportConfig.mpegTag = setting.data;
+              setting.textData = [setting.data];
+              this.entities.saveSyncProfile(parsedProfile);
+            }
           }
         ]
       },
@@ -553,19 +582,11 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             data: exportConfig.playlistConfig.format,
             textData: [exportConfig.playlistConfig.format.toUpperCase()],
             beforePanelOpen: panelModel => {
-              const chipItemM3u: IChipItem = {
-                sequence: 1,
-                value: 'm3u',
-                caption: 'M3U'
-              };
+              const chipItemM3u: IChipItem = { sequence: 1, value: 'm3u', caption: 'M3U' };
               if (chipItemM3u.value === exportConfig.playlistConfig.format) {
                 chipItemM3u.selected = true;
               }
-              const chipItemPls: IChipItem = {
-                sequence: 2,
-                value: 'pls',
-                caption: 'PLS'
-              };
+              const chipItemPls: IChipItem = { sequence: 2, value: 'pls', caption: 'PLS' };
               if (chipItemPls.value === exportConfig.playlistConfig.format) {
                 chipItemPls.selected = true;
               }

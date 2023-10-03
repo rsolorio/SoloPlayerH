@@ -127,6 +127,7 @@ export class ExportService {
         bytes += song.fileSize;
         seconds += song.seconds;
         exportResult.finalFileCount++;
+        writeResult.count = exportResult.finalFileCount;
         this.events.broadcast(AppEvent.ExportAudioFileEnd, writeResult);
       }
     }

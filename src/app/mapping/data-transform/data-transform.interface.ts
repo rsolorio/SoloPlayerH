@@ -11,6 +11,7 @@ export interface IMetadataWriterOutput {
   sourcePath: string;
   destinationPath: string;
   metadata: KeyValues;
+  count?: number;
   skipped?: boolean;
   error?: any;
 }

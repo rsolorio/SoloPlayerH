@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IFileBrowserModel } from './file-browser.interface';
+import { IFileBrowserItem, IFileBrowserModel } from './file-browser.interface';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
 import { FileService } from '../file/file.service';
@@ -19,6 +19,16 @@ export class FileBrowserService {
   }
 
   public async browse(model: IFileBrowserModel, directoryPath?: string): Promise<void> {
+    const validSelectedItems: IFileBrowserItem[] = [];
+    if (model.selectedItems?.length) {
+      model.selectedItems.forEach(item => {
+        if (this.fileService.exists(item.id)) {
+          validSelectedItems.push(item);
+        }
+      });
+    }
+    // Exclude items that don't exist
+    model.selectedItems = validSelectedItems;
     this.state = model;
     let name = '';
     if (directoryPath) {
