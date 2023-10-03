@@ -109,9 +109,12 @@ export class RatingComponent extends BaseComponent<IRatingModel, number> {
   public onClick(e: Event) {
     // Render the invisible selector
     this.model.showSelector = true;
-    // Wait a little bit to render and now activate the animation
+    // Wait a little bit to render and now activate the animation,
+    // otherwise the selector will be displayed when the animation is finished
     setTimeout(() => {
       this.scaleUpAnimationEnabled = true;
+      // since the line above is happening on a timeout we need to tell ng to detect changes
+      this.cd.detectChanges();
     }, 50);
     // This will prevent other elements to receive the click as well
     e.preventDefault();
