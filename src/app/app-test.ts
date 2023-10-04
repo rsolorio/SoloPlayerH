@@ -65,12 +65,14 @@ export class AppTestService {
       // Use music-metadata
       const audioInfo = await this.metadataService.getMetadata(buffer, this.utility.getMimeType(fileInfo.extension.replace('.', '')), true);      
       this.log.warn('music-metadata.', audioInfo);
-      console.log(audioInfo.metadata.common.title);
-      console.log(audioInfo.metadata.common.title.length);
       // Use mp3tag
       const mp3Tag = new MP3Tag(buffer, true);
       mp3Tag.read();
       this.log.warn('mp3tag.js', mp3Tag.tags);
+      // Display lyrics content
+      const txtFile = selectedFiles[0].replace('.mp3', '.txt');
+      const lyrics = await this.fileService.getText(txtFile);
+      console.log(lyrics);
     }
   }
 

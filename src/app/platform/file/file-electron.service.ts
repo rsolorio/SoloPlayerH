@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { promises, existsSync } from 'fs';
 import { join, resolve, extname, parse, relative } from 'path';
 import { exec } from 'child_process';
+const languageEncoding = require("detect-file-encoding-and-language");
 import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
 import { FileService } from './file.service';
@@ -31,14 +32,32 @@ export class FileElectronService extends FileService {
     return promises.appendFile(filePath, content, { encoding: 'utf8' });
   }
 
-  async createDirectory(directoryPath: string): Promise<void> {
-    await promises.mkdir(directoryPath, { recursive: true });
+  createDirectory(directoryPath: string): Promise<void> {
+    return promises.mkdir(directoryPath, { recursive: true });
   }
 
-  getText(filePath: string): Promise<string> {
-    return promises.readFile(filePath, { encoding: 'utf8' }).then(data => {
-      return this.removeBom(data.toString());
-    });
+  async getText(filePath: string): Promise<string> {
+    const buffer = await promises.readFile(filePath);
+    const fileInfo = await languageEncoding(new Blob([buffer]));
+    let result: string;
+    switch (fileInfo.encoding) {
+      case 'latin1':
+      case 'ISO-8859-1':
+      case 'CP1250':
+      case 'CP1251':
+      case 'CP1252':
+      case 'CP1253':
+      case 'CP1254':
+      case 'CP1255':
+      case 'CP1256':
+      case 'CP1257':
+        result = buffer.toString('latin1');
+        break;
+      default:
+        result = buffer.toString('utf8');
+        break;
+    }
+    return this.removeBom(result);
   }
 
   getFiles(directoryPaths: string[]): Observable<IFileInfo> {

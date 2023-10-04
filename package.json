@@ -34,6 +34,7 @@
     "@electron/remote": "^2.0.8",
     "@mdi/font": "^7.2.96",
     "bootstrap": "^4.6.2",
+    "detect-file-encoding-and-language": "^2.4.0",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "mp3tag.js": "^3.7.0",
