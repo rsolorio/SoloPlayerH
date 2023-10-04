@@ -183,7 +183,7 @@ export class ScanAudioService {
     }
     syncInfo.songUpdatedRecords = this.existingSongs.filter(song => song.hasChanges);
     if (syncInfo.songUpdatedRecords.length) {
-      const songUpdateColumns = ['lyrics', 'seconds', 'bitrate', 'frequency', 'vbr', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
+      const songUpdateColumns = ['lyrics', 'seconds', 'duration', 'bitrate', 'frequency', 'vbr', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
       await this.db.bulkUpdate(SongEntity, syncInfo.songUpdatedRecords, songUpdateColumns);
       // songsToBeUpdated.forEach(s => s.hasChanges = false);
     }
