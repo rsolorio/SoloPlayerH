@@ -73,6 +73,14 @@ export class DatabaseOptionsService {
     }
   }
 
+  public async saveNumber(id: string, value: number): Promise<void> {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
+    if (moduleOption) {
+      moduleOption.values = JSON.stringify(value);
+      await moduleOption.save();
+    }
+  }
+
   public async refreshOptionValues(id: string): Promise<void> {
     const dbModuleOption = await this.lookup.lookupModuleOption(id);
     if (dbModuleOption) {

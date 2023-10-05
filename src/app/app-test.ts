@@ -43,16 +43,8 @@ export class AppTestService {
     //await this.readArtist();
     //await this.readPlaylists();
     //await this.readPlaylistSong();
-    //await this.testExporter();
     //await this.updatePlayCount();
     //await this.insertFilters();
-  }
-
-  private testExporter(): void {
-    // const exportProfileId = this.options.getText(ModuleOptionId.DefaultExportProfile);
-    // this.exporter.run(exportProfileId).then(() => {
-    //   console.log('done');
-    // });
   }
 
   private async logFileMetadata(): Promise<void> {

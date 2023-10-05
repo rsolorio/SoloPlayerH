@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { IStateService } from 'src/app/core/models/core.interface';
-import { ModuleOptionId, SyncProfileId } from 'src/app/shared/services/database/database.seed';
+import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppActionIcons, AppEntityIcons, AppFeatureIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppFeatureIcons } from 'src/app/app-icons';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
@@ -119,6 +119,19 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             data: this.options.getBoolean(ModuleOptionId.AllowMultipleQuickFilters),
             onChange: setting => {
               this.options.saveBoolean(ModuleOptionId.AllowMultipleQuickFilters, setting.data);
+            }
+          },
+          {
+            name: 'List View Limit',
+            icon: AppAttributeIcons.Maximum,
+            editorType: SettingsEditorType.Number,
+            textRegular: ['The maximum number of results to be displayed in the views.'],
+            data: this.options.getNumber(ModuleOptionId.ListViewLimit),
+            textData: [this.options.getNumber(ModuleOptionId.ListViewLimit).toString()],
+            onChange: setting => {
+              setting.data = setting.data;
+              setting.textData = [setting.data.toString()];
+              this.options.saveNumber(ModuleOptionId.ListViewLimit, setting.data);
             }
           }
         ]
