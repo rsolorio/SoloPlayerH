@@ -69,7 +69,7 @@ export class MenuService {
     // The actual height of the item is 42.72px
     // which is calculated based on the text size (default prime ng size) and with a padding of 0.714em
     // Inspect the actual size and set it here
-    const menuItemHeight = 41;
+    const menuItemHeight = 37;
     const separatorHeight = 2;
     menu.viewportHeight = (items * menuItemHeight) + (separators * separatorHeight);
   }

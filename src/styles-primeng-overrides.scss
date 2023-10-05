@@ -64,8 +64,11 @@ p-dynamicdialog .p-component-overlay {
 
 .p-menuitem .p-menuitem-link {
     font-family: $sp-font-family-regular !important;
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    // If top/bottom padding change the menuService.setSlideMenuHeight needs to be updated
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
     font-size: 14px !important;
 }
 
