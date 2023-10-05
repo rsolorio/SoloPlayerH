@@ -471,28 +471,11 @@ export class ScanAudioService {
 
   private processAlbum(artist: ArtistEntity, metadata: KeyValues): AlbumEntity {
     const newAlbum = new AlbumEntity();
-    newAlbum.name = this.first(metadata[MetaField.Album]);
-    if (!newAlbum.name) {
-      newAlbum.name = AlbumName.Unknown;
-    }
-
-    const year = this.first(metadata[MetaField.Year]);
+    this.setFirst(newAlbum, 'name', metadata, MetaField.Album, AlbumName.Unknown);
     // Is this actually the album year? Album year and song year might be different.
-    newAlbum.releaseYear = year > 0 ? year : 0;
-
-    let albumStylized = this.first(metadata[MetaField.AlbumStylized]);
-    if (!albumStylized) {
-      albumStylized = newAlbum.name;
-    }
-    newAlbum.albumStylized = albumStylized;
-
-    const albumSort = this.first(metadata[MetaField.AlbumSort]);
-    if (albumSort) {
-      newAlbum.albumSort = albumSort;
-    }
-    else {
-      newAlbum.albumSort = newAlbum.name;
-    }
+    this.setFirst(newAlbum, 'releaseYear', metadata, MetaField.Year, 0);
+    this.setFirst(newAlbum, 'albumStylized', metadata, MetaField.AlbumStylized, newAlbum.name);
+    this.setFirst(newAlbum, 'albumSort', metadata, MetaField.AlbumSort, newAlbum.name);
 
     const existingAlbum = this.lookupService.findAlbum(newAlbum.name, newAlbum.releaseYear, artist.id, this.existingAlbums);
     if (existingAlbum) {
@@ -535,16 +518,8 @@ export class ScanAudioService {
     song.fileExtension = this.first(metadata[MetaField.FileExtension]);
     song.hash = this.lookupService.hashSong(song.filePath);
 
-    const ufId = this.first(metadata[MetaField.UfId]);
-    if (ufId) {
-      song.externalId = ufId;
-    }
-
-    song.name = this.first(metadata[MetaField.Title]);
-    if (!song.name) {
-      song.name = this.first(metadata[MetaField.FileName]);
-    }
-
+    this.setFirst(song, 'externalId', metadata, MetaField.UfId);
+    this.setFirst(song, 'name', metadata, MetaField.Title, this.first(metadata[MetaField.FileName]));
 
     // Clean file name from brackets
     // TODO: use a module option to perform this action
@@ -575,40 +550,19 @@ export class ScanAudioService {
     }
 
     song.primaryAlbumId = album.id;
-    const trackNumber = this.first(metadata[MetaField.TrackNumber]);
-    song.trackNumber = trackNumber ? trackNumber : 0;
-    const mediaNumber = this.first(metadata[MetaField.MediaNumber]);
-    song.mediaNumber = mediaNumber ? mediaNumber : 1;
+
+    this.setFirst(song, 'trackNumber', metadata, MetaField.TrackNumber, 0);
+    this.setFirst(song, 'mediaNumber', metadata, MetaField.MediaNumber, 1);
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 
-    const composer = this.first(metadata[MetaField.Composer]);
-    if (composer) {
-      song.composer = composer;
-    }
-    const composerSort = this.first(metadata[MetaField.ComposerSort]);
-    if (composerSort) {
-      song.composerSort = composerSort;
-    }
-    const originalArtist = this.first(metadata[MetaField.OriginalArtist]);
-    if (originalArtist) {
-      song.originalArtist = originalArtist;
-    }
-    const originalAlbum = this.first(metadata[MetaField.OriginalAlbum]);
-    if (originalAlbum) {
-      song.originalAlbum = originalAlbum;
-    }
-    const originalReleaseYear = this.first(metadata[MetaField.OriginalReleaseYear]);
-    song.originalReleaseYear = originalReleaseYear ? originalReleaseYear : 0;
-
-    const comment = this.first(metadata[MetaField.Comment]);
-    if (comment) {
-      song.comment = comment;
-    }
-    const grouping = this.first(metadata[MetaField.Grouping]);
-    if (grouping) {
-      song.grouping = grouping;
-    }
+    this.setFirst(song, 'composer', metadata, MetaField.Composer);
+    this.setFirst(song, 'composerSort', metadata, MetaField.ComposerSort);
+    this.setFirst(song, 'originalArtist', metadata, MetaField.OriginalArtist);
+    this.setFirst(song, 'originalAlbum', metadata, MetaField.OriginalAlbum);
+    this.setFirst(song, 'originalReleaseYear', metadata, MetaField.OriginalReleaseYear, 0);
+    this.setFirst(song, 'comment', metadata, MetaField.Comment);
+    this.setFirst(song, 'grouping', metadata, MetaField.Grouping);
 
     // Add Date
     let addDate = this.first(metadata[MetaField.AddDate]) as Date;
@@ -633,25 +587,12 @@ export class ScanAudioService {
     song.changeDate = new Date();
     // TODO: Set dates in file
 
-    // TODO: add language to value list entry if it doesn't exist
-    song.language = this.first(metadata[MetaField.Language]);
-    if (!song.language) {
-      song.language = ValueLists.Language.entries.Unknown.name;
-    }
+    // TODO: add language/mood to value list entry if it doesn't exist
+    this.setFirst(song, 'language', metadata, MetaField.Language, ValueLists.Language.entries.Unknown.name);
+    this.setFirst(song, 'mood', metadata, MetaField.Mood, ValueLists.Mood.entries.Unknown.name);
 
-    // TODO: add mood to value list entry if it doesn't exist
-    song.mood = this.first(metadata[MetaField.Mood]);
-    if (!song.mood) {
-      song.mood = ValueLists.Mood.entries.Unknown.name;
-    }
-
-    // Rating
-    const rating = this.first(metadata[MetaField.Rating]);
-    song.rating = rating ? rating : 0;
-
-    // Play Count
-    const playCount = this.first(metadata[MetaField.PlayCount]);
-    song.playCount = playCount ? playCount : 0;
+    this.setFirst(song, 'rating', metadata, MetaField.Rating, 0);
+    this.setFirst(song, 'playCount', metadata, MetaField.PlayCount, 0);
 
     let lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
     if (!lyrics) {
@@ -661,52 +602,24 @@ export class ScanAudioService {
       song.lyrics = lyrics;
     }
 
-    const titleSort = this.first(metadata[MetaField.TitleSort]);
-    if (titleSort) {
-      song.titleSort = titleSort;
-    }
-    else {
-      song.titleSort = song.name;
-    }
-
-    song.live = false;
-    const live = this.first(metadata[MetaField.Live]);
-    if (live) {
-      song.live = true;
-    }
-
-    song.favorite = false;
-    const favorite = this.first(metadata[MetaField.Favorite]);
-    if (favorite) {
-      song.favorite = true;
-    }
-
-    song.explicit = false;
-    const explicit = this.first(metadata[MetaField.Explicit]);
-    if (explicit) {
-      song.explicit = true;
-    }
+    this.setFirst(song, 'titleSort', metadata, MetaField.TitleSort, song.name);
+    this.setFirst(song, 'live', metadata, MetaField.Live, false);
+    this.setFirst(song, 'favorite', metadata, MetaField.Favorite, false);
+    this.setFirst(song, 'explicit', metadata, MetaField.Explicit, false);
 
     // Let's start with zero but this cannot be the final value, it should be at least 1
     // If this value is not found here, the processArtistRelations will figure it out
-    const performerCount = this.first(metadata[MetaField.PerformerCount]);
-    song.performerCount = performerCount ? performerCount : 0;
-
-    let seconds = this.first(metadata[MetaField.Seconds]);
-    song.seconds = seconds ? this.utility.round(seconds, 4) : 0;
+    this.setFirst(song, 'performerCount', metadata, MetaField.PerformerCount, 0);
 
     let bitrate = this.first(metadata[MetaField.Bitrate]);
     song.bitrate = bitrate ? this.utility.round(bitrate, 4) : 0;
 
-    let frequency = this.first(metadata[MetaField.Frequency]);
-    song.frequency = frequency ? frequency : 0;
+    this.setFirst(song, 'frequency', metadata, MetaField.Frequency, 0);
+    this.setFirst(song, 'tempo', metadata, MetaField.Tempo, 0);
+    this.setFirst(song, 'replayGain', metadata, MetaField.ReplayGain, 0);
 
-    let tempo = this.first(metadata[MetaField.Tempo]);
-    song.tempo = tempo ? tempo : 0;
-
-    let replayGain = this.first(metadata[MetaField.ReplayGain]);
-    song.replayGain = replayGain ? replayGain : 0;
-
+    let seconds = this.first(metadata[MetaField.Seconds]);
+    song.seconds = seconds ? this.utility.round(seconds, 4) : 0;
     song.duration = this.utility.secondsToMinutes(song.seconds);
     song.vbr = this.first(metadata[MetaField.Vbr]);
     song.fileSize = this.first(metadata[MetaField.FileSize]);
@@ -1225,5 +1138,15 @@ export class ScanAudioService {
     command += ' setAddDate ' + this.utility.toTicks(addDate, true);
     const result = await this.fileService.runCommand(`"${utilityFilePath}" ${command}`);
     this.log.info(result);
+  }
+
+  private setFirst(obj: any, propertyName: string, metadata: KeyValues, field: MetaField, defaultValue?: any): void {
+    const value = this.first(metadata[field]);
+    if (value) {
+      obj[propertyName] = value;
+    }
+    else if (defaultValue !== undefined) {
+      obj[propertyName] = defaultValue;
+    }
   }
 }
