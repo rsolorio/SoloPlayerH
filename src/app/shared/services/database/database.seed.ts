@@ -50,6 +50,10 @@ export enum SyncProfileId {
   DefaultExport = '5021cccd-eafc-46ae-b521-f075dda9e105'
 }
 
+export enum FilterId {
+  RecentlyAdded = '3dff6bcf-077f-a109-6730-6315b24eb06e'
+}
+
 export enum ArtistName {
   Unknown = 'Unknown'
 }

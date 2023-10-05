@@ -46,8 +46,8 @@ Each list view offers multiple sorting options.
 - Mood
 - Tempo
 
-### Tag Mapping
-You can configure how the tag information is retrieved and where it will be stored.
+### Export Tag Mapping
+You can configure the export mechanism to map custom data to audio tags.
 
 ### Album Art Color Palette
 The application gets a list of dominant colors for each album art, and you can customize the colors of the player view for each individual album art.
@@ -89,8 +89,6 @@ The application gets a list of dominant colors for each album art, and you can c
 - Smartlists
   - Songs
 - Settings
-
-## Icons
 
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.
@@ -354,6 +352,8 @@ This is a list of key dependencies in the project.
   - SQLite client.
 - [typeorm](https://typeorm.io/)
   - ORM for SQLite.
+- [detect-file-encoding-and-language](https://www.npmjs.com/package/detect-file-encoding-and-language)
+  - Library that determines the proper file encoding; used when reading lyrics from text files.
 
 ## Fonts
 This is a list of free fonts used in this project.

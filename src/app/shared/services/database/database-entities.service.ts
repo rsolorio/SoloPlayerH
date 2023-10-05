@@ -406,6 +406,11 @@ export class DatabaseEntitiesService {
     await filter.save();
   }
 
+  public async getCriteriaFromFilterId(filterId: string): Promise<Criteria> {
+    const filter = await FilterEntity.findOneBy({ id: filterId });
+    return this.getCriteriaFromFilter(filter);
+  }
+
   public async getCriteriaFromFilter(filter: IFilterModel): Promise<Criteria> {
     const filterCriteria = await FilterCriteriaEntity.findOneBy({ id: filter.filterCriteriaId });
     const filterCriteriaItems = await FilterCriteriaItemEntity.findBy({ filterCriteriaId: filter.filterCriteriaId });

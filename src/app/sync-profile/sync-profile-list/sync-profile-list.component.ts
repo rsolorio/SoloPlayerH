@@ -28,8 +28,9 @@ import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.in
 import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
-import { settings } from 'cluster';
 import { MpegTagVersion } from 'src/app/shared/models/music.enum';
+import { FilterId } from 'src/app/shared/services/database/database.seed';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -88,6 +89,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     private scanner: ScanService,
     private events: EventsService,
     private log: LogService,
+    private navigation: NavigationService,
     private utility: UtilityService,
     private navbarService: NavBarStateService,
     private entities: DatabaseEntitiesService)
@@ -421,7 +423,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     this.subscribeToImportAudioEvents();
     this.settingsModel = [
       {
-        name: profile.name,
+        name: 'Actions',
         settings: [
           {
             id: 'syncAudioFiles',
@@ -430,6 +432,18 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             textRegular: ['Click here to start the import audio process.'],
             action: () => {
               this.importAudio(profile);
+            }
+          },
+          {
+            name: 'Recently Added',
+            icon: AppAttributeIcons.Recent,
+            textRegular: ['Display recently added tracks.'],
+            action: () => {
+              this.entities.updateFilterAccessDate(FilterId.RecentlyAdded).then(() => {
+                this.entities.getCriteriaFromFilterId(FilterId.RecentlyAdded).then(criteria => {
+                  this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+                });
+              });
             }
           }
         ]

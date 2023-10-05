@@ -18,10 +18,10 @@
             <i *ngIf="setting.running" class="mdi-loading mdi-spin mdi">&nbsp;</i>
             <span>{{setting.name}}</span>
           </p>
-          <!-- Html -->
-          <p *ngIf="setting.textHtml" [innerHtml]="setting.textHtml"></p>
           <!-- Regular -->
           <p *ngFor="let text of setting.textRegular" class="sp-text-medium" [innerText]="text"></p>
+          <!-- Html -->
+          <p *ngIf="setting.textHtml" [innerHtml]="setting.textHtml"></p>
           <!-- Warning -->
           <p *ngIf="setting.textWarning" class="sp-text-medium sp-color-warning" [innerText]="setting.textWarning"></p>
           <!-- Error -->

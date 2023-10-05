@@ -1126,6 +1126,7 @@
     ],
     "filter": [
       {
+        "id": "3dff6bcf-077f-a109-6730-6315b24eb06e",
         "name": "Recently Added",
         "description": "Last 300 tracks added",
         "filterCriteriaId": "923ed06a-442c-4ebd-8441-6f698d1e916a",
