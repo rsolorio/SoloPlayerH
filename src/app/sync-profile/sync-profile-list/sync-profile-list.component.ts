@@ -614,7 +614,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Minimum Playlist Tracks',
-            icon: AppAttributeIcons.Minimum,
+            icon: AppAttributeIcons.Bottom,
             textRegular: ['The minimum number of tracks a playlist should have to be exported.'],
             editorType: SettingsEditorType.Number,
             data: exportConfig.playlistConfig.minCount,
@@ -630,7 +630,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
           },
           {
             name: 'Maximum Playlist Tracks',
-            icon: AppAttributeIcons.Maximum,
+            icon: AppAttributeIcons.Top,
             textRegular: ['The maximum number of tracks a playlist will have when exported.'],
             editorType: SettingsEditorType.Number,
             data: exportConfig.playlistConfig.maxCount,

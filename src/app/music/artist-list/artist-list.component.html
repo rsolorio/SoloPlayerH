@@ -28,8 +28,9 @@
         </span>
       </td>
       <!-- Favorite Icon -->
-      <td *ngIf="isAlbumArtist" style="width: 40px;text-align: center;" class="sp-clickable" (click)="onFavoriteClick($event, item)">
-        <i [ngClass]="item.favorite ? AppAttributeIcons.FavoriteOn : AppAttributeIcons.FavoriteOff" class="sp-text-xlarge"></i>
+      <td style="width: 40px;" class="sp-clickable sp-text-center" (click)="onFavoriteClick($event, item)">
+        <i *ngIf="item.favorite" [ngClass]="AppAttributeIcons.FavoriteOn" class="sp-text-xlarge sp-color-primary"></i>
+        <i *ngIf="!item.favorite" [ngClass]="AppAttributeIcons.FavoriteOff" class="sp-text-xlarge"></i>
       </td>
     </tr></table>
   </ng-template>

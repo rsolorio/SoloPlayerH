@@ -17,10 +17,10 @@ class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-he
       <!-- Drag/Play icon -->
       <td class="sp-td-drag">
         <ng-container *ngIf="model.editEnabled">
-          <span><i class="mdi-drag mdi sp-text-big sp-cursor-drag"></i></span>
+          <span><i [ngClass]="AppActionIcons.Drag" class="sp-text-big sp-cursor-drag"></i></span>
         </ng-container>
         <ng-container *ngIf="!model.editEnabled">
-          <span *ngIf="playlistSong.playerStatus === PlayerSongStatus.Playing" class="sp-text-medium"><i class="mdi-play mdi sp-text-big sp-color-playing"></i></span>
+          <span *ngIf="playlistSong.playerStatus === PlayerSongStatus.Playing" class="sp-text-medium"><i [ngClass]="AppPlayerIcons.Play" class="sp-text-big sp-color-playing"></i></span>
           <span *ngIf="playlistSong.playerStatus !== PlayerSongStatus.Playing" class="sp-text-medium">{{playlistSong.sequence}}</span>
         </ng-container>
       </td>
@@ -29,15 +29,15 @@ class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-he
         <span
         class="sp-text-medium sp-no-select"
         [ngClass]="{ 'sp-color-playing': playlistSong.playerStatus === PlayerSongStatus.Playing }"
-        >{{playlistSong.name}}</span>
+        >{{playlistSong.cleanName}}</span>
         <br>
         <span class="sp-color-on-bg-low sp-text-small sp-no-select" [ngClass]="{ 'sp-color-primary-low': playlistSong.playerStatus === PlayerSongStatus.Playing }">
-          <i class="mdi-account mdi">&nbsp;</i>
+          <i [ngClass]="AppAttributeIcons.ArtistName">&nbsp;</i>
           <span>{{playlistSong.primaryArtistStylized}}&nbsp;&nbsp;&nbsp;</span>
-          <i class="mdi-album mdi">&nbsp;</i>
+          <i [ngClass]="AppAttributeIcons.AlbumName">&nbsp;</i>
           <span>{{playlistSong.primaryAlbumName}}&nbsp;&nbsp;&nbsp;</span>
           <ng-container *ngIf="playlistSong.releaseYear > 0">
-            <i class="mdi-calendar mdi">&nbsp;</i>
+            <i [ngClass]="AppAttributeIcons.Year">&nbsp;</i>
             <span>{{playlistSong.releaseYear}}&nbsp;&nbsp;&nbsp;</span>
           </ng-container>
         </span>

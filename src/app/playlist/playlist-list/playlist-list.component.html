@@ -11,17 +11,17 @@
           <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-            <i class="mdi-timer mdi">&nbsp;</i><span>{{item.seconds | duration}}&nbsp;&nbsp;&nbsp;</span>
-            <i class="mdi-music-circle mdi">&nbsp;</i><span>{{item.songCount}}</span>
+            <i [ngClass]="AppAttributeIcons.Duration">&nbsp;</i><span>{{item.seconds | duration}}&nbsp;&nbsp;&nbsp;</span>
+            <i [ngClass]="AppAttributeIcons.SongCount">&nbsp;</i><span>{{item.songCount}}</span>
             <ng-container *ngIf="item.description">
               <span>&nbsp;&nbsp;&nbsp;</span>
-              <i class="mdi-note-text mdi">&nbsp;</i><span>{{item.description}}</span>
+              <i [ngClass]="AppAttributeIcons.Description">&nbsp;</i><span>{{item.description}}</span>
             </ng-container>
           </span>
         </td>
-        <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onFavoriteClick($event, item)">
-          <i *ngIf="item.favorite" class="mdi-heart mdi sp-text-xlarge"></i>
-          <i *ngIf="!item.favorite" class="mdi-heart-outline mdi sp-text-xlarge"></i>
+        <td style="width: 40px;" class="sp-clickable sp-text-center" (click)="onFavoriteClick($event, item)">
+          <i *ngIf="item.favorite" [ngClass]="AppAttributeIcons.FavoriteOn" class="sp-text-xlarge sp-color-primary"></i>
+          <i *ngIf="!item.favorite" [ngClass]="AppAttributeIcons.FavoriteOff" class="sp-text-xlarge"></i>
         </td>
       </tr>
     </table>

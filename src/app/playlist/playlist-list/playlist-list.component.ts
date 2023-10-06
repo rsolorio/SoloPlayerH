@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { FileService } from 'src/app/platform/file/file.service';
@@ -16,7 +15,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppRoute } from 'src/app/app-routes';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
-import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 
@@ -27,6 +26,7 @@ import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlaylistListComponent extends CoreComponent implements OnInit {
+  public AppAttributeIcons = AppAttributeIcons;
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   // START - LIST MODEL
   public listModel: IListBaseModel = {
@@ -34,7 +34,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     itemMenuList: [
       {
         caption: 'Play',
-        icon: 'mdi-play mdi',
+        icon: AppPlayerIcons.Play,
         action: (menuItem, param) => {
           const playlist = param as IPlaylistModel;
           if (playlist) {
@@ -44,7 +44,7 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
       },
       {
         caption: 'Edit...',
-        icon: 'mdi-playlist-edit mdi',
+        icon: AppActionIcons.PlaylistEdit,
         action: (menuItem, param) => {
           const playlist = param as IPlaylistModel;
           if (playlist) {
@@ -85,7 +85,6 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     private fileService: FileService,
     private metadataService: AudioMetadataService,
     private entityService: DatabaseEntitiesService,
-    private utilities: UtilityService,
     private navigation: NavigationService,
     private entities: DatabaseEntitiesService,
     private sidebarHostService: SideBarHostStateService,

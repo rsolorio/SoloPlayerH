@@ -20,7 +20,7 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 
@@ -42,19 +42,19 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     itemMenuList: [
       {
         caption: 'Play',
-        icon: 'mdi-play mdi',
+        icon: AppPlayerIcons.Play,
         action: () => {}
       },
       {
         caption: 'Toggle Selection',
-        icon: 'mdi-select mdi',
+        icon: AppActionIcons.Select,
         action: (menuItem, param) => {
           this.spListBaseComponent.toggleSelection(param);
         }
       },
       {
         caption: 'Search...',
-        icon: 'mdi-web mdi',
+        icon: AppActionIcons.WebSearch,
         action: (menuItem, param) => {
           const artistModel = param as IArtistModel;
           this.utility.googleSearch(artistModel.name);
@@ -62,7 +62,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       },
       {
         caption: 'Properties...',
-        icon: 'mdi-square-edit-outline mdi',
+        icon: AppActionIcons.Edit,
         action: (menuItem, param) => {
           const artist = param as IArtistModel;
           if (artist) {

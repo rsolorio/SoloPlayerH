@@ -18,7 +18,7 @@ import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed'
 import { ImageSrcType } from 'src/app/core/models/core.enum';
 import { ImageService } from 'src/app/platform/image/image.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
@@ -30,6 +30,8 @@ import { ValueLists } from 'src/app/shared/services/database/database.lists';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClassificationListComponent extends CoreComponent implements OnInit {
+  public AppAttributeIcons = AppAttributeIcons;
+  public AppEntityIcons = AppEntityIcons;
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   private albumArtistRoute = appRoutes[AppRoute.AlbumArtists];
   private albumRoute = appRoutes[AppRoute.Albums];
@@ -41,12 +43,12 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     itemMenuList: [
       {
         caption: 'Play',
-        icon: 'mdi-play mdi',
+        icon: AppPlayerIcons.Play,
         action: () => {}
       },
       {
         caption: 'Toggle Selection',
-        icon: 'mdi-select mdi',
+        icon: AppActionIcons.Select,
         action: (menuItem, param) => {
           this.spListBaseComponent.toggleSelection(param);
         }

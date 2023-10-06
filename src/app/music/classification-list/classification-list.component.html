@@ -12,12 +12,12 @@
           <span class="sp-text-medium sp-no-select">{{item.name}}</span>
           <br>
           <span class="sp-color-on-bg-low sp-text-small sp-no-select">
-            <i class="mdi-shape mdi">&nbsp;</i><span>{{item.classificationType}}&nbsp;&nbsp;&nbsp;</span>
-            <i class="mdi-music-circle mdi">&nbsp;</i><span>{{item.songCount}}</span>
+            <i [ngClass]="AppAttributeIcons.ClassificationType">&nbsp;</i><span>{{item.classificationType}}&nbsp;&nbsp;&nbsp;</span>
+            <i [ngClass]="AppAttributeIcons.SongCount">&nbsp;</i><span>{{item.songCount}}</span>
           </span>
         </td>
         <td style="width: 40px;text-align: center;" class="sp-clickable" (click)="onShowSongsClick(item)">
-          <i class="mdi-music-box-multiple-outline mdi sp-text-xlarge"></i>
+          <i [ngClass]="AppEntityIcons.Song" class="sp-text-xlarge"></i>
         </td>
       </tr>
     </table>

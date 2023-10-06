@@ -82,18 +82,20 @@ export enum AppAttributeIcons {
   Unselected = 'mdi-checkbox-blank-outline mdi',
   Recent = 'mdi-history mdi',
   Checked = 'mdi-check-circle mdi',
-  Minimum = 'mdi-arrow-collapse-down mdi',
-  Maximum = 'mdi-arrow-collapse-up mdi'
+  Bottom = 'mdi-arrow-collapse-down mdi',
+  Top = 'mdi-arrow-collapse-up mdi'
 }
 
 export enum AppActionIcons {
   Add = 'mdi-plus mdi',
-  Edit = 'mdi-pencil-outline mdi',
+  Edit = 'mdi-pencil mdi',
+  Delete = 'mdi-delete mdi',
   Ok = 'mdi-check mdi',
   CloseClear = 'mdi-close mdi',
   Search = 'mdi-magnify mdi',
   SearchClose = 'mdi-magnify-remove-outline mdi',
   WebSearch = 'mdi-web mdi',
+  Select = 'mdi-select mdi',
   Sort = 'mdi-sort-variant mdi',
   SortAscending = 'mdi-sort-ascending mdi',
   SortDescending = 'mdi-sort-descending mdi-flip-v mdi',
@@ -105,6 +107,8 @@ export enum AppActionIcons {
   DotsHorizontal = 'mdi-dots-horizontal mdi',
   Scroll = 'mdi-arrow-up-down mdi',
   Back = 'mdi-arrow-left mdi',
+  Up = 'mdi-arrow-up mdi',
+  Down = 'mdi-arrow-down mdi',
   ExportData = 'mdi-database-export mdi',
   DeleteData = 'mdi-database-remove mdi',
   SearchData = 'mdi-database-search mdi',
@@ -127,7 +131,9 @@ export enum AppActionIcons {
   LevelUp = 'mdi-arrow-up-right-bold mdi',
   Config = 'mdi-tools mdi',
   Run = 'mdi-flash mdi',
-  SmartlistRemove = 'mdi-filter-variant-remove mdi'
+  SmartlistRemove = 'mdi-filter-variant-remove mdi',
+  PlaylistEdit = 'mdi-playlist-edit mdi',
+  Drag = 'mdi-drag mdi'
 }
 
 export enum AppPlayerIcons {

@@ -26,7 +26,7 @@ export class FilterListComponent extends CoreComponent implements OnInit {
     itemMenuList: [
       {
         caption: 'Properties...',
-        icon: 'mdi-square-edit-outline mdi',
+        icon: AppActionIcons.Edit,
         action: (menuItem, param) => {
           const filter = param as IFilterModel;
           if (filter) {

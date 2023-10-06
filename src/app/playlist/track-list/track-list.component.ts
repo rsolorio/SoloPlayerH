@@ -3,6 +3,7 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { ITrackListModel } from './track-list.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 
 /**
  * Base component that displays a list of tracks.
@@ -13,6 +14,9 @@ import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
   styleUrls: ['./track-list.component.scss']
 })
 export class TrackListComponent extends CoreComponent implements OnInit {
+  public AppActionIcons = AppActionIcons;
+  public AppPlayerIcons = AppPlayerIcons;
+  public AppAttributeIcons = AppAttributeIcons;
   public PlayerSongStatus = PlayerSongStatus;
   public model: ITrackListModel = {
     items: [],
@@ -40,11 +44,11 @@ export class TrackListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.model.itemMenuList.push({
       caption: 'Go To Artist',
-      icon: 'mdi-account-badge mdi'
+      icon: AppEntityIcons.Artist
     });
     this.model.itemMenuList.push({
       caption: 'Go To Album',
-      icon: 'mdi-album mdi'
+      icon: AppEntityIcons.Album
     });
     this.model.itemMenuList.push({
       isSeparator: true
@@ -52,24 +56,24 @@ export class TrackListComponent extends CoreComponent implements OnInit {
     if (this.model.editEnabled) {
       this.model.itemMenuList.push({
         caption: 'Move Up',
-        icon: 'mdi-arrow-up mdi'
+        icon: AppActionIcons.Up
       });
       this.model.itemMenuList.push({
         caption: 'Move Down',
-        icon: 'mdi-arrow-down mdi'
+        icon: AppActionIcons.Down
       });
       this.model.itemMenuList.push({
         caption: 'Move To Top',
-        icon: 'mdi-arrow-collapse-up mdi'
+        icon: AppAttributeIcons.Top
       });
       this.model.itemMenuList.push({
         caption: 'Move To Bottom',
-        icon: 'mdi-arrow-collapse-down mdi'
+        icon: AppAttributeIcons.Bottom
       });
     }
     this.model.itemMenuList.push({
       caption: 'Remove',
-      icon: 'mdi-delete-outline mdi'
+      icon: AppActionIcons.Delete
     });
   }
 
