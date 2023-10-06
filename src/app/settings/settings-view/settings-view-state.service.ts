@@ -123,7 +123,7 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
           },
           {
             name: 'List View Limit',
-            icon: AppAttributeIcons.Maximum,
+            icon: AppAttributeIcons.Top,
             editorType: SettingsEditorType.Number,
             textRegular: ['The maximum number of results to be displayed in the views.'],
             data: this.options.getNumber(ModuleOptionId.ListViewLimit),
