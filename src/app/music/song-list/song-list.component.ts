@@ -75,7 +75,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         caption: 'Properties...',
-        icon: 'mdi-square-edit-outline mdi',
+        icon: AppActionIcons.Edit,
         action: (menuItem, param) => {
           const song = param as ISongModel;
           if (song) {
@@ -88,7 +88,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         caption: 'Search...',
-        icon: 'mdi-web mdi',
+        icon: AppActionIcons.WebSearch,
         action: (menuItem, param) => {
           const song = param as ISongModel;
           this.utility.googleSearch(`${song.primaryArtistName} ${song.name}`);
@@ -96,7 +96,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         caption: 'Album Artist Songs',
-        icon: 'mdi-account-badge mdi',
+        icon: AppEntityIcons.AlbumArtist,
         action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumArtistSongs(song);
@@ -104,7 +104,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         caption: 'Feat. Artists Songs',
-        icon: 'mdi-account-music mdi',
+        icon: AppEntityIcons.Artist,
         action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForFeatArtistSongs(song);
@@ -112,7 +112,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         caption: 'Album Songs',
-        icon: 'mdi-album mdi',
+        icon: AppEntityIcons.Album,
         action: (menuItem, param) => {
           const song = param as ISongModel;
           this.setBreadcrumbsForAlbumSongs(song);
@@ -148,7 +148,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'filterRemoveIcon',
-        icon: 'mdi-filter-variant-remove mdi',
+        icon: AppActionIcons.SmartlistRemove,
         action: iconAction => {
           // Since this icon is displayed in Title mode, all icons should be displayed in this mode
           this.navbarService.getState().rightIcons.forEach(i => i.hidden = false);

@@ -105,7 +105,7 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'showAllSongsIcon',
-        icon: AppActionIcons.ShowSongs,
+        icon: AppEntityIcons.Song,
         action: () => {
           // No specific criteria, breadcrumbs will be automatically taken by the new entity
           const criteria = new Criteria('Search Results');

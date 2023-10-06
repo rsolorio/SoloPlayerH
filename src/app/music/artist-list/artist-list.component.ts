@@ -20,7 +20,7 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { AppActionIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 
@@ -31,6 +31,8 @@ import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ArtistListComponent extends CoreComponent implements OnInit {
+  public AppAttributeIcons = AppAttributeIcons;
+  public AppEntityIcons = AppEntityIcons;
   @ViewChild('spListBaseComponent') private spListBaseComponent: ListBaseComponent;
   public isAlbumArtist = false;
 
@@ -97,7 +99,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
       },
       {
         id: 'showAllSongsIcon',
-        icon: AppActionIcons.ShowSongs,
+        icon: AppEntityIcons.Song,
         action: () => {
           // No specific criteria, breadcrumbs will be automatically taken by the new entity
           const criteria = new Criteria('Search Results');
@@ -174,7 +176,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
 
     this.listModel.itemMenuList.push({
       caption: 'Artist Songs',
-      icon: 'mdi-music-box-outline mdi',
+      icon: AppEntityIcons.Song,
       action: (menuItem, param) => {
         const artist = param as IArtistModel;
           if (artist) {

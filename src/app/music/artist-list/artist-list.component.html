@@ -17,20 +17,19 @@
         <br>
         <span class="sp-color-on-bg-low sp-text-small sp-no-select">
           <ng-container *ngIf="isAlbumArtist && item.country !== 'Unknown'">
-            <i class="mdi-earth mdi">&nbsp;</i>
+            <i [ngClass]="AppAttributeIcons.Country">&nbsp;</i>
             <span>{{item.country}}&nbsp;&nbsp;&nbsp;</span>
           </ng-container>
           <ng-container *ngIf="isAlbumArtist">
-            <i class="mdi-album mdi">&nbsp;</i>
+            <i [ngClass]="AppEntityIcons.Album">&nbsp;</i>
             <span>{{item.albumCount}}&nbsp;&nbsp;&nbsp;</span>
           </ng-container>
-          <i class="mdi-music-circle mdi">&nbsp;</i><span>{{item.songCount}}</span>
+          <i [ngClass]="AppAttributeIcons.SongCount">&nbsp;</i><span>{{item.songCount}}</span>
         </span>
       </td>
       <!-- Favorite Icon -->
       <td *ngIf="isAlbumArtist" style="width: 40px;text-align: center;" class="sp-clickable" (click)="onFavoriteClick($event, item)">
-        <i *ngIf="item.favorite" class="mdi-heart mdi sp-text-xlarge"></i>
-        <i *ngIf="!item.favorite" class="mdi-heart-outline mdi sp-text-xlarge"></i>
+        <i [ngClass]="item.favorite ? AppAttributeIcons.FavoriteOn : AppAttributeIcons.FavoriteOff" class="sp-text-xlarge"></i>
       </td>
     </tr></table>
   </ng-template>

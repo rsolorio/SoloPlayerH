@@ -10,8 +10,8 @@ export enum AppEntityIcons {
   Instrument = 'mdi-guitar-acoustic mdi',
   Category = 'mdi-sticker-text mdi',
   Playlist = 'mdi-playlist-play mdi',
-  Smartlist = 'mdi-playlist-star mdi',
-  Autolist = 'mdi-playlist-check mdi',
+  Smartlist = 'mdi-filter-variant mdi',
+  Autolist = 'mdi-playlist-star mdi',
   Sync = 'mdi-sync mdi'
 }
 
@@ -28,9 +28,9 @@ export enum AppAttributeIcons {
   ArtistName = 'mdi-account mdi',
   ArtistGroup = 'mdi-account-group mdi',
   AlbumName = 'mdi-album mdi',
-  SongName = 'mdi-music mdi',
+  SongName = 'mdi-music-clef-treble mdi',
   TitleSort = 'mdi-sort-alphabetical-variant mdi',
-  SongCount = 'mdi-music-circle mdi',
+  SongCount = 'mdi-music mdi',
   GenreName = 'mdi-tag mdi',
   FileInfo = 'mdi-file-music mdi',
   ClassificationType = 'mdi-shape mdi',
@@ -72,7 +72,8 @@ export enum AppAttributeIcons {
   Grouping = 'mdi-format-list-group mdi',
   PerformerCount = 'mdi-account-group mdi',
   Limit = 'mdi-sort-numeric-variant mdi',
-  LongPlay = 'mdi-music-box-multiple mdi',
+  LongPlay = 'mdi-clock-time-ten mdi',
+  ShortPlay = 'mdi-clock-time-two mdi',
   Accent = 'mdi-vanish-quarter mdi',
   Contributor = 'mdi-account-supervisor mdi',
   SwitchOn = 'mdi-toggle-switch-variant mdi',
@@ -92,6 +93,7 @@ export enum AppActionIcons {
   CloseClear = 'mdi-close mdi',
   Search = 'mdi-magnify mdi',
   SearchClose = 'mdi-magnify-remove-outline mdi',
+  WebSearch = 'mdi-web mdi',
   Sort = 'mdi-sort-variant mdi',
   SortAscending = 'mdi-sort-ascending mdi',
   SortDescending = 'mdi-sort-descending mdi-flip-v mdi',
@@ -101,7 +103,6 @@ export enum AppActionIcons {
   Menu = 'mdi-menu mdi',
   DotsVertical = 'mdi-dots-vertical mdi',
   DotsHorizontal = 'mdi-dots-horizontal mdi',
-  ShowSongs = 'mdi-music-box-multiple-outline mdi',
   Scroll = 'mdi-arrow-up-down mdi',
   Back = 'mdi-arrow-left mdi',
   ExportData = 'mdi-database-export mdi',
@@ -125,7 +126,8 @@ export enum AppActionIcons {
   ExportFromDb = 'mdi-database-export mdi',
   LevelUp = 'mdi-arrow-up-right-bold mdi',
   Config = 'mdi-tools mdi',
-  Run = 'mdi-flash mdi'
+  Run = 'mdi-flash mdi',
+  SmartlistRemove = 'mdi-filter-variant-remove mdi'
 }
 
 export enum AppPlayerIcons {
