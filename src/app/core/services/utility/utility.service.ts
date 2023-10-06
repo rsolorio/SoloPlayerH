@@ -454,6 +454,10 @@ export class UtilityService {
     return value.split(' ').map(w => w[0].toUpperCase() + w.substring(1).toLowerCase()).join(' ');
   }
 
+  public removeReservedFileCharacters(value: string): string {
+    return value.replace(/[/\\?%*:|"<>]/g, '');
+  }
+
   public isTrue(value: string): boolean {
     if (value) {
       if (value === '1') {

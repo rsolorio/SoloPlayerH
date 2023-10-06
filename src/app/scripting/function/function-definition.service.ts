@@ -37,6 +37,7 @@ export class FunctionDefinitionService {
     this.digitsFunction();
     this.intFunction();
     this.noBracketsFunction();
+    this.pathFunction();
   }
 
   private ifFunction(): void {
@@ -122,6 +123,44 @@ export class FunctionDefinitionService {
           }
         }
         return x;
+      }
+    });
+  }
+
+  private pathFunction(): void {
+    this.functions.push({
+      name: 'path',
+      syntax: '$path(args)',
+      description: 'Combines all the arguments to create a path by automatically adding the proper path separator.',
+      fn: args => {
+        const driveSeparator = ':';
+        const pathSeparator = '\\';
+        const newArgs: string[] = [];
+        // Treat the first item differently
+        const firstItem = args.shift();
+        if (firstItem) {
+          const firstText = firstItem.toString() as string;
+          // Does it contain the drive info?
+          if (firstText.length > 2 && firstText[1] === driveSeparator && firstItem[2] === pathSeparator) {
+            if (firstText.endsWith(pathSeparator)) {
+              // Remove the last separator since it will be automatically added at the end
+              newArgs.push(firstText.slice(0, -1));
+            }
+            else {
+              newArgs.push(firstText);
+            }
+          }
+          else {
+            newArgs.push(this.utility.removeReservedFileCharacters(firstText));
+          }
+        }
+        // For the rest of the items remove any text that could cause problem with file naming convention
+        args.forEach(arg => {
+          if (arg) {
+            newArgs.push(this.utility.removeReservedFileCharacters(arg.toString()));
+          }
+        });
+        return newArgs.join(pathSeparator);
       }
     });
   }
