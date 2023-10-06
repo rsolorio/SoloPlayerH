@@ -175,7 +175,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     }
 
     this.listModel.itemMenuList.push({
-      caption: 'Artist Songs',
+      caption: 'Songs',
       icon: AppEntityIcons.Song,
       action: (menuItem, param) => {
         const artist = param as IArtistModel;
