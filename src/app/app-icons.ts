@@ -83,7 +83,8 @@ export enum AppAttributeIcons {
   Recent = 'mdi-history mdi',
   Checked = 'mdi-check-circle mdi',
   Bottom = 'mdi-arrow-collapse-down mdi',
-  Top = 'mdi-arrow-collapse-up mdi'
+  Top = 'mdi-arrow-collapse-up mdi',
+  Vocal = 'mdi-account-voice mdi'
 }
 
 export enum AppActionIcons {

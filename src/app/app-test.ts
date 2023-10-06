@@ -8,7 +8,7 @@ import { LogService } from "./core/services/log/log.service";
 import { DatabaseService } from "./shared/services/database/database.service";
 import { DatabaseEntitiesService } from "./shared/services/database/database-entities.service";
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
-import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, SongClassificationEntity, SongEntity, SongExtendedViewEntity, ValueListEntryEntity } from "./shared/entities";
+import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedViewEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
@@ -36,7 +36,7 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    await this.logFileMetadata();
+    //await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
@@ -45,6 +45,7 @@ export class AppTestService {
     //await this.readPlaylistSong();
     //await this.updatePlayCount();
     //await this.insertFilters();
+    await this.updateSong();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -505,5 +506,20 @@ export class AppTestService {
 
     // await this.db.insertData(dataToInsert);
     console.log('done');
+  }
+
+  private async updateSong(): Promise<void> {
+    const songId = '812b370e-f5bd-5d66-5e41-fb2257cde2e5';
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.filePath = 'G:\\Music\\English\\Electronic\\Air\\1998 - Moon Safari\\04 - kelly watch the stars.mp3';
+    song.hash = this.lookup.hashSong(song.filePath);
+    song.genre = 'Electronic';
+    await song.save();
+
+    const relatedImageId = '98753335-cdfc-426a-52e8-67fed69b750c';
+    const relatedImage = await RelatedImageEntity.findOneBy({ id: relatedImageId });
+    relatedImage.sourcePath = 'G:\\Music\\English\\Electronic\\Air\\1998 - Moon Safari\\front.jpg';
+    relatedImage.hash = this.lookup.hashImage(relatedImage.sourcePath, relatedImage.sourceIndex);
+    await relatedImage.save();
   }
 }

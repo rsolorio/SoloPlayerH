@@ -5,6 +5,7 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
@@ -89,6 +90,24 @@ export class ArtistViewComponent implements OnInit {
               onEdit: () => this.editGender()
             }
           ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'vocal',
+              icon: AppAttributeIcons.Vocal,
+              label: 'Vocal',
+              editorType: ValueEditorType.YesNo,
+              onEdit: () => {
+                ArtistEntity.findOneBy({ id: this.artistId }).then(artist => {
+                  artist.vocal = !this.entityEditorModel.data['vocal'];
+                  artist.save().then(() => {
+                    this.entityEditorModel.data['vocal'] = artist.vocal;
+                  });
+                });
+              }
+            }
+          ]
         }
       ]
     };    
@@ -164,7 +183,7 @@ export class ArtistViewComponent implements OnInit {
 
   private async editCountry(): Promise<void> {
     const entries = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Country.id });
-    const values = entries.map(entry => {
+    const values = this.utility.sort(entries, 'name').map(entry => {
       const valuePair: ISelectableValue = {
         value: entry.name,
         caption: entry.name
