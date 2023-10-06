@@ -5,13 +5,13 @@ import { PartyRelationType } from '../models/music.enum';
 
 /**
  * Retrieves all the records from the artist table with associated songs as primary or featuring artist.
- * Fields: id, name, hash, artistSort, artistStylized, artistType, country, favorite, albumCount, songCount, playCount, songAddDateMax
+ * Fields: id, name, hash, artistSort, artistStylized, artistType, country, favorite, albumCount, songCount, playCount, seconds, songAddDateMax
  */
 @ViewEntity({
   name: 'artistView',
   expression: `
     SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.artistType, artist.country, artist.favorite,
-    0 AS albumCount, COUNT(partyRelation.songId) AS songCount, 0 AS playCount, NULL AS songAddDateMax
+    0 AS albumCount, COUNT(partyRelation.songId) AS songCount, 0 AS playCount, 0 AS seconds, NULL AS songAddDateMax
     FROM artist
     LEFT JOIN (
       SELECT relatedId, songId

@@ -20,13 +20,15 @@ export class ArtistViewBaseEntity extends ListItemEntity implements IArtistModel
   @ViewColumn()
   favorite: boolean;
   @ViewColumn()
+  albumCount: number;
+  @ViewColumn()
   songCount: number;
   @ViewColumn()
   playCount: number;
   @ViewColumn()
-  songAddDateMax: Date;
+  seconds: number;
   @ViewColumn()
-  albumCount: number;
+  songAddDateMax: Date;
 
   // These don't look like are needed in the view
   artistGender: string;

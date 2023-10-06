@@ -21,6 +21,8 @@
             <span>{{item.country}}&nbsp;&nbsp;&nbsp;</span>
           </ng-container>
           <ng-container *ngIf="isAlbumArtist">
+            <i [ngClass]="AppAttributeIcons.Duration">&nbsp;</i>
+            <span>{{item.seconds | duration}}&nbsp;&nbsp;&nbsp;</span>
             <i [ngClass]="AppEntityIcons.Album">&nbsp;</i>
             <span>{{item.albumCount}}&nbsp;&nbsp;&nbsp;</span>
           </ng-container>
