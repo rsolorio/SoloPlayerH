@@ -26,6 +26,9 @@ import { PartyRelationType } from '../../models/music.enum';
 import { FileService } from 'src/app/platform/file/file.service';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { LocalStorageKeys } from '../local-storage/local-storage.enum';
+import { IAlbumModel } from '../../models/album-model.interface';
+import { IArtistModel } from '../../models/artist-model.interface';
+import { IPlaylistModel } from '../../models/playlist-model.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -95,40 +98,40 @@ export class DatabaseEntitiesService {
     return song;
   }
 
-  public async setFavoriteSong(songId: string, favorite: boolean): Promise<boolean> {
+  public async setFavoriteSong(songId: string, favorite: boolean): Promise<ISongModel> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.favorite = favorite;
     song.changeDate = new Date();
     await song.save();
-    return favorite;
+    return song;
   }
 
-  public async setFavoriteAlbum(albumId: string, favorite: boolean): Promise<boolean> {
+  public async setFavoriteAlbum(albumId: string, favorite: boolean): Promise<IAlbumModel> {
     const album = await AlbumEntity.findOneBy({ id: albumId });
     album.favorite = favorite;
     await album.save();
-    return favorite;
+    return album;
   }
 
-  public async setFavoriteArtist(artistId: string, favorite: boolean): Promise<boolean> {
+  public async setFavoriteArtist(artistId: string, favorite: boolean): Promise<IArtistModel> {
     const artist = await ArtistEntity.findOneBy({ id: artistId });
     artist.favorite = favorite;
     await artist.save();
-    return favorite;
+    return artist;
   }
 
-  public async setFavoritePlaylist(playlistId: string, favorite: boolean): Promise<boolean> {
+  public async setFavoritePlaylist(playlistId: string, favorite: boolean): Promise<IPlaylistModel> {
     const playlist = await PlaylistEntity.findOneBy({ id: playlistId });
     playlist.favorite = favorite;
     await playlist.save();
-    return favorite;
+    return playlist;
   }
 
-  public async setFavoriteFilter(filterId: string, favorite: boolean): Promise<boolean> {
+  public async setFavoriteFilter(filterId: string, favorite: boolean): Promise<IFilterModel> {
     const filter = await FilterEntity.findOneBy({ id: filterId });
     filter.favorite = favorite;
     await filter.save();
-    return favorite;
+    return filter;
   }
 
   public async setRating(songId: string, rating: number): Promise<void> {
@@ -179,19 +182,6 @@ export class DatabaseEntitiesService {
       }
     }
     return null;
-  }
-
-  public getSongDetails(songId: string): Promise<any> {
-    return SongEntity
-      .getRepository()
-      .createQueryBuilder('song')
-      .innerJoin('album', 'album', 'song.primaryAlbumId = album.id')
-      .innerJoin('artist', 'artist', 'album.primaryArtistId = artist.id')
-      .addSelect('album.name', 'primaryAlbumName')
-      .addSelect('artist.name', 'primaryArtistName')
-      .where('song.id = :songId')
-      .setParameter('songId', songId)
-      .getRawOne();
   }
 
   /**

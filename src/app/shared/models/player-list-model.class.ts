@@ -231,6 +231,11 @@ export class PlayerListModel implements IDbModel {
   }
 
   // Private Methods ****************************************************************************
+
+  /**
+   * Converts a ISongModel into a IPlaylistSongModel.
+   * This method creates a new object.
+   */
   private toTrack(song: ISongModel, playlistId: string, sequence: number): IPlaylistSongModel {
     return {
       ...song,

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AppEvent } from 'src/app/app-events';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
@@ -7,11 +8,12 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { IEntityEditorModel, IEntityFieldModel } from 'src/app/shared/components/entity-editor/entity-editor.interface';
-import { SongClassificationEntity, SongEntity, ValueListEntryEntity } from 'src/app/shared/entities';
+import { SongClassificationEntity, SongEntity, SongExtendedViewEntity, ValueListEntryEntity } from 'src/app/shared/entities';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -33,6 +35,7 @@ export class SongViewComponent implements OnInit {
     private entityService: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
     private navigation: NavigationService,
+    private events: EventsService,
     private sidebarHostService: SideBarHostStateService)
   { }
 
@@ -53,9 +56,9 @@ export class SongViewComponent implements OnInit {
   }
 
   private async loadModel(): Promise<void> {
-    const data = await this.entityService.getSongDetails(this.songId);
+    const song = await SongExtendedViewEntity.findOneBy({ id: this.songId });
     // Prepare the editor
-    this.setupModel(data);
+    this.setupModel(song);
     // Add classification fields
     let classifications: ValueListEntryEntity[] = [];
     const songClassifications = await SongClassificationEntity.findBy({ songId: this.songId });
@@ -66,14 +69,14 @@ export class SongViewComponent implements OnInit {
     }
     for (const classificationType of this.classificationTypes) {
       // Default value
-      data[classificationType.name] = '<None>';
+      song[classificationType.name] = '<None>';
       // Find out if there's data
       const entries = classifications.filter(
         c => c.valueListTypeId === classificationType.id);
       if (entries.length) {
-        data[classificationType.name] = entries.map(s => s.name).join(', ');
+        song[classificationType.name] = entries.map(s => s.name).join(', ');
         // Hack: save a list of selected ids in case we need to edit
-        data[classificationType.id] = entries.map(s => s.id);
+        song[classificationType.id] = entries.map(s => s.id);
       }
       // Create the field
       this.entityEditorModel.groups.push({ fields: [{
@@ -98,7 +101,7 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'song_name',
+              propertyName: 'name',
               icon: AppAttributeIcons.SongName,
               label: 'Title'
             }
@@ -125,12 +128,12 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'song_trackNumber',
+              propertyName: 'trackNumber',
               icon: AppAttributeIcons.TrackNumber,
               label: 'Track'
             },
             {
-              propertyName: 'song_duration',
+              propertyName: 'duration',
               icon: AppAttributeIcons.Duration,
               label: 'Duration'
             }
@@ -139,12 +142,12 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'song_releaseYear',
+              propertyName: 'releaseYear',
               icon: AppAttributeIcons.Year,
               label: 'Year'
             },
             {
-              propertyName: 'song_genre',
+              propertyName: 'genre',
               icon: AppEntityIcons.Genre,
               label: 'Genre',
               onEdit: () => {}
@@ -154,13 +157,13 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'song_language',
+              propertyName: 'language',
               icon: AppAttributeIcons.Language,
               label: 'Language',
               onEdit: () => {}
             },
             {
-              propertyName: 'song_mood',
+              propertyName: 'mood',
               icon: AppAttributeIcons.MoodOn,
               label: 'Mood',
               onEdit: () => {}
@@ -170,12 +173,12 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'song_playCount',
+              propertyName: 'playCount',
               icon: AppAttributeIcons.PlayCount,
               label: 'Play Count'
             },
             {
-              propertyName: 'song_addDate',
+              propertyName: 'addDate',
               icon: AppAttributeIcons.AddDate,
               label: 'Add Date'
             }
@@ -184,29 +187,31 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'song_live',
+              propertyName: 'live',
               icon: AppAttributeIcons.LiveOn,
               label: 'Live',
               editorType: ValueEditorType.YesNo,
               onEdit: () => {
                 SongEntity.findOneBy({ id: this.songId }).then(song => {
-                  song.live = !this.entityEditorModel.data['song_live'];
+                  song.live = !this.entityEditorModel.data['live'];
                   song.save().then(() => {
-                    this.entityEditorModel.data['song_live'] = song.live;
+                    this.entityEditorModel.data['live'] = song.live;
+                    this.events.broadcast(AppEvent.ViewSongUpdated, song);
                   });
                 });
               }
             },
             {
-              propertyName: 'song_explicit',
+              propertyName: 'explicit',
               icon: AppAttributeIcons.ExplicitOn,
               label: 'Explicit',
               editorType: ValueEditorType.YesNo,
               onEdit: () => {
                 SongEntity.findOneBy({ id: this.songId }).then(song => {
-                  song.explicit = !this.entityEditorModel.data['song_explicit'];
+                  song.explicit = !this.entityEditorModel.data['explicit'];
                   song.save().then(() => {
-                    this.entityEditorModel.data['song_explicit'] = song.explicit;
+                    this.entityEditorModel.data['explicit'] = song.explicit;
+                    this.events.broadcast(AppEvent.ViewSongUpdated, song);
                   });
                 });
               }
@@ -216,7 +221,7 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'song_grouping',
+              propertyName: 'grouping',
               icon: AppAttributeIcons.Grouping,
               label: 'Grouping',
               onEdit: () => {}
@@ -228,7 +233,7 @@ export class SongViewComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
-    const favorite = this.entityEditorModel.data['song_favorite'] as number;
+    const favorite = this.entityEditorModel.data['favorite'] as boolean;
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
       show: true,
@@ -256,12 +261,14 @@ export class SongViewComponent implements OnInit {
         action: iconAction => {
           this.entityService.setFavoriteSong(this.songId, false).then(response => {
             iconAction.off = true;
+            this.events.broadcast(AppEvent.ViewSongUpdated, response);
           });
         },
         offIcon: AppAttributeIcons.FavoriteOff,
         offAction: iconAction => {
           this.entityService.setFavoriteSong(this.songId, true).then(response => {
             iconAction.off = false;
+            this.events.broadcast(AppEvent.ViewSongUpdated, response);
           });
         },
         off: !favorite
@@ -331,7 +338,7 @@ export class SongViewComponent implements OnInit {
   private async onClassificationSelected(valuePair: ISelectableValue): Promise<void> {
     if (valuePair.selected) {
       const songClassification = new SongClassificationEntity();
-      songClassification.songId = this.entityEditorModel.data['song_id'];
+      songClassification.songId = this.entityEditorModel.data['id'];
       songClassification.classificationId = valuePair.value;
       // We need this to get the type
       const classification = await ValueListEntryEntity.findOneBy({ id: songClassification.classificationId });
@@ -341,9 +348,9 @@ export class SongViewComponent implements OnInit {
       await songClassification.save();
     }
     else {
-      await SongClassificationEntity.delete({ songId: this.entityEditorModel.data['song_id'], classificationId: valuePair.value})
+      await SongClassificationEntity.delete({ songId: this.entityEditorModel.data['id'], classificationId: valuePair.value})
     }
-    await this.entityService.setChangeDate(this.entityEditorModel.data['song_id']);
+    await this.entityService.setChangeDate(this.entityEditorModel.data['id']);
   }
 
   private findFieldByProperty(propertyName: string): IEntityFieldModel {

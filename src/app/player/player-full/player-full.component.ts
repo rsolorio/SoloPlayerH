@@ -157,6 +157,7 @@ export class PlayerFullComponent extends PlayerComponentBase {
     const newValue = !this.model.playerList.current.live;
     this.entityService.setLive(this.model.playerList.current.id, newValue).then(() => {
       this.model.playerList.current.live = newValue;
+      this.events.broadcast(AppEvent.PlayerSongUpdated, this.model.playerList.current);
     });
   }
 

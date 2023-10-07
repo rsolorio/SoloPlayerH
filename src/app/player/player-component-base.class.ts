@@ -93,6 +93,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.subs.sink = this.eventService.onEvent<IEventArgs<IPlaylistSongModel>>(AppEvent.PlaylistCurrentTrackChanged).subscribe(eventArgs => {
       this.onTrackChanged(eventArgs);
     });
+    this.subs.sink = this.eventService.onEvent<ISongModel>(AppEvent.ViewSongUpdated).subscribe(updatedSong => {
+      if (this.model.playerList.current?.songId === updatedSong.id) {
+        this.model.playerList.current.favorite = updatedSong.favorite;
+        this.model.playerList.current.live = updatedSong.live;
+        this.model.playerList.current.rating = updatedSong.rating;
+        this.model.playerList.current.mood = updatedSong.mood;
+      }
+    });
   }
 
   protected initializeMenu() {
@@ -221,6 +229,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     const newValue = !song.favorite;
     this.databaseEntityService.setFavoriteSong(song.id, newValue).then(() => {
       song.favorite = newValue;
+      this.eventService.broadcast(AppEvent.PlayerSongUpdated, song);
     });
   }
 
@@ -250,6 +259,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
             const newMood = selectedValues[0].caption;
             this.databaseEntityService.setMood(song.id, newMood).then(() => {
               song.mood = newMood;
+              this.eventService.broadcast(AppEvent.PlayerSongUpdated, song);
             });
           }
         }
@@ -275,7 +285,9 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     if (e.oldValue === e.newValue) {
       return;
     }
-    this.databaseEntityService.setRating(song.id, song.rating);
+    this.databaseEntityService.setRating(song.id, song.rating).then(() => {
+      this.eventService.broadcast(AppEvent.PlayerSongUpdated, song);
+    });
   }
 
   public takeScreenshot(): void {

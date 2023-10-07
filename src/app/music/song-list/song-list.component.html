@@ -31,8 +31,8 @@
         Live / Green
         Rating / Orange
         Favorite / Red
-        Recent / Blue
         Explicit / Yellow
+        Recent / Blue
        -->
       <i *ngIf="item.bitrate === 320000" [ngClass]="AppAttributeIcons.BitrateHigh" class="sp-title-icon sp-color-320" [title]="SongBadge.Kbps320"></i>
       <i *ngIf="item.vbr" [ngClass]="AppAttributeIcons.BitrateHigh" class="sp-title-icon sp-color-vbr" [title]="SongBadge.Vbr"></i>
@@ -41,8 +41,8 @@
       <i *ngIf="item.rating === 5" [ngClass]="AppAttributeIcons.RatingOn" class="sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
       <i *ngIf="item.rating === 0" [ngClass]="AppAttributeIcons.RatingOff" class="sp-title-icon sp-color-rating"></i>
       <i *ngIf="item.favorite" [ngClass]="AppAttributeIcons.FavoriteOn" class="sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
-      <i *ngIf="item.recentPlayIcon" [ngClass]="[AppAttributeIcons.Recent, item.recentPlayIcon.styleClass]" class="sp-title-icon sp-color-info" [title]="item.recentPlayIcon.tooltip"></i>
       <i *ngIf="item.explicit" [ngClass]="AppAttributeIcons.ExplicitOn" class="sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
+      <!-- <i *ngIf="item.recentPlayIcon" [ngClass]="[AppAttributeIcons.Recent, item.recentPlayIcon.styleClass]" class="sp-title-icon sp-color-info" [title]="item.recentPlayIcon.tooltip"></i> -->
     </span>
     <br>
     <!-- Extra Info -->

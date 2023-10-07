@@ -153,6 +153,13 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     this.navbarService.showToast(message);
   }
 
+  public getItem(id: string): IListItemModel {
+    if (this.model.criteriaResult.items?.length) {
+      return this.model.criteriaResult.items.find(i => i.id === id);
+    }
+    return null;
+  }
+
   private initializeNavbar(): void {
     const routeInfo = this.utilities.getCurrentRouteInfo();
     const navbar = this.navbarService.getState();

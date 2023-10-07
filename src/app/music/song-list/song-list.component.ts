@@ -185,6 +185,11 @@ export class SongListComponent extends CoreComponent implements OnInit {
       if (!song.image.src && !song.image.getImage) {
         song.image.getImage = () => this.getSongImage(song);
       }
+
+      // Set the proper player status
+      if (song.id === this.playerService.getState().playerList.current.songId) {
+        song.playerStatus = this.playerService.getState().playerList.current.playerStatus;
+      }
     },
     afterNavbarModeChange: model => {
       this.manageRightIconsVisibility(model);
@@ -217,9 +222,32 @@ export class SongListComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.expandPlayerOnPlay = this.options.getBoolean(ModuleOptionId.ExpandPlayerOnSongPlay);
     this.subs.sink = this.events.onEvent<IPlayerStatusChangedEventArgs>(AppEvent.PlayerStatusChanged)
-    .subscribe(() => {
-      this.cd.detectChanges();
+    .subscribe(statusChangedArgs => {
+      const item = this.spListBaseComponent.getItem(statusChangedArgs.track.songId) as ISongModel;
+      if (item) {
+        item.playerStatus = statusChangedArgs.track.playerStatus;
+        this.cd.detectChanges();
+      }
     });
+    this.subs.sink = this.events.onEvent<ISongModel>(AppEvent.PlayerSongUpdated).subscribe(updatedSong => {
+      this.updateSong(updatedSong);
+    });
+    this.subs.sink = this.events.onEvent<ISongModel>(AppEvent.ViewSongUpdated).subscribe(updatedSong => {
+      this.updateSong(updatedSong);
+    });
+  }
+
+  private updateSong(song: ISongModel): void {
+    const item = this.spListBaseComponent.getItem(song.id) as ISongModel;
+    if (item) {
+      item.live = song.live;
+      item.rating = song.rating;
+      item.mood = song.mood;
+      item.favorite = song.favorite;
+      item.explicit = song.explicit;
+      item.playCount = song.playCount;
+      this.cd.detectChanges();
+    }
   }
 
   private setBreadcrumbsForAlbumArtistSongs(song: ISongModel): void {

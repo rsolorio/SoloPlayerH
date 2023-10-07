@@ -133,13 +133,13 @@ export class ArtistViewComponent implements OnInit {
       rightIcons: [{
         icon: AppAttributeIcons.FavoriteOn,
         action: iconAction => {
-          this.entityService.setFavoriteArtist(this.artistId, false).then(response => {
+          this.entityService.setFavoriteArtist(this.artistId, false).then(() => {
             iconAction.off = true;
           });
         },
         offIcon: AppAttributeIcons.FavoriteOff,
         offAction: iconAction => {
-          this.entityService.setFavoriteArtist(this.artistId, true).then(response => {
+          this.entityService.setFavoriteArtist(this.artistId, true).then(() => {
             iconAction.off = false;
           });
         },

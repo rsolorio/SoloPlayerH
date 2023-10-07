@@ -16,6 +16,11 @@ export enum CoreEvent {
 export enum AppEvent {
   // App
   QuickSearchFired = 'QUICK_SEARCH_FIRED',
+  CriteriaApplied = 'CRITERIA_APPLIED',
+  CriteriaCleared = 'CRITERIA_CLEARED',
+  // Views
+  ViewSongUpdated = 'VIEW_SONG_UPDATED',
+  // Lists
   SongListUpdated = 'SONG_LIST_UPDATED',
   AlbumListUpdated = 'ALBUM_LIST_UPDATED',
   ArtistListUpdated = 'ARTIST_LIST_UPDATED',
@@ -24,13 +29,12 @@ export enum AppEvent {
   FilterListUpdated = 'FILTER_LIST_UPDATED',
   FileListUpdated = 'FILE_LIST_UPDATED',
   SyncProfileListUpdated = 'SYNC_PROFILE_LIST_UPDATED',
-  CriteriaApplied = 'CRITERIA_APPLIED',
-  CriteriaCleared = 'CRITERIA_CLEARED',
   // Player
   PlayerPositionChanged = 'PLAYER_POSITION_CHANGED',
   PlayerStatusChanged = 'PLAYER_STATUS_CHANGED',
   PlaylistCurrentTrackChanged = 'PLAYLIST_CURRENT_TRACK_CHANGED',
   FullPlayerPaletteLoaded = 'FULL_PLAYER_PALETTE_LOADED',
+  PlayerSongUpdated = 'PLAYER_SONG_UPDATED',
   // Breadcrumb
   BreadcrumbUpdated = 'BREADCRUMB_UPDATED',
   // Scan
