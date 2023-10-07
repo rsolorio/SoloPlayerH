@@ -8,11 +8,13 @@ import { LogService } from "./core/services/log/log.service";
 import { DatabaseService } from "./shared/services/database/database.service";
 import { DatabaseEntitiesService } from "./shared/services/database/database-entities.service";
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
-import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedViewEntity, ValueListEntryEntity } from "./shared/entities";
+import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedByPlaylistViewEntity, SongExtendedViewEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
 import { IsNull } from "typeorm";
+import { Criteria, CriteriaItem } from "./shared/services/criteria/criteria.class";
+import { CriteriaComparison } from "./shared/services/criteria/criteria.enum";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -45,7 +47,8 @@ export class AppTestService {
     //await this.readPlaylistSong();
     //await this.updatePlayCount();
     //await this.insertFilters();
-    await this.updateSong();
+    //await this.updateSong();
+    await this.getPlaylistsTracks();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -521,5 +524,24 @@ export class AppTestService {
     relatedImage.sourcePath = 'G:\\Music\\English\\Electronic\\Air\\1998 - Moon Safari\\front.jpg';
     relatedImage.hash = this.lookup.hashImage(relatedImage.sourcePath, relatedImage.sourceIndex);
     await relatedImage.save();
+  }
+
+  private async getPlaylistsTracks(): Promise<void> {
+    const criteria = new Criteria();
+    criteria.searchCriteria.addIgnore('sequence');
+    const criteriaItem = criteria.searchCriteria.addIgnore('playlistId');
+    criteriaItem.comparison = CriteriaComparison.Equals;
+    criteriaItem.columnValues.push({ value: '8f029db4-96e4-4826-a411-68052607ac4e' });
+    criteriaItem.columnValues.push({ value: '83402866-da7a-4ed2-9917-c67c3043c140' });
+    // const criteria = new Criteria();
+    // const criteriaItem = new CriteriaItem('playlistId', '8f029db4-96e4-4826-a411-68052607ac4e');
+    // criteriaItem.columnValues.push({ value: '83402866-da7a-4ed2-9917-c67c3043c140' });
+    // criteriaItem.ignoreInSelect = true;
+    // criteria.searchCriteria.push(criteriaItem);
+    // const sequenceItem = new CriteriaItem('sequence');
+    // sequenceItem.ignoreInSelect = true;
+    // criteria.searchCriteria.push(sequenceItem);
+    const songs = await this.db.getList(SongExtendedByPlaylistViewEntity, criteria);
+    console.log(songs);
   }
 }

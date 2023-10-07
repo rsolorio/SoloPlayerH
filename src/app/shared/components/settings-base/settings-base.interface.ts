@@ -25,7 +25,7 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   /** Event to be fired if the data changed. */
   onChange?: (setting: ISetting) => void;
   /** Event to be fired before opening a panel. */
-  beforePanelOpen?: (panelMode: ISideBarHostModel) => void;
+  beforePanelOpen?: (panelMode: ISideBarHostModel) => Promise<void>;
 }
 
 export interface ISettingCategory {

@@ -39,11 +39,14 @@ export class SettingsBaseComponent implements OnInit {
       this.openNumericEditorPanel(setting);
     }
     else if (setting.editorType === SettingsEditorType.List) {
-      this.openListEditorPanel(setting);
+      this.openListQuickEditorPanel(setting);
+    }
+    else if (setting.editorType === SettingsEditorType.ListMultiple) {
+      this.openListMultipleEditorPanel(setting);
     }
   }
 
-  private openNumericEditorPanel(setting: ISetting): void {
+  private async openNumericEditorPanel(setting: ISetting): Promise<void> {
     const model: IInputEditorModel = {
       componentType: InputEditorComponent,
       title: 'Edit',
@@ -58,12 +61,12 @@ export class SettingsBaseComponent implements OnInit {
       }
     };
     if (setting.beforePanelOpen) {
-      setting.beforePanelOpen(model);
+      await setting.beforePanelOpen(model);
     }
     this.sidebarHostService.loadContent(model);
   }
 
-  private openListEditorPanel(setting: ISetting): void {
+  private async openListQuickEditorPanel(setting: ISetting): Promise<void> {
     const model: IChipSelectionModel = {
       componentType: ChipSelectionComponent,
       title: 'Edit',
@@ -79,7 +82,26 @@ export class SettingsBaseComponent implements OnInit {
       }
     };
     if (setting.beforePanelOpen) {
-      setting.beforePanelOpen(model);
+      await setting.beforePanelOpen(model);
+    }
+    this.sidebarHostService.loadContent(model);
+  }
+
+  private async openListMultipleEditorPanel(setting: ISetting): Promise<void> {
+    const model: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Edit',
+      titleIcon: AppActionIcons.Edit,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.MultipleOk,
+      items: [],
+      onOk: selectionModel => {
+        setting.data = selectionModel.items.filter(i => i.selected).map(i => i.value);
+        setting.onChange(setting);
+      }
+    };
+    if (setting.beforePanelOpen) {
+      await setting.beforePanelOpen(model);
     }
     this.sidebarHostService.loadContent(model);
   }

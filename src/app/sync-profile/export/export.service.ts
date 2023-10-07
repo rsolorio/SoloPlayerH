@@ -24,7 +24,7 @@ import { ValueLists } from '../../shared/services/database/database.lists';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PeriodTimer } from 'src/app/core/models/timer.class';
-import { EntityTarget } from 'typeorm';
+import { EntityTarget, In } from 'typeorm';
 import { SideBarMenuStateService } from 'src/app/core/components/side-bar-menu/side-bar-menu-state.service';
 import { AppRoute } from 'src/app/app-routes';
 import { Bytes } from 'src/app/core/services/utility/utility.enum';
@@ -147,9 +147,14 @@ export class ExportService {
       exportResult.autolistCount = await this.exportAutolists();
     }
     if (!this.config.playlistConfig.playlistsDisabled && !this.config.exportTableEnabled) {
-      // Exporting playlist entities is not supported if only a subset of the songs is being used
+      // Exporting all playlist entities is not supported if only a subset of the songs is being used
       this.events.broadcast(AppEvent.ExportPlaylistsStart, exportResult);
       exportResult.playlistCount = await this.exportPlaylists();
+    }
+    else if (this.config.playlistIds?.length) {
+      // But if specific playlists were specified, then only export those
+      this.events.broadcast(AppEvent.ExportPlaylistsStart, exportResult);
+      exportResult.playlistCount = await this.exportPlaylists(this.config.playlistIds);
     }
     exportResult.period = t.stop();
     await this.saveSyncFile(exportResult);
@@ -163,26 +168,33 @@ export class ExportService {
    * Sets up the songs in the config object based on the specified criteria and fills the SongExport table if needed.
    */
   private async prepareSongs(): Promise<void> {
-    if (!this.config.songs) {
-      if (this.config.playlistId && !this.config.criteria) {
-        this.config.criteria = new Criteria('Playlist Search');
-        this.config.criteria.searchCriteria.push(new CriteriaItem('playlistId', this.config.playlistId));
-      }
-      if (this.config.filterId && !this.config.criteria) {
-        const filter = await FilterEntity.findOneBy({ id: this.config.filterId });
-        this.config.criteria = await this.entities.getCriteriaFromFilter(filter);
-      }
-      if (this.config.lastAdded && !this.config.criteria) {
-        this.config.criteria = new Criteria('Last Added');
-        this.config.criteria.paging.pageSize = this.config.lastAdded;
-        this.config.criteria.addSorting('addDate', CriteriaSortDirection.Descending);
-      }
+    // Let's make sure export is not enabled to get songs from the real tables
+    this.config.exportTableEnabled = false;
 
-      if (this.config.criteria) {
-        // Let's make sure export is not enabled to get songs from the real tables
-        this.config.exportTableEnabled = false;
-        this.config.songs = await this.getSongs(this.config.criteria);
+    if (this.config.playlistIds?.length) {
+      const criteria = new Criteria();
+      criteria.searchCriteria.addIgnore('sequence');
+      const criteriaItem = criteria.searchCriteria.addIgnore('playlistId');
+      criteriaItem.comparison = CriteriaComparison.Equals;
+      for (const playlistId of this.config.playlistIds) {
+        criteriaItem.columnValues.push({ value: playlistId });
       }
+      await this.mergeCriteria(criteria);
+    }
+    if (this.config.filterId) {
+      const filter = await FilterEntity.findOneBy({ id: this.config.filterId });
+      const criteria = await this.entities.getCriteriaFromFilter(filter);
+      await this.mergeCriteria(criteria);
+    }
+    if (this.config.lastAdded) {
+      const criteria = new Criteria('Last Added');
+      criteria.paging.pageSize = this.config.lastAdded;
+      criteria.addSorting('addDate', CriteriaSortDirection.Descending);
+      await this.mergeCriteria(criteria);
+    }
+
+    if (this.config.criteria) {
+      await this.mergeCriteria(this.config.criteria);
     }
 
     if (this.config.songs) {
@@ -198,6 +210,24 @@ export class ExportService {
     this.config.songs = await SongExtendedViewEntity.find();
   }
 
+  private async mergeCriteria(criteria: Criteria): Promise<void> {
+    const songs = await this.getSongs(criteria);
+    if (this.config.songs?.length) {
+      this.mergeSongs(songs, this.config.songs);
+    }
+    else {
+      this.config.songs = songs;
+    }
+  }
+
+  private mergeSongs(source: ISongExtendedModel[], destination: ISongExtendedModel[]): void {
+    for (const song of source) {
+      if (!destination.find(s => s.id === song.id)) {
+        destination.push(song);
+      }
+    }
+  }
+
   private async fillSongExport(songs: ISongModel[]): Promise<void> {
     await SongExportEntity.clear();
     const songTempData: SongExportEntity[] = [];
@@ -208,9 +238,15 @@ export class ExportService {
     await this.db.bulkInsert(SongExportEntity, songTempData);
   }
 
-  private async exportPlaylists(): Promise<number> {
+  private async exportPlaylists(ids?: string[]): Promise<number> {
     let result = 0;
-    const playlists = await PlaylistEntity.find();
+    let playlists: PlaylistEntity[];
+    if (ids?.length) {
+      playlists = await PlaylistEntity.findBy({ id: In(ids) });
+    }
+    else {
+      playlists = await PlaylistEntity.find();
+    }
     for (const playlist of playlists) {
       const criteria = new Criteria(playlist.name);
       criteria.searchCriteria.push(new CriteriaItem('playlistId', playlist.id));

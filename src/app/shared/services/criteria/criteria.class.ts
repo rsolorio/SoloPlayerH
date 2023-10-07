@@ -243,4 +243,17 @@ export class CriteriaItems extends Array<CriteriaItem> {
   public ignoredInSelect(columnName: string): boolean {
     return this.filter(item => item.columnName === columnName && item.ignoreInSelect).length > 0;
   }
+
+  public addIgnore(columnName: string): CriteriaItem {
+    let criteriaItem = this.find(item => item.columnName === columnName);
+    if (criteriaItem) {
+      criteriaItem.ignoreInSelect = true;
+    }
+    else {
+      criteriaItem = new CriteriaItem(columnName);
+      criteriaItem.ignoreInSelect = true;
+      this.push(criteriaItem);
+    }
+    return criteriaItem;
+  }
 }

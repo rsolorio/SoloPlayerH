@@ -31,6 +31,7 @@ import { MpegTagVersion } from 'src/app/shared/models/music.enum';
 import { FilterId } from 'src/app/shared/services/database/database.seed';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppEvent } from 'src/app/app-events';
+import { In } from 'typeorm';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -506,13 +507,13 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             editorType: SettingsEditorType.Number,
             data: exportConfig.lastAdded,
             textData: [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'],
-            beforePanelOpen: panelModel => {
+            beforePanelOpen: async panelModel => {
               panelModel['label'] = 'Last number of songs';
             },
             onChange: setting => {
               exportConfig.lastAdded = setting.data;
               setting.textData = [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'];
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           },
           {
@@ -521,7 +522,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             textRegular: ['The ID3 tag version to be used when writing the audio metadata. This setting only applies to mp3 files.'],
             editorType: SettingsEditorType.List,
             textData: [exportConfig.mpegTag],
-            beforePanelOpen: panelModel => {
+            beforePanelOpen: async panelModel => {
               const chipItem1: IChipItem = { sequence: 1, value: MpegTagVersion.Id3v23, caption: MpegTagVersion.Id3v23 };
               if (chipItem1.value === exportConfig.mpegTag) {
                 chipItem1.selected = true;
@@ -535,7 +536,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             onChange: setting => {
               exportConfig.mpegTag = setting.data;
               setting.textData = [setting.data];
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           }
         ]
@@ -546,13 +547,42 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
           {
             name: 'Export Static Playlists',
             icon: AppEntityIcons.Playlist,
-            textRegular: ['Whether or not static playlists should be exported.'],
+            textRegular: ['Whether or not all static playlists should be exported.'],
             editorType: SettingsEditorType.YesNo,
             data: !exportConfig.playlistConfig.playlistsDisabled,
             disabled: exportConfig.lastAdded > 0,
             onChange: setting => {
               exportConfig.playlistConfig.playlistsDisabled = !setting.data;
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            id: 'exportSelectedPlaylists',
+            name: 'Export Selected Playlists',
+            icon: AppEntityIcons.Playlist,
+            textRegular: ['Select playlists to export'],
+            editorType: SettingsEditorType.ListMultiple,
+            data: exportConfig.playlistIds,
+            beforePanelOpen: async panelModel => {
+              const playlists = await PlaylistEntity.find();
+              const chips: IChipItem[] = [];
+              this.utility.sort(playlists, 'name').forEach(playlist => {
+                chips.push({
+                  value: playlist.id,
+                  caption: playlist.name,
+                  selected: exportConfig.playlistIds?.length && exportConfig.playlistIds.includes(playlist.id)
+                })
+              });
+              panelModel['items'] = chips;
+            },
+            onChange: settings => {
+              exportConfig.playlistIds = settings.data;
+              this.entities.saveSyncProfile(parsedProfile).then(result => {
+                profile.config = result.config;
+                this.getPlaylistNames(exportConfig.playlistIds).then(names => {
+                  settings.textData = [names];
+                });
+              });
             }
           },
           {
@@ -563,7 +593,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             data: !exportConfig.playlistConfig.smartlistsDisabled,
             onChange: setting => {
               exportConfig.playlistConfig.smartlistsDisabled = !setting.data;
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           },
           {
@@ -574,7 +604,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             data: !exportConfig.playlistConfig.autolistsDisabled,
             onChange: setting => {
               exportConfig.playlistConfig.autolistsDisabled = !setting.data;
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           },
           {
@@ -585,7 +615,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             data: !exportConfig.playlistConfig.dedicatedDirectoryDisabled,
             onChange: setting => {
               exportConfig.playlistConfig.dedicatedDirectoryDisabled = !setting.data;
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           },
           {
@@ -595,21 +625,17 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             editorType: SettingsEditorType.List,
             data: exportConfig.playlistConfig.format,
             textData: [exportConfig.playlistConfig.format.toUpperCase()],
-            beforePanelOpen: panelModel => {
-              const chipItemM3u: IChipItem = { sequence: 1, value: 'm3u', caption: 'M3U' };
-              if (chipItemM3u.value === exportConfig.playlistConfig.format) {
-                chipItemM3u.selected = true;
-              }
-              const chipItemPls: IChipItem = { sequence: 2, value: 'pls', caption: 'PLS' };
-              if (chipItemPls.value === exportConfig.playlistConfig.format) {
-                chipItemPls.selected = true;
-              }
+            beforePanelOpen: async panelModel => {
+              const chipItemM3u: IChipItem = {
+                sequence: 1, value: 'm3u', caption: 'M3U', selected: exportConfig.playlistConfig.format === 'm3u' };
+              const chipItemPls: IChipItem = {
+                sequence: 2, value: 'pls', caption: 'PLS', selected: exportConfig.playlistConfig.format === 'pls' };
               panelModel['items'] = [chipItemM3u, chipItemPls];
             },
             onChange: setting => {
               exportConfig.playlistConfig.format = setting.data;
               setting.textData = [exportConfig.playlistConfig.format.toUpperCase()];
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           },
           {
@@ -619,13 +645,13 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             editorType: SettingsEditorType.Number,
             data: exportConfig.playlistConfig.minCount,
             textData: [exportConfig.playlistConfig.minCount ? exportConfig.playlistConfig.minCount.toString() : '0'],
-            beforePanelOpen: panelModel => {
+            beforePanelOpen: async panelModel => {
               panelModel['label'] = 'Minimum number of tracks';
             },
             onChange: setting => {
               exportConfig.playlistConfig.minCount = setting.data;
               setting.textData = [exportConfig.playlistConfig.minCount ? exportConfig.playlistConfig.minCount.toString() : '0'];
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           },
           {
@@ -635,19 +661,31 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             editorType: SettingsEditorType.Number,
             data: exportConfig.playlistConfig.maxCount,
             textData: [exportConfig.playlistConfig.maxCount ? exportConfig.playlistConfig.maxCount.toString() : '0'],
-            beforePanelOpen: panelModel => {
+            beforePanelOpen: async panelModel => {
               panelModel['label'] = 'Maximum number of tracks';
             },
             onChange: setting => {
               exportConfig.playlistConfig.maxCount = setting.data;
               setting.textData = [exportConfig.playlistConfig.maxCount ? exportConfig.playlistConfig.maxCount.toString() : '0'];
-              this.entities.saveSyncProfile(parsedProfile);
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }
           }
         ]
       }
     ];
     this.showModal(profile);
+    const setting = this.findSetting('exportSelectedPlaylists');
+    this.getPlaylistNames(exportConfig.playlistIds).then(names => {
+      setting.textData = [names];
+    });
+  }
+
+  private async getPlaylistNames(ids: string[]): Promise<string> {
+    if (ids?.length) {
+      const playlists = await PlaylistEntity.findBy({ id: In(ids) });
+      return playlists.map(p => p.name).join(', ');
+    }
+    return null;
   }
 
   private refreshScanAudioStatus(profile: ISyncProfile): void {

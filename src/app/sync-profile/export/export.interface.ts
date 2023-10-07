@@ -7,7 +7,7 @@ export interface IExportConfig {
   /** If set, this will export the last x number of songs added to the library. */
   lastAdded?: number;
   filterId?: string;
-  playlistId?: string;
+  playlistIds?: string[];
   criteria?: Criteria;
   songs?: ISongExtendedModel[];
   exportTableEnabled?: boolean;

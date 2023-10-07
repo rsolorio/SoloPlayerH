@@ -5,6 +5,7 @@ import { SongViewBaseEntity, songViewBaseSelect, songViewBaseJoins } from './son
 /**
  * View that integrates the song information with the playlist song data.
  * Besides the regular song view fields, this view includes these extra fields: playlistId, songId, sequence.
+ * Since the PlaylistSongEntity does not have an "id" column, the id in this entity matches the songId column.
  */
 @ViewEntity({
   name: 'playlistSongView',

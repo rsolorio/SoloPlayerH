@@ -361,13 +361,14 @@ export class DatabaseEntitiesService {
     return this.parseSyncProfile(entity);
   }
 
-  public async saveSyncProfile(data: ISyncProfileParsed): Promise<void> {
+  public async saveSyncProfile(data: ISyncProfileParsed): Promise<ISyncProfile> {
     const syncProfile = await SyncProfileEntity.findOneBy({ id: data.id });
     syncProfile.directories = data.directoryArray ? JSON.stringify(data.directoryArray) : null;
     syncProfile.config = data.configObj ? JSON.stringify(data.configObj) : null;
     syncProfile.syncInfo = data.syncInfoObj ? JSON.stringify(data.syncInfoObj) : null;
     syncProfile.syncDate = data.syncDate;
     await syncProfile.save();
+    return syncProfile;
   }
 
   public async getDataSources(profileId: string): Promise<IDataSourceParsed[]> {
