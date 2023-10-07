@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { IEvent } from './events.interface';
-import { CoreEvent } from './events.enum';
 import { filter, map } from 'rxjs/operators';
+import { CoreEvent } from 'src/app/app-events';
 
 @Injectable({
   providedIn: 'root'

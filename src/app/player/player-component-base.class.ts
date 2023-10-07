@@ -9,7 +9,6 @@ import { PlayerStatus, PlayMode, RepeatMode } from '../shared/models/player.enum
 import { HtmlPlayerService } from '../shared/services/html-player/html-player.service';
 import { MenuService } from '../core/services/menu/menu.service';
 import { EventsService } from '../core/services/events/events.service';
-import { AppEvent } from '../shared/models/events.enum';
 import { IEventArgs, ISelectableValue } from '../core/models/core.interface';
 import { IPlaylistSongModel } from '../shared/models/playlist-song-model.interface';
 import { ISongModel } from '../shared/models/song-model.interface';
@@ -30,6 +29,7 @@ import { ImagePreviewComponent } from '../related-image/image-preview/image-prev
 import { SideBarHostStateService } from '../core/components/side-bar-host/side-bar-host-state.service';
 import { ChipSelectionComponent } from '../shared/components/chip-selection/chip-selection.component';
 import { AppActionIcons, AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } from '../app-icons';
+import { AppEvent } from '../app-events';
 
 /**
  * Base component for any implementation of the player modes.

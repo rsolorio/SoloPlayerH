@@ -4,11 +4,11 @@ import { IMenuModel } from '../../models/menu-model.interface';
 import { ISideBarMenuModel } from './side-bar-menu-model.interface';
 import { UtilityService } from '../../services/utility/utility.service';
 import { EventsService } from '../../services/events/events.service';
-import { CoreEvent } from '../../services/events/events.enum';
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { LogService } from '../../services/log/log.service';
 import { LogLevel } from '../../services/log/log.enum';
 import { AppViewIcons } from 'src/app/app-icons';
+import { CoreEvent } from 'src/app/app-events';
 
 @Injectable({
   providedIn: 'root'

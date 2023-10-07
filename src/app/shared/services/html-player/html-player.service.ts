@@ -3,13 +3,13 @@ import { IStateService } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AppEvent } from '../../models/events.enum';
 import { PlayerListModel } from '../../models/player-list-model.class';
 import { PlayerSongStatus, PlayerStatus } from '../../models/player.enum';
 import { IPlayer, IPlayerState, IPlayerStatusChangedEventArgs } from '../../models/player.interface';
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { HtmlMediaEvent, HtmlMediaSessionEvent } from './html-player.enum';
 import { IMediaEventEntry } from './html-player.interface';
+import { AppEvent } from 'src/app/app-events';
 
 /**
  * Implementation of the IPlayer interface using the Html 5 Audio api.

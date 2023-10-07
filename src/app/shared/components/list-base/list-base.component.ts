@@ -6,9 +6,7 @@ import {
   Input,
   OnInit,
   Output,
-  TemplateRef,
-  ViewChild,
-  ViewContainerRef
+  TemplateRef
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
@@ -20,7 +18,6 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IListItemModel } from '../../models/base-model.interface';
 import { BreadcrumbEventType } from '../../models/breadcrumbs.enum';
-import { AppEvent } from '../../models/events.enum';
 import { Criteria } from '../../services/criteria/criteria.class';
 import { ICriteriaResult } from '../../services/criteria/criteria.interface';
 import { NavigationService } from '../../services/navigation/navigation.service';
@@ -30,6 +27,7 @@ import { IListBaseModel } from './list-base-model.interface';
 import { TimeAgo } from 'src/app/core/models/core.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { AppActionIcons } from 'src/app/app-icons';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-list-base',

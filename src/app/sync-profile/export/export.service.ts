@@ -22,7 +22,6 @@ import { CriteriaComparison, CriteriaSortDirection } from '../../shared/services
 import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
 import { ValueLists } from '../../shared/services/database/database.lists';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { AppEvent } from '../../shared/models/events.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PeriodTimer } from 'src/app/core/models/timer.class';
 import { EntityTarget } from 'typeorm';
@@ -30,6 +29,7 @@ import { SideBarMenuStateService } from 'src/app/core/components/side-bar-menu/s
 import { AppRoute } from 'src/app/app-routes';
 import { Bytes } from 'src/app/core/services/utility/utility.enum';
 import { FileService } from 'src/app/platform/file/file.service';
+import { AppEvent } from 'src/app/app-events';
 
 enum SongViewType {
   Standard,

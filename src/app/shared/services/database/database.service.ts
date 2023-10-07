@@ -60,7 +60,6 @@ import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.clas
 import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { IComparison } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
-import { AppEvent } from '../../models/events.enum';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
 import { HttpClient } from '@angular/common/http';
 import { ComposerViewEntity } from '../../entities/composer-view.entity';
@@ -68,6 +67,7 @@ import { DatabaseLookupService } from './database-lookup.service';
 import { RelativeDateService } from '../relative-date/relative-date.service';
 import { ICollection, IKeyValuePair, KeyValueGen } from 'src/app/core/models/core.interface';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
+import { AppEvent } from 'src/app/app-events';
 
 interface IBulkInfo {
   /** Maximum number of parameters allowed on each bulk. */

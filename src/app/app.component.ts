@@ -2,7 +2,6 @@ import { Component, OnInit, HostListener, Inject, HostBinding } from '@angular/c
 import { DOCUMENT } from '@angular/common';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 
-import { CoreEvent } from './core/services/events/events.enum';
 import { EventsService } from './core/services/events/events.service';
 import { BreakpointMode } from './core/services/utility/utility.enum';
 import { IWindowSize, IWindowSizeChangedEvent } from './core/services/utility/utility.interface';
@@ -14,6 +13,7 @@ import { IMenuModel } from './core/models/menu-model.interface';
 import { NavBarStateService } from './core/components/nav-bar/nav-bar-state.service';
 import { ModuleOptionId } from './shared/services/database/database.seed';
 import { DatabaseOptionsService } from './shared/services/database/database-options.service';
+import { CoreEvent } from './app-events';
 
 /**
  * The main app component.

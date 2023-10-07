@@ -1,12 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { CoreEvent } from 'src/app/core/services/events/events.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { BreadcrumbDisplayMode, BreadcrumbEventType } from '../../models/breadcrumbs.enum';
-import { AppEvent } from '../../models/events.enum';
 import { IBreadcrumbModel, IBreadcrumbsModel } from './breadcrumbs-model.interface';
 import { BreadcrumbsStateService } from './breadcrumbs-state.service';
 import { getNumericCircleIcon } from 'src/app/app-icons';
+import { AppEvent, CoreEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-breadcrumbs',

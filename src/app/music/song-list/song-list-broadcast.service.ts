@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
+import { AppEvent } from 'src/app/app-events';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { SongArtistViewEntity, SongViewEntity,SongClassificationViewEntity } from 'src/app/shared/entities';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IMusicSearchTerms } from 'src/app/shared/models/music-model.interface';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';

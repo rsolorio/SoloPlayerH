@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
+import { AppEvent } from 'src/app/app-events';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { FilterEntity } from 'src/app/shared/entities/filter.entity';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFilterModel } from 'src/app/shared/models/filter-model.interface';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';

@@ -7,7 +7,6 @@ import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base
 import { SongClassificationViewEntity } from 'src/app/shared/entities';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
 import { IClassificationModel } from 'src/app/shared/models/classification-model.interface';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -22,6 +21,7 @@ import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } fro
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-classification-list',

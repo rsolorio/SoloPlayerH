@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { BreadcrumbDisplayMode, BreadcrumbEventType } from '../../models/breadcrumbs.enum';
-import { AppEvent } from '../../models/events.enum';
 import { CriteriaItems } from '../../services/criteria/criteria.class';
 import { IBreadcrumbModel, IBreadcrumbOptions, IBreadcrumbsModel } from './breadcrumbs-model.interface';
 import { IWindowSizeChangedEvent } from 'src/app/core/services/utility/utility.interface';
-import { CoreEvent } from 'src/app/core/services/events/events.enum';
 import { BreakpointMode } from 'src/app/core/services/utility/utility.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { AppEvent, CoreEvent } from 'src/app/app-events';
 
 @Injectable({
   providedIn: 'root'

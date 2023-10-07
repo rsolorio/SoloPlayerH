@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AppEvent } from 'src/app/app-events';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { AppEvent } from '../../models/events.enum';
 
 @Component({
   selector: 'sp-quick-search',

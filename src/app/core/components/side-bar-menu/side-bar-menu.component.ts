@@ -5,9 +5,9 @@ import { SideBarStateService } from '../side-bar/side-bar-state.service';
 import { Position } from '../../models/core.enum';
 import { SideBarMenuStateService } from './side-bar-menu-state.service';
 import { EventsService } from '../../services/events/events.service';
-import { CoreEvent } from '../../services/events/events.enum';
 import { ISideBarMenuModel } from './side-bar-menu-model.interface';
 import { AppActionIcons } from 'src/app/app-icons';
+import { CoreEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-side-bar-menu',

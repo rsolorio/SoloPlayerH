@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute } from 'src/app/app-routes';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFilterModel } from 'src/app/shared/models/filter-model.interface';
 import { FilterListBroadcastService } from './filter-list-broadcast.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -11,6 +10,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-filter-list',

@@ -5,7 +5,6 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlayerOverlayStateService } from 'src/app/player/player-overlay/player-overlay-state.service';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
@@ -43,6 +42,7 @@ import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } fro
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { SyncType } from 'src/app/shared/models/sync-profile-model.interface';
 import { ExportService } from 'src/app/sync-profile/export/export.service';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-song-list',

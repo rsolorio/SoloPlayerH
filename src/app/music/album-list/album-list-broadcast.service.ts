@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
+import { AppEvent } from 'src/app/app-events';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { AlbumViewEntity, AlbumClassificationViewEntity } from 'src/app/shared/entities';
 import { IAlbumModel } from 'src/app/shared/models/album-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison, CriteriaJoinOperator } from 'src/app/shared/services/criteria/criteria.enum';

@@ -4,7 +4,7 @@ import { IMenuModel } from '../../models/menu-model.interface';
 import { SlideMenu } from 'primeng/slidemenu';
 import { MenuService } from '../../services/menu/menu.service';
 import { EventsService } from '../../services/events/events.service';
-import { CoreEvent } from '../../services/events/events.enum';
+import { CoreEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-icon-menu',

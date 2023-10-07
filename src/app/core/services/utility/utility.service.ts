@@ -3,7 +3,6 @@ import { IWindowSize, IWindowSizeChangedEvent } from './utility.interface';
 import { BreakpointMode, Bytes, Milliseconds } from './utility.enum';
 import { BreakpointRanges } from './utility.class';
 import { EventsService } from '../../../core/services/events/events.service';
-import { CoreEvent } from '../../../core/services/events/events.enum';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { IRouteInfo, ISize, ITimeSpan } from 'src/app/core/models/core.interface';
@@ -11,6 +10,7 @@ import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
 import { MimeType, TimeAgo } from '../../models/core.enum';
+import { CoreEvent } from 'src/app/app-events';
 
 @Injectable({
   providedIn: 'root'

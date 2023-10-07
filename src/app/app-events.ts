@@ -1,7 +1,21 @@
+export enum CoreEvent {
+  WindowSizeChanged = 'WINDOW_SIZE_CHANGED',
+  BreakpointExtended = 'BREAKPOINT_EXTENDED',
+  BreakpointReduced = 'BREAKPOINT_REDUCED',
+  BreakpointChanged = 'BREAKPOINT_CHANGED',
+  WindowScrollDown = 'WINDOW_SCROLL_DOWN',
+  WindowScrollUp = 'WINDOW_SCROLL_UP',
+  WindowClick = 'WINDOW_CLICK',
+  RouteChanging = 'ROUTE_CHANGING',
+  RouteChanged = 'ROUTE_CHANGED',
+  SidebarMenuAction = 'SIDEBAR_MENU_ACTION',
+  SidebarShow = 'SIDEBAR_SHOW',
+  NavbarBackRequested = 'NAVBAR_BACK_REQUESTED'
+}
+
 export enum AppEvent {
   // App
   QuickSearchFired = 'QUICK_SEARCH_FIRED',
-  SearchSelectionDone = 'SEARCH_SELECTION_DONE',
   SongListUpdated = 'SONG_LIST_UPDATED',
   AlbumListUpdated = 'ALBUM_LIST_UPDATED',
   ArtistListUpdated = 'ARTIST_LIST_UPDATED',

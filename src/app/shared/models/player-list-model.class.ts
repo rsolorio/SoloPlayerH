@@ -3,12 +3,12 @@ import { EventsService } from "src/app/core/services/events/events.service";
 import { UtilityService } from "src/app/core/services/utility/utility.service";
 import { RelatedImageSrc } from "../services/database/database.seed";
 import { IDbModel } from "./base-model.interface";
-import { AppEvent } from "./events.enum";
 import { PlayerSongStatus, PlayMode, RepeatMode } from "./player.enum";
 import { IPlaylistSongModel } from "./playlist-song-model.interface";
 import { ISongModel } from "./song-model.interface";
 import { ImageSrcType } from "src/app/core/models/core.enum";
 import { fisherYatesShuffle } from "src/app/app-exports";
+import { AppEvent } from "src/app/app-events";
 
 /**
  * Class responsible for handling the access to the tracks and updating the playlist status.

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListBroadcastServiceBase } from 'src/app/shared/models/list-broadcast-service-base.class';
 import { IFileBrowserItem } from './file-browser.interface';
 import { Observable } from 'rxjs';
@@ -9,6 +8,7 @@ import { Criteria, CriteriaItems } from 'src/app/shared/services/criteria/criter
 import { FileService } from '../file/file.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
+import { AppEvent } from 'src/app/app-events';
 
 @Injectable({
   providedIn: 'root'

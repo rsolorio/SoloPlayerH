@@ -8,7 +8,6 @@ import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/b
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { IArtistModel } from 'src/app/shared/models/artist-model.interface';
 import { BreadcrumbSource } from 'src/app/shared/models/breadcrumbs.enum';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -23,6 +22,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-artist-list',

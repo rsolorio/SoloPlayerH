@@ -3,10 +3,10 @@ import { SideBarHostStateService } from './side-bar-host-state.service';
 import { ISideBarHostModel } from './side-bar-host-model.interface';
 import { CoreComponent } from '../../models/core-component.class';
 import { EventsService } from '../../services/events/events.service';
-import { CoreEvent } from '../../services/events/events.enum';
 import { ISideBarModel } from '../side-bar/side-bar-model.interface';
 import { Position } from '../../models/core.enum';
 import { IIconAction } from '../../models/core.interface';
+import { CoreEvent } from 'src/app/app-events';
 
 /**
  * Component that hosts dynamic content for the side bar.

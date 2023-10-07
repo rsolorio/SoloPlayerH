@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ColorG } from 'src/app/core/models/color-g.class';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { PlayerOverlayStateService } from './player-overlay-state.service';
 import { PlayerOverlayMode } from './player-overlay.enum';
@@ -11,6 +10,7 @@ import { IFullColorPalette } from 'src/app/shared/services/color-utility/color-u
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { AppEvent } from 'src/app/app-events';
 
 /**
  * This is the main container of the player and responsible for rendering the selected player mode.

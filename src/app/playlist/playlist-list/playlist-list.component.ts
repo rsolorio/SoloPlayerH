@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IPlaylistModel } from 'src/app/shared/models/playlist-model.interface';
 import { FileService } from 'src/app/platform/file/file.service';
 import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
@@ -18,6 +17,7 @@ import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-play
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-playlist-list',

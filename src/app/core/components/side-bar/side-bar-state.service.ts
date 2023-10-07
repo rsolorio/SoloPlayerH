@@ -3,7 +3,7 @@ import { Position } from '../../models/core.enum';
 import { ISideBarModel } from './side-bar-model.interface';
 import { LoadingViewStateService } from '../loading-view/loading-view-state.service';
 import { EventsService } from '../../services/events/events.service';
-import { CoreEvent } from '../../services/events/events.enum';
+import { CoreEvent } from 'src/app/app-events';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { IFileBrowserItem, IFileBrowserModel, IFileBrowserQueryParams } from './file-browser.interface';
 import { FileBrowserBroadcastService } from './file-browser-broadcast.service';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -12,6 +11,7 @@ import { IFileInfo } from '../file/file.interface';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { AppActionIcons, AppAttributeIcons, getNumericBoxIcon } from 'src/app/app-icons';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-file-browser',

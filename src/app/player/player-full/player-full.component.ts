@@ -6,7 +6,6 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { MenuService } from 'src/app/core/services/menu/menu.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { WorkerName, WorkerService } from 'src/app/core/services/worker/worker.service';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ColorUtilityService } from 'src/app/shared/services/color-utility/color-utility.service';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
@@ -24,6 +23,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { EntityId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-player-full',

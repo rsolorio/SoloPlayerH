@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { IListBaseModel } from 'src/app/shared/components/list-base/list-base-model.interface';
 import { PlaylistEntity, SyncProfileEntity } from 'src/app/shared/entities';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { Criteria } from 'src/app/shared/services/criteria/criteria.class';
 import { SyncProfileListBroadcastService } from './sync-profile-list-broadcast.service';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppFeatureIcons, AppViewIcons } from 'src/app/app-icons';
@@ -31,6 +30,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { MpegTagVersion } from 'src/app/shared/models/music.enum';
 import { FilterId } from 'src/app/shared/services/database/database.seed';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
+import { AppEvent } from 'src/app/app-events';
 
 @Component({
   selector: 'sp-sync-profile-list',

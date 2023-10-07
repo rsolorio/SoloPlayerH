@@ -3,7 +3,7 @@ import { INavbarModel, INavBarOuterIcons, NavbarDisplayMode } from './nav-bar-mo
 import { IMenuModel } from '../../models/menu-model.interface';
 import { NavBarComponent } from './nav-bar.component';
 import { EventsService } from '../../services/events/events.service';
-import { CoreEvent } from '../../services/events/events.enum';
+import { CoreEvent } from 'src/app/app-events';
 
 @Injectable({
   providedIn: 'root'

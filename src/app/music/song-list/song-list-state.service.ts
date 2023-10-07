@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { AppEvent } from 'src/app/app-events';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { AppEvent } from 'src/app/shared/models/events.enum';
 import { ListListenerServiceBase } from 'src/app/shared/models/list-listener-service-base.class';
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 

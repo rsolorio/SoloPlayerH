@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { CoreEvent } from 'src/app/app-events';
 import { AppRoute } from 'src/app/app-routes';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { IValuePair } from 'src/app/core/models/core.interface';
-import { CoreEvent } from 'src/app/core/services/events/events.enum';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
