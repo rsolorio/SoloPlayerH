@@ -212,8 +212,14 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
           <!-- Elapsed -->
           <td
           (click)="adjustTimeDown()"
-          class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital sp-clickable">
-            <span [ngClass]="{ 'sp-fade-in-out': model.status === PlayerStatus.Paused }" class="sp-time-text">{{ model.elapsedSeconds | duration }}</span>
+          class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-clickable">
+            <sp-time-display
+            class="sp-time-text"
+            [blinkEnabled]="model.status === PlayerStatus.Paused"
+            [totalSeconds]="model.elapsedSeconds"
+            [placeholderClass]="'sp-color-overlay-02'"
+            [hoursHidden]="true">
+            </sp-time-display>
           </td>
           <!-- Progress Bar -->
           <td class="sp-td-progress-bar sp-full-width">
@@ -224,8 +230,13 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
           <!-- Remaining -->
           <td
           (click)="adjustTimeUp()"
-          class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-font-family-digital sp-clickable">
-              <span class="sp-time-text">{{ song.seconds - model.elapsedSeconds | duration }}</span>
+          class="sp-td-nav-bar-icon sp-text-xlarge sp-text-center sp-clickable">
+            <sp-time-display
+            class="sp-time-text"
+            [totalSeconds]="song.seconds - model.elapsedSeconds"
+            [placeholderClass]="'sp-color-overlay-02'"
+            [hoursHidden]="true">
+            </sp-time-display>
           </td>
         </tr></table></td></tr>
         <!-- Play Controls -->

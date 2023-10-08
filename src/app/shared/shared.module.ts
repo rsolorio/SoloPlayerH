@@ -24,6 +24,7 @@ import { EyeDropperDirective } from './directives/eye-dropper/eye-dropper.direct
 import { EntityEditorComponent } from './components/entity-editor/entity-editor.component';
 import { SettingsBaseComponent } from './components/settings-base/settings-base.component';
 import { InputEditorComponent } from './components/input-editor/input-editor.component';
+import { TimeDisplayComponent } from './components/time-display/time-display.component';
 
 
 
@@ -42,7 +43,8 @@ import { InputEditorComponent } from './components/input-editor/input-editor.com
     EyeDropperDirective,
     EntityEditorComponent,
     SettingsBaseComponent,
-    InputEditorComponent
+    InputEditorComponent,
+    TimeDisplayComponent
   ],
   imports: [
     CommonModule,
@@ -62,7 +64,8 @@ import { InputEditorComponent } from './components/input-editor/input-editor.com
     EyeDropperDirective,
     EntityEditorComponent,
     SettingsBaseComponent,
-    InputEditorComponent
+    InputEditorComponent,
+    TimeDisplayComponent
   ],
   entryComponents: [ QuickSearchComponent ],
   providers: [ { provide: FileService, useClass: FileElectronService }, { provide: ImageService, useClass: ImageElectronService } ]

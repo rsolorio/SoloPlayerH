@@ -1,0 +1,18 @@
+.sp-time-container {
+  display: flex;
+  justify-content: center;
+}
+.sp-time-container div {
+	display: inline-block;
+	position: relative;
+}
+.sp-time-container div p {
+	position: relative;
+	z-index: 100;
+  margin: 0;
+}
+.sp-time-container .sp-time-numbers .sp-time-placeholder {
+	position: absolute;
+	top: 0;
+	z-index: 50;
+}

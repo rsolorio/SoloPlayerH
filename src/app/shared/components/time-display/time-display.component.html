@@ -1,0 +1,25 @@
+<div class="sp-time-container sp-font-family-digital" [ngClass]="fontClass" [ngStyle]="{ 'color': fontColor }">
+  <!-- Hours -->
+  <div *ngIf="!hoursHidden" class="sp-time-numbers">
+    <p>{{hours}}</p>
+    <p class="sp-time-placeholder" [ngClass]="placeholderClass" [ngStyle]="{ 'color': placeholderColor }">88</p>
+  </div>
+  <!-- Colon -->
+  <div *ngIf="!hoursHidden" [ngClass]="{ 'sp-fade-in-out': model.blinkEnabled }">
+    <p>:</p>
+  </div>
+  <!-- Minutes -->
+  <div *ngIf="!minutesHidden" class="sp-time-numbers">
+    <p>{{minutes}}</p>
+    <p class="sp-time-placeholder" [ngClass]="placeholderClass" [ngStyle]="{ 'color': placeholderColor }">88</p>
+  </div>
+  <!-- Colon -->
+  <div *ngIf="!minutesHidden" [ngClass]="{ 'sp-fade-in-out': model.blinkEnabled }">
+    <p>:</p>
+  </div>
+  <!-- Seconds -->
+  <div class="sp-time-numbers">
+    <p>{{seconds}}</p>
+    <p class="sp-time-placeholder" [ngClass]="placeholderClass" [ngStyle]="{ 'color': placeholderColor }">88</p>
+  </div>
+ </div>
