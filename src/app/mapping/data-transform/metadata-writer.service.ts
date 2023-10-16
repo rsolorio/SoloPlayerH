@@ -173,6 +173,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
   }
 
+  /**
+   * Adds metadata tags and returns an object that follows the tag object of the mp3tag library.
+   * Supported tags: https://mp3tag.js.org/docs/frames.html
+   */
   private async setupV2Tags(metadata: KeyValues): Promise<any> {
     const tags: any = {};
     const frameSeparator = '\\\\';
@@ -239,11 +243,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     const year = this.first(metadata[MetaField.Year]);
     if (year) {
-      // Recording year: TYER (2.3), TDRC (2.4)
-      // Let's stick with TYER for backwards compatibility
+      // Recording year (2.3), for backwards compatibility
       tags.TYER = year.toString();
-      // Support for v2.4 (release year)
+      // Release date (v2.4)
       tags.TDRL = year.toString();
+      // Recording date (v2.4)
+      tags.TDRC = year.toString();
     }
 
     const comment = this.first(metadata[MetaField.Comment]);

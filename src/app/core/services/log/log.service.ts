@@ -36,6 +36,7 @@ export class LogService {
    * @param message The debug message.
    * @param data Array or object to display as table.
    * @param columns An array of column names to display.
+   * Reference: https://developer.mozilla.org/en-US/docs/Web/API/console/table
    */
   public table(message: string, data: any, columns?: string[]): void {
     this.debug(message, { tabularData: data, columns: columns }, false);

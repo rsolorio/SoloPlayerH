@@ -160,7 +160,9 @@ export class SongViewComponent implements OnInit {
               propertyName: 'language',
               icon: AppAttributeIcons.Language,
               label: 'Language',
-              onEdit: () => {}
+              onEdit: () => {
+                this.editLanguage();
+              }
             },
             {
               propertyName: 'mood',
@@ -274,6 +276,41 @@ export class SongViewComponent implements OnInit {
         off: !favorite
       }]
     });
+  }
+
+  private async editLanguage(): Promise<void> {
+    const entries = await ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Language.id });
+    const valuePairs = entries.map(entry => {
+      const valuePair: ISelectableValue = {
+        value: entry.id,
+        caption: entry.name
+      };
+      if (entry.name === this.entityEditorModel.data['language']) {
+        valuePair.selected = true;
+      }
+      return valuePair;
+    });
+    const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Language',
+      titleIcon: AppAttributeIcons.Language,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.Quick,
+      items: valuePairs,
+      onOk: model => {
+        const selectedValues = model.items.filter(value => value.selected);
+        const valuePair = selectedValues[0];
+        if (valuePair.caption !== this.entityEditorModel.data['language']) {
+          this.entityEditorModel.data['language'] = valuePair.caption;
+          SongEntity.findOneBy({ id: this.entityEditorModel.data['id']}).then(song => {
+            song.language = valuePair.caption;
+            song.changeDate = new Date();
+            song.save();
+          });
+        }
+      }
+    };
+    this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
   private getClassificationTypeIcon(classificationTypeId: string): string {

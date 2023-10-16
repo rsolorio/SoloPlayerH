@@ -12,6 +12,7 @@ import {
   RelatedImageEntity,
   SongClassificationEntity,
   SongEntity,
+  SongViewEntity,
   ValueListEntryEntity
 } from '../../shared/entities';
 import { FileService } from 'src/app/platform/file/file.service';
@@ -750,6 +751,22 @@ export class ScanAudioService {
     return result;
   }
 
+  private createAlbum(primaryArtistId: string, albumName: string, releaseYear: number): AlbumEntity {
+    const album = new AlbumEntity();
+    album.id = this.utility.newGuid();
+    album.isNew = true;
+    album.name = albumName;
+    album.albumSort = albumName;
+    album.albumStylized = albumName;
+    album.primaryArtistId = primaryArtistId;
+    album.releaseYear = releaseYear;
+    album.releaseDecade = this.utility.getDecade(album.releaseYear);
+    album.hash = this.lookupService.hashAlbum(album.name, album.releaseYear);
+    album.favorite = false;
+    album.albumType = ValueLists.AlbumType.entries.LP.name;
+    return album;
+  }
+
   private createArtist(artistName: string, artistSort?: string, artistStylized?: string): ArtistEntity {
     const artist = new ArtistEntity();
     artist.id = this.utility.newGuid();
@@ -1114,6 +1131,141 @@ export class ScanAudioService {
     this.existingImages = [];
     this.existingPartyRelations = [];
     this.existingSongClassifications = [];
+  }
+
+  public async moveSong(songId: string, newDirectoryPath: string, newFileName: string): Promise<void> {
+    const song = await SongEntity.findOneBy({ id: songId });
+    const newFilePath = this.fileService.combine(newDirectoryPath, newFileName);
+    if (this.fileService.exists(newFilePath)) {
+      return;
+    }
+
+    // TODO: move lyrics file and single image?
+    await this.fileService.copyFile(song.filePath, newFilePath);
+    const newFileInfo = await this.fileService.getFileInfo(newFilePath);
+    const metadata = await this.metadataReader.run(newFileInfo);
+
+    // Things that can change when the file path changes:
+    // Language, Genre, Artist Name, Year/Decade, Featuring, PerformerCount, Album Name, Contributors/Party Relation, Artist Image, Album Image, Single Image
+
+    // ARTIST AND ALBUM
+    let primaryAlbum = await AlbumEntity.findOneBy({ id: song.primaryAlbumId });
+    let primaryArtist = await ArtistEntity.findOneBy({ id: primaryAlbum.primaryArtistId });
+
+    const primaryArtistName = this.first(metadata[MetaField.AlbumArtist]);
+    const primaryAlbumName = this.first(metadata[MetaField.Album]);
+    const year = this.first(metadata[MetaField.Year]);
+    const releaseYear = year ? year : 0;
+
+    // If the artist is different create or update the artist
+    if (primaryArtist.name !== primaryArtistName) {
+      const songs = await SongViewEntity.findBy({ primaryArtistId: primaryArtist.id });
+      if (songs.length === 1) {
+        // Rename the artist
+        primaryArtist.name = primaryArtistName;
+        primaryArtist.artistSort = primaryArtistName;
+        primaryArtist.artistStylized = primaryArtistName;
+        primaryArtist.hash = this.lookupService.hashArtist(primaryArtist.name);
+        await primaryArtist.save();
+      }
+      else if (songs.length > 1) {
+        // Create new artist
+        primaryArtist = this.createArtist(primaryArtistName, primaryArtistName, primaryArtistName);
+        await primaryArtist.save();
+      }
+    }
+
+    // Add new album when: new artist OR same artist and different album name (and year) and more than one album songs
+    // Edit album when: same artist and different album name (and year) and only one album song
+    let needsNewAlbum = false;
+    if (primaryArtist.id === primaryAlbum.primaryArtistId) {
+      if (primaryAlbum.name !== primaryAlbumName || primaryAlbum.releaseYear !== releaseYear) {
+        const songs = await SongViewEntity.findBy({ primaryAlbumId: primaryAlbum.id });
+        needsNewAlbum = songs.length > 1;
+      }
+    }
+    else {
+      needsNewAlbum = true;
+    }
+
+    if (needsNewAlbum) {
+      primaryAlbum = this.createAlbum(primaryArtist.id, primaryAlbumName, releaseYear);
+    }
+    else {
+      primaryAlbum.name = primaryAlbumName;
+      primaryAlbum.albumSort = primaryAlbumName;
+      primaryAlbum.albumStylized = primaryAlbumName;
+      primaryAlbum.releaseYear = releaseYear;
+      primaryAlbum.releaseDecade = this.utility.getDecade(primaryAlbum.releaseYear);
+      primaryAlbum.hash = this.lookupService.hashAlbum(primaryAlbum.name, primaryAlbum.releaseYear);
+    }
+    await primaryAlbum.save();
+    song.primaryAlbumId = primaryAlbum.id;
+    song.releaseYear = primaryAlbum.releaseYear;
+    song.releaseDecade = primaryAlbum.releaseDecade;
+
+    // GENRE
+    const genre = this.first(metadata[MetaField.Genre]);
+    if (genre && song.genre !== genre) {
+      // Remove classification
+      const currentGenreEntry = await ValueListEntryEntity.findOneBy({ name: song.genre, valueListTypeId: ValueLists.Genre.id });
+      if (currentGenreEntry) {
+        SongClassificationEntity.delete({ songId: songId, classificationId: currentGenreEntry.id });
+      }
+      // Replace current with new one
+      song.genre = genre;
+      // Add new classification
+      let newGenreEntry = await ValueListEntryEntity.findOneBy({ name: song.genre, valueListTypeId: ValueLists.Genre.id });
+      if (!newGenreEntry) {
+        newGenreEntry = new ValueListEntryEntity();
+        newGenreEntry.id = this.utility.newGuid();
+        newGenreEntry.name = song.genre;
+        newGenreEntry.hash = this.lookupService.hashValueListEntry(newGenreEntry.name);
+        newGenreEntry.valueListTypeId = ValueLists.Genre.id;
+        newGenreEntry.isClassification = true;
+        newGenreEntry.sequence = 0;
+        await newGenreEntry.save();
+      }
+      let songClass = await SongClassificationEntity.findOneBy({ songId: songId, classificationId: newGenreEntry.id });
+      if (!songClass) {
+        songClass = new SongClassificationEntity();
+        songClass.songId = songId;
+        songClass.classificationId = newGenreEntry.id;
+        songClass.classificationTypeId = ValueLists.Genre.id;
+        songClass.primary = false;
+      }
+    }
+
+    // PARTY RELATION
+
+    // SONG
+    song.filePath = newFilePath;
+    song.hash = this.lookupService.hashSong(song.filePath);
+    this.setFirst(song, 'name', metadata, MetaField.Title, this.first(metadata[MetaField.FileName]));
+
+    const brackets = this.utility.matchBrackets(song.name);
+    if (brackets?.length) {
+      for (const bracket of brackets) {
+        song.cleanName = song.name.replace(bracket, '').trim();
+      }
+    }
+    else {
+      song.cleanName = song.name;
+    }
+
+    const featuringArtists = metadata[MetaField.FeaturingArtist];
+    if (featuringArtists?.length) {
+      song.featuring = featuringArtists.join(', ');
+    }
+    else if (brackets?.length) {
+      song.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
+    }
+
+    this.setFirst(song, 'trackNumber', metadata, MetaField.TrackNumber, 0);
+    this.setFirst(song, 'mediaNumber', metadata, MetaField.MediaNumber, 1);
+    this.setFirst(song, 'titleSort', metadata, MetaField.TitleSort, song.name);
+    this.setFirst(song, 'language', metadata, MetaField.Language);
+    song.performerCount = 0;
   }
 
   private setChangesIfNotNew(entity: DbEntity): void {

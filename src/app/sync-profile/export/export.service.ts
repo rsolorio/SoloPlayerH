@@ -54,7 +54,7 @@ enum SongViewType {
 export class ExportService {
   private config: IExportConfig;
   private running: boolean;
-  private syncFileName = 'SyncFile.txt';
+  private syncFileName = 'SyncInfo.txt';
   constructor(
     private db: DatabaseService,
     private writer: MetadataWriterService,
@@ -263,10 +263,12 @@ export class ExportService {
     let result = 0;
     const filters = await FilterEntity.find();
     for (const filter of filters) {
-      const criteria = await this.entities.getCriteriaFromFilter(filter);
-      const playlistExported = await this.exportCriteriaAsPlaylist('Filter', criteria);
-      if (playlistExported) {
-        result++;
+      if (filter.sync) {
+        const criteria = await this.entities.getCriteriaFromFilter(filter);
+        const playlistExported = await this.exportCriteriaAsPlaylist('Filter', criteria);
+        if (playlistExported) {
+          result++;
+        }
       }
     }
     return result;

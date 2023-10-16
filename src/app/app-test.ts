@@ -38,7 +38,7 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    //await this.logFileMetadata();
+    await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
@@ -48,7 +48,8 @@ export class AppTestService {
     //await this.updatePlayCount();
     //await this.insertFilters();
     //await this.updateSong();
-    await this.getPlaylistsTracks();
+    //await this.getPlaylistsTracks();
+    //await this.har();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -67,8 +68,10 @@ export class AppTestService {
       this.log.warn('mp3tag.js', mp3Tag.tags);
       // Display lyrics content
       const txtFile = selectedFiles[0].replace('.mp3', '.txt');
-      const lyrics = await this.fileService.getText(txtFile);
-      console.log(lyrics);
+      if (this.fileService.exists(txtFile)) {
+        const lyrics = await this.fileService.getText(txtFile);
+        console.log(lyrics);
+      }
     }
   }
 
@@ -543,5 +546,76 @@ export class AppTestService {
     // criteria.searchCriteria.push(sequenceItem);
     const songs = await this.db.getList(SongExtendedByPlaylistViewEntity, criteria);
     console.log(songs);
+  }
+
+  private async har(): Promise<void> {
+    /**
+     * {
+     *  log {
+     *    entries: [
+     *      {
+     *        _formCache: "",
+     *        _initiator: {},
+     *        timings: {}
+     *      }
+     *    ]
+     *  }
+     * }
+     */
+    // log.entries[].
+    // request > method, url, headers, queryString, postData
+    // response > headers, content
+    // time, timings
+    
+    const files = ['11.2.300 100 Lines', '11.2.400 100 Lines'];
+    const versions = ['a', 'b', 'c', 'd'];
+
+    for (const file of files) {
+      const newObject: any = {
+        entries: []
+      };
+      let sequence = 0;
+      for (const version of versions) {
+        console.log(file + ' ' + version);
+        const fileContent = await this.fileService.getText(`E:\\Temp\\${file}-${version}.har`);
+        const jsonObject = JSON.parse(fileContent);
+        console.log(jsonObject.log.entries.length);
+        for (const entry of jsonObject.log.entries) {
+          sequence++;
+          this.addMinimumData(newObject.entries, entry, sequence);
+        }
+      }
+      await this.fileService.writeText(`E:\\Temp\\${file}-x.har`, JSON.stringify(newObject, null, 2));
+      //this.log.table('Done', newObject.entries);
+      console.log('done');
+    }
+  }
+
+  private addMinimumData(entries: any[], entry: any, sequence: number): void {
+    entries.push({
+      sequence: sequence,
+      method: entry.request.method,
+      url: entry.request.url,
+      size: entry.response.content.size,
+      time: entry.time
+    });
+  }
+
+  private addBasicData(entries: any[], entry: any): void {
+    entries.push({
+      request: {
+        method: entry.request.method,
+        url: entry.request.url,
+        headers: entry.request.headers,
+        queryString: entry.request.queryString,
+        postData: entry.request.postData
+      },
+      response: {
+        headers: entry.response.headers,
+        content: entry.response.content
+      },
+      time: entry.time,
+      timings: entry.timings
+    });
   }
 }

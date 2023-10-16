@@ -673,6 +673,9 @@ export class DatabaseEntitiesService {
     this.addSortingChip(
       'sorting-addDate', ['addDate', 'name'],
       AppAttributeIcons.AddDate, 'Add Date', result, existingCriteria.sortingCriteria);
+    this.addSortingChip(
+      'sorting-rating', ['rating', 'playCount'],
+      AppAttributeIcons.RatingOn, 'Rating', result, existingCriteria.sortingCriteria);
     this.addAlternateChip(
       'alternate-artist', ['primaryArtistName'],
       AppActionIcons.Alternate, 'Alternate Artists', result, existingCriteria.sortingCriteria);
