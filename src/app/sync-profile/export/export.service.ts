@@ -156,6 +156,7 @@ export class ExportService {
       this.events.broadcast(AppEvent.ExportPlaylistsStart, exportResult);
       exportResult.playlistCount = await this.exportPlaylists(this.config.playlistIds);
     }
+    await this.clearSongExport();
     exportResult.period = t.stop();
     await this.saveSyncFile(exportResult);
     this.events.broadcast(AppEvent.ExportEnd, exportResult);
@@ -229,13 +230,17 @@ export class ExportService {
   }
 
   private async fillSongExport(songs: ISongModel[]): Promise<void> {
-    await SongExportEntity.clear();
+    await this.clearSongExport();
     const songTempData: SongExportEntity[] = [];
     for (const song of songs) {
       const songTemp = this.db.mapEntities(song, SongExportEntity);
       songTempData.push(songTemp);
     }
     await this.db.bulkInsert(SongExportEntity, songTempData);
+  }
+
+  private async clearSongExport(): Promise<void> {
+    await SongExportEntity.clear();
   }
 
   private async exportPlaylists(ids?: string[]): Promise<number> {

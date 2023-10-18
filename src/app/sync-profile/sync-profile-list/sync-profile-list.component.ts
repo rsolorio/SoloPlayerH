@@ -511,7 +511,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
               panelModel['label'] = 'Last number of songs';
             },
             onChange: setting => {
-              exportConfig.lastAdded = setting.data;
+              exportConfig.lastAdded = parseInt(setting.data.toString(), 10);
               setting.textData = [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'];
               this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
             }

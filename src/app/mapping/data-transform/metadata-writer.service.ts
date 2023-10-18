@@ -243,7 +243,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     const year = this.first(metadata[MetaField.Year]);
     if (year) {
-      // Recording year (2.3), for backwards compatibility
+      // Recording year (v2.3), for backwards compatibility
       tags.TYER = year.toString();
       // Release date (v2.4)
       tags.TDRL = year.toString();
