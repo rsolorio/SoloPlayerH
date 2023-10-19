@@ -1106,7 +1106,7 @@
         "name": "Default Export DataSource and Mappings",
         "type": "SongModel",
         "config": "",
-        "fields": "track,media,year,album,albumSort,albumArtist,artistStylized,artist,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,genre,rating,playCount,mood,language,favorite,live,explicit,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,subtitle,country,albumStylized",
+        "fields": "track,media,year,album,albumSort,albumArtist,artistStylized,artist,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,genre,rating,playCount,mood,language,favorite,live,explicit,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,subtitle,country,albumStylized,unSyncLyrics",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,

@@ -222,6 +222,7 @@ export class SongModelSourceService implements IDataSourceService {
     result['artist'] = 'primaryArtistName';
     result['album'] = 'primaryAlbumName';
     result['year'] = 'releaseYear';
+    result['decade'] = 'releaseDecade';
     result['media'] = 'mediaNumber';
     result['track'] = 'trackNumber';
     result['title'] = 'name';

@@ -379,7 +379,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     for (const property of properties) {
       const value = this.first(metadata[property]);
       if (value) {
-        result.push({ description: this.utility.toProperCase(property), text: value.toString() });
+        result.push({ description: property, text: value.toString() });
       }
     }
     return result;
