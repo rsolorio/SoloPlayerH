@@ -260,14 +260,14 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }];
     }
 
-    const composer = this.first(metadata[MetaField.Composer]);
-    if (composer) {
-      tags.TCOM = composer;
+    const composers = metadata[MetaField.Composer];
+    if (composers?.length) {
+      tags.TCOM = composers.join(frameSeparator);
     }
 
-    const composerSort = this.first(metadata[MetaField.ComposerSort]);
-    if (composerSort) {
-      tags.TSOC = composerSort;
+    const composerSorts = metadata[MetaField.ComposerSort];
+    if (composerSorts?.length) {
+      tags.TSOC = composerSorts.join(frameSeparator);
     }
 
     const grouping = this.first(metadata[MetaField.Grouping]);
@@ -377,6 +377,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   private createUserDefinedTexts(metadata: KeyValues, properties: string[]): IUserDefinedText[] {
     const result: IUserDefinedText[] = [];
     for (const property of properties) {
+      // This is assuming a user defined property returns only one value
       const value = this.first(metadata[property]);
       if (value) {
         result.push({ description: property, text: value.toString() });

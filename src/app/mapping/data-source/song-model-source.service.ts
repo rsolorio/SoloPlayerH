@@ -10,6 +10,7 @@ import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.int
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { appName } from 'src/app/app-exports';
+import { Not } from 'typeorm';
 
 /**
  * A data source that retrieves information from a ISongModel object.
@@ -195,12 +196,25 @@ export class SongModelSourceService implements IDataSourceService {
               result.push(albumImagePaths[0]);
             }
             break;
+          case '$getClassifications()':
+            const classifications = await this.getNonGenreClassifications(this.inputData.id);
+            if (classifications?.length) {
+              result.push(...classifications);
+            }
+            break;
           default:
             const value = this.parser.parse({
               expression: mapping.source,
               context: this.context,
               mappings: predefinedMappings });
-            result.push(value);
+            if (value) {
+              if (Array.isArray(value)) {
+                result.push(...value);
+              }
+              else {
+                result.push(value);
+              }
+            }
             break;
         }
       }
@@ -248,6 +262,16 @@ export class SongModelSourceService implements IDataSourceService {
   private async getClassifications(songId: string, classificationTypeId: string): Promise<string[]> {
     const result: string[] = [];
     const classifications = await SongClassificationEntity.findBy({ songId: songId, classificationTypeId: classificationTypeId });
+    for (const classification of classifications) {
+      const classificationInfo = this.syncProfileData.classifications.find(c => c.id === classification.classificationId);
+      result.push(classificationInfo.name);
+    }
+    return result;
+  }
+
+  private async getNonGenreClassifications(songId: string): Promise<string[]> {
+    const result: string[] = [];
+    const classifications = await SongClassificationEntity.findBy({ songId: songId, classificationTypeId: Not(ValueLists.Genre.id) });
     for (const classification of classifications) {
       const classificationInfo = this.syncProfileData.classifications.find(c => c.id === classification.classificationId);
       result.push(classificationInfo.name);
