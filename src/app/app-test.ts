@@ -38,7 +38,7 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    await this.logFileMetadata();
+    //await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
@@ -50,6 +50,7 @@ export class AppTestService {
     //await this.updateSong();
     //await this.getPlaylistsTracks();
     //await this.har();
+    await this.logStatistics();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -617,5 +618,31 @@ export class AppTestService {
       time: entry.time,
       timings: entry.timings
     });
+  }
+
+  private async logStatistics(): Promise<void> {
+    const queries: string[] = [];
+    queries.push('SELECT country, COUNT(id) AS artistCount FROM artist GROUP BY country ORDER BY artistCount DESC');
+    queries.push('SELECT artistType, COUNT(id) AS artistCount FROM artist GROUP BY artistType ORDER BY artistCount DESC');
+    queries.push('SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0'); // 225.477
+    queries.push('SELECT releaseDecade, AVG(bitrate) FROM song GROUP BY releaseDecade ORDER BY releaseDecade');
+    queries.push(`SELECT strftime('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`);
+    queries.push(`SELECT strftime('%Y', addDate) AS addYear, language, COUNT(id) AS songCount FROM song GROUP BY addYear, language ORDER BY addYear, language`);
+    queries.push(`SELECT strftime('%Y', addDate) AS addYear, strftime('%m', addDate) AS addMonth, COUNT(id) AS songCount FROM song GROUP BY addYear, addMonth ORDER BY addYear, addMonth`);
+    queries.push(`SELECT strftime('%Y', addDate) AS addYear, releaseDecade, COUNT(id) AS releaseDecadeCount FROM song GROUP BY addYear, releaseDecade ORDER BY addYear, releaseDecade`);
+    queries.push(`SELECT strftime('%Y', addDate) AS addYear, releaseYear, COUNT(id) AS releaseYearCount FROM song GROUP BY addYear, releaseYear ORDER BY addYear, releaseYear`);
+    queries.push('SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND vbr = 0 GROUP BY primaryArtistName ORDER BY songCount DESC');
+    queries.push('SELECT bitrate, filePath FROM song WHERE bitrate < 128000 ORDER BY bitrate ASC');
+    queries.push(`SELECT changeDate, filePath FROM song WHERE (bitrate = 320000 OR VBR = 1) AND changeDate > '2022-07-01' AND addDate < '2022-07-01' ORDER BY changeDate ASC`);
+    queries.push(`
+      SELECT allSongs.count AS allSongsCount, lowSongs.count AS lowSongsCount, (CAST(lowSongs.count AS float) / allSongs.count) * 100 AS lowQualityPercentage
+      FROM
+      (SELECT COUNT(*) AS count FROM song) AS allSongs, (SELECT COUNT(*) AS count FROM song WHERE bitrate < 320000 AND Vbr = 0) AS lowSongs
+    `); // 40.15
+
+    for (const query of queries) {
+      const result = await this.db.run(query);
+      console.log(result);
+    }
   }
 }
