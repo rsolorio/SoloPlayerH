@@ -10,10 +10,12 @@ import { ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { FileService } from 'src/app/platform/file/file.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { IEntityEditorModel, IEntityFieldModel } from 'src/app/shared/components/entity-editor/entity-editor.interface';
 import { SongClassificationEntity, SongEntity, SongExtendedViewEntity, ValueListEntryEntity } from 'src/app/shared/entities';
+import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
@@ -36,7 +38,8 @@ export class SongViewComponent implements OnInit {
     private navbarService: NavBarStateService,
     private navigation: NavigationService,
     private events: EventsService,
-    private sidebarHostService: SideBarHostStateService)
+    private sidebarHostService: SideBarHostStateService,
+    private fileService: FileService)
   { }
 
   ngOnInit(): void {
@@ -241,7 +244,17 @@ export class SongViewComponent implements OnInit {
       show: true,
       menuList: [
         {
+          caption: 'Open Directory',
+          icon: AppAttributeIcons.DirectoryOpen,
+          action: () => {
+            const song = this.entityEditorModel.data as ISongModel;
+            const directoryPath = this.fileService.getDirectoryPath(song.filePath);
+            this.fileService.openDirectory(directoryPath);
+          }
+        },
+        {
           caption: 'Toggle Labels',
+          icon: AppAttributeIcons.Labels,
           action: () => {
             this.entityEditorModel.groups.forEach(g => {
               g.fields.forEach(f => {

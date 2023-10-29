@@ -35,6 +35,8 @@ export abstract class FileService {
 
   abstract runCommand(command: string): Promise<string>;
 
+  abstract openDirectory(directoryPath: string): Promise<string>;
+
   abstract createDirectory(directoryPath: string): Promise<void>;
 
   combine(...args: string[]): string {
@@ -47,6 +49,10 @@ export abstract class FileService {
       }
     });
     return result;
+  }
+
+  getDirectoryPath(filePath: string): string {
+    return filePath.substring(0, filePath.lastIndexOf('\\'));
   }
 
   removeBom(value: string): string {

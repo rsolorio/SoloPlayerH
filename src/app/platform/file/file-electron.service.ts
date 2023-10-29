@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { promises, existsSync } from 'fs';
 import { join, resolve, extname, parse, relative } from 'path';
-import { exec } from 'child_process';
-const languageEncoding = require("detect-file-encoding-and-language");
 import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
 import { FileService } from './file.service';
+import { exec } from 'child_process';
+const languageEncoding = require("detect-file-encoding-and-language");
 
 @Injectable({
   providedIn: 'root'
@@ -73,7 +73,7 @@ export class FileElectronService extends FileService {
   }
 
   async copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void> {
-    const directoryPath = destinationFilePath.substring(0, destinationFilePath.lastIndexOf('\\'));
+    const directoryPath = this.getDirectoryPath(destinationFilePath);
     // Hack to determine if this is not a drive
     if (!directoryPath.endsWith(':')) {
       await promises.mkdir(directoryPath, { recursive: true });
@@ -201,6 +201,10 @@ export class FileElectronService extends FileService {
         }
       });
     });
+  }
+
+  openDirectory(directoryPath: string): Promise<string> {
+    return this.runCommand(`start "" "${directoryPath}"`);
   }
 
   private getRootDirectories(): Promise<IFileInfo[]> {

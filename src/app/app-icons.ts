@@ -66,6 +66,7 @@ export enum AppAttributeIcons {
   Gender = 'mdi-gender-male-female mdi',
   Directory = 'mdi-folder mdi',
   DirectoryInfo = 'mdi-folder-information mdi',
+  DirectoryOpen = 'mdi-folder-open mdi',
   AudioDirectory = 'mdi-folder-music mdi',
   PlaylistDirectory = 'mdi-folder-play mdi',
   Description = 'mdi-note-text mdi',
@@ -84,7 +85,8 @@ export enum AppAttributeIcons {
   Checked = 'mdi-check-circle mdi',
   Bottom = 'mdi-arrow-collapse-down mdi',
   Top = 'mdi-arrow-collapse-up mdi',
-  Vocal = 'mdi-account-voice mdi'
+  Vocal = 'mdi-account-voice mdi',
+  Labels = 'mdi-label-multiple-outline mdi'
 }
 
 export enum AppActionIcons {

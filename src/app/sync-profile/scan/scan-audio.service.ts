@@ -400,7 +400,7 @@ export class ScanAudioService {
     // If the db date is older than the file date, update the file
     else if (dbAddTime < fileAddTime) {
       await this.setFileAddDate(this.songToProcess.filePath, this.songToProcess.addDate);
-      this.log.warn('Setting older creation date for file: ' + this.songToProcess.filePath, {
+      this.log.debug('Setting older creation date for file: ' + this.songToProcess.filePath, {
         dbAddDate: this.songToProcess.addDate,
         fileAddDate: fileAddDate
       });
@@ -1146,31 +1146,41 @@ export class ScanAudioService {
     const metadata = await this.metadataReader.run(newFileInfo);
 
     // Things that can change when the file path changes:
-    // Language, Genre, Artist Name, Year/Decade, Featuring, PerformerCount, Album Name, Contributors/Party Relation, Artist Image, Album Image, Single Image
+    // Language (DONE)
+    // Genre (DONE)
+    // Artist Name (DONE)
+    // Year/Decade (DONE)
+    // Featuring (DONE)
+    // PerformerCount
+    // Album Name (DONE)
+    // Contributors/Party Relation
+    // Artist Image
+    // Album Image
+    // Single Image
 
     // ARTIST AND ALBUM
     let primaryAlbum = await AlbumEntity.findOneBy({ id: song.primaryAlbumId });
     let primaryArtist = await ArtistEntity.findOneBy({ id: primaryAlbum.primaryArtistId });
 
-    const primaryArtistName = this.first(metadata[MetaField.AlbumArtist]);
-    const primaryAlbumName = this.first(metadata[MetaField.Album]);
+    const newArtistName = this.first(metadata[MetaField.AlbumArtist]);
+    const newAlbumName = this.first(metadata[MetaField.Album]);
     const year = this.first(metadata[MetaField.Year]);
     const releaseYear = year ? year : 0;
 
     // If the artist is different create or update the artist
-    if (primaryArtist.name !== primaryArtistName) {
-      const songs = await SongViewEntity.findBy({ primaryArtistId: primaryArtist.id });
-      if (songs.length === 1) {
-        // Rename the artist
-        primaryArtist.name = primaryArtistName;
-        primaryArtist.artistSort = primaryArtistName;
-        primaryArtist.artistStylized = primaryArtistName;
+    if (primaryArtist.name !== newArtistName) {
+      const artistSongCount = await SongViewEntity.findBy({ primaryArtistId: primaryArtist.id });
+      if (artistSongCount.length === 1) {
+        // Rename the existing artist
+        primaryArtist.name = newArtistName;
+        primaryArtist.artistSort = newArtistName;
+        primaryArtist.artistStylized = newArtistName;
         primaryArtist.hash = this.lookupService.hashArtist(primaryArtist.name);
         await primaryArtist.save();
       }
-      else if (songs.length > 1) {
+      else if (artistSongCount.length > 1) {
         // Create new artist
-        primaryArtist = this.createArtist(primaryArtistName, primaryArtistName, primaryArtistName);
+        primaryArtist = this.createArtist(newArtistName, newArtistName, newArtistName);
         await primaryArtist.save();
       }
     }
@@ -1179,7 +1189,7 @@ export class ScanAudioService {
     // Edit album when: same artist and different album name (and year) and only one album song
     let needsNewAlbum = false;
     if (primaryArtist.id === primaryAlbum.primaryArtistId) {
-      if (primaryAlbum.name !== primaryAlbumName || primaryAlbum.releaseYear !== releaseYear) {
+      if (primaryAlbum.name !== newAlbumName || primaryAlbum.releaseYear !== releaseYear) {
         const songs = await SongViewEntity.findBy({ primaryAlbumId: primaryAlbum.id });
         needsNewAlbum = songs.length > 1;
       }
@@ -1189,12 +1199,12 @@ export class ScanAudioService {
     }
 
     if (needsNewAlbum) {
-      primaryAlbum = this.createAlbum(primaryArtist.id, primaryAlbumName, releaseYear);
+      primaryAlbum = this.createAlbum(primaryArtist.id, newAlbumName, releaseYear);
     }
     else {
-      primaryAlbum.name = primaryAlbumName;
-      primaryAlbum.albumSort = primaryAlbumName;
-      primaryAlbum.albumStylized = primaryAlbumName;
+      primaryAlbum.name = newAlbumName;
+      primaryAlbum.albumSort = newAlbumName;
+      primaryAlbum.albumStylized = newAlbumName;
       primaryAlbum.releaseYear = releaseYear;
       primaryAlbum.releaseDecade = this.utility.getDecade(primaryAlbum.releaseYear);
       primaryAlbum.hash = this.lookupService.hashAlbum(primaryAlbum.name, primaryAlbum.releaseYear);
@@ -1266,6 +1276,9 @@ export class ScanAudioService {
     this.setFirst(song, 'titleSort', metadata, MetaField.TitleSort, song.name);
     this.setFirst(song, 'language', metadata, MetaField.Language);
     song.performerCount = 0;
+
+    // UPDATE NEW FILE DATES
+    // DELETE FILE
   }
 
   private setChangesIfNotNew(entity: DbEntity): void {

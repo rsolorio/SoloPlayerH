@@ -49,8 +49,8 @@ export class AppTestService {
     //await this.insertFilters();
     //await this.updateSong();
     //await this.getPlaylistsTracks();
-    //await this.har();
     await this.logStatistics();
+    //this.hash();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -549,47 +549,10 @@ export class AppTestService {
     console.log(songs);
   }
 
-  private async har(): Promise<void> {
-    /**
-     * {
-     *  log {
-     *    entries: [
-     *      {
-     *        _formCache: "",
-     *        _initiator: {},
-     *        timings: {}
-     *      }
-     *    ]
-     *  }
-     * }
-     */
-    // log.entries[].
-    // request > method, url, headers, queryString, postData
-    // response > headers, content
-    // time, timings
-    
-    const files = ['11.2.300 100 Lines', '11.2.400 100 Lines'];
-    const versions = ['a', 'b', 'c', 'd'];
+  private hash(): void {
+    const value = this.lookup.hashValueListEntry('China');
 
-    for (const file of files) {
-      const newObject: any = {
-        entries: []
-      };
-      let sequence = 0;
-      for (const version of versions) {
-        console.log(file + ' ' + version);
-        const fileContent = await this.fileService.getText(`E:\\Temp\\${file}-${version}.har`);
-        const jsonObject = JSON.parse(fileContent);
-        console.log(jsonObject.log.entries.length);
-        for (const entry of jsonObject.log.entries) {
-          sequence++;
-          this.addMinimumData(newObject.entries, entry, sequence);
-        }
-      }
-      await this.fileService.writeText(`E:\\Temp\\${file}-x.har`, JSON.stringify(newObject, null, 2));
-      //this.log.table('Done', newObject.entries);
-      console.log('done');
-    }
+    console.log(value);
   }
 
   private addMinimumData(entries: any[], entry: any, sequence: number): void {
@@ -626,6 +589,7 @@ export class AppTestService {
     queries.push('SELECT artistType, COUNT(id) AS artistCount FROM artist GROUP BY artistType ORDER BY artistCount DESC');
     queries.push('SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0'); // 225.477
     queries.push('SELECT releaseDecade, AVG(bitrate) FROM song GROUP BY releaseDecade ORDER BY releaseDecade');
+    queries.push('SELECT mood, COUNT(id) AS songCount FROM song GROUP BY mood ORDER BY mood'); // Unknown: 1773
     queries.push(`SELECT strftime('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`);
     queries.push(`SELECT strftime('%Y', addDate) AS addYear, language, COUNT(id) AS songCount FROM song GROUP BY addYear, language ORDER BY addYear, language`);
     queries.push(`SELECT strftime('%Y', addDate) AS addYear, strftime('%m', addDate) AS addMonth, COUNT(id) AS songCount FROM song GROUP BY addYear, addMonth ORDER BY addYear, addMonth`);

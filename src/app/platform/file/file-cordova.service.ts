@@ -64,6 +64,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  openDirectory(directoryPath: string): Promise<string> {
+    return null;
+  }
+
   public getParentPath(path: string): string {
     return null;
   }
