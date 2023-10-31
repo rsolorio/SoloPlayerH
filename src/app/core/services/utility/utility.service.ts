@@ -48,17 +48,7 @@ export class UtilityService {
 
   /** Returns a new guid. */
   public newGuid(): string {
-    return [this.genHex(2), this.genHex(1), this.genHex(1), this.genHex(1), this.genHex(3)].join('-');
-  }
-
-  /** Creates a hexadecimal number of 4 digits x number of times. */
-  private genHex(count: number): string {
-    let out = '';
-    for (let i = 0; i < count; i++) {
-        // tslint:disable-next-line:no-bitwise
-        out += (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    }
-    return out;
+    return window.crypto['randomUUID']();
   }
 
   /** Determines if the argument is a function. */

@@ -32,6 +32,8 @@ export class FunctionDefinitionService {
 
   private initializeFunctions(): void {
     this.ifFunction();
+    this.eqFunction();
+    this.notFunction();
     this.andFunction();
     this.orFunction();
     this.digitsFunction();
@@ -53,6 +55,31 @@ export class FunctionDefinitionService {
           return y;
         }
         return z;
+      }
+    });
+  }
+
+  private eqFunction(): void {
+    this.functions.push({
+      name: 'eq',
+      syntax: '$eq(x,y)',
+      description: 'Returns true if x is equals to y, otherwise returns false.',
+      fn: args => {
+        const x = args[0];
+        const y = args[1];
+        return x === y;
+      }
+    });
+  }
+
+  private notFunction(): void {
+    this.functions.push({
+      name: 'not',
+      syntax: '$not(x)',
+      description: 'Returns true if x is false.',
+      fn: args => {
+        const x = args[0];
+        return !x;
       }
     });
   }
