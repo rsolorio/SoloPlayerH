@@ -49,8 +49,8 @@ export class AppTestService {
     //await this.insertFilters();
     //await this.updateSong();
     //await this.getPlaylistsTracks();
-    await this.logStatistics();
-    //this.hash();
+    //await this.logStatistics();
+    this.hash();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -550,7 +550,8 @@ export class AppTestService {
   }
 
   private hash(): void {
-    const value = this.lookup.hashValueListEntry('China');
+    //const value = this.lookup.hashValueListEntry('China');
+    const value = this.lookup.hashValues(['Symfonium Player']);
 
     console.log(value);
   }

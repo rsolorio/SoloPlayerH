@@ -1118,6 +1118,7 @@
         "dataSourceId": "445219eb-7134-45bb-8476-bbdff6cafe48",
         "source": "$path(%rootPath%,%language%,%genre%,%artist%,$if(%year%,$digits(%year%,4) - %album%, %album%),$digits(%media%,2)-$digits(%track%,2) - %title%.%ext%)",
         "destination": "filePath",
+        "priority": 1,
         "sequence": 1,
         "userDefined": false,
         "disabled": false,

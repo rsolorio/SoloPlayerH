@@ -165,23 +165,25 @@ export class SongModelSourceService implements IDataSourceService {
   }
 
   /**
-   * Gets mappings associated with the specified field and sorted by sequence.
+   * Gets mappings associated with the specified field and sorted by priority.
    */
   private getMappings(destinationField: string): DataMappingEntity[] {
     const mappings = this.entityData.mappings.filter(m => m.destination === destinationField && !m.disabled);
-    return this.utility.sort(mappings, 'sequence');
+    return this.utility.sort(mappings, 'priority');
   }
 
   private async getDataFromMappings(associatedMappings: DataMappingEntity[]): Promise<any[]> {
     const predefinedMappings = this.setupScriptingPlaceholders();
-    const groupedMappings = this.utility.groupByKey(associatedMappings, 'sequence');
-    // Mappings with the same sequence will be included in the same result
-    // If there are no results in a given sequence we will move to the next sequence to get results, and so on
+    // Mappings will be grouped and sorted by priority
+    const groupedMappings = this.utility.groupByKey(associatedMappings, 'priority');
     const groupKeys = Object.keys(groupedMappings);
+    // If there are no results in a given priority we will move to the next priority to get results, and so on
     for (const groupKey of groupKeys) {
       const result: any[] = [];
       const groupMappings = groupedMappings[groupKey];
-      for (const mapping of groupMappings) {
+      // Within a priority group, the mappings should be processed ordered by sequence
+      const sortedMappings = this.utility.sort(groupMappings, 'sequence');
+      for (const mapping of sortedMappings) {
         // Hack to implement custom functions
         switch (mapping.source) {
           case '$getSingleImage()':
