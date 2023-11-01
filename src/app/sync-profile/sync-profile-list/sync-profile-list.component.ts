@@ -562,7 +562,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
             icon: AppEntityIcons.Playlist,
             textRegular: ['Select playlists to export'],
             editorType: SettingsEditorType.ListMultiple,
-            data: exportConfig.playlistIds,
+            data: exportConfig.playlistConfig?.ids,
             beforePanelOpen: async panelModel => {
               const playlists = await PlaylistEntity.find();
               const chips: IChipItem[] = [];
@@ -570,16 +570,19 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
                 chips.push({
                   value: playlist.id,
                   caption: playlist.name,
-                  selected: exportConfig.playlistIds?.length && exportConfig.playlistIds.includes(playlist.id)
+                  selected: exportConfig.playlistConfig?.ids?.length && exportConfig.playlistConfig.ids.includes(playlist.id)
                 })
               });
               panelModel['items'] = chips;
             },
             onChange: settings => {
-              exportConfig.playlistIds = settings.data;
+              if (!exportConfig.playlistConfig) {
+                exportConfig.playlistConfig = {};
+              }
+              exportConfig.playlistConfig.ids = settings.data;
               this.entities.saveSyncProfile(parsedProfile).then(result => {
                 profile.config = result.config;
-                this.getPlaylistNames(exportConfig.playlistIds).then(names => {
+                this.getPlaylistNames(exportConfig.playlistConfig.ids).then(names => {
                   settings.textData = [names];
                 });
               });
@@ -675,7 +678,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     ];
     this.showModal(profile);
     const setting = this.findSetting('exportSelectedPlaylists');
-    this.getPlaylistNames(exportConfig.playlistIds).then(names => {
+    this.getPlaylistNames(exportConfig.playlistConfig?.ids).then(names => {
       setting.textData = [names];
     });
   }

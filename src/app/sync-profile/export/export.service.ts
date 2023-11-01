@@ -75,7 +75,7 @@ export class ExportService {
    * 1. Determine which songs will be exported
    * 2. Copy songs from the source to the destination
    * 3. Update songs metadata based on the database and mapping info
-   * 4. Export filters as playlist files
+   * 4. Export filters (smartlists) as playlist files
    * 5. Export auto filters as playlist files
    * 6. Export playlists as playlist files
    */
@@ -103,6 +103,7 @@ export class ExportService {
     const dataSources = await this.entities.getDataSources(syncProfile.id);
     await this.writer.init(syncProfile, dataSources);
     await this.prepareSongs();
+    this.sortSongs();
 
     const exportResult: IExportResult = {
       rootPath: syncProfile.directoryArray[0],
@@ -151,10 +152,10 @@ export class ExportService {
       this.events.broadcast(AppEvent.ExportPlaylistsStart, exportResult);
       exportResult.playlistCount = await this.exportPlaylists();
     }
-    else if (this.config.playlistIds?.length) {
+    else if (this.config.playlistConfig?.ids?.length) {
       // But if specific playlists were specified, then only export those
       this.events.broadcast(AppEvent.ExportPlaylistsStart, exportResult);
-      exportResult.playlistCount = await this.exportPlaylists(this.config.playlistIds);
+      exportResult.playlistCount = await this.exportPlaylists(this.config.playlistConfig.ids);
     }
     await this.clearSongExport();
     exportResult.period = t.stop();
@@ -172,12 +173,12 @@ export class ExportService {
     // Let's make sure export is not enabled to get songs from the real tables
     this.config.exportTableEnabled = false;
 
-    if (this.config.playlistIds?.length) {
+    if (this.config.playlistConfig?.ids?.length) {
       const criteria = new Criteria();
       criteria.searchCriteria.addIgnore('sequence');
       const criteriaItem = criteria.searchCriteria.addIgnore('playlistId');
       criteriaItem.comparison = CriteriaComparison.Equals;
-      for (const playlistId of this.config.playlistIds) {
+      for (const playlistId of this.config.playlistConfig.ids) {
         criteriaItem.columnValues.push({ value: playlistId });
       }
       await this.mergeCriteria(criteria);
@@ -209,6 +210,15 @@ export class ExportService {
 
     // Send all songs
     this.config.songs = await SongExtendedViewEntity.find();
+  }
+
+  /**
+   * Sorts the songs to be exported by filePath.
+   * The sorting doesn't really affect the end result,
+   * it is just to display the songs being exported in some order.
+   */
+  private sortSongs(): void {
+    this.config.songs = this.utility.sort(this.config.songs, 'filePath');
   }
 
   private async mergeCriteria(criteria: Criteria): Promise<void> {
