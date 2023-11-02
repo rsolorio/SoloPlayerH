@@ -6,9 +6,11 @@ export class DataMappingEntity extends BaseEntity {
   id: string;
   @Column()
   dataSourceId: string;
-  @Column()
+  @Column({ nullable: true, comment: 'Expression that should return a list of values; each value will be processed using the source expression where you can refer to each value as %item%.' })
+  iterator: string;  
+  @Column({ comment: 'Expression to retrieve data from a data source.' })
   source: string;
-  @Column()
+  @Column({ comment: 'The name of the field where the data will be inserted.' })
   destination: string;
   @Column({ comment: 'The data retrieval process will group the mappings by priority; if the highest priority group does not return a value it will move to the next group until a value is returned.' })
   priority: number;

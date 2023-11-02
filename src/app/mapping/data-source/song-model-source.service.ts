@@ -26,6 +26,26 @@ export class SongModelSourceService implements IDataSourceService {
   private syncProfileData: ISyncProfileParsed;
   private context: any;
   private counter = 0;
+  private songIdCache: string;
+  private classificationsCache: SongClassificationEntity[] = [];
+  /**
+   * A mapping object that defines the name of the placeholders that can be used
+   * for the mapping scripts. This is a way to use easier/shorter names instead of the
+   * real names of the source (in this case the ISongExtendedModel).
+   */
+  private placeholders: KeyValueGen<string> = {
+    artist: 'primaryArtistName',
+    album: 'primaryAlbumName',
+    year: 'releaseYear',
+    decade: 'releaseDecade',
+    media: 'mediaNumber',
+    track: 'trackNumber',
+    title: 'name',
+    ext: 'fileExtension',
+    file: 'fileName',
+    albumType: 'primaryAlbumType',
+    artistType: 'primaryArtistType'
+  };
   constructor(private utility: UtilityService, private parser: ScriptParserService) { }
 
   public init(): void {
@@ -173,7 +193,6 @@ export class SongModelSourceService implements IDataSourceService {
   }
 
   private async getDataFromMappings(associatedMappings: DataMappingEntity[]): Promise<any[]> {
-    const predefinedMappings = this.setupScriptingPlaceholders();
     // Mappings will be grouped and sorted by priority
     const groupedMappings = this.utility.groupByKey(associatedMappings, 'priority');
     const groupKeys = Object.keys(groupedMappings);
@@ -184,40 +203,23 @@ export class SongModelSourceService implements IDataSourceService {
       // Within a priority group, the mappings should be processed ordered by sequence
       const sortedMappings = this.utility.sort(groupMappings, 'sequence');
       for (const mapping of sortedMappings) {
-        // Hack to implement custom functions
-        switch (mapping.source) {
-          case '$getSingleImage()':
-            const singleImagePaths = await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
-            if (singleImagePaths?.length) {
-              result.push(singleImagePaths[0]);
+        if (mapping.iterator) {
+          const data = await this.getDataFromExpression(mapping.iterator, this.placeholders);
+          if (Array.isArray(data)) {
+            const array = data as any[];
+            for (const item of array) {
+              // Add the data item as one more property to the context as %item%
+              this.context.item = item;
+              const value = await this.getDataFromExpression(mapping.source, this.placeholders);
+              this.addValueToArray(result, value);
             }
-            break;
-          case '$getAlbumImage()':
-            const albumImagePaths = await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.Front);
-            if (albumImagePaths?.length) {
-              result.push(albumImagePaths[0]);
-            }
-            break;
-          case '$getClassifications()':
-            const classifications = await this.getNonGenreClassifications(this.inputData.id);
-            if (classifications?.length) {
-              result.push(...classifications);
-            }
-            break;
-          default:
-            const value = this.parser.parse({
-              expression: mapping.source,
-              context: this.context,
-              mappings: predefinedMappings });
-            if (value) {
-              if (Array.isArray(value)) {
-                result.push(...value);
-              }
-              else {
-                result.push(value);
-              }
-            }
-            break;
+            // Remove the data item from the context
+            delete this.context.item;
+          }
+        }
+        else {
+          const value = await this.getDataFromExpression(mapping.source, this.placeholders);
+          this.addValueToArray(result, value);
         }
       }
       if (result.length) {
@@ -228,25 +230,72 @@ export class SongModelSourceService implements IDataSourceService {
     return [];
   }
 
-  /**
-   * Prepares a mapping object that defines the name of the placeholders that can be used
-   * for the mapping scripts. This is a way to use easier/shorter names instead of the 
-   * real names of the source (in this case the ISongExtendedModel).
-   */
-  private setupScriptingPlaceholders(): KeyValueGen<string> {
-    const result: KeyValueGen<string> = {};
-    result['artist'] = 'primaryArtistName';
-    result['album'] = 'primaryAlbumName';
-    result['year'] = 'releaseYear';
-    result['decade'] = 'releaseDecade';
-    result['media'] = 'mediaNumber';
-    result['track'] = 'trackNumber';
-    result['title'] = 'name';
-    result['ext'] = 'fileExtension';
-    result['file'] = 'fileName';
-    result['albumType'] = 'primaryAlbumType';
-    result['artistType'] = 'primaryArtistType';
+  private async getDataFromExpression(expression: string, predefinedMappings: KeyValueGen<string>): Promise<any> {
+    let result: any = null;
+    // Hack to implement custom functions
+    switch (expression) {
+      case '$getSingleImage()':
+        const singleImagePaths = await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
+        if (singleImagePaths?.length) {
+          result = singleImagePaths[0];
+        }
+        break;
+      case '$getAlbumImage()':
+        const albumImagePaths = await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.Front);
+        if (albumImagePaths?.length) {
+          result = albumImagePaths[0];
+        }
+        break;
+      case '$getGenres()':
+        const genres = await this.getClassifications(this.inputData.id, ValueLists.Genre.id);
+        if (genres?.length) {
+          result = genres;
+        }
+        break;
+      case '$getSubGenres()':
+        const subGenres = await this.getClassifications(this.inputData.id, ValueLists.Subgenre.id);
+        if (subGenres?.length) {
+          result = subGenres;
+        }
+        break;
+      case '$getCategories()':
+        const categories = await this.getClassifications(this.inputData.id, ValueLists.Category.id);
+        if (categories?.length) {
+          result = categories;
+        }
+        break;
+      case '$getOccasions()':
+        const occasions = await this.getClassifications(this.inputData.id, ValueLists.Occasion.id);
+        if (occasions?.length) {
+          result = occasions;
+        }
+        break;
+      case '$getInstruments()':
+        const instruments = await this.getClassifications(this.inputData.id, ValueLists.Instrument.id);
+        if (instruments?.length) {
+          result = instruments;
+        }
+        break;
+      default:
+        result = this.parser.parse({
+          expression: expression,
+          context: this.context,
+          mappings: predefinedMappings
+        });
+        break;
+    }
     return result;
+  }
+
+  private addValueToArray(array: any[], value: any): void {
+    if (value) {
+      if (Array.isArray(value)) {
+        array.push(...value);
+      }
+      else {
+        array.push(value);
+      }
+    }
   }
 
   /**
@@ -262,13 +311,21 @@ export class SongModelSourceService implements IDataSourceService {
   }
 
   private async getClassifications(songId: string, classificationTypeId: string): Promise<string[]> {
+    await this.cacheClassifications(songId);
     const result: string[] = [];
-    const classifications = await SongClassificationEntity.findBy({ songId: songId, classificationTypeId: classificationTypeId });
+    const classifications = this.classificationsCache.filter(c => c.classificationTypeId === classificationTypeId);
     for (const classification of classifications) {
       const classificationInfo = this.syncProfileData.classifications.find(c => c.id === classification.classificationId);
       result.push(classificationInfo.name);
     }
     return result;
+  }
+
+  private async cacheClassifications(songId: string): Promise<void> {
+    if (this.songIdCache !== songId) {
+      this.classificationsCache = await SongClassificationEntity.findBy({ songId: songId });
+      this.songIdCache = songId;
+    }
   }
 
   private async getNonGenreClassifications(songId: string): Promise<string[]> {
