@@ -17,6 +17,7 @@ export interface ISyncProfileParsed extends ISyncProfile {
   configObj?: any;
   syncInfoObj?: any;
   classifications?: ValueListEntryEntity[];
+  /** List of partyRelation records and their associated artist name where the relation type is featuring, contributor or singer. */
   nonPrimaryRelations?: any[];
 }
 

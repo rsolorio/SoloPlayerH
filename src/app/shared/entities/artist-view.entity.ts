@@ -5,6 +5,8 @@ import { PartyRelationType } from '../models/music.enum';
 
 /**
  * Retrieves all the records from the artist table with associated songs as primary or featuring artist.
+ * Contributors and singers are not considered in this condition because they are associated to other artists
+ * and this query is about associations between artists and songs.
  * Fields: id, name, hash, artistSort, artistStylized, artistType, country, favorite, albumCount, songCount, playCount, seconds, songAddDateMax
  */
 @ViewEntity({

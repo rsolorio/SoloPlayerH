@@ -101,23 +101,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.ArtistStylized:
         return [this.inputData.primaryArtistStylized];
       case MetaField.Artist:
-        const artists: string[] = [];
-        artists.push(this.inputData.primaryArtistName);
-        // Find artists associated with songs using songId and featuring type
-        const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === this.inputData.id);
-        for (const relation of songRelations) {
-          if (!artists.includes(relation.artistName)) {
-            artists.push(relation.artistName);
-          }
-        }
-        // Then find artists associated with primary artist by using artistId and lead singer or contributor
-        const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === this.inputData.primaryArtistId);
-        for (const relation of artistRelations) {
-          if (!artists.includes(relation.artistName)) {
-            artists.push(relation.artistName);
-          }
-        }
-        return artists;
+        return this.getArtists();
       case MetaField.UfId:
         return [this.inputData.id];
       case MetaField.AlbumImage:
@@ -310,6 +294,29 @@ export class SongModelSourceService implements IDataSourceService {
     return context;
   }
 
+  private getArtists(): string[] {
+    const result: string[] = [];
+
+    // First, the album artist as regular artist
+    result.push(this.inputData.primaryArtistName);
+    // Find other artists (featuring) associated with the song
+    const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === this.inputData.id);
+    for (const relation of songRelations) {
+      if (!result.includes(relation.artistName)) {
+        result.push(relation.artistName);
+      }
+    }
+    // Then find artists (contributors and singers) associated with primary artist of the song
+    const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === this.inputData.primaryArtistId);
+    for (const relation of artistRelations) {
+      if (!result.includes(relation.artistName)) {
+        result.push(relation.artistName);
+      }
+    }
+
+    return result;
+  }
+
   private async getClassifications(songId: string, classificationTypeId: string): Promise<string[]> {
     await this.cacheClassifications(songId);
     const result: string[] = [];
@@ -326,16 +333,6 @@ export class SongModelSourceService implements IDataSourceService {
       this.classificationsCache = await SongClassificationEntity.findBy({ songId: songId });
       this.songIdCache = songId;
     }
-  }
-
-  private async getNonGenreClassifications(songId: string): Promise<string[]> {
-    const result: string[] = [];
-    const classifications = await SongClassificationEntity.findBy({ songId: songId, classificationTypeId: Not(ValueLists.Genre.id) });
-    for (const classification of classifications) {
-      const classificationInfo = this.syncProfileData.classifications.find(c => c.id === classification.classificationId);
-      result.push(classificationInfo.name);
-    }
-    return result;
   }
 
   private async getRelatedImagePath(songId: string, imageType: MusicImageType): Promise<string[]> {

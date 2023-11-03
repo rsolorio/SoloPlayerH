@@ -122,6 +122,18 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             }
           },
           {
+            name: 'Include Associated Artists',
+            icon: AppAttributeIcons.ArtistGroup,
+            editorType: SettingsEditorType.YesNo,
+            textRegular: [
+              'If turned on, clicking an artist will display not only its associated songs but also songs associated with contributors and singers.'
+            ],
+            data: this.options.getBoolean(ModuleOptionId.IncludeAssociatedArtistSongs),
+            onChange: setting => {
+              this.options.saveBoolean(ModuleOptionId.IncludeAssociatedArtistSongs, setting.data);
+            }
+          },
+          {
             name: 'List View Limit',
             icon: AppAttributeIcons.Top,
             editorType: SettingsEditorType.Number,
