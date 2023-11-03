@@ -976,7 +976,7 @@ export class ScanAudioService {
 
     // Contributors
     const contributors = metadata[MetaField.Contributor];
-    if (contributors && contributors.length) {
+    if (contributors?.length) {
       for (const contributor of contributors) {
         let newRelatedId: string;
         const existingArtist = this.lookupService.findArtist(contributor, this.existingArtists);

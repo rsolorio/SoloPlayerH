@@ -59,7 +59,7 @@ export class PathExpressionSourceService implements IDataSourceService {
     switch (propertyName) {
       case MetaField.Language:
       case MetaField.Genre:
-      case MetaField.AlbumArtist:
+      case MetaField.Artist:
       case MetaField.Album:
       case MetaField.Title:
         const valueText = this.matchInfo.groups[propertyName];
@@ -67,14 +67,17 @@ export class PathExpressionSourceService implements IDataSourceService {
           return [valueText];
         }
         break;
-      case MetaField.Artist:
-        const mainArtists: string[] = [];
-        // Album artist
-        const mainArtist = this.matchInfo.groups[propertyName];
-        if (mainArtist) {
-          mainArtists.push(mainArtist);
+      case MetaField.Contributor:
+        // Try to get contributors from the artist
+        const artist = this.matchInfo.groups[MetaField.Artist];
+        if (artist) {
+          const artists = artist.split(' - ');
+          if (artists.length > 1) {
+            // Process contributors only if we were able to break down the main artist
+            return artists;
+          }
         }
-        return mainArtists;
+        break;
       case MetaField.FeaturingArtist:
         const featuring: string[] = [];
         const title = this.matchInfo.groups[MetaField.Title];

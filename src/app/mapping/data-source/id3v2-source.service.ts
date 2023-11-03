@@ -115,6 +115,14 @@ export class Id3v2SourceService implements IDataSourceService {
           return [this.audioInfo.metadata.common.albumartistsort];
         }
         break;
+      case MetaField.Contributor:
+        // Use the album artist tag to get contributors
+        const artists = this.metadataService.getValues<string>('TPE2', this.tags);
+        // Ignore the first item assuming it is the actual album artist
+        if (artists?.length > 1) {
+          return artists.slice(1);
+        }
+        break;
       case MetaField.Album:
         if (this.audioInfo.metadata.common.album) {
           return [this.audioInfo.metadata.common.album];
