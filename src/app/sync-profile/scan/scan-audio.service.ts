@@ -978,23 +978,23 @@ export class ScanAudioService {
     const contributors = metadata[MetaField.Contributor];
     if (contributors?.length) {
       for (const contributor of contributors) {
-        let newRelatedId: string;
+        let contributorId: string;
         const existingArtist = this.lookupService.findArtist(contributor, this.existingArtists);
         if (existingArtist) {
           const existingRelation = this.lookupService.findContributorRelation(existingArtist.id, primaryArtist.id, this.existingPartyRelations);
           if (!existingRelation) {
-            newRelatedId = existingArtist.id;
+            contributorId = existingArtist.id;
           }
         }
         else {
           const newArtist = this.createArtist(contributor, contributor);
-          newRelatedId = newArtist.id;
+          contributorId = newArtist.id;
           this.existingArtists.push(newArtist);
         }
-        if (newRelatedId) {
+        if (contributorId) {
           const contributorRelation = new PartyRelationEntity();
           contributorRelation.id = this.utility.newGuid();
-          contributorRelation.relatedId = newRelatedId;
+          contributorRelation.relatedId = contributorId;
           contributorRelation.artistId = primaryArtist.id;
           contributorRelation.relationTypeId = PartyRelationType.Contributor;
           this.existingPartyRelations.push(contributorRelation);

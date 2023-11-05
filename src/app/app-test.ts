@@ -551,7 +551,8 @@ export class AppTestService {
 
   private hash(): void {
     //const value = this.lookup.hashValueListEntry('China');
-    const value = this.lookup.hashValues(['Symfonium Player']);
+    //const value = this.lookup.hashValues(['Symfonium Player']);
+    const value = this.lookup.hashArtist('Al Di Meola');
 
     console.log(value);
   }
