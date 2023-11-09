@@ -38,7 +38,7 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    //await this.logFileMetadata();
+    await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
@@ -49,7 +49,7 @@ export class AppTestService {
     //await this.insertFilters();
     //await this.updateSong();
     //await this.getPlaylistsTracks();
-    await this.logStatistics();
+    //await this.logStatistics();
     //this.hash();
   }
 

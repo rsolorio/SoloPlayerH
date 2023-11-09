@@ -13,7 +13,8 @@ import { ArtistViewBaseEntity } from './artist-view-base.entity';
   FROM artist
   INNER JOIN (
     SELECT album.id, album.primaryArtistId, album.name, COUNT(song.id) AS songCount, SUM(song.playCount) AS playCount, SUM(song.seconds) AS seconds, MAX(song.addDate) AS songAddDateMax
-    FROM album INNER JOIN song ON album.id = song.primaryAlbumId
+    FROM album INNER JOIN song
+    ON album.id = song.primaryAlbumId
     GROUP BY album.id, album.primaryArtistId, album.name
   ) AS album ON artist.id = album.primaryArtistId
   GROUP BY artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.artistType, artist.artistGender, artist.country, artist.favorite

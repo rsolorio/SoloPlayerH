@@ -14,12 +14,17 @@ import { ArtistViewBaseEntity } from './artist-view-base.entity';
   name: 'artistClassificationView',
   expression: `
   SELECT artist.id, artist.name, artist.hash, artist.artistSort, artist.artistStylized, artist.artistType, artist.country, artist.favorite,
-  albumClassification.classificationId, COUNT(albumClassification.id) AS albumCount, SUM(albumClassification.songCount) AS songCount, SUM(albumClassification.playCount) AS playCount, MAX(albumClassification.songAddDateMax) AS songAddDateMax
+  albumClassification.classificationId,
+  COUNT(albumClassification.id) AS albumCount,
+  SUM(albumClassification.songCount) AS songCount,
+  SUM(albumClassification.playCount) AS playCount,
+  SUM(albumClassification.seconds) AS seconds,
+  MAX(albumClassification.songAddDateMax) AS songAddDateMax
   FROM artist
   INNER JOIN (
-    SELECT album.id, album.primaryArtistId, album.name, songClass.classificationId, COUNT(songClass.id) AS songCount, SUM(songClass.playCount) AS playCount, MAX(songClass.addDate) AS songAddDateMax
+    SELECT album.id, album.primaryArtistId, album.name, songClass.classificationId, COUNT(songClass.id) AS songCount, SUM(songClass.playCount) AS playCount, SUM(songClass.seconds) AS seconds, MAX(songClass.addDate) AS songAddDateMax
     FROM album INNER JOIN (
-      SELECT song.id, song.primaryAlbumId, song.addDate, song.playCount, songClassification.classificationId
+      SELECT song.id, song.primaryAlbumId, song.addDate, song.playCount, song.seconds, songClassification.classificationId
       FROM song INNER JOIN songClassification
       ON song.id = songClassification.songId
     ) AS songClass
