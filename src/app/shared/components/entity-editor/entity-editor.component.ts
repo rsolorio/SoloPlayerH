@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IEntityEditorModel, IEntityFieldModel } from './entity-editor.interface';
 import { ValueEditorType } from 'src/app/core/models/core.enum';
+import { AppActionIcons } from 'src/app/app-icons';
 
 @Component({
   selector: 'sp-entity-editor',
@@ -9,6 +10,7 @@ import { ValueEditorType } from 'src/app/core/models/core.enum';
 })
 export class EntityEditorComponent implements OnInit {
   public ValueEditorType = ValueEditorType;
+  public AppActionIcons = AppActionIcons;
   constructor() { }
 
   @Input() public model: IEntityEditorModel = {

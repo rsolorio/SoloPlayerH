@@ -232,6 +232,44 @@ export class SongViewComponent implements OnInit {
               onEdit: () => {}
             },
           ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'infoUrl',
+              icon: AppAttributeIcons.Link,
+              label: 'Info Url',
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                SongEntity.findOneBy({ id: this.songId }).then(song => {
+                  song.infoUrl = this.entityEditorModel.data['infoUrl'];
+                  song.save();
+                });
+              }
+            },
+          ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'videoUrl',
+              icon: AppAttributeIcons.Video,
+              label: 'Video Url',
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                SongEntity.findOneBy({ id: this.songId }).then(song => {
+                  song.videoUrl = this.entityEditorModel.data['videoUrl'];
+                  song.save();
+                });
+              }
+            },
+          ]
         }
       ]
     };

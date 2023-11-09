@@ -13,10 +13,12 @@
     (click)="onPrependClick(field)"
     >{{field.label}}</span>
     <!-- Input -->
-    <input *ngIf="field.editorType !== ValueEditorType.YesNo" type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>
+    <input *ngIf="field.editorType !== ValueEditorType.YesNo" type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" [readonly]="!field.editEnabled">
     <input *ngIf="field.editorType === ValueEditorType.YesNo" type="text" [ngModel]="getYesNoValue(field)" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>
     <!-- Edit Icon -->
-    <span *ngIf="field.onEdit" (click)="field.onEdit(field)" class="sp-input-edit sp-clickable"><i class="mdi-pencil-outline mdi"></i></span>
+    <span *ngIf="field.onEdit && !field.editEnabled" (click)="field.onEdit(field)" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Edit"></i></span>
+    <!-- Edit Ok Icon -->
+    <span *ngIf="field.editEnabled" (click)="field.onOk(field)" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Ok"></i></span>
     <!-- Badge -->
     <span *ngIf="field.badge" class="sp-input-badge sp-text-small">{{field.badge}}</span>
   </div>

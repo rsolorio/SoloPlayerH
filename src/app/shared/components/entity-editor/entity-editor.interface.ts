@@ -12,7 +12,9 @@ export interface IEntityFieldModel {
   labelVisible?: boolean;
   badge?: string;
   editorType?: ValueEditorType;
+  editEnabled?: boolean;
   onEdit?: (field: IEntityFieldModel) => void;
+  onOk?: (field: IEntityFieldModel) => void;
 }
 
 export interface IEntityGroupModel {

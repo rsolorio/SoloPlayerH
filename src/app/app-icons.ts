@@ -86,7 +86,9 @@ export enum AppAttributeIcons {
   Bottom = 'mdi-arrow-collapse-down mdi',
   Top = 'mdi-arrow-collapse-up mdi',
   Vocal = 'mdi-account-voice mdi',
-  Labels = 'mdi-label-multiple-outline mdi'
+  Labels = 'mdi-label-multiple-outline mdi',
+  Link = 'mdi-link mdi mdi-rotate-135',
+  Video = 'mdi-video mdi'
 }
 
 export enum AppActionIcons {
