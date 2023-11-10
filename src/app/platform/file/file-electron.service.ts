@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { promises, existsSync } from 'fs';
+import { promises, existsSync, utimesSync } from 'fs';
 import { join, resolve, extname, parse, relative } from 'path';
 import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
@@ -20,7 +20,12 @@ export class FileElectronService extends FileService {
     return promises.readFile(filePath);
   }
 
-  writeBuffer(filePath: string, content: Buffer): Promise<void> {
+  async writeBuffer(filePath: string, content: Buffer): Promise<void> {
+    const directoryPath = this.getDirectoryPath(filePath);
+    // Hack to determine if this is not a drive
+    if (!directoryPath.endsWith(':')) {
+      await promises.mkdir(directoryPath, { recursive: true });
+    }
     return promises.writeFile(filePath, content);
   }
 
@@ -177,6 +182,10 @@ export class FileElectronService extends FileService {
     }
 
     return info;
+  }
+
+  public setTimes(filePath: string, modifiedDate: Date, accessDate: Date): void {
+    utimesSync(filePath, accessDate, modifiedDate);
   }
 
   getAbsolutePath(locationPath: string, endPath: string): string {

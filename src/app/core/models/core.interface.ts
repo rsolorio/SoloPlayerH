@@ -50,16 +50,25 @@ export interface IMonthRange {
 }
 
 export interface ITimeSpan {
+  /** Total number of milliseconds of the time span. */
   total?: number;
+  /** The milliseconds portion of the time span. */
   milliseconds?: number;
+  /** The seconds portion of the time span. */
   seconds?: number;
+  /** The minutes portion of the time span. */
   minutes?: number;
+  /** The hours portion of the time span. */
   hours?: number;
+  /** The days portion of the time span. */
   days?: number;
+  /** Generic property to store related information especially for debugging purposes. */
+  data?: any;
 }
 
 export interface ITimePeriod extends IDateRange {
   span: ITimeSpan;
+  laps?: ITimeSpan[];
 }
 
 /** Interface that provides a "selected" optional property. */

@@ -48,6 +48,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  setTimes(filePath: string, modifiedDate: Date, accessDate: Date): void {
+    //
+  }
+
   exists(path: string): boolean {
     return false;
   }

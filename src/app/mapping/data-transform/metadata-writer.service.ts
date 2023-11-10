@@ -99,10 +99,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     // 2. Get the data
     result.metadata = await this.getData(input);
-    // 3. Create the file
-    await this.fileService.copyFile(result.sourcePath, result.destinationPath);
+    // 3. Load the buffer
+    const originalAudioBuffer = await this.fileService.getBuffer(result.sourcePath);
     // 4. Write metadata
-    await this.writeMetadata(result.destinationPath, result.metadata);
+    await this.writeMetadata(originalAudioBuffer, result.destinationPath, result.metadata);
     return result;
   }
 
@@ -141,9 +141,8 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
   }
 
-  private async writeMetadata(filePath: string, metadata: KeyValues): Promise<void> {
-    const buffer = await this.fileService.getBuffer(filePath);
-    const mp3Tag = new MP3Tag(buffer, this.log.level === LogLevel.Verbose);
+  private async writeMetadata(existingAudioBuffer: Buffer, newFilePath: string, metadata: KeyValues): Promise<void> {
+    const mp3Tag = new MP3Tag(existingAudioBuffer, this.log.level === LogLevel.Verbose);
     // This will initialize the tags object even if the file has no tags
     mp3Tag.read();
     mp3Tag.tags.v2 = await this.setupV2Tags(metadata);
@@ -162,14 +161,15 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
     else {
       mp3Tag.read();
-      await this.fileService.writeBuffer(filePath, mp3Tag.buffer as Buffer);
+      // Write the buffer of the existing file to a new file
+      await this.fileService.writeBuffer(newFilePath, mp3Tag.buffer as Buffer);
     }
 
     // Setting the change date will only happen if the changeDate field is configured in the data source
     const changeDate = this.first(metadata[MetaField.ChangeDate]) as Date;
     if (changeDate) {
       // Write this info to the actual file
-      await this.setFileChangeDate(filePath, changeDate);
+      this.fileService.setTimes(newFilePath, changeDate, changeDate);
     }
   }
 
@@ -435,21 +435,5 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       return 204; // 4
     }
     return 255; // 5
-  }
-
-  private async setFileChangeDate(filePath: string, changeDate: Date): Promise<void> {
-    // This is a hack that uses a .net cmd file to update the creation date,
-    // since node doesn't support this.
-    const utilityFilePath = 'F:\\Code\\VS Online\\SoloSoft\\Bin46\\FileAttributeCmd.exe';
-    if (!this.fileService.exists(utilityFilePath)) {
-      return;
-    }
-    // This will put the string between quotes (needed for the command) and also escape backslashes (needed for the command)
-    let command = JSON.stringify(filePath);
-    command += ' setWriteDate ' + this.utility.toTicks(changeDate, true);
-    const result = await this.fileService.runCommand(`"${utilityFilePath}" ${command}`);
-    if (result.includes('error') || result.includes('exception')) {
-      this.log.warn('Error setting write date to file: ' + filePath, result);
-    }
   }
 }

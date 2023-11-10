@@ -29,6 +29,14 @@ export abstract class FileService {
 
   abstract getFileInfo(path: string): Promise<IFileInfo>;
 
+  /**
+   * Sets modified and access date of the specified file.
+   * @param filePath The full path of the file.
+   * @param modifiedDate The last time the contents of the file were modified (mtime)
+   * @param accessDate The last time the file was read (atime)
+   */
+  abstract setTimes(filePath: string, modifiedDate: Date, accessDate: Date): void;
+
   abstract exists(path: string): boolean;
 
   abstract copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>;
