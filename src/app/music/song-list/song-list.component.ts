@@ -43,6 +43,8 @@ import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection
 import { SyncType } from 'src/app/shared/models/sync-profile-model.interface';
 import { ExportService } from 'src/app/sync-profile/export/export.service';
 import { AppEvent } from 'src/app/app-events';
+import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -214,7 +216,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private sidebarHostService: SideBarHostStateService,
     private addToPlaylistService: AddToPlaylistService,
     private exporter: ExportService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private log: LogService
   ) {
     super();
   }
@@ -331,38 +334,39 @@ export class SongListComponent extends CoreComponent implements OnInit {
     return list.id === this.spListBaseComponent.model.criteriaResult.criteria.id;
   }
 
-  private loadSongInPlayer(song: ISongModel, play?: boolean, expand?: boolean): void {
+  private async loadSongInPlayer(song: ISongModel, play?: boolean, expand?: boolean): Promise<void> {
     const playerList = this.playerService.getState().playerList;
+    let trackToLoad: IPlaylistSongModel;
     if (this.isListInPlayer(playerList)) {
-      const track = playerList.getTrack(song);
-      this.playerService.setCurrentTrack(track, play).then(() => {
-        if (expand) {
-          this.playerOverlayService.expand();
-        }
-      });
+      trackToLoad = playerList.getTrack(song);
     }
-    else {
+
+    if (!trackToLoad) {
       // Since we are about to play a new track:
       // 1. Stop the player
       // 2. Load this new track list
       // 3. Load this track
-      this.playerService.stop().then(success => {
-        if (success) {
-          const songList = this.spListBaseComponent.model.criteriaResult.items as ISongModel[];
-          // For now, we are using this component only for search results,
-          // but we should have an input property to specify the title of the play list
-          playerList.loadSongs(
-            this.spListBaseComponent.model.criteriaResult.criteria.id,
-            this.spListBaseComponent.model.criteriaResult.criteria.name,
-            songList);
-          const track = playerList.getTrack(song);
-          this.playerService.setCurrentTrack(track, play).then(() => {
-            if (expand) {
-              this.playerOverlayService.expand();
-            }
-          });
-        }
-      });
+      const success = await this.playerService.stop();
+      if (success) {
+        const songList = this.spListBaseComponent.model.criteriaResult.items as ISongModel[];
+        // For now, we are using this component only for search results,
+        // but we should have an input property to specify the title of the play list
+        playerList.loadSongs(
+          this.spListBaseComponent.model.criteriaResult.criteria.id,
+          this.spListBaseComponent.model.criteriaResult.criteria.name,
+          songList);
+        trackToLoad = playerList.getTrack(song);
+      }
+    }
+
+    if (trackToLoad) {
+      await this.playerService.setCurrentTrack(trackToLoad, play);
+      if (expand) {
+        this.playerOverlayService.expand();
+      }
+    }
+    else {
+      this.log.warn('Loading song in player. Track not found in the list of songs.', song.filePath);
     }
   }
 
