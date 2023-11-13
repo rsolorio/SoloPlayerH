@@ -419,20 +419,36 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   private convert5To255(rating: number): number {
+    // Based on this thread:
+    // https://www.mediamonkey.com/forum/viewtopic.php?p=450821&sid=3d55a9a4af0caeffd6fbc4147772e346#p450821
+    // This is the proposal that covers most of the cases
+    // 00/0.0 = 000
+    // 02/1.0 = 001 (special case)
+    // 01/0.5 = 022-002
+    // 02/1.0 = 031-023
+    // 03/1.5 = 063-032
+    // 04/2.0 = 095-064
+    // 05/2.5 = 127-096
+    // 06/3.0 = 159-128
+    // 07/3.5 = 195-160
+    // 08/4.0 = 223-196
+    // 09/4.5 = 224-254
+    // 10/5.0 = 255
+
     if (rating < 1) {
       return 0;
     }
     if (rating < 2) {
-      return 51; // 1
+      return 31; // 1
     }
     if (rating < 3) {
-      return 102; // 2
+      return 95; // 2
     }
     if (rating < 4) {
-      return 153; // 3
+      return 159; // 3
     }
     if (rating < 5) {
-      return 204; // 4
+      return 223; // 4
     }
     return 255; // 5
   }

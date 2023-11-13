@@ -5,7 +5,7 @@ import { DatabaseOptionsService } from 'src/app/shared/services/database/databas
 import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
-import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppFeatureIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppFeatureIcons, AppViewIcons } from 'src/app/app-icons';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
@@ -193,6 +193,16 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             action: () => {
               this.tester.test();
             }
+          }
+        ]
+      },
+      {
+        name: 'About',
+        settings: [
+          {
+            name: 'Version',
+            icon: AppViewIcons.About,
+            textRegular: [this.utility.getAppVersion()]
           }
         ]
       }

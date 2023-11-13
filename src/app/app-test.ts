@@ -38,7 +38,7 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    await this.logFileMetadata();
+    //await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
@@ -50,7 +50,7 @@ export class AppTestService {
     //await this.updateSong();
     //await this.getPlaylistsTracks();
     //await this.logStatistics();
-    //this.hash();
+    this.hash();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -553,7 +553,8 @@ export class AppTestService {
     //const value = this.lookup.hashValueListEntry('China');
     //const value = this.lookup.hashValues(['Symfonium Player']);
     //const value = this.lookup.hashSong('G:\\Music\\Various\\Flamenco\\Al Di Meola - John McLaughlin - Paco De Lucia\\1981 - Friday Night In San Francisco\\01 - mediterranean sundance, rio ancho.mp3');
-    const value = this.lookup.hashAlbum('Entren Los Que Quieran', 2013);
+    //const value = this.lookup.hashAlbum('El Ruego', 1988);
+    const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Impacto De Montemorelos\\1988 - El Ruego\\front.jpg', 0);
 
     console.log(value);
   }

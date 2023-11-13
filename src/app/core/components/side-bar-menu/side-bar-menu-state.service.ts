@@ -43,12 +43,6 @@ export class SideBarMenuStateService {
     return menuModel;
   }
 
-  private createAboutMenuItem(): IMenuModel {
-    const menuModel = this.createMenuItem('About', AppViewIcons.About, false);
-    menuModel.subtitle = this.utility.getAppVersion();
-    return menuModel;
-  }
-
   /**
    * Populates the menu based on the specified route.
    * @param route The current route
@@ -93,7 +87,6 @@ export class SideBarMenuStateService {
         }
       }
 
-      this.state.items.push(this.createAboutMenuItem());
       this.state.appMenuLoaded = true;
     }
   }
