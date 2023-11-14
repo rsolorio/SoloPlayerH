@@ -135,14 +135,11 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private sidebarHostService: SideBarHostStateService,
   ) {
     super();
-    const isGenreList = this.utility.isRouteActive(AppRoute.Genres);
-    if (isGenreList) {
-      const criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);
-      criteriaItem.id = 'quickFilter-genre';
-      criteriaItem.displayName = 'Genre';
-      criteriaItem.displayValue = 'Yes';
-      this.listModel.criteriaResult.criteria.quickCriteria.push(criteriaItem);
-    }
+    const criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);
+    criteriaItem.id = 'quickFilter-genre';
+    criteriaItem.displayName = 'Genre';
+    criteriaItem.displayValue = 'Yes';
+    this.listModel.criteriaResult.criteria.quickCriteria.push(criteriaItem);
   }
 
   ngOnInit(): void {

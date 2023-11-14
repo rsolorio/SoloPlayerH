@@ -16,7 +16,6 @@ export enum AppRoute {
   Artists = '/artists',
   AlbumArtists = '/albumartists',
   Albums = '/albums',
-  Genres = '/genres',
   Classifications = '/classifications',
   Playlists = '/playlists',
   Filters = '/filters',
@@ -44,10 +43,6 @@ appRoutes[AppRoute.Artists] = { route: AppRoute.Artists,
 appRoutes[AppRoute.Albums] = { route: AppRoute.Albums,
   icon: AppEntityIcons.Album,
   name: 'Albums',
-  menuEnabled: true };
-appRoutes[AppRoute.Genres] = { route: AppRoute.Genres,
-  icon: AppEntityIcons.Genre,
-  name: 'Genres',
   menuEnabled: true };
 appRoutes[AppRoute.Classifications] = { route: AppRoute.Classifications,
   icon: AppEntityIcons.Classification,
