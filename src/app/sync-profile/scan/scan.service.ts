@@ -58,6 +58,7 @@ export class ScanService {
           }
         },
         complete: () => {
+          this.events.broadcast(AppEvent.ScanEnd, scanId);
           resolve({ period: t.stop(), result: result });
         }
       });

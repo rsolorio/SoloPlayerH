@@ -32,3 +32,11 @@ export interface ISettingCategory {
   name: string;
   settings: ISetting[];
 }
+
+export function clearSettingText(setting: ISetting): void {
+  setting.textHtml = null;
+  setting.textRegular = [];
+  setting.textData = [];
+  setting.textWarning = null;
+  setting.textError = null;
+}

@@ -13,7 +13,7 @@ import { ExportService } from '../export/export.service';
 import { ISyncProfile, SyncType } from 'src/app/shared/models/sync-profile-model.interface';
 import { ScanService } from '../scan/scan.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
-import { ISetting, ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
+import { ISetting, ISettingCategory, clearSettingText } from 'src/app/shared/components/settings-base/settings-base.interface';
 import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
 import { IExportConfig, IExportResult } from '../export/export.interface';
 import { IChipItem } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
@@ -112,9 +112,24 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       }
       setting.disabled = true;
       setting.running = true;
-      setting.textRegular[0] = 'Calculating file count...';
-      setting.textRegular[1] = `Files found: ${scanFileInfo.progress}`;
-      setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
+      const html = `
+        <span class="sp-text-medium">Calculating file count...</span><br>
+        <span class="sp-text-small">Files found: ${scanFileInfo.progress}</span><br>
+        <span class="sp-text-tiny">${scanFileInfo.item.directoryPath}</span><br>
+        <span class="sp-text-tiny">${scanFileInfo.item.fullName}</span>
+      `;
+      setting.textHtml = html;
+    });
+
+    this.subs.sink = this.events.onEvent(AppEvent.ScanEnd).subscribe(scanId => {
+      if (scanId !== 'scanAudio') {
+        return;
+      }
+      const setting = this.findSetting('syncAudioFiles');
+      if (!setting) {
+        return;
+      }
+      clearSettingText(setting);
     });
 
     this.subs.sink = this.events.onEvent<IScanItemInfo<IFileInfo>>(AppEvent.ScanAudioFileStart).subscribe(scanFileInfo => {
@@ -122,11 +137,16 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       setting.disabled = true;
       setting.running = true;
-      setting.textRegular[0] = 'Reading metadata...';
-      setting.textRegular[1] = `File ${scanFileInfo.progress} of ${scanFileInfo.total}`;
-      setting.textRegular[2] = `${scanFileInfo.item.directoryPath} \n ${scanFileInfo.item.fullName}`;
+      const html = `
+        <span class="sp-text-medium">Reading metadata...</span><br>
+        <span class="sp-text-small">File ${scanFileInfo.progress} of ${scanFileInfo.total}</span><br>
+        <span class="sp-text-tiny">${scanFileInfo.item.directoryPath}</span><br>
+        <span class="sp-text-tiny">${scanFileInfo.item.fullName}</span>
+      `;
+      setting.textHtml = html;
     });
 
     this.subs.sink = this.events.onEvent(AppEvent.ScanAudioDbSyncStart).subscribe(() => {
@@ -134,11 +154,10 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       setting.disabled = true;
       setting.running = true;
       setting.textRegular[0] = 'Synchronizing changes...';
-      setting.textRegular[1] = '';
-      setting.textRegular[2] = '';
     });
 
     this.subs.sink = this.events.onEvent(AppEvent.ScanAudioDbCleanupStart).subscribe(() => {
@@ -146,11 +165,10 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       setting.disabled = true;
       setting.running = true;
       setting.textRegular[0] = 'Cleaning up...';
-      setting.textRegular[1] = '';
-      setting.textRegular[2] = '';
     });
 
     this.subs.sink = this.events.onEvent<IProcessDuration<ISyncSongInfo>>(AppEvent.ScanAudioEnd).subscribe(processInfo => {
@@ -158,6 +176,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
 
       let syncMessage = '';
       if (processInfo.result.songAddedRecords.length) {
@@ -187,7 +206,6 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       else {
         setting.textRegular[1] = `Sync process done. ${syncMessage}`;
       }
-      setting.textRegular[2] = '';
 
       setting.disabled = false;
       setting.running = false;
@@ -249,6 +267,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       setting.disabled = true;
       setting.running = true;
       setting.textRegular[0] = 'Preparing export...';
@@ -259,13 +278,17 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       const pathParts = exportAudioResult.destinationPath.split('\\');
       const fileName = pathParts[pathParts.length - 1];
       setting.disabled = true;
       setting.running = true;
-      setting.textRegular[0] = `Exporting track ${exportAudioResult.count} to...`;
-      setting.textRegular[1] = exportAudioResult.destinationPath.replace(fileName, '');
-      setting.textRegular[2] = fileName;
+      const html = `
+        <span class="sp-text-medium">Exporting track ${exportAudioResult.count} to...</span><br>
+        <span class="sp-text-tiny">${exportAudioResult.destinationPath.replace(fileName, '')}</span><br>
+        <span class="sp-text-tiny">${fileName}</span>
+      `;
+      setting.textHtml = html;
     });
 
     this.subs.sink = this.events.onEvent<IExportResult>(AppEvent.ExportSmartlistsStart).subscribe(exportResult => {
@@ -273,6 +296,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       setting.disabled = true;
       setting.running = true;
       setting.textRegular[0] = 'Exporting smartlists to...';
@@ -288,6 +312,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       setting.disabled = true;
       setting.running = true;
       setting.textRegular[0] = 'Exporting autolists...';
@@ -302,6 +327,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       setting.disabled = true;
       setting.running = true;
       setting.textRegular[0] = 'Exporting playlists...';
@@ -316,6 +342,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       if (!setting) {
         return;
       }
+      clearSettingText(setting);
       let resultMessage = '';
       resultMessage += `Processed files: ${exportResult.totalFileCount}.`;
       resultMessage += ` Exported files: ${exportResult.finalFileCount}.`;
