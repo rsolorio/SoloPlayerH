@@ -94,6 +94,8 @@ export class DatabaseEntitiesService {
     const playRecord = new PlayHistoryEntity();
     playRecord.songId = songData.id;
     playRecord.playDate = song.playDate;
+    playRecord.playCount = 1;
+    playRecord.progress = 0;
     await playRecord.save();
     return song;
   }

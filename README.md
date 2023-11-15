@@ -274,6 +274,12 @@ All standard entities have three main fields:
 ### PlayHistory table
 - songId
 - playDate
+- playCount
+  - This is set to 1 when registering a song as played.
+  - On an initial scan it can be set to the initial play count found in the metadata.
+  - It can also be set to 0 if the song was added to the player but never marked as played.
+- progress
+  - The play percentage reached when the record was registered.
 
 ### RelatedImage table
 - relatedId

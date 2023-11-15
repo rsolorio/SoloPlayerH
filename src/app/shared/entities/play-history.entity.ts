@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity({name: 'playHistory'})
 export class PlayHistoryEntity extends BaseEntity {
@@ -6,4 +6,8 @@ export class PlayHistoryEntity extends BaseEntity {
   songId: string;
   @PrimaryColumn()
   playDate: Date;
+  @Column()
+  playCount: number;
+  @Column()
+  progress: number;
 }
