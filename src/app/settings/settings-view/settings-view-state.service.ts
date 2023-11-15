@@ -141,10 +141,35 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             data: this.options.getNumber(ModuleOptionId.ListViewLimit),
             textData: [this.options.getNumber(ModuleOptionId.ListViewLimit).toString()],
             onChange: setting => {
-              setting.data = setting.data;
               setting.textData = [setting.data.toString()];
-              this.options.saveNumber(ModuleOptionId.ListViewLimit, setting.data);
+              this.options.saveNumber(ModuleOptionId.ListViewLimit, parseInt(setting.data.toString(), 10));
             }
+          }
+        ]
+      },
+      {
+        name: 'Player',
+        settings: [
+          {
+            name: 'Replay Time',
+            icon: AppActionIcons.TimeBackward,
+            textRegular: ['Amount of time in seconds to go back when replaying a track.'],
+            data: this.options.getNumber(ModuleOptionId.PlayerReplayTime),
+            textData: [this.options.getNumber(ModuleOptionId.PlayerReplayTime).toString()]
+          },
+          {
+            name: 'Forward Time',
+            icon: AppActionIcons.TimeForward,
+            textRegular: ['Amount of time in seconds to go forward when playing a track.'],
+            data: this.options.getNumber(ModuleOptionId.PlayerForwardTime),
+            textData: [this.options.getNumber(ModuleOptionId.PlayerForwardTime).toString()]
+          },
+          {
+            name: 'Play Percentage',
+            icon: AppActionIcons.PlusOne,
+            textRegular: ['Minimum elapsed percentage to mark a song as played.'],
+            data: this.options.getNumber(ModuleOptionId.PlayPercentage),
+            textData: [this.options.getNumber(ModuleOptionId.PlayPercentage).toString()]
           }
         ]
       },

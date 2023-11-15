@@ -14,6 +14,7 @@ import { NavBarStateService } from './core/components/nav-bar/nav-bar-state.serv
 import { ModuleOptionId } from './shared/services/database/database.seed';
 import { DatabaseOptionsService } from './shared/services/database/database-options.service';
 import { CoreEvent } from './app-events';
+import { HtmlPlayerService } from './shared/services/html-player/html-player.service';
 
 /**
  * The main app component.
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     private featureService: FeatureDetectionService,
     private navbarService: NavBarStateService,
+    private playerService: HtmlPlayerService,
     private navigation: NavigationService)
   {
     doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
@@ -61,6 +63,8 @@ export class AppComponent implements OnInit {
     if (this.options.getBoolean(ModuleOptionId.HideNavbarOnScroll)) {
       this.navbarService.enableAutoHide();
     }
+
+    this.playerService.getState().playPercentage = this.options.getNumber(ModuleOptionId.PlayPercentage)
   }
 
   @HostListener('window:scroll', ['$event'])

@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ColorG } from 'src/app/core/models/color-g.class';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
-import { PlayerSongStatus } from 'src/app/shared/models/player.enum';
 import { PlayerOverlayStateService } from './player-overlay-state.service';
 import { PlayerOverlayMode } from './player-overlay.enum';
 import { IPlayerOverlayModel } from './player-overlay.interface';
@@ -11,9 +10,12 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { AppEvent } from 'src/app/app-events';
+import { IPlayerTrackCount } from 'src/app/shared/models/player.interface';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 /**
- * This is the main container of the player and responsible for rendering the selected player mode.
+ * This is the main container of the player, responsible for the visual representation of the player service and for rendering the selected player mode.
+ * This component lives while the app is running.
  */
 @Component({
   selector: 'sp-player-overlay',
@@ -29,6 +31,7 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
     private playerOverlayService: PlayerOverlayStateService,
     private events: EventsService,
     private entityService: DatabaseEntitiesService,
+    private log: LogService,
     private cd: ChangeDetectorRef,
     private playerService: HtmlPlayerService,
     private utility: UtilityService)
@@ -39,23 +42,7 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
   ngOnInit(): void {
     this.model = this.playerOverlayService.getState();
     this.subscribeToFullPlayerImageLoaded();
-    // Tell the player what to do when the status of a song changes.
-    // This component has this responsibility because it lives while the app is running,
-    // it is responsible for the visual representation of the player service,
-    // and has direct access to the db service.
-    this.playerService.getState().playerList.doAfterSongStatusChange = (song, oldStatus) => {
-      if (song.playerStatus === PlayerSongStatus.Playing && oldStatus !== PlayerSongStatus.Paused) {
-        song.playCount++;
-        song.playDate = new Date();
-        const days = this.utility.daysFromNow(song.playDate);
-        song.recentPlayIcon = this.playerOverlayService.getRecentPlayIcon(days);
-        this.entityService.updatePlayCount(song).then(result => {
-          if (result) {
-            this.events.broadcast(AppEvent.PlayerSongUpdated, song);
-          }
-        });
-      }
-    };
+    this.subscribeToPlayerTrackCount();
   }
 
   public expand() {
@@ -79,6 +66,28 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
         // A simple observable doesn't actually fire change detection so let's do it here
         this.cd.detectChanges();
       }
+    });
+  }
+
+  private subscribeToPlayerTrackCount(): void {
+    // Since this is the visual representation of the player service, do it here
+    this.subs.sink = this.events.onEvent<IPlayerTrackCount>(AppEvent.PlayerTrackCount)
+    .subscribe(countInfo => {
+      this.log.debug('PlayerTrackCount event fired.', countInfo);
+      this.entityService.registerPlayHistory(countInfo.songId, countInfo.count, countInfo.elapsedPercentage).then(result => {
+        if (result) {
+          const state = this.playerService.getState();
+          const track = state.playerList.getTrackById(countInfo.songId);
+          if (track) {
+            const days = this.utility.daysFromNow(track.playDate);
+            track.recentPlayIcon = this.playerOverlayService.getRecentPlayIcon(days);
+            track.playCount = result.playCount;
+            track.playDate = result.playDate;
+            track.changeDate = result.changeDate;
+            this.events.broadcast(AppEvent.PlayerSongUpdated, track);
+          }
+        }
+      });
     });
   }
 }

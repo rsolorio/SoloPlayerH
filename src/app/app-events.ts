@@ -32,6 +32,7 @@ export enum AppEvent {
   // Player
   PlayerPositionChanged = 'PLAYER_POSITION_CHANGED',
   PlayerStatusChanged = 'PLAYER_STATUS_CHANGED',
+  PlayerTrackCount = 'PLAYER_TRACK_COUNT',
   PlaylistCurrentTrackChanged = 'PLAYLIST_CURRENT_TRACK_CHANGED',
   FullPlayerPaletteLoaded = 'FULL_PLAYER_PALETTE_LOADED',
   PlayerSongUpdated = 'PLAYER_SONG_UPDATED',

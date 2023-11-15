@@ -78,25 +78,36 @@ export class DatabaseEntitiesService {
     return result['seconds'];
   }
 
-  public async updatePlayCount(songData: ISongModel): Promise<SongEntity> {
+  /**
+   * Adds a play history record and updates the song entity if needed.
+   * This method does nothing in debug mode.
+   * @param songId The id of the song.
+   * @param count The number of plays for that song.
+   * @param progress The % play progress when it was recorded.
+   * @returns A song entity if it was updated.
+   */
+  public async registerPlayHistory(songId: string, count: number, progress: number): Promise<SongEntity> {
     // This particular functionality will be disabled when debug is on.
     const debugMode = this.storage.getByKey(LocalStorageKeys.DebugMode);
     if (debugMode) {
       return null;
     }
-    // Increase play count
-    const song = await SongEntity.findOneBy({ id: songData.id });
-    song.playCount = songData.playCount;
-    song.playDate = songData.playDate;
-    song.changeDate = new Date();
-    await song.save();
     // Add play record
     const playRecord = new PlayHistoryEntity();
-    playRecord.songId = songData.id;
-    playRecord.playDate = song.playDate;
-    playRecord.playCount = 1;
-    playRecord.progress = 0;
+    playRecord.songId = songId;
+    playRecord.playDate = new Date();
+    playRecord.playCount = count;
+    playRecord.progress = progress;
     await playRecord.save();
+    // Increase play count
+    if (!count) {
+      return null;
+    }
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.playCount = song.playCount + count;
+    song.playDate = playRecord.playDate;
+    song.changeDate = playRecord.playDate;
+    await song.save();
     return song;
   }
 

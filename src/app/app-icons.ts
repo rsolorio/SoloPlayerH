@@ -138,7 +138,12 @@ export enum AppActionIcons {
   Run = 'mdi-flash mdi',
   SmartlistRemove = 'mdi-filter-variant-remove mdi',
   PlaylistEdit = 'mdi-playlist-edit mdi',
-  Drag = 'mdi-drag mdi'
+  Drag = 'mdi-drag mdi',
+  TimerAdd = 'mdi-timer-plus mdi',
+  TimerRemove = 'mdi-timer-minus mdi',
+  TimeBackward = 'mdi-replay mdi',
+  TimeForward = 'mdi-replay mdi-flip-h mdi',
+  PlusOne = 'mdi-numeric-positive-1 mdi'
 }
 
 export enum AppPlayerIcons {

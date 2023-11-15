@@ -163,6 +163,16 @@
         "multipleValues": false,
         "system": true,
         "values": "true"
+      },
+      {
+        "id": "89a480bf-2693-423b-8239-1ea071bf8421",
+        "name": "Play Percentage",
+        "moduleName": "Player",
+        "description": "Minimum elapsed percentage to mark a song as played.",
+        "valueEditorType": "number",
+        "multipleValues": false,
+        "system": false,
+        "values": "50"
       }
     ],
     "relatedImage": [

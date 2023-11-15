@@ -28,14 +28,28 @@ export interface IPlayerState {
   /** True if the html audio element fired a stalled event and hasn't been handled. */
   isStalled: boolean;
   hasError: boolean;
+  /** The current position of the duration in seconds. */
   elapsedSeconds: number;
+  /** The current position of the duration in percentage. */
   elapsedPercentage: number;
+  /** The previous position of the duration in seconds. */
+  previousElapsedSeconds:number;
+  /** The previous position of the duration in percentage. */
+  previousElapsedPercentage: number;
   loadedPercentage?: string;
   playerList: PlayerListModel;
   mediaSessionEnabled: boolean;
   playTimerInterval: number;
+  /** Percentage of the elapsed time of a song to be marked as played. */
+  playPercentage: number;
 }
 
 export interface IPlayerStatusChangedEventArgs extends IEventArgs<PlayerStatus> {
   track: IPlaylistSongModel;
+}
+
+export interface IPlayerTrackCount {
+  songId: string;
+  elapsedPercentage: number;
+  count: number;
 }

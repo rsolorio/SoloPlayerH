@@ -5,7 +5,7 @@ import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlayerListModel } from '../../models/player-list-model.class';
 import { PlayerSongStatus, PlayerStatus } from '../../models/player.enum';
-import { IPlayer, IPlayerState, IPlayerStatusChangedEventArgs } from '../../models/player.interface';
+import { IPlayer, IPlayerState, IPlayerStatusChangedEventArgs, IPlayerTrackCount } from '../../models/player.interface';
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { HtmlMediaEvent, HtmlMediaSessionEvent } from './html-player.enum';
 import { IMediaEventEntry } from './html-player.interface';
@@ -13,12 +13,18 @@ import { AppEvent } from 'src/app/app-events';
 
 /**
  * Implementation of the IPlayer interface using the Html 5 Audio api.
+ * playByTrack implementation:
+ * - playBySequence > playByTrack
+ * - play > playByTrack
+ * - playFirst > playByTrack
+ * setupNewTrack implementation:
+ * - playByTrack > setupNewTrack
+ * - setupCurrentTrack > setupNewTrack
  */
 @Injectable({
   providedIn: 'root'
 })
 export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
-
   private state: IPlayerState = {
     volume: 0,
     playNextEnabled: true,
@@ -28,9 +34,12 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     hasError: false,
     elapsedSeconds: 0,
     elapsedPercentage: 0,
+    previousElapsedSeconds: 0,
+    previousElapsedPercentage: 0,
     playerList: new PlayerListModel(this.events, this.utilities),
     mediaSessionEnabled: false,
-    playTimerInterval: 1
+    playTimerInterval: 1,
+    playPercentage: 0
   };
   private htmlAudio = new Audio();
   private eventHistory: IMediaEventEntry[] = [];
@@ -38,6 +47,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
   private isStopping = false;
   private isManualPause = false;
   private stalledWaitTime = 2;
+  /** Flag that determines if the current track has been played. */
+  private played = false;
   /** Resolve callback of the stop promise. We save it to be called later. */
   private resolveStop: (value: boolean) => void;
 
@@ -342,7 +353,8 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
   }
 
   private updateElapsedTime() {
-    const oldPosition = this.state.elapsedSeconds;
+    this.state.previousElapsedSeconds = this.state.elapsedSeconds;
+    this.state.previousElapsedPercentage = this.state.elapsedPercentage;
     const currentTime = this.htmlAudio.currentTime;
     const seconds = Math.round(currentTime);
     if (isNaN(seconds)) {
@@ -359,7 +371,16 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
         this.state.elapsedPercentage = 0;
       }
     }
-    this.events.broadcast(AppEvent.PlayerPositionChanged, { oldValue: oldPosition, newValue: this.state.elapsedSeconds });
+    this.events.broadcast(AppEvent.PlayerPositionChanged, { oldValue: this.state.previousElapsedSeconds, newValue: this.state.elapsedSeconds });
+    if (!this.played && this.state.elapsedPercentage >= this.state.playPercentage) {
+      this.played = true;
+      const countInfo: IPlayerTrackCount = {
+        songId: this.state.playerList.current.songId,
+        elapsedPercentage: Math.round(this.state.elapsedPercentage),
+        count: 1
+      };
+      this.events.broadcast(AppEvent.PlayerTrackCount, countInfo);
+    }
   }
 
   /**
@@ -453,6 +474,21 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
    * and loads the audio file into the internal player.
    */
   private setupNewTrack(track: IPlaylistSongModel): boolean {
+    if (this.played) {
+      // Reset the play flag
+      this.played = false;
+    }
+    else if (this.state.playerList.hasTrack()) {
+      // Using the previous percentage because at this point the song should have been stopped
+      // and the current percentage should be 0
+      const countInfo: IPlayerTrackCount = {
+        songId: this.state.playerList.current.songId,
+        elapsedPercentage: Math.round(this.state.previousElapsedPercentage),
+        count: 0
+      };
+      // Before setting current, fire event if the track was not played
+      this.events.broadcast(AppEvent.PlayerTrackCount, countInfo);
+    }
     this.state.playerList.setCurrent(track);
     return this.loadAudio(this.utilities.fileToUrl(track.filePath));
   }
