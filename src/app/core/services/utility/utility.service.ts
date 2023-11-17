@@ -5,7 +5,7 @@ import { BreakpointRanges } from './utility.class';
 import { EventsService } from '../../../core/services/events/events.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { IRouteInfo, ISize, ITimeSpan } from 'src/app/core/models/core.interface';
+import { IDateTimeText, IRouteInfo, ISize, ITimeSpan } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
@@ -232,6 +232,18 @@ export class UtilityService {
     return false;
   }
 
+  public toDateTimeText(date: Date): IDateTimeText {
+    return {
+      year: this.enforceDigits(date.getFullYear(), 4),
+      month: this.enforceDigits(date.getMonth(), 2),
+      day: this.enforceDigits(date.getDay(), 2),
+      hour: this.enforceDigits(date.getHours(), 2),
+      minute: this.enforceDigits(date.getMinutes(), 2),
+      second: this.enforceDigits(date.getSeconds(), 2),
+      millisecond: this.enforceDigits(date.getMilliseconds(), 3)
+    };
+  }
+
   /** Returns the difference in days between two dates. */
   public differenceInDays(date1: Date, date2: Date): number {
     const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
@@ -291,14 +303,13 @@ export class UtilityService {
    * Converts the specified date to a single number format, example: 20230130-163559000
    */
   public toDateTimeStamp(date: Date, separator: string = ''): string {
-    const year = date.getFullYear().toString();
-    const month = this.enforceDigits(date.getMonth(), 2);
-    const day = this.enforceDigits(date.getDay(), 2);
-    const hour = this.enforceDigits(date.getHours(), 2);
-    const minute = this.enforceDigits(date.getMinutes(), 2);
-    const second = this.enforceDigits(date.getSeconds(), 2);
-    const millisecond = this.enforceDigits(date.getMilliseconds(), 3);
-    return `${year}${separator}${month}${separator}${day}-${hour}${separator}${minute}${separator}${second}${separator}${millisecond}`;
+    const text = this.toDateTimeText(date);
+    return `${text.year}${separator}${text.month}${separator}${text.day}-${text.hour}${separator}${text.minute}${separator}${text.second}${separator}${text.millisecond}`;
+  }
+
+  public toDateTimeSqlite(date: Date): string {
+    const text = this.toDateTimeText(date);
+    return `${text.year}-${text.month}-${text.day} ${text.hour}:${text.minute}:${text.second}.${text.millisecond}`;
   }
 
   /**

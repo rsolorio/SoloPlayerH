@@ -142,20 +142,17 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   private async writeMetadata(existingAudioBuffer: Buffer, newFilePath: string, metadata: KeyValues): Promise<void> {
-    const mp3Tag = new MP3Tag(existingAudioBuffer, this.log.level === LogLevel.Verbose);
-    // This will initialize the tags object even if the file has no tags
-    mp3Tag.read();
-    mp3Tag.tags.v2 = await this.setupV2Tags(metadata);
     const config = this.syncProfile.configObj as IExportConfig;
     // Save to v2.3 by default, and also support v2.4
     // TODO: save to v1.1
     // TODO: save to other tag system if the file is not mp3
-    if (config?.mpegTag?.toLowerCase() === MpegTagVersion.Id3v24.toLowerCase()) {
-      mp3Tag.save({ id3v2: { include: undefined, unsynch: undefined, padding: undefined, version: 4 } });
-    }
-    else {
-      mp3Tag.save({ id3v2: { include: undefined, unsynch: undefined, padding: undefined, version: 3 } });
-    }
+    const v2Version = config?.mpegTag?.toLowerCase() === MpegTagVersion.Id3v24.toLowerCase() ? 4 : 3;
+    const mp3Tag = new MP3Tag(existingAudioBuffer, this.log.level === LogLevel.Verbose);
+    // This will initialize the tags object even if the file has no tags
+    mp3Tag.read();
+    mp3Tag.tags.v2 = await this.setupV2Tags(metadata, v2Version);
+    mp3Tag.save({ id3v2: { include: undefined, unsynch: undefined, padding: undefined, version: v2Version } });
+
     if (mp3Tag.error) {
       console.error(mp3Tag.error);
     }
@@ -177,9 +174,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * Adds metadata tags and returns an object that follows the tag object of the mp3tag library.
    * Supported tags: https://mp3tag.js.org/docs/frames.html
    */
-  private async setupV2Tags(metadata: KeyValues): Promise<any> {
+  private async setupV2Tags(metadata: KeyValues, v2Version: number): Promise<any> {
     const tags: any = {};
     const frameSeparator = '\\\\';
+    const valueSeparator = ', ';
 
     const title = this.first(metadata[MetaField.Title]);
     if (title) {
@@ -198,12 +196,22 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     const artists = metadata[MetaField.Artist];
     if (artists?.length) {
-      tags.TPE1 = artists.join(frameSeparator);
+      if (v2Version === 4) {
+        tags.TPE1 = artists.join(frameSeparator);
+      }
+      else {
+        tags.TPE1 = artists.join(valueSeparator);
+      }
     }
 
     const artistSorts = metadata[MetaField.ArtistSort];
     if (artistSorts?.length) {
-      tags.TSOP = artistSorts.join(frameSeparator);
+      if (v2Version === 4) {
+        tags.TSOP = artistSorts.join(frameSeparator);
+      }
+      else {
+        tags.TSOP = artistSorts.join(valueSeparator);
+      }
     }
 
     const albumArtist = this.first(metadata[MetaField.AlbumArtist]);
@@ -228,7 +236,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     const genres = metadata[MetaField.Genre];
     if (genres?.length) {
-      tags.TCON = genres.join(frameSeparator);
+      if (v2Version === 4) {
+        tags.TCON = genres.join(frameSeparator);
+      }
+      else {
+        tags.TCON = genres.join(valueSeparator);
+      }
     }
 
     const trackNumber = this.first(metadata[MetaField.TrackNumber]);
@@ -262,12 +275,22 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     const composers = metadata[MetaField.Composer];
     if (composers?.length) {
-      tags.TCOM = composers.join(frameSeparator);
+      if (v2Version === 4) {
+        tags.TCOM = composers.join(frameSeparator);
+      }
+      else {
+        tags.TCOM = composers.join(valueSeparator);
+      }
     }
 
     const composerSorts = metadata[MetaField.ComposerSort];
     if (composerSorts?.length) {
-      tags.TSOC = composerSorts.join(frameSeparator);
+      if (v2Version === 4) {
+        tags.TSOC = composerSorts.join(frameSeparator);
+      }
+      else {
+        tags.TSOC = composerSorts.join(valueSeparator);
+      }
     }
 
     const grouping = this.first(metadata[MetaField.Grouping]);

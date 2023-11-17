@@ -10,7 +10,6 @@ import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.int
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { appName } from 'src/app/app-exports';
-import { Not } from 'typeorm';
 
 /**
  * A data source that retrieves information from a ISongModel object.
@@ -44,7 +43,8 @@ export class SongModelSourceService implements IDataSourceService {
     ext: 'fileExtension',
     file: 'fileName',
     albumType: 'primaryAlbumType',
-    artistType: 'primaryArtistType'
+    artistType: 'primaryArtistType',
+    cleanTitle: 'cleanName'
   };
   constructor(private utility: UtilityService, private parser: ScriptParserService) { }
 

@@ -24,3 +24,9 @@ export interface IMusicSearchTerms {
   /** A term that will be used to search for artists, albums or titles. */
   wildcard: string;
 }
+
+export interface IPopularity {
+  id: string;
+  maxPlayDate: string;
+  sumPlayCount: string;
+}

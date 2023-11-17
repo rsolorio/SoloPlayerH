@@ -71,6 +71,16 @@ export interface ITimePeriod extends IDateRange {
   laps?: ITimeSpan[];
 }
 
+export interface IDateTimeText {
+  year: string;
+  month: string;
+  day: string;
+  hour: string;
+  minute: string;
+  second: string;
+  millisecond: string;
+}
+
 /** Interface that provides a "selected" optional property. */
 export interface ISelectable {
   selected?: boolean;

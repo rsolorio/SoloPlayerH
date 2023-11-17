@@ -5,7 +5,7 @@ import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { DbColumn, databaseColumns } from './database.columns';
 import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } from '../../components/chip-selection/chip-selection-model.interface';
-import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { IDateRange, ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { DatabaseService } from './database.service';
@@ -29,6 +29,9 @@ import { LocalStorageKeys } from '../local-storage/local-storage.enum';
 import { IAlbumModel } from '../../models/album-model.interface';
 import { IArtistModel } from '../../models/artist-model.interface';
 import { IPlaylistModel } from '../../models/playlist-model.interface';
+import { IPopularity } from '../../models/music-model.interface';
+import { RelativeDateOperator, RelativeDateTerm, RelativeDateUnit } from '../relative-date/relative-date.enum';
+import { RelativeDateService } from '../relative-date/relative-date.service';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +44,7 @@ export class DatabaseEntitiesService {
     private options: DatabaseOptionsService,
     private fileService: FileService,
     private storage: LocalStorageService,
+    private relativeDates: RelativeDateService,
     private sidebarHostService: SideBarHostStateService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
@@ -833,5 +837,32 @@ export class DatabaseEntitiesService {
       items: values
     };
     return result;
+  }
+
+  public async getSongPopularityByRange(range: IDateRange, limit: number): Promise<IPopularity[]> {
+    const query = `
+      SELECT songId AS id, MAX(playDate) AS maxPlayDate, SUM(playCount) AS sumPlayCount
+      FROM playHistory
+      WHERE playDate >= ? AND playDate <= ?
+      GROUP BY songId
+      ORDER BY sumPlayCount DESC, maxPlayDate DESC
+      LIMIT ${limit}
+    `;
+    return await this.db.run(query, [
+      this.utilities.toDateTimeSqlite(range.from),
+      this.utilities.toDateTimeSqlite(range.to)
+    ]);
+  }
+
+  public async getSongPopularityByUnit(unit: RelativeDateUnit, value: number, limit: number): Promise<IPopularity[]> {
+    const exp = this.relativeDates.createExpression(`${RelativeDateTerm.ThisDay} ${RelativeDateOperator.Minus} ${value}${unit}`);
+    if (this.relativeDates.isValid(exp)) {
+      const range = this.relativeDates.parse(exp);
+      // The "from" value of the range is the one that we need
+      // And we are going to change the "to" value to today
+      range.to = new Date();
+      return await this.getSongPopularityByRange(range, limit);
+    }
+    return [];
   }
 }

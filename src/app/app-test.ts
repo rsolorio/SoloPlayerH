@@ -12,9 +12,10 @@ import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEnt
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
-import { IsNull } from "typeorm";
+import { In, IsNull } from "typeorm";
 import { Criteria, CriteriaItem } from "./shared/services/criteria/criteria.class";
 import { CriteriaComparison } from "./shared/services/criteria/criteria.enum";
+import { RelativeDateUnit } from "./shared/services/relative-date/relative-date.enum";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -38,7 +39,7 @@ export class AppTestService {
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
-    //await this.logFileMetadata();
+    await this.logFileMetadata();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
@@ -50,7 +51,8 @@ export class AppTestService {
     //await this.updateSong();
     //await this.getPlaylistsTracks();
     //await this.logStatistics();
-    this.hash();
+    //this.hash();
+    //await this.logPopularity();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -585,6 +587,15 @@ export class AppTestService {
       time: entry.time,
       timings: entry.timings
     });
+  }
+
+  private async logPopularity(): Promise<void> {
+    const entities = await this.entities.getSongPopularityByUnit(RelativeDateUnit.Year, 1, 10);
+    console.log(entities);
+    const songs = await SongEntity.findBy({ id: In(entities.map(e => e.id)) });
+    for (const song of songs) {
+      console.log(song.filePath);
+    }
   }
 
   private async logStatistics(): Promise<void> {
