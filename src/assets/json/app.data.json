@@ -1147,6 +1147,16 @@
         "sync": true
       },
       {
+        "id": "96039f5c-8936-d81f-5ae9-c0b7e769b305",
+        "name": "Recently Updated",
+        "description": "Recently updated, excluding recently added in the last year.",
+        "filterCriteriaId": "365ccc7f-9885-490a-8db5-1faceb2401e5",
+        "transformAlgorithm": 0,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "sync": true
+      },
+      {
         "name": "Favorites",
         "description": "Favorite tracks, random order",
         "filterCriteriaId": "25423af4-ff82-45ad-8f20-8533ee124f94",
@@ -1227,6 +1237,12 @@
         "random": false
       },
       {
+        "id": "365ccc7f-9885-490a-8db5-1faceb2401e5",
+        "distinct": false,
+        "limit": 200,
+        "random": 0
+      },
+      {
         "id": "25423af4-ff82-45ad-8f20-8533ee124f94",
         "distinct": false,
         "limit": 0,
@@ -1288,6 +1304,33 @@
         "isRelativeDate": false,
         "displayName": "Sort By",
         "displayValue": "Add Date Desc"
+      },
+      {
+        "filterCriteriaId": "365ccc7f-9885-490a-8db5-1faceb2401e5",
+        "columnName": "addDate",
+        "columnValue": "td - 1y",
+        "comparison": 5,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 0,
+        "sortSequence": 0,
+        "ignoreInSelect": false,
+        "isRelativeDate": true,
+        "displayName": "Add Date",
+        "displayValue": "More than one year ago"
+      },
+      {
+        "filterCriteriaId": "365ccc7f-9885-490a-8db5-1faceb2401e5",
+        "columnName": "changeDate",
+        "comparison": 0,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 1,
+        "sortSequence": 1,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Sort By",
+        "displayValue": "Change Date"
       },
       {
         "filterCriteriaId": "25423af4-ff82-45ad-8f20-8533ee124f94",

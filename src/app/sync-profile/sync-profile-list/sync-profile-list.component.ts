@@ -472,7 +472,19 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
                   this.navigation.forward(AppRoute.Songs, { criteria: criteria });
                 });
               });
-            }
+            }            
+          },
+          {
+            name: 'Recently Updated',
+            icon: AppAttributeIcons.Recent,
+            textRegular: ['Display recently updated tracks.'],
+            action: () => {
+              this.entities.updateFilterAccessDate(FilterId.RecentlyUpdated).then(() => {
+                this.entities.getCriteriaFromFilterId(FilterId.RecentlyUpdated).then(criteria => {
+                  this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+                });
+              });
+            }            
           }
         ]
       }

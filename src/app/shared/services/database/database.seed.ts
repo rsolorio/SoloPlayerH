@@ -52,7 +52,8 @@ export enum SyncProfileId {
 }
 
 export enum FilterId {
-  RecentlyAdded = '3dff6bcf-077f-a109-6730-6315b24eb06e'
+  RecentlyAdded = '3dff6bcf-077f-a109-6730-6315b24eb06e',
+  RecentlyUpdated = '96039f5c-8936-d81f-5ae9-c0b7e769b305'
 }
 
 export enum ArtistName {
