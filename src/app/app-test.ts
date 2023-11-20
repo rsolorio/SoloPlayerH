@@ -553,10 +553,11 @@ export class AppTestService {
 
   private hash(): void {
     //const value = this.lookup.hashValueListEntry('China');
-    const value = this.lookup.hashValues(['Play Percentage']);
+    //const value = this.lookup.hashValues(['Play Percentage']);
     //const value = this.lookup.hashSong('G:\\Music\\Various\\Flamenco\\Al Di Meola - John McLaughlin - Paco De Lucia\\1981 - Friday Night In San Francisco\\01 - mediterranean sundance, rio ancho.mp3');
     //const value = this.lookup.hashAlbum('El Ruego', 1988);
     //const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Impacto De Montemorelos\\1988 - El Ruego\\front.jpg', 0);
+    const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
 
     console.log(value);
   }

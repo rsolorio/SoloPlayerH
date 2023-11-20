@@ -79,11 +79,13 @@ export class PlayerOverlayComponent extends CoreComponent implements OnInit {
           const state = this.playerService.getState();
           const track = state.playerList.getTrackById(countInfo.songId);
           if (track) {
-            const days = this.utility.daysFromNow(track.playDate);
-            track.recentPlayIcon = this.playerOverlayService.getRecentPlayIcon(days);
             track.playCount = result.playCount;
             track.playDate = result.playDate;
             track.changeDate = result.changeDate;
+
+            const days = this.utility.daysFromNow(track.playDate);
+            track.recentPlayIcon = this.playerOverlayService.getRecentPlayIcon(days);
+
             this.events.broadcast(AppEvent.PlayerSongUpdated, track);
           }
         }
