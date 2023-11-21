@@ -143,7 +143,8 @@ export enum AppActionIcons {
   TimerRemove = 'mdi-timer-minus mdi',
   TimeBackward = 'mdi-replay mdi',
   TimeForward = 'mdi-replay mdi-flip-h mdi',
-  PlusOne = 'mdi-numeric-positive-1 mdi'
+  PlusOne = 'mdi-numeric-positive-1 mdi',
+  FileSync = 'mdi-file-sync mdi'
 }
 
 export enum AppPlayerIcons {

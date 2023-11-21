@@ -206,33 +206,37 @@ export class ScanAudioService {
     // TODO: if lyrics file or images files changed also set update mode
     this.songToProcess = this.lookupService.findSong(fileInfo.path, this.existingSongs);
     if (this.songToProcess) {
-      const fileAddTime = fileInfo.addDate.getTime();
-      const dbAddTime = this.songToProcess.addDate.getTime();
-      if (fileAddTime === dbAddTime) {
-        if (!this.songToProcess.lyrics && this.entities.hasLyricsFile(this.songToProcess)) {
-          this.scanMode = ScanFileMode.Update;
-        }
-        else {
-          this.scanMode = ScanFileMode.Skip;
-        }
+      if (this.options.getBoolean(ModuleOptionId.ForceFileSync)) {
+        this.scanMode = ScanFileMode.Update;
       }
       else {
-        // If the add date changed, we are assuming the file was replaced or updated,
-        // so we need to update the record with the new info
-        this.scanMode = ScanFileMode.Update;
-        
-        if (fileAddTime < dbAddTime) {
-          // This should only happen if something deliberately updated the dates
-          // to an older value, so just log it as warning
-          this.log.warn('Found file with older add date.', {
-            filePath: fileInfo.path,
-            fileAddDate: fileInfo.addDate,
-            dbAddDate: this.songToProcess.addDate,
-            fileChangeDate: fileInfo.changeDate,
-            dbChangeDate: this.songToProcess.changeDate
-          });
+        const fileAddTime = fileInfo.addDate.getTime();
+        const dbAddTime = this.songToProcess.addDate.getTime();
+        if (fileAddTime === dbAddTime) {
+          if (!this.songToProcess.lyrics && this.entities.hasLyricsFile(this.songToProcess)) {
+            this.scanMode = ScanFileMode.Update;
+          }
+          else {
+            this.scanMode = ScanFileMode.Skip;
+          }
         }
-        
+        else {
+          // If the add date changed, we are assuming the file was replaced or updated,
+          // so we need to update the record with the new info
+          this.scanMode = ScanFileMode.Update;
+          
+          if (fileAddTime < dbAddTime) {
+            // This should only happen if something deliberately updated the dates
+            // to an older value, so just log it as warning
+            this.log.warn('Found file with older add date.', {
+              filePath: fileInfo.path,
+              fileAddDate: fileInfo.addDate,
+              dbAddDate: this.songToProcess.addDate,
+              fileChangeDate: fileInfo.changeDate,
+              dbChangeDate: this.songToProcess.changeDate
+            });
+          }
+        }
       }
     }
     else {
@@ -399,6 +403,8 @@ export class ScanAudioService {
     }
     // If the db date is older than the file date, update the file
     else if (dbAddTime < fileAddTime) {
+      // TODO: If the sync db function fails this change will prevent the sync process
+      // to find this file again. This change should happen after the db is updated
       await this.setFileAddDate(this.songToProcess.filePath, this.songToProcess.addDate);
       this.log.debug('Setting older creation date for file: ' + this.songToProcess.filePath, {
         dbAddDate: this.songToProcess.addDate,

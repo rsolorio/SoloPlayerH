@@ -42,7 +42,8 @@ export enum ModuleOptionId {
   ListViewLimit = '05543fcf-c0fe-4608-8187-41c68e4bd1c3',
   MinimumAudioDuration = '0cad8c29-3af4-41c2-b10b-8a9ec7832f30',
   IncludeAssociatedArtistSongs = '1cf0024d-d5c1-46a8-b89c-06d61c25cd95',
-  PlayPercentage = '89a480bf-2693-423b-8239-1ea071bf8421'
+  PlayPercentage = '89a480bf-2693-423b-8239-1ea071bf8421',
+  ForceFileSync = '5008ff66-e737-4662-88ca-8e20206f09f7'
 }
 
 export enum SyncProfileId {

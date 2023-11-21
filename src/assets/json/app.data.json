@@ -173,6 +173,16 @@
         "multipleValues": false,
         "system": false,
         "values": "50"
+      },
+      {
+        "id": "5008ff66-e737-4662-88ca-8e20206f09f7",
+        "name": "Force File Sync",
+        "moduleName": "Scan",
+        "description": "By default, the scan process only re-syncs information from existing files with a new modification date. When this flag is on, the process will sync information from all existing files; this process is slower but ensrures all metadata is up to date and synchronized to the database; turn this flag on when file lyrics have changed or when the default scan does not detect changes.",
+        "valueEditorType": "yesNo",
+        "multipleValues": false,
+        "system": false,
+        "values": "false"
       }
     ],
     "relatedImage": [

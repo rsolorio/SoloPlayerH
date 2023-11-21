@@ -101,6 +101,18 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
             textRegular: [
               'This feature will take genre tags and split every value by using separators. Click here to specify separators. Leave it empty to disable the feature.'
             ]
+          },
+          {
+            name: 'Force File Sync',
+            icon: AppActionIcons.FileSync,
+            editorType: SettingsEditorType.YesNo,
+            textRegular: [
+              'By default, the scan process only re-syncs information from existing files with a new modification date. When this flag is on, the process will sync information from all existing files; this process is slower but ensrures all metadata is up to date and synchronized to the database; turn this flag on when file lyrics have changed or when the default scan does not detect changes.'
+            ],
+            data: this.options.getBoolean(ModuleOptionId.ForceFileSync),
+            onChange: setting => {
+              this.options.saveBoolean(ModuleOptionId.ForceFileSync, setting.data);
+            }
           }
         ]
       },
