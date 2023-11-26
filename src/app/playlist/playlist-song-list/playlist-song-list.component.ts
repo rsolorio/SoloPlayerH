@@ -10,6 +10,7 @@ import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-play
 import { AppActionIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { fisherYatesShuffle } from 'src/app/app-exports';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 
 /**
  * Component that represents the playlist song list view.
@@ -61,7 +62,7 @@ export class PlaylistSongListComponent implements OnInit {
           this.navigation.back();
         }
       },
-      rightIcons: [{
+      rightIcons: new IconActionArray(...[{
         icon: AppPlayerIcons.ShuffleOn,
         // Shuffle the tracks and add the playlist as a brand new playlist and not this one
         action: () => {
@@ -75,7 +76,7 @@ export class PlaylistSongListComponent implements OnInit {
           // Play it
           this.playerService.playFirst();
         }
-      }]
+      }])
     });
   }
 

@@ -32,6 +32,7 @@ import { FilterId } from 'src/app/shared/services/database/database.seed';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { AppEvent } from 'src/app/app-events';
 import { In } from 'typeorm';
+import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -77,7 +78,9 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
       criteria: new Criteria('Search Results'),
       items: []
     },
-    searchIconEnabled: true,
+    rightIcons: [
+      this.listBaseService.createSearchIcon('searchIcon')
+    ],
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService
   }
@@ -93,8 +96,9 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService,
     private utility: UtilityService,
     private navbarService: NavBarStateService,
-    private entities: DatabaseEntitiesService)
-  {
+    private entities: DatabaseEntitiesService,
+    private listBaseService: ListBaseService
+  ){
     super();
   }
 

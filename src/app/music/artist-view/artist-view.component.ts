@@ -7,6 +7,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
@@ -130,7 +131,7 @@ export class ArtistViewComponent implements OnInit {
           this.navigation.back();
         }
       },
-      rightIcons: [{
+      rightIcons: new IconActionArray(...[{
         icon: AppAttributeIcons.FavoriteOn,
         action: iconAction => {
           this.entityService.setFavoriteArtist(this.artistId, false).then(() => {
@@ -144,7 +145,7 @@ export class ArtistViewComponent implements OnInit {
           });
         },
         off: !favorite
-      }]
+      }])
     });
   }
 

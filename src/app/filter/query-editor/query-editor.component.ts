@@ -6,6 +6,7 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { IValuePair } from 'src/app/core/models/core.interface';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
@@ -177,12 +178,7 @@ export class QueryEditorComponent implements OnInit {
       leftIcon: {
         icon: 'mdi-filter-outline mdi'
       },
-      rightIcons: [{
-        icon: 'mdi-plus mdi',
-        action: () => {          
-          this.openFieldSelectionPanel();
-        }
-      }]
+      rightIcons: new IconActionArray()
     });
   }
 

@@ -22,6 +22,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { AppEvent } from 'src/app/app-events';
+import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
 
 @Component({
   selector: 'sp-classification-list',
@@ -105,13 +106,13 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
         offAction: () => {
           this.openQuickFilterPanel();
         }
-      }
+      },
+      this.listBaseService.createSearchIcon('searchIcon')
     ],
     criteriaResult: {
       criteria: new Criteria('Search Results'),
       items: []
     },
-    searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
     prepareItemRender: item => {
@@ -133,6 +134,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private entities: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
     private sidebarHostService: SideBarHostStateService,
+    private listBaseService: ListBaseService
   ) {
     super();
     const criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);

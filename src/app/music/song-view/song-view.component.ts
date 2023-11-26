@@ -8,6 +8,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { FileService } from 'src/app/platform/file/file.service';
@@ -309,7 +310,7 @@ export class SongViewComponent implements OnInit {
           this.navigation.back();
         }
       },
-      rightIcons: [{
+      rightIcons: new IconActionArray(...[{
         icon: AppAttributeIcons.FavoriteOn,
         action: iconAction => {
           this.entityService.setFavoriteSong(this.songId, false).then(response => {
@@ -325,7 +326,7 @@ export class SongViewComponent implements OnInit {
           });
         },
         off: !favorite
-      }]
+      }])
     });
   }
 

@@ -27,7 +27,7 @@
               <td [ngClass]="{ 'sp-text-overflow-ellipsis': model.mode === NavbarDisplayMode.Title }">
                   <!-- Title -->
                   <span *ngIf="model.mode === NavbarDisplayMode.Title && model.title" class="sp-text-xlarge-fixed">{{model.title}}</span>
-                  <!-- We need to make sure this element is rendered (as invisible) even if it is not needed. -->
+                  <!-- Component. We need to make sure this element is rendered (as invisible) even if it is not needed. -->
                   <div
                   class="sp-full-width"
                   [ngClass]="{ 'sp-no-display': model.mode !== NavbarDisplayMode.Component, 'sp-flex': model.mode === NavbarDisplayMode.Component }">
@@ -42,7 +42,7 @@
                   </div>
               </td>
               <!-- Inner right icon -->
-              <ng-container *ngIf="model.rightIcons"><ng-container *ngFor="let rightIcon of model.rightIcons">
+              <ng-container *ngFor="let rightIcon of model.rightIcons">
                 <td
                 *ngIf="!rightIcon.hidden"
                 class="sp-td-inner-icon"
@@ -51,7 +51,7 @@
                   [ngClass]="rightIcon.off ? rightIcon.offIcon : rightIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(rightIcon)"></i>
                 </td>
-              </ng-container></ng-container>
+              </ng-container>
           </tr></table>
       </td>
       <!-- Outer Right -->

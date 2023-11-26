@@ -23,6 +23,7 @@ import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } fro
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 import { AppEvent } from 'src/app/app-events';
+import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
 
 @Component({
   selector: 'sp-artist-list',
@@ -105,9 +106,9 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
           const criteria = new Criteria('Search Results');
           this.navigation.forward(AppRoute.Songs, { criteria: criteria });
         }
-      }
+      },
+      this.listBaseService.createSearchIcon('searchIcon')
     ],
-    searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
     prepareItemRender: item => {
@@ -117,21 +118,21 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
         artist.recentIcon = this.spListBaseComponent.getRecentIcon(days);
       }
     },
-    afterNavbarModeChange: (model, navbar) => {
+    onNavbarModeChanged: (model, navbar) => {
+      this.listBaseService.handleIconsVisibility(model, navbar);
       switch(navbar.mode) {
         case NavbarDisplayMode.Component:
           if (this.isAlbumArtist) {
-            navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = false;
+            navbar.rightIcons.show('showAllSongsIcon');
           }
           break;
         case NavbarDisplayMode.Title:
           if (this.isAlbumArtist) {
-            // Hide Show All Songs
-            navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = true;
+            navbar.rightIcons.hide('showAllSongsIcon');
           }
           else {
-            // Only show Search
-            navbar.rightIcons.filter(i => i.id !== 'searchIcon').forEach(i => i.hidden = true);
+            navbar.rightIcons.hideAll();
+            navbar.rightIcons.show('searchIcon');
           }
           break;
       }
@@ -149,6 +150,7 @@ export class ArtistListComponent extends CoreComponent implements OnInit {
     private navbarService: NavBarStateService,
     private sidebarHostService: SideBarHostStateService,
     private options: DatabaseOptionsService,
+    private listBaseService: ListBaseService
   ) {
     super();
     this.isAlbumArtist = this.utility.isRouteActive(AppRoute.AlbumArtists);

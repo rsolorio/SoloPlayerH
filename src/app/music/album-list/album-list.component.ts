@@ -22,6 +22,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { AppEvent } from 'src/app/app-events';
+import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
 
 @Component({
   selector: 'sp-album-list',
@@ -112,9 +113,9 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
           const criteria = new Criteria('Search Results');
           this.navigation.forward(AppRoute.Songs, { criteria: criteria });
         }
-      }
+      },
+      this.listBaseService.createSearchIcon('searchIcon')
     ],
-    searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService,
     prepareItemRender: item => {
@@ -127,13 +128,14 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
         album.image.getImage = () => this.getAlbumImage(album);
       }
     },
-    afterNavbarModeChange: (model, navbar) => {
+    onNavbarModeChanged: (model, navbar) => {
+      this.listBaseService.handleIconsVisibility(model, navbar);
       switch(navbar.mode) {
         case NavbarDisplayMode.Component:
-          navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = false;
+          navbar.rightIcons.show('showAllSongsIcon');
           break;
         case NavbarDisplayMode.Title:
-          navbar.rightIcons.find(i => i.id === 'showAllSongsIcon').hidden = true;
+          navbar.rightIcons.hide('showAllSongsIcon');
           break;
       }
     }
@@ -149,7 +151,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService,
     private imageService: ImageService,
     private navbarService: NavBarStateService,
-    private sidebarHostService: SideBarHostStateService
+    private sidebarHostService: SideBarHostStateService,
+    private listBaseService: ListBaseService
   ) {
     super();
   }

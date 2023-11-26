@@ -11,6 +11,7 @@ import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-i
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { AppEvent } from 'src/app/app-events';
+import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
 
 @Component({
   selector: 'sp-filter-list',
@@ -50,9 +51,9 @@ export class FilterListComponent extends CoreComponent implements OnInit {
         action: () => {
           this.openSortingPanel();
         }
-      }
+      },
+      this.listBaseService.createSearchIcon('searchIcon')
     ],
-    searchIconEnabled: true,
     breadcrumbsEnabled: true,
     broadcastService: this.broadcastService
   };  
@@ -62,7 +63,8 @@ export class FilterListComponent extends CoreComponent implements OnInit {
     public broadcastService: FilterListBroadcastService,
     private navigation: NavigationService,
     private sidebarHostService: SideBarHostStateService,
-    private entities: DatabaseEntitiesService
+    private entities: DatabaseEntitiesService,
+    private listBaseService: ListBaseService
   ) {
     super();
   }

@@ -18,6 +18,7 @@ import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } fro
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { AppEvent } from 'src/app/app-events';
+import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
 
 @Component({
   selector: 'sp-playlist-list',
@@ -66,9 +67,9 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
         action: () => {
           this.openSortingPanel();
         }
-      }
+      },
+      this.listBaseService.createSearchIcon('searchIcon')
     ],
-    searchIconEnabled: true,
     breadcrumbsEnabled: false,
     broadcastService: this.broadcastService,
     prepareItemRender: item => {
@@ -88,8 +89,9 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService,
     private entities: DatabaseEntitiesService,
     private sidebarHostService: SideBarHostStateService,
-    private playerService: HtmlPlayerService)
-  {
+    private playerService: HtmlPlayerService,
+    private listBaseService: ListBaseService
+  ){
     super();
   }
 

@@ -4,6 +4,7 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { ILogEntry } from 'src/app/core/services/log/log.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 
 @Component({
   selector: 'sp-log-view',
@@ -23,6 +24,15 @@ export class LogViewComponent implements OnInit {
   }
 
   private initializeNavbar(): void {
+    const icons = new IconActionArray();
+    icons.push({
+      icon: 'mdi mdi-eraser',
+      action: () => {
+        this.log.clear();
+        this.reloadLogEntries();
+        this.navbarService.showToast('Log entries deleted.');
+      }
+    });
     const routeInfo = this.utilities.getCurrentRouteInfo();
     this.navbarService.set({
       mode: NavbarDisplayMode.Title,
@@ -45,14 +55,7 @@ export class LogViewComponent implements OnInit {
       leftIcon: {
         icon: routeInfo.icon
       },
-      rightIcons: [{
-        icon: 'mdi mdi-eraser',
-        action: () => {
-          this.log.clear();
-          this.reloadLogEntries();
-          this.navbarService.showToast('Log entries deleted.');
-        }
-      }]
+      rightIcons: icons
     });
   }
 

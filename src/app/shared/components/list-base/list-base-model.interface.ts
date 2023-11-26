@@ -20,8 +20,6 @@ export interface IListBaseModel {
   leftIcon?: IIconAction;
   /** List of icons for the inner right side of the nav bar. */
   rightIcons?: IIconAction[];
-  /** Determines if a search icon should be automatically added to the list of icons for the inner right side of the nav bar. */
-  searchIconEnabled?: boolean;
   /** If true, the nav bar will display the breadcrumb component. */
   breadcrumbsEnabled: boolean;
   /** The service used to search and load data. */
@@ -31,5 +29,5 @@ export interface IListBaseModel {
   /** Helper method that can be used to apply any logic to the item before it is marked for rendering. */
   prepareItemRender?: (item: IListItemModel) => void;
   /** Helper method that runs after the navbar mode has changed by this component. Useful to customize visible icons in the navbar. */
-  afterNavbarModeChange?: (model: IListBaseModel, navbar: INavbarModel) => void;
+  onNavbarModeChanged?: (model: IListBaseModel, navbar: INavbarModel) => void;
 }

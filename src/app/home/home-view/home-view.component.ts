@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 
@@ -34,7 +35,8 @@ export class HomeViewComponent implements OnInit {
       title: routeInfo.name,
       leftIcon: {
         icon: routeInfo.icon
-      }
+      },
+      rightIcons: new IconActionArray()
     });
   }
 }

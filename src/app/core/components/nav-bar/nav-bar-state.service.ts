@@ -4,6 +4,8 @@ import { IMenuModel } from '../../models/menu-model.interface';
 import { NavBarComponent } from './nav-bar.component';
 import { EventsService } from '../../services/events/events.service';
 import { CoreEvent } from 'src/app/app-events';
+import { IconActionArray } from '../../models/icon-action-array.class';
+import { IEventArgs } from '../../models/core.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,8 @@ export class NavBarStateService {
   private navbarState: INavbarModel = {
     show: true,
     menuList: [],
-    mode: NavbarDisplayMode.None
+    mode: NavbarDisplayMode.None,
+    rightIcons: new IconActionArray()
   };
 
   private outerIcons: INavBarOuterIcons = {};
@@ -26,6 +29,15 @@ export class NavBarStateService {
 
   public getState(): INavbarModel {
     return this.navbarState;
+  }
+
+  public setMode(mode: NavbarDisplayMode): void {
+    const args: IEventArgs<NavbarDisplayMode> = {
+      oldValue: this.navbarState.mode,
+      newValue: mode
+    };
+    this.navbarState.mode = mode;
+    this.events.broadcast(CoreEvent.NavbarModeChanged, args);
   }
 
   public getOuterIcons(): INavBarOuterIcons {

@@ -6,6 +6,7 @@ import { CoreComponent } from 'src/app/core/models/core-component.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { SettingsViewStateService } from './settings-view-state.service';
 import { ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 
 @Component({
   selector: 'sp-settings-view',
@@ -51,7 +52,8 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       title: routeInfo.name,
       leftIcon: {
         icon: routeInfo.icon
-      }
+      },
+      rightIcons: new IconActionArray()
     });
   }
 }

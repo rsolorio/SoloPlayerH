@@ -29,7 +29,6 @@ export class FileBrowserComponent implements OnInit {
   // START - LIST BASE
   public listModel: IListBaseModel = {
     listUpdatedEvent: AppEvent.FileListUpdated,
-    searchIconEnabled: false,
     itemMenuList: [
       {
         caption: 'Details',

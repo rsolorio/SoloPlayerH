@@ -50,8 +50,8 @@ export class AppTestService {
     //await this.insertFilters();
     //await this.updateSong();
     //await this.getPlaylistsTracks();
-    //await this.logStatistics();
-    this.hash();
+    await this.logStatistics();
+    //this.hash();
     //await this.logPopularity();
   }
 

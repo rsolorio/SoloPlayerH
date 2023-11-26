@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import { IMenuModel } from '../../models/menu-model.interface';
 import { IIconAction } from '../../models/core.interface';
+import { IconActionArray } from '../../models/icon-action-array.class';
 
 /** Interface that defines the behavior of the top nav bar of the application. */
 export interface INavbarModel {
@@ -17,7 +18,7 @@ export interface INavbarModel {
     /** Mini icon displayed on the right bottom corner of the left icon */
     leftSubIcon?: string;
     /** List of IconAction elements for the inner right side of the nav bar. */
-    rightIcons?: IIconAction[];
+    rightIcons: IconActionArray;
     /** The message that will be displayed by the tiny toast notification below the nav bar. */
     toastMessage?: string;
     /** Show/hide the tiny toast below the nav bar. */

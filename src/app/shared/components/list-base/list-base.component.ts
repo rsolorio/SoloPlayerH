@@ -13,7 +13,7 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { IIcon, IIconAction } from 'src/app/core/models/core.interface';
+import { IIcon } from 'src/app/core/models/core.interface';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IListItemModel } from '../../models/base-model.interface';
@@ -26,8 +26,9 @@ import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { IListBaseModel } from './list-base-model.interface';
 import { TimeAgo } from 'src/app/core/models/core.enum';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { AppActionIcons } from 'src/app/app-icons';
-import { AppEvent } from 'src/app/app-events';
+import { AppEvent, CoreEvent } from 'src/app/app-events';
+import { ListBaseService } from './list-base.service';
+import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 
 @Component({
   selector: 'sp-list-base',
@@ -64,7 +65,8 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     private route: ActivatedRoute,
     private utilities: UtilityService,
     private log: LogService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private listBaseService: ListBaseService
   ) {
     super();
   }
@@ -75,6 +77,15 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       this.model.criteriaResult = response;
       this.cd.detectChanges();
       this.afterListUpdated();
+    });
+
+    this.subs.sink = this.events.onEvent(CoreEvent.NavbarModeChanged).subscribe(() => {
+      if (this.model.onNavbarModeChanged) {
+        this.model.onNavbarModeChanged(this.model, this.navbarService.getState());
+      }
+      else {
+        this.listBaseService.handleIconsVisibility(this.model, this.navbarService.getState());
+      }
     });
 
     // Breadcrumbs
@@ -196,37 +207,11 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       };
     }
 
-    navbar.rightIcons = this.model.rightIcons ? this.model.rightIcons : [];
-    if (this.model.searchIconEnabled) {
-      // Search icon
-      const searchIcon: IIconAction = {
-        id: 'searchIcon',
-        icon: AppActionIcons.SearchClose,
-        action: iconAction => {
-          // This will turn OFF the search
-          iconAction.off = true;
-          navbar.searchTerm = '';
-          if (navbar.onSearch) {
-            navbar.onSearch(navbar.searchTerm);
-          }
-          // The only way to get to the search mode if from the Title mode,
-          // so for now go back to title mode from search mode
-          this.setNavbarMode(NavbarDisplayMode.Title);
-        },
-        off: true, // Search turned off by default
-        offIcon: AppActionIcons.Search,
-        offAction: iconAction => {
-          // This will turn ON the search
-          iconAction.off = false;
-          navbar.searchTerm = '';
-          this.setNavbarMode(NavbarDisplayMode.Search);
-          // Give the search box time to render before setting focus
-          setTimeout(() => {
-            this.navbarService.searchBoxFocus();
-          });
-        }
-      };
-      navbar.rightIcons.push(searchIcon);
+    navbar.rightIcons = new IconActionArray();
+    if (this.model.rightIcons) {
+      for (const iconAction of this.model.rightIcons) {
+        navbar.rightIcons.push(iconAction);
+      }
     }
 
     // Search
@@ -317,10 +302,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   private discardSearch(): void {
     const navbar = this.navbarService.getState();
     navbar.searchTerm = '';
-    const searchIcon = this.model.rightIcons.find(i => i.id === 'searchIcon');
-    if (searchIcon) {
-      searchIcon.off = true;
-    }
+    navbar.rightIcons.off('searchIcon');
   }
 
   /**
@@ -341,70 +323,24 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
   }
 
   /**
-   * Sets the breadcrumb mode if supported and data is available, otherwise it will set the Title mode.
+   * Sets the proper breadcrumb mode
    */
   private setDefaultNavbarMode(): void {
     // If it has breadcrumbs display the component
     if (this.model.breadcrumbsEnabled && this.breadcrumbService.hasBreadcrumbs()) {
-      this.setNavbarMode(NavbarDisplayMode.Component);
+      this.navbarService.setMode(NavbarDisplayMode.Component);
     }
-    // If it doesn't have breadcrumbs and it is displaying the component go back to Title mode
+    // If it doesn't have breadcrumbs, don't display the component, display the Title
     else if (this.navbarService.getState().mode === NavbarDisplayMode.Component) {
-      this.setNavbarMode(NavbarDisplayMode.Title);
+      this.navbarService.setMode(NavbarDisplayMode.Title);
     }
+    // If there's no search criteria, restart the navbar and display the Title
     else if (this.navbarService.getState().mode === NavbarDisplayMode.Search && !this.model.criteriaResult.criteria.hasComparison(true)) {
-      this.setNavbarMode(NavbarDisplayMode.Title);
+      this.navbarService.setMode(NavbarDisplayMode.Title);
     }
     else {
       // Set the same mode, but run the extra logic
-      this.setNavbarMode(this.navbarService.getState().mode);
-    }
-  }
-
-  /**
-   * Sets the navbar mode, handles the right icons visibility
-   * and fires the navbarModeChange event.
-   */
-  private setNavbarMode(mode: NavbarDisplayMode): void {
-    const navbar = this.navbarService.getState();
-    // We should not validate if the navbar already has the same mode
-    // since the same mode applies to all entities and the same mode
-    // can have different icons on different views
-    navbar.mode = mode;
-    navbar.leftIcon.off = !this.model.criteriaResult.criteria.hasComparison(true);
-    const searchIcon = navbar.rightIcons.find(i => i.id === 'searchIcon');
-
-    // Handle icon visibility
-    switch (mode) {
-      case NavbarDisplayMode.Component:
-        // Hide all the icons
-        navbar.rightIcons.forEach(icon => icon.hidden = true);
-        if (searchIcon) {
-          searchIcon.off = true;
-        }
-        break;
-      case NavbarDisplayMode.Title:
-        // Show all icons
-        navbar.rightIcons.forEach(icon => icon.hidden = false);
-        if (searchIcon) {
-          searchIcon.off = true;
-        }
-        break;
-      case NavbarDisplayMode.Search:
-        // Show search, hide the rest of the icons
-        navbar.rightIcons.forEach(icon => {
-          if (icon.id === 'searchIcon') {
-            icon.hidden = false;
-          }
-          else {
-            icon.hidden = true;
-          }
-        });
-        break;
-    }
-    // Fire this event that will allow customize the behavior above
-    if (this.model.afterNavbarModeChange) {
-      this.model.afterNavbarModeChange(this.model, navbar);
+      this.navbarService.setMode(this.navbarService.getState().mode);
     }
   }
 }
