@@ -4,7 +4,6 @@
 [infoTemplate]="infoTemplate"
 [imageOverlayTemplate]="imageOverlayTemplate"
 (afterInit)="onListInitialized($event)"
-(listUpdated)="onListUpdated($event)"
 (itemAvatarClick)="onItemImageClick($event)"
 (itemContentClick)="onItemContentClick($event)">
   <ng-template #imageOverlayTemplate let-item="item">
@@ -34,12 +33,11 @@
         Explicit / Yellow
         Recent / Blue
        -->
-      <i *ngIf="item.bitrate === 320000" [ngClass]="AppAttributeIcons.BitrateHigh" class="sp-title-icon sp-color-320" [title]="SongBadge.Kbps320"></i>
-      <i *ngIf="item.vbr" [ngClass]="AppAttributeIcons.BitrateHigh" class="sp-title-icon sp-color-vbr" [title]="SongBadge.Vbr"></i>
+      <i *ngIf="item.bitrate < 320000 && !item.vbr" [ngClass]="AppAttributeIcons.BitrateLow" class="sp-title-icon sp-color-320" [title]="SongBadge.LowQuality"></i>
       <i *ngIf="item.lyrics" [ngClass]="AppAttributeIcons.LyricsOn" class="sp-title-icon sp-color-lyric" [title]="SongBadge.Lyrics"></i>
       <i *ngIf="item.live" [ngClass]="AppAttributeIcons.LiveOn" class="sp-title-icon sp-color-success" [title]="SongBadge.Live"></i>
       <i *ngIf="item.rating === 5" [ngClass]="AppAttributeIcons.RatingOn" class="sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
-      <i *ngIf="item.rating === 0" [ngClass]="AppAttributeIcons.RatingOff" class="sp-title-icon sp-color-rating"></i>
+      <i *ngIf="item.rating === 0" [ngClass]="AppAttributeIcons.RatingOff" class="sp-title-icon sp-color-rating" [title]="SongBadge.NotRated"></i>
       <i *ngIf="item.favorite" [ngClass]="AppAttributeIcons.FavoriteOn" class="sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
       <i *ngIf="item.explicit" [ngClass]="AppAttributeIcons.ExplicitOn" class="sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
       <!-- <i *ngIf="item.recentPlayIcon" [ngClass]="[AppAttributeIcons.Recent, item.recentPlayIcon.styleClass]" class="sp-title-icon sp-color-info" [title]="item.recentPlayIcon.tooltip"></i> -->

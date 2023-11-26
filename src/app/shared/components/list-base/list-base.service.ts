@@ -66,15 +66,4 @@ export class ListBaseService {
     };
     return searchIcon;
   }
-
-  public createBackIcon(id: string): IIconAction {
-    const backIcon: IIconAction = {
-      id: id,
-      icon: AppActionIcons.Back,
-      action: iconAction => {
-        
-      }
-    };
-    return backIcon;
-  }
 }

@@ -495,10 +495,6 @@ export class SongListComponent extends CoreComponent implements OnInit {
     this.sidebarHostService.loadContent(model);
   }
 
-  public onListUpdated(model: IListBaseModel): void {
-    //this.manageRightIconsVisibility(model);
-  }
-
   private manageRightIconsVisibility(model: IListBaseModel, navbar: INavbarModel): void {
     // Icons from right to left
     // BREADCRUMBS: sort, quick filter

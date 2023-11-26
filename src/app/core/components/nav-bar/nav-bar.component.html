@@ -17,11 +17,6 @@
                   <i
                   [ngClass]="model.leftIcon.off ? model.leftIcon.offIcon : model.leftIcon.icon"
                   class="sp-text-xlarge-fixed" (click)="onIconClick(model.leftIcon)"></i>
-                  <!-- Sub icon -->
-                  <i
-                  *ngIf="model.leftSubIcon"
-                  [ngClass]="model.leftSubIcon"
-                  class="sp-left-sub-icon sp-text-small-fixed"></i>
               </td>
               <!-- Dynamic content -->
               <td [ngClass]="{ 'sp-text-overflow-ellipsis': model.mode === NavbarDisplayMode.Title }">
@@ -41,7 +36,7 @@
                     </span>
                   </div>
               </td>
-              <!-- Inner right icon -->
+              <!-- Inner right icons -->
               <ng-container *ngFor="let rightIcon of model.rightIcons">
                 <td
                 *ngIf="!rightIcon.hidden"

@@ -109,7 +109,6 @@ export class NavBarStateService {
   public setIcons(navbarModel: INavbarModel): void {
     this.navbarState.leftIcon = navbarModel.leftIcon;
     this.navbarState.rightIcons = navbarModel.rightIcons;
-    this.navbarState.leftSubIcon = navbarModel.leftSubIcon;
   }
 
   public getComponentInstance<T>(): T {
