@@ -7,7 +7,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { HtmlPlayerService } from 'src/app/shared/services/html-player/html-player.service';
-import { AppActionIcons, AppPlayerIcons } from 'src/app/app-icons';
+import { AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { fisherYatesShuffle } from 'src/app/app-exports';
 import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
@@ -57,10 +57,7 @@ export class PlaylistSongListComponent implements OnInit {
       ],
       title: this.currentPlaylist.name,
       leftIcon: {
-        icon: AppActionIcons.Back,
-        action: () => {
-          this.navigation.back();
-        }
+        icon: AppEntityIcons.Playlist
       },
       rightIcons: new IconActionArray(...[{
         icon: AppPlayerIcons.ShuffleOn,

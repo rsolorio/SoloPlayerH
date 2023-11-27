@@ -5,11 +5,15 @@
       <td class="sp-td-icon">
           <i *ngIf="outerIcons.left" [ngClass]="outerIcons.left.icon" class="sp-clickable sp-text-xlarge-fixed" (click)="onIconClick(outerIcons.left)"></i>
           <!-- Hamburger button -->
-          <i *ngIf="!outerIcons.left" class="mdi-menu mdi sp-clickable sp-text-xlarge-fixed" (click)="onHamburgerClick()"></i>
+          <i *ngIf="!outerIcons.left" [ngClass]="AppActionIcons.Menu" class="sp-clickable sp-text-xlarge-fixed" (click)="onHamburgerClick()"></i>
       </td>
       <!-- Middle content -->
       <td class="sp-td-center">
           <table class="sp-table sp-table-support-overflow-ellipsis sp-full-width sp-nav-bar-height"><tr>
+              <!-- Back Icon -->
+              <td *ngIf="!model.backHidden" class="sp-td-inner-icon">
+                <i [ngClass]="AppActionIcons.Back" class="sp-clickable sp-text-xlarge-fixed" (click)="onBackClick()"></i>
+              </td>
               <!-- Inner left icon -->
               <td *ngIf="model.leftIcon"
               class="sp-td-inner-icon"
@@ -32,7 +36,7 @@
                   <div *ngIf="model.mode === NavbarDisplayMode.Search" class="sp-flex">
                     <input #spNavbarSearchBox class="sp-nav-bar-search-input" [(ngModel)]="model.searchTerm" (keyup.enter)="onSearchEnter()" type="search" placeholder="Search" />
                     <span (click)="onSearchClearClick()" [hidden]="!model.searchTerm" class="sp-nav-bar-search-clear-icon sp-opacity-50 sp-cursor-pointer ">
-                      <i class="mdi-close mdi"></i>
+                      <i [ngClass]="AppActionIcons.CloseClear"></i>
                     </span>
                   </div>
               </td>

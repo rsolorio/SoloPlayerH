@@ -25,12 +25,16 @@ export interface INavbarModel {
     discardPlaceholder?: boolean;
     /** Determines what should be displayed in the navbar content area. */
     mode: NavbarDisplayMode;
+    /** Determines if the back button should not be visible. */
+    backHidden?: boolean;
     /** Value bound to the search box of the nav bar. */
     searchTerm?: string;
     /** Event handler fired when the user performs a search. */
     onSearch?: (searchTerm: string) => void;
     /** Event handler fired when the user clicks the clear button. */
     onSearchClear?: () => void;
+    /** Event fired when the user clicks the back button. It returns a flag that tells if the default back action should be cancelled. */
+    onBack?: () => boolean;
 }
 
 /**

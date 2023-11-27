@@ -43,6 +43,7 @@ export class FileBrowserComponent implements OnInit {
     },
     breadcrumbsEnabled: false,
     broadcastService: this.broadcastService,
+    backHidden: true,
     leftIcon: {
       offIcon: AppActionIcons.Back,
       offAction: () => {

@@ -305,10 +305,7 @@ export class SongViewComponent implements OnInit {
       ],
       title: 'Song',
       leftIcon: {
-        icon:  AppActionIcons.Back,
-        action: () => {
-          this.navigation.back();
-        }
+        icon:  AppEntityIcons.Song
       },
       rightIcons: new IconActionArray(...[{
         icon: AppAttributeIcons.FavoriteOn,

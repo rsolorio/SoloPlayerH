@@ -35,6 +35,10 @@ export class NavigationService {
     this.navigate(route, options);
   }
 
+  public canGoBack(): boolean {
+    return this.history.length > 1;
+  }
+
   public back(): void {
     if (this.history.length > 1) {
       // Remove the last route
@@ -44,8 +48,13 @@ export class NavigationService {
       this.navigate(navInfo.route, navInfo.options);
     }
     else {
-      this.navigate(AppRoute.Home);
+      // Move forward to home so the route is registered
+      this.forward(AppRoute.Home);
     }
+  }
+
+  public atHome(): boolean {
+    return this.current().route === AppRoute.Home;
   }
 
   public clear(): void {
@@ -80,16 +89,14 @@ export class NavigationService {
   }
 
   private navigate(route: string, options?: INavigationOptions): void {
-    if (options) {
-      if (options.criteria) {
-        this.utilities.navigateWithQueryParams(route, { queryId: options.criteria.id });
-      }
-      else if (options.queryParams) {
-        this.utilities.navigateWithQueryParams(route, options.queryParams );
-      }
-      else if (options.routeParams) {
-        this.utilities.navigateWithRouteParams(route, options.routeParams);
-      }
+    if (options?.criteria) {
+      this.utilities.navigateWithQueryParams(route, { queryId: options.criteria.id });
+    }
+    else if (options?.queryParams) {
+      this.utilities.navigateWithQueryParams(route, options.queryParams);
+    }
+    else if (options?.routeParams) {
+      this.utilities.navigateWithRouteParams(route, options.routeParams);
     }
     else {
       this.utilities.navigate(route);

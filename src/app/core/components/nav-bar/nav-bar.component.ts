@@ -4,6 +4,8 @@ import { Position } from '../../models/core.enum';
 import { INavbarModel, INavBarOuterIcons, NavbarDisplayMode } from './nav-bar-model.interface';
 import { NavBarStateService } from './nav-bar-state.service';
 import { IIconAction } from '../../models/core.interface';
+import { AppActionIcons } from 'src/app/app-icons';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
 /**
  * Component that displays a navigation bar at the top of the application.
@@ -19,8 +21,13 @@ export class NavBarComponent implements OnInit {
   public NavbarDisplayMode = NavbarDisplayMode;
   public model: INavbarModel;
   public outerIcons: INavBarOuterIcons;
+  public AppActionIcons = AppActionIcons;
 
-  constructor(private navbarService: NavBarStateService, private sidebarService: SideBarStateService) { }
+  constructor(
+    private navbarService: NavBarStateService,
+    private sidebarService: SideBarStateService,
+    private navigationService: NavigationService
+  ) { }
 
   public ngOnInit(): void {
     this.navbarService.saveComponentContainer(this.navbarContentViewContainer);
@@ -64,5 +71,19 @@ export class NavBarComponent implements OnInit {
     if (this.navbarSearchBox && this.navbarSearchBox.nativeElement) {
       this.navbarSearchBox.nativeElement.focus();
     }
+  }
+
+  public onBackClick(): void {
+    let cancelBack = false;
+    if (this.model.onBack) {
+      cancelBack = this.model.onBack();
+    }
+    if (!cancelBack) {
+      this.navigationService.back();
+    }
+  }
+
+  public atHome(): boolean {
+    return this.navigationService.atHome();
   }
 }

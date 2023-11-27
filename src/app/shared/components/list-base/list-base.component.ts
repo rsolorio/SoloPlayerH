@@ -183,6 +183,7 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
       navbar.title = routeInfo.name;
     }
     navbar.mode = NavbarDisplayMode.Title;
+    navbar.backHidden = this.model.backHidden;
 
     if (this.model.leftIcon) {
       navbar.leftIcon = this.model.leftIcon;
@@ -217,6 +218,15 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     // Search
     navbar.onSearch = searchTerm => {
       this.search(this.model.criteriaResult.criteria.clone(), searchTerm);
+    };
+
+    navbar.onBack = () => {
+      if (this.model.showModal) {
+        this.model.showModal = false;
+        this.cd.detectChanges();
+        return true;
+      }
+      return false;
     };
 
     // Setup navbar breadcrumbs if supported
@@ -318,8 +328,10 @@ export class ListBaseComponent extends CoreComponent implements OnInit {
     criteriaClone.searchCriteria.clear();
     // Set nav bar mode
     this.setDefaultNavbarMode();
-    // Navigate to the same route but with the new object
-    this.navigation.forward(this.navigation.current().route, { criteria: criteriaClone });
+    // Update current route with new criteria
+    this.navigation.current().options = { criteria: criteriaClone };
+    // Show the data
+    this.loadData();
   }
 
   /**

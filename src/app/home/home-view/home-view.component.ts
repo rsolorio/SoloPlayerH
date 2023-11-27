@@ -4,6 +4,7 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
+import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 
 @Component({
   selector: 'sp-home-view',
@@ -15,11 +16,14 @@ export class HomeViewComponent implements OnInit {
   constructor(
     private utilities: UtilityService,
     private navbarService: NavBarStateService,
+    private navigationService: NavigationService,
     private breadcrumbService: BreadcrumbsStateService) { }
 
   ngOnInit(): void {
     this.initializeNavbar();
     this.breadcrumbService.clear();
+    // Restart navigation history in home
+    this.navigationService.clear();
   }
 
   private initializeNavbar(): void {
@@ -36,7 +40,8 @@ export class HomeViewComponent implements OnInit {
       leftIcon: {
         icon: routeInfo.icon
       },
-      rightIcons: new IconActionArray()
+      rightIcons: new IconActionArray(),
+      backHidden: true
     });
   }
 }

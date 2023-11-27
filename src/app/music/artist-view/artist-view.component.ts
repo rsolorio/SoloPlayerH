@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AppActionIcons, AppAttributeIcons } from 'src/app/app-icons';
+import { AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -126,10 +126,7 @@ export class ArtistViewComponent implements OnInit {
       ],
       title: 'Artist',
       leftIcon: {
-        icon:  AppActionIcons.Back,
-        action: () => {
-          this.navigation.back();
-        }
+        icon:  AppEntityIcons.AlbumArtist
       },
       rightIcons: new IconActionArray(...[{
         icon: AppAttributeIcons.FavoriteOn,

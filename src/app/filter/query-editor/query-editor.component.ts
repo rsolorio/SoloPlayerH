@@ -50,12 +50,6 @@ export class QueryEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadingService.show();
-    this.navbarService.showBackIcon(() => {
-      const previous = this.navigation.previous();
-      if (previous?.options?.criteria && this.model) {
-        previous.options.criteria = this.model;
-      }
-    });
     this.initializeNavbar();
     this.setupSelectors().then(criteria => {
       if (criteria) {

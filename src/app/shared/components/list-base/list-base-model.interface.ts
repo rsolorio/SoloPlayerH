@@ -20,6 +20,8 @@ export interface IListBaseModel {
   leftIcon?: IIconAction;
   /** List of icons for the inner right side of the nav bar. */
   rightIcons?: IIconAction[];
+  /** If the back button of the nav bar should be hidden. */
+  backHidden?: boolean;
   /** If true, the nav bar will display the breadcrumb component. */
   breadcrumbsEnabled: boolean;
   /** The service used to search and load data. */

@@ -91,6 +91,8 @@ export class NavBarStateService {
   public set(navbarModel: INavbarModel): void {
     this.navbarState.mode = navbarModel.mode;
     this.navbarState.title = navbarModel.title;
+    this.navbarState.backHidden = navbarModel.backHidden;
+    this.navbarState.onBack = navbarModel.onBack;
     this.loadComponent(navbarModel.componentType);
     this.navbarState.discardPlaceholder = navbarModel.discardPlaceholder;
     this.buildMenu(navbarModel.menuList);
@@ -190,18 +192,6 @@ export class NavBarStateService {
     if (this.navbarComponent) {
       this.navbarComponent.searchBoxFocus();
     }
-  }
-
-  public showBackIcon(beforeAction?: () => void): void {
-    this.outerIcons.left = {
-      icon: 'mdi-arrow-left mdi',
-      action: () => {
-        if (beforeAction) {
-          beforeAction();
-        }
-        this.events.broadcast(CoreEvent.NavbarBackRequested);
-      }
-    };
   }
 
   public restoreOuterLeftIcon(): void {
