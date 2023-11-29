@@ -43,7 +43,7 @@ const routes: Routes = [
     FilterModule, // For loading child roots
     PlaylistModule,
     PlatformModule,
-    SettingsModule,
+    SettingsModule,  // For loading child roots
     SyncProfileModule,
     LogModule
   ],

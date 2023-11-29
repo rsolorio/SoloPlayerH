@@ -135,41 +135,31 @@ export class UtilityService {
 
   /**
    * Navigates to the specified route.
-   * It accepts a list of values which should match the route parameters of the path.
-   * In a resolver you can get the specified param like this: ActivatedRouteSnapshot.paramMap.get('nameOfTheRouteParam')
-   * Route param example: yourRoute/details/yourRouteParam/info
+   * @param route 
+   * @param routeParams It accepts a list of values which should match the route parameters of the path.
+   * In a resolver you can get the specified param like this: ActivatedRouteSnapshot.paramMap.get('nameOfTheRouteParam').
+   * Route param example: yourRoute/details/yourRouteParam/info.
+   * @param queryParams It accepts a list of query parameters.
+   * Usage: navigateWithQueryParams('yourRoute', { yourQueryParam: 'someValue' });
+   * Query param example: yourRoute?yourQueryParam=someValue
+   * @param complexData 
    */
-  public navigateWithRouteParams(route: string | AppRoute, params: any[]): void {
+  public navigateWithParams(route: string | AppRoute, routeParams: any[], queryParams?: any, complexData?: any): void {
     const commands: any[] = [];
     // First add the route
     commands.push(route);
-    // Then add the params if any
-    for (const p of params) {
-      commands.push(p);
+    // Then add route params if any
+    if (routeParams?.length) {
+      for (const p of routeParams) {
+        commands.push(p);
+      }
     }
-    this.router.navigate(commands);
-  }
 
-  /**
-   * Navigates to the specified route.
-   * It accepts a set of key/value pairs as optional parameters, but values have to be strings.
-   */
-  public navigateWithOptionalParams(route: string | AppRoute, optionalParams: any): void {
-    this.router.navigate([route, optionalParams]);
-  }
-
-  /**
-   * Navigates to the specified route.
-   * It accepts a list of query parameters.
-   * Usage: navigateWithQueryParams('yourRoute', { yourQueryParam: 'someValue' });
-   * Query param example: yourRoute?yourQueryParam=someValue
-   */
-  public navigateWithQueryParams(route: string | AppRoute, queryParams: any, complexData?: any): void {
-    if (complexData) {
-      this.router.navigate([route], { queryParams, state: complexData });
+    if (queryParams) {
+      this.router.navigate(commands, { queryParams, state: complexData });
     }
     else {
-      this.router.navigate([route], { queryParams });
+      this.router.navigate(commands);
     }
   }
 

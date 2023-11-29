@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IStateService } from 'src/app/core/models/core.interface';
-import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
+import { IStateService, KeyValuesGen } from 'src/app/core/models/core.interface';
+import { FilterId, ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -15,12 +15,20 @@ import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-st
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ISetting, ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
 import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
+import { SettingsViewId } from './settings-view.enum';
+import { ISyncProfile } from 'src/app/shared/models/sync-profile-model.interface';
+import { IExportConfig } from 'src/app/sync-profile/export/export.interface';
+import { IChipItem } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
+import { MpegTagVersion } from 'src/app/shared/models/music.enum';
+import { In } from 'typeorm';
+import { ExportService } from 'src/app/sync-profile/export/export.service';
+import { ScanService } from 'src/app/sync-profile/scan/scan.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SettingsViewStateService implements IStateService<ISettingCategory[]> {
-  private state: ISettingCategory[];
+export class SettingsViewStateService implements IStateService<KeyValuesGen<ISettingCategory>> {
+  private state: KeyValuesGen<ISettingCategory> = {};
   constructor(
     private options: DatabaseOptionsService,
     private utility: UtilityService,
@@ -29,17 +37,38 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     private dialog: DialogService,
     private tester: AppTestService,
     private storage: LocalStorageService,
-    private navigation: NavigationService)
+    private navigation: NavigationService,
+    private exporter: ExportService,
+    private scanner: ScanService)
   {
   }
 
-  public getState(): ISettingCategory[] {
+  public getState(): KeyValuesGen<ISettingCategory> {
     return this.state;
   }
 
-  /** Creates the list of settings. */
-  public initializeState(): void {
-    this.state = [
+  public async getSettingsInfo(viewId: string, context?: any): Promise<ISettingCategory[]> {
+    if (!this.state[viewId]) {
+      switch (viewId) {
+        case SettingsViewId.Main:
+          this.state[viewId] = this.buildMainSettings();
+          break;
+        case SettingsViewId.Export:
+          this.state[viewId] = await this.buildExportSettings(context);
+          break;
+        case SettingsViewId.ImportAudio:
+          this.state[viewId] = this.buildImportAudioSettings(context);
+          break;
+        case SettingsViewId.ImportPlaylists:
+          this.state[viewId] = this.buildImportPlaylistsSettings(context);
+          break;
+      }
+    }
+    return this.state[viewId];
+  }
+
+  private buildMainSettings(): ISettingCategory[] {
+    const settings: ISettingCategory[] = [
       {
         name: 'Media Library',
         settings: [
@@ -244,15 +273,275 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
         ]
       }
     ];
+    return settings;
   }
 
-  /** Update settings values. */
-  public async updateState(): Promise<void> {
-    await this.refreshStatistics();
+  private async buildExportSettings(profile: ISyncProfile): Promise<ISettingCategory[]> {
+    const parsedProfile = this.entities.parseSyncProfile(profile);
+    const exportConfig = parsedProfile.configObj as IExportConfig;
+    const settings: ISettingCategory[] = [
+      {
+        name: 'General',
+        settings: [
+          {
+            id: 'exportLibrary',
+            name: 'Run',
+            icon: AppActionIcons.Run,
+            textRegular: ['Click here to start running the export process.'],
+            action: () => {
+              this.exporter.run(profile.id);
+            }
+          },
+          {
+            name: 'Directory',
+            icon: AppAttributeIcons.Directory,
+            textRegular: ['Directory where audio and playlist files will be exported.'],
+            textData: parsedProfile.directoryArray,
+            data: parsedProfile.directoryArray
+          },
+          {
+            name: 'Last Songs Added',
+            icon: AppAttributeIcons.AddDate,
+            textRegular: [
+              'This number represents the last songs added to the library that will be exported.',
+              'If this value is greater than zero, exporting static playlists will be disabled.'],
+            editorType: SettingsEditorType.Number,
+            data: exportConfig.lastAdded,
+            textData: [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'],
+            beforePanelOpen: async panelModel => {
+              panelModel['label'] = 'Last number of songs';
+            },
+            onChange: setting => {
+              exportConfig.lastAdded = parseInt(setting.data.toString(), 10);
+              setting.textData = [exportConfig.lastAdded ? exportConfig.lastAdded.toString() : '0'];
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            name: 'Mpeg Tag Version',
+            icon: AppFeatureIcons.TagMapping,
+            textRegular: ['The ID3 tag version to be used when writing the audio metadata. This setting only applies to mp3 files.'],
+            editorType: SettingsEditorType.List,
+            textData: [exportConfig.mpegTag],
+            beforePanelOpen: async panelModel => {
+              const chipItem1: IChipItem = { sequence: 1, value: MpegTagVersion.Id3v23, caption: MpegTagVersion.Id3v23 };
+              if (chipItem1.value === exportConfig.mpegTag) {
+                chipItem1.selected = true;
+              }
+              const chipItem2: IChipItem = { sequence: 2, value: MpegTagVersion.Id3v24, caption: MpegTagVersion.Id3v24 };
+              if (chipItem2.value === exportConfig.mpegTag) {
+                chipItem2.selected = true;
+              }
+              panelModel['items'] = [chipItem1, chipItem2];
+            },
+            onChange: setting => {
+              exportConfig.mpegTag = setting.data;
+              setting.textData = [setting.data];
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          }
+        ]
+      },
+      {
+        name: 'Playlist Settings',
+        settings: [
+          {
+            name: 'Export Static Playlists',
+            icon: AppEntityIcons.Playlist,
+            textRegular: ['Whether or not all static playlists should be exported.'],
+            editorType: SettingsEditorType.YesNo,
+            data: !exportConfig.playlistConfig.playlistsDisabled,
+            disabled: exportConfig.lastAdded > 0,
+            onChange: setting => {
+              exportConfig.playlistConfig.playlistsDisabled = !setting.data;
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            id: 'exportSelectedPlaylists',
+            name: 'Export Selected Playlists',
+            icon: AppEntityIcons.Playlist,
+            textRegular: ['Select playlists to export'],
+            editorType: SettingsEditorType.ListMultiple,
+            data: exportConfig.playlistConfig?.ids,
+            beforePanelOpen: async panelModel => {
+              const playlists = await PlaylistEntity.find();
+              const chips: IChipItem[] = [];
+              this.utility.sort(playlists, 'name').forEach(playlist => {
+                chips.push({
+                  value: playlist.id,
+                  caption: playlist.name,
+                  selected: exportConfig.playlistConfig?.ids?.length && exportConfig.playlistConfig.ids.includes(playlist.id)
+                })
+              });
+              panelModel['items'] = chips;
+            },
+            onChange: settings => {
+              if (!exportConfig.playlistConfig) {
+                exportConfig.playlistConfig = {};
+              }
+              exportConfig.playlistConfig.ids = settings.data;
+              this.entities.saveSyncProfile(parsedProfile).then(result => {
+                profile.config = result.config;
+                this.getPlaylistNames(exportConfig.playlistConfig.ids).then(names => {
+                  settings.textData = [names];
+                });
+              });
+            }
+          },
+          {
+            name: 'Export Smart Playlists',
+            icon: AppEntityIcons.Smartlist,
+            textRegular: ['Whether or not smart playlists should be exported.'],
+            editorType: SettingsEditorType.YesNo,
+            data: !exportConfig.playlistConfig.smartlistsDisabled,
+            onChange: setting => {
+              exportConfig.playlistConfig.smartlistsDisabled = !setting.data;
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            name: 'Export Auto Playlists',
+            icon: AppEntityIcons.Autolist,
+            textRegular: ['Whether or not auto playlists should be exported.'],
+            editorType: SettingsEditorType.YesNo,
+            data: !exportConfig.playlistConfig.autolistsDisabled,
+            onChange: setting => {
+              exportConfig.playlistConfig.autolistsDisabled = !setting.data;
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            name: 'Dedicated Playlist Folder',
+            icon: AppAttributeIcons.PlaylistDirectory,
+            textRegular: ['Whether or not playlist files should be saved on its own playlist folder.'],
+            editorType: SettingsEditorType.YesNo,
+            data: !exportConfig.playlistConfig.dedicatedDirectoryDisabled,
+            onChange: setting => {
+              exportConfig.playlistConfig.dedicatedDirectoryDisabled = !setting.data;
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            name: 'Playlist Format',
+            icon: AppAttributeIcons.FileInfo,
+            textRegular: ['Select the playlist format to export.'],
+            editorType: SettingsEditorType.List,
+            data: exportConfig.playlistConfig.format,
+            textData: [exportConfig.playlistConfig.format.toUpperCase()],
+            beforePanelOpen: async panelModel => {
+              const chipItemM3u: IChipItem = {
+                sequence: 1, value: 'm3u', caption: 'M3U', selected: exportConfig.playlistConfig.format === 'm3u' };
+              const chipItemPls: IChipItem = {
+                sequence: 2, value: 'pls', caption: 'PLS', selected: exportConfig.playlistConfig.format === 'pls' };
+              panelModel['items'] = [chipItemM3u, chipItemPls];
+            },
+            onChange: setting => {
+              exportConfig.playlistConfig.format = setting.data;
+              setting.textData = [exportConfig.playlistConfig.format.toUpperCase()];
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            name: 'Minimum Playlist Tracks',
+            icon: AppAttributeIcons.Bottom,
+            textRegular: ['The minimum number of tracks a playlist should have to be exported.'],
+            editorType: SettingsEditorType.Number,
+            data: exportConfig.playlistConfig.minCount,
+            textData: [exportConfig.playlistConfig.minCount ? exportConfig.playlistConfig.minCount.toString() : '0'],
+            beforePanelOpen: async panelModel => {
+              panelModel['label'] = 'Minimum number of tracks';
+            },
+            onChange: setting => {
+              exportConfig.playlistConfig.minCount = setting.data;
+              setting.textData = [exportConfig.playlistConfig.minCount ? exportConfig.playlistConfig.minCount.toString() : '0'];
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          },
+          {
+            name: 'Maximum Playlist Tracks',
+            icon: AppAttributeIcons.Top,
+            textRegular: ['The maximum number of tracks a playlist will have when exported.'],
+            editorType: SettingsEditorType.Number,
+            data: exportConfig.playlistConfig.maxCount,
+            textData: [exportConfig.playlistConfig.maxCount ? exportConfig.playlistConfig.maxCount.toString() : '0'],
+            beforePanelOpen: async panelModel => {
+              panelModel['label'] = 'Maximum number of tracks';
+            },
+            onChange: setting => {
+              exportConfig.playlistConfig.maxCount = setting.data;
+              setting.textData = [exportConfig.playlistConfig.maxCount ? exportConfig.playlistConfig.maxCount.toString() : '0'];
+              this.entities.saveSyncProfile(parsedProfile).then(result => profile.config = result.config);
+            }
+          }
+        ]
+      }
+    ];
+
+    const setting = this.findSettingItem('exportSelectedPlaylists', settings);
+    const names = await this.getPlaylistNames(exportConfig.playlistConfig?.ids);
+    setting.textData = [names];
+    return settings;
+  }
+
+  private buildImportAudioSettings(profile: ISyncProfile): ISettingCategory[] {
+    const settings: ISettingCategory[] = [
+      {
+        name: 'Actions',
+        settings: [
+          {
+            id: 'syncAudioFiles',
+            name: 'Run',
+            icon: AppActionIcons.Run,
+            textRegular: ['Click here to start the import audio process.'],
+            action: () => {
+              this.importAudio(profile);
+            }
+          },
+          {
+            name: 'Recently Added',
+            icon: AppAttributeIcons.Recent,
+            textRegular: ['Display recently added tracks.'],
+            action: () => {
+              this.entities.updateFilterAccessDate(FilterId.RecentlyAdded).then(() => {
+                this.entities.getCriteriaFromFilterId(FilterId.RecentlyAdded).then(criteria => {
+                  this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+                });
+              });
+            }            
+          },
+          {
+            name: 'Recently Updated',
+            icon: AppAttributeIcons.Recent,
+            textRegular: ['Display recently updated tracks.'],
+            action: () => {
+              this.entities.updateFilterAccessDate(FilterId.RecentlyUpdated).then(() => {
+                this.entities.getCriteriaFromFilterId(FilterId.RecentlyUpdated).then(criteria => {
+                  this.navigation.forward(AppRoute.Songs, { criteria: criteria });
+                });
+              });
+            }            
+          }
+        ]
+      }
+    ];
+    return settings;
+  }
+
+  private buildImportPlaylistsSettings(profile: ISyncProfile): ISettingCategory[] {
+    return null;
+  }
+
+  public async refreshSettings(viewId: string): Promise<void> {
+    switch (viewId) {
+      case SettingsViewId.Main:
+        await this.refreshStatistics();
+        break;
+    }
   }
 
   private async refreshStatistics(): Promise<void> {
-    let setting = this.findSetting('statistics');
+    let setting = this.findSetting('statistics', SettingsViewId.Main);
     const playlistCount = await PlaylistEntity.count();
     const songCount = await SongEntity.count();
     let hours = this.utility.secondsToHours(0);
@@ -269,8 +558,12 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
     `;
   }
 
-  private findSetting(id: string): ISetting {
-    for (const settingCategory of this.state) {
+  public findSetting(id: string, viewId: string): ISetting {
+    return this.findSettingItem(id, this.state[viewId]);
+  }
+
+  private findSettingItem(id: string, categories: ISettingCategory[]): ISetting {
+    for (const settingCategory of categories) {
       for (const setting of settingCategory.settings) {
         if (setting.id === id) {
           return setting;
@@ -278,5 +571,21 @@ export class SettingsViewStateService implements IStateService<ISettingCategory[
       }
     }
     return null;
+  }
+
+  private async getPlaylistNames(ids: string[]): Promise<string> {
+    if (ids?.length) {
+      const playlists = await PlaylistEntity.findBy({ id: In(ids) });
+      return playlists.map(p => p.name).join(', ');
+    }
+    return null;
+  }
+
+  private async importAudio(profile: ISyncProfile): Promise<void> {
+    profile.running = true;
+    const parsedProfile = this.entities.parseSyncProfile(profile);
+    const syncResponse = await this.scanner.scanAndSyncAudio(parsedProfile.directoryArray, '.mp3', 'scanAudio');
+    profile.running = false;
+    // Log results
   }
 }

@@ -89,14 +89,13 @@ export class NavigationService {
   }
 
   private navigate(route: string, options?: INavigationOptions): void {
-    if (options?.criteria) {
-      this.utilities.navigateWithQueryParams(route, { queryId: options.criteria.id });
-    }
-    else if (options?.queryParams) {
-      this.utilities.navigateWithQueryParams(route, options.queryParams);
-    }
-    else if (options?.routeParams) {
-      this.utilities.navigateWithRouteParams(route, options.routeParams);
+    if (options?.criteria || options?.queryParams || options?.routeParams) {
+      if (options?.criteria) {
+        this.utilities.navigateWithParams(route, options.routeParams, { queryId: options.criteria.id });
+      }
+      else {
+        this.utilities.navigateWithParams(route, options.routeParams, options.queryParams);
+      }
     }
     else {
       this.utilities.navigate(route);

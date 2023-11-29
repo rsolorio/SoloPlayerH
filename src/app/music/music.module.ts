@@ -7,14 +7,14 @@ import { SharedModule } from '../shared/shared.module';
 import { AlbumListComponent } from './album-list/album-list.component';
 import { ClassificationListComponent } from './classification-list/classification-list.component';
 import { SongListComponent } from './song-list/song-list.component';
-import { FileService } from '../platform/file/file.service';
-import { FileElectronService } from '../platform/file/file-electron.service';
 import { ListTransformService } from '../shared/services/list-transform/list-transform.service';
 import { SongValidatorFactory } from './transform-validators/song-validator-factory';
 import { ValueListModule } from '../value-list/value-list.module';
 import { ArtistViewComponent } from './artist-view/artist-view.component';
 import { RouterModule } from '@angular/router';
 import { SongViewComponent } from './song-view/song-view.component';
+import { FileService } from '../platform/file/file.service';
+import { FileElectronService } from '../platform/file/file-electron.service';
 import { FileCordovaService } from '../platform/file/file-cordova.service';
 
 @NgModule({

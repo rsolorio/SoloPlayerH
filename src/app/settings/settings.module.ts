@@ -7,6 +7,7 @@ import { CoreModule } from '../core/core.module';
 import { DialogService } from '../platform/dialog/dialog.service';
 import { DialogElectronService } from '../platform/dialog/dialog-electron.service';
 import { DialogCordovaService } from '../platform/dialog/dialog-cordova.service';
+import { RouterModule } from '@angular/router';
 
 
 
@@ -18,7 +19,10 @@ import { DialogCordovaService } from '../platform/dialog/dialog-cordova.service'
     CommonModule,
     CoreModule,
     FormsModule,
-    SharedModule
+    SharedModule,
+    RouterModule.forChild([
+      { path: 'settings/:viewId', component: SettingsViewComponent }
+    ])
   ],
   providers: [ { provide: DialogService, useClass: DialogElectronService }]
 })
