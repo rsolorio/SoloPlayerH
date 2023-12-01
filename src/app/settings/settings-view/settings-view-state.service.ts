@@ -149,6 +149,16 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
         name: 'Navigation',
         settings: [
           {
+            name: 'Hide NavBar On Scroll',
+            icon: AppActionIcons.Scroll,
+            editorType: SettingsEditorType.YesNo,
+            textRegular: ['Automatically hide the navbar when scrolling down; this will give more vertical space to the lists. To show the navbar just scroll up.'],
+            data: this.options.getBoolean(ModuleOptionId.HideNavbarOnScroll),
+            onChange: setting => {
+              this.options.saveBoolean(ModuleOptionId.HideNavbarOnScroll, setting.data);
+            }
+          },
+          {
             id: 'multipleQuickFilters',
             name: 'Multiple Quick Filters',
             icon: AppFeatureIcons.MultipleFilters,

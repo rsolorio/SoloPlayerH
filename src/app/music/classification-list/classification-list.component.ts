@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { CoreComponent } from 'src/app/core/models/core-component.class';
-import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { BreadcrumbsStateService } from 'src/app/shared/components/breadcrumbs/breadcrumbs-state.service';
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { SongClassificationViewEntity } from 'src/app/shared/entities';
@@ -23,6 +22,8 @@ import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-stat
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { AppEvent } from 'src/app/app-events';
 import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
+import { DatabaseFiltersService } from 'src/app/shared/services/database/database-filters.service';
+import { DatabaseSortingService } from 'src/app/shared/services/database/database-sorting.service';
 
 @Component({
   selector: 'sp-classification-list',
@@ -126,7 +127,6 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
 
   constructor(
     public broadcastService: ClassificationListBroadcastService,
-    private utility: UtilityService,
     private breadcrumbService: BreadcrumbsStateService,
     private navigation: NavigationService,
     private db: DatabaseService,
@@ -134,7 +134,9 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     private entities: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
     private sidebarHostService: SideBarHostStateService,
-    private listBaseService: ListBaseService
+    private listBaseService: ListBaseService,
+    private filters: DatabaseFiltersService,
+    private sorting: DatabaseSortingService
   ) {
     super();
     const criteriaItem = new CriteriaItem('classificationTypeId', ValueLists.Genre.id);
@@ -212,8 +214,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   public openQuickFilterPanel(): void {
-    const chips = this.entities.getQuickFiltersForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(chips, 'Classifications', AppEntityIcons.Classification);
+    const chips = this.filters.getQuickFiltersForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.filters.getQuickFilterPanelModel(chips, 'Classifications', AppEntityIcons.Classification);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep sorting criteria
@@ -238,7 +240,7 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
     // Update the title accordingly    
     if (model.criteriaResult.criteria.quickCriteria.length === 1) {
       // get the info from the chips
-      const chips = this.entities.getQuickFiltersForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
+      const chips = this.filters.getQuickFiltersForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
       // Whatever type is selected
       for (const chip of chips) {
         const criteriaItem = chip.value as CriteriaItem;
@@ -257,8 +259,8 @@ export class ClassificationListComponent extends CoreComponent implements OnInit
   }
 
   private openSortingPanel(): void {
-    const chips = this.entities.getSortingForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getSortingPanelModel(chips, 'Classifications', AppEntityIcons.Classification);
+    const chips = this.sorting.getSortingForClassifications(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.sorting.getSortingPanelModel(chips, 'Classifications', AppEntityIcons.Classification);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep quick criteria

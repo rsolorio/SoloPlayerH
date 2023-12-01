@@ -12,6 +12,7 @@ import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { AppEvent } from 'src/app/app-events';
 import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
+import { DatabaseSortingService } from 'src/app/shared/services/database/database-sorting.service';
 
 @Component({
   selector: 'sp-filter-list',
@@ -64,7 +65,8 @@ export class FilterListComponent extends CoreComponent implements OnInit {
     private navigation: NavigationService,
     private sidebarHostService: SideBarHostStateService,
     private entities: DatabaseEntitiesService,
-    private listBaseService: ListBaseService
+    private listBaseService: ListBaseService,
+    private sorting: DatabaseSortingService
   ) {
     super();
   }
@@ -90,8 +92,8 @@ export class FilterListComponent extends CoreComponent implements OnInit {
   }
 
   private openSortingPanel(): void {
-    const chips = this.entities.getSortingForFilters(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getSortingPanelModel(chips, 'Smartlists', AppEntityIcons.Smartlist);
+    const chips = this.sorting.getSortingForFilters(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.sorting.getSortingPanelModel(chips, 'Smartlists', AppEntityIcons.Smartlist);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep quick criteria

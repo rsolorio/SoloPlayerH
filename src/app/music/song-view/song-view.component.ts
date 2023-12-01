@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppEvent } from 'src/app/app-events';
-import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
+import { AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { LoadingViewStateService } from 'src/app/core/components/loading-view/loading-view-state.service';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -19,7 +19,6 @@ import { SongClassificationEntity, SongEntity, SongExtendedViewEntity, ValueList
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
-import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { In, Not } from 'typeorm';
 
 @Component({
@@ -37,7 +36,6 @@ export class SongViewComponent implements OnInit {
     private loadingService: LoadingViewStateService,
     private entityService: DatabaseEntitiesService,
     private navbarService: NavBarStateService,
-    private navigation: NavigationService,
     private events: EventsService,
     private sidebarHostService: SideBarHostStateService,
     private fileService: FileService)

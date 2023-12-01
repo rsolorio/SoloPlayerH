@@ -46,6 +46,8 @@ import { AppEvent } from 'src/app/app-events';
 import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
+import { DatabaseFiltersService } from 'src/app/shared/services/database/database-filters.service';
+import { DatabaseSortingService } from 'src/app/shared/services/database/database-sorting.service';
 
 @Component({
   selector: 'sp-song-list',
@@ -220,7 +222,9 @@ export class SongListComponent extends CoreComponent implements OnInit {
     private exporter: ExportService,
     private cd: ChangeDetectorRef,
     private log: LogService,
-    private listBaseService: ListBaseService
+    private listBaseService: ListBaseService,
+    private filters: DatabaseFiltersService,
+    private sorting: DatabaseSortingService
   ) {
     super();
   }
@@ -456,8 +460,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const chips = this.entities.getQuickFiltersForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(chips, 'Songs', AppEntityIcons.Song);
+    const chips = this.filters.getQuickFiltersForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.filters.getQuickFilterPanelModel(chips, 'Songs', AppEntityIcons.Song);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep sorting criteria
@@ -475,8 +479,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
   }
 
   private openSortingPanel(): void {
-    const chips = this.entities.getSortingForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getSortingPanelModel(chips, 'Songs', AppEntityIcons.Song);
+    const chips = this.sorting.getSortingForSongs(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.sorting.getSortingPanelModel(chips, 'Songs', AppEntityIcons.Song);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep quick criteria
@@ -532,7 +536,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     const breadcrumbs = this.breadcrumbService.getState().items;
     const languageBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Language);
     const languages = languageBreadcrumb?.criteriaItem?.columnValues?.length ? languageBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
-    const model = await this.entities.getValueListSelectorModel(ValueLists.Language.id, true, chip => {
+    const model = await this.filters.getValueListSelectorModel(ValueLists.Language.id, true, chip => {
       return languages.includes(chip.caption);
     });
     model.subTitle = 'Language';
@@ -574,7 +578,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
     const breadcrumbs = this.breadcrumbService.getState().items;
     const moodBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Mood);
     const moods = moodBreadcrumb?.criteriaItem?.columnValues?.length ? moodBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
-    const model = await this.entities.getValueListSelectorModel(ValueLists.Mood.id, false, chip => {
+    const model = await this.filters.getValueListSelectorModel(ValueLists.Mood.id, false, chip => {
       return moods.includes(chip.caption);
     });
     model.subTitle = 'Mood';
@@ -616,7 +620,8 @@ export class SongListComponent extends CoreComponent implements OnInit {
     const breadcrumbs = this.breadcrumbService.getState().items;
     const decadeBreadcrumb = breadcrumbs.find(crumb => crumb.origin === BreadcrumbSource.Decade);
     const decades = decadeBreadcrumb?.criteriaItem?.columnValues?.length ? decadeBreadcrumb.criteriaItem.columnValues.map(v => v.value) : [];
-    const model = await this.entities.getSongValuesSelectorModel(DbColumn.ReleaseDecade, chip => {
+    const values = await this.entities.getSongValues(DbColumn.ReleaseDecade);
+    const model = await this.filters.getSongValuesSelectorModel(values, chip => {
       return decades.includes(chip.caption);
     });
     model.subTitle = 'Decade';

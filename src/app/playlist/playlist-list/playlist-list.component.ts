@@ -19,6 +19,7 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { ListBaseComponent } from 'src/app/shared/components/list-base/list-base.component';
 import { AppEvent } from 'src/app/app-events';
 import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
+import { DatabaseSortingService } from 'src/app/shared/services/database/database-sorting.service';
 
 @Component({
   selector: 'sp-playlist-list',
@@ -90,7 +91,8 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
     private entities: DatabaseEntitiesService,
     private sidebarHostService: SideBarHostStateService,
     private playerService: HtmlPlayerService,
-    private listBaseService: ListBaseService
+    private listBaseService: ListBaseService,
+    private sorting: DatabaseSortingService
   ){
     super();
   }
@@ -150,8 +152,8 @@ export class PlaylistListComponent extends CoreComponent implements OnInit {
   }
 
   private openSortingPanel(): void {
-    const chips = this.entities.getSortingForPlaylists(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getSortingPanelModel(chips, 'Playlists', AppEntityIcons.Playlist);
+    const chips = this.sorting.getSortingForPlaylists(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.sorting.getSortingPanelModel(chips, 'Playlists', AppEntityIcons.Playlist);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep quick criteria

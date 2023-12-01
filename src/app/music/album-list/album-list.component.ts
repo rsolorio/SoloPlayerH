@@ -23,6 +23,8 @@ import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/s
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { AppEvent } from 'src/app/app-events';
 import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
+import { DatabaseFiltersService } from 'src/app/shared/services/database/database-filters.service';
+import { DatabaseSortingService } from 'src/app/shared/services/database/database-sorting.service';
 
 @Component({
   selector: 'sp-album-list',
@@ -152,7 +154,9 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
     private imageService: ImageService,
     private navbarService: NavBarStateService,
     private sidebarHostService: SideBarHostStateService,
-    private listBaseService: ListBaseService
+    private listBaseService: ListBaseService,
+    private filters: DatabaseFiltersService,
+    private sorting: DatabaseSortingService
   ) {
     super();
   }
@@ -238,8 +242,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private openQuickFilterPanel(): void {
-    const chips = this.entities.getQuickFiltersForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getQuickFilterPanelModel(chips, 'Albums', 'mdi-album mdi');
+    const chips = this.filters.getQuickFiltersForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.filters.getQuickFilterPanelModel(chips, 'Albums', 'mdi-album mdi');
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       for (const valuePair of okResult.items) {
@@ -256,8 +260,8 @@ export class AlbumListComponent extends CoreComponent implements OnInit {
   }
 
   private openSortingPanel(): void {
-    const chips = this.entities.getSortingForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
-    const model = this.entities.getSortingPanelModel(chips, 'Albums', AppEntityIcons.Album);
+    const chips = this.sorting.getSortingForAlbums(this.spListBaseComponent.model.criteriaResult.criteria);
+    const model = this.sorting.getSortingPanelModel(chips, 'Albums', AppEntityIcons.Album);
     model.onOk = okResult => {
       const criteria = new Criteria(model.title);
       // Keep quick criteria
