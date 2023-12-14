@@ -306,9 +306,16 @@ export class ExportService {
    * Uses the specified criteria to get a list of songs which will be exported as a playlist file.
    */
   private async exportCriteriaAsPlaylist(namePrefix: string, criteria: Criteria): Promise<boolean> {
-    // Override the number of results with the max number of tracks
-    if (this.config.playlistConfig?.maxCount) {
-      criteria.paging.pageSize = this.config.playlistConfig.maxCount;
+    if (this.config.playlistConfig?.maxCount && criteria.paging.pageSize) {
+      // Override the number of tracks for each playlist
+      // only if the configuration is less than the filter limit
+      // We only want to ensure the playlist track limit does not go beyond the max specified by the user.
+      // In theory this is not needed since the playlist writer performs
+      // a slice on the filter result based on the max and min configs
+      // but this will help getting only the data that is needed.
+      if (this.config.playlistConfig.maxCount < criteria.paging.pageSize) {
+        criteria.paging.pageSize = this.config.playlistConfig.maxCount;
+      }
     }
     let tracks = await this.getSongs(criteria);
     if (tracks?.length) {
