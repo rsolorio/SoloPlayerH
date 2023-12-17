@@ -107,6 +107,8 @@ export enum MetaField {
   /** String. Id3v2 */
   Copyright = 'copyright',
   /** String. Id3v2 */
+  Publisher = 'publisher',
+  /** String. Id3v2 */
   OriginalArtist = 'originalArtist',
   /** String. Id3v2 */
   OriginalAlbum = 'originalAlbum',

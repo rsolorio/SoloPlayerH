@@ -176,6 +176,11 @@ export class Id3v2SourceService implements IDataSourceService {
           return [this.audioInfo.metadata.common.composersort];
         }
         break;
+      case MetaField.Publisher:
+        if (this.audioInfo.metadata.common.label) {
+          return this.audioInfo.metadata.common.label;
+        }
+        break;
       case MetaField.OriginalArtist:
         if (this.audioInfo.metadata.common.originalartist) {
           return [this.audioInfo.metadata.common.originalartist];

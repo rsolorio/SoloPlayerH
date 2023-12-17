@@ -483,6 +483,7 @@ export class ScanAudioService {
     this.setFirst(newAlbum, 'releaseYear', metadata, MetaField.Year, 0);
     this.setFirst(newAlbum, 'albumStylized', metadata, MetaField.AlbumStylized, newAlbum.name);
     this.setFirst(newAlbum, 'albumSort', metadata, MetaField.AlbumSort, newAlbum.name);
+    this.setFirst(newAlbum, 'publisher', metadata, MetaField.Publisher);
 
     const existingAlbum = this.lookupService.findAlbum(newAlbum.name, newAlbum.releaseYear, artist.id, this.existingAlbums);
     if (existingAlbum) {

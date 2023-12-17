@@ -173,6 +173,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   /**
    * Adds metadata tags and returns an object that follows the tag object of the mp3tag library.
    * Supported tags: https://mp3tag.js.org/docs/frames.html
+   * Mp3Tag reference: https://docs.mp3tag.de/mapping/
+   * Other reference: https://exiftool.org/TagNames/ID3.html
+   * One more with details: https://mutagen-specs.readthedocs.io/en/latest/id3/id3v2.4.0-frames.html
+   * Reference to taglib: https://github.com/mono/taglib-sharp
    */
   private async setupV2Tags(metadata: KeyValues, v2Version: number): Promise<any> {
     const tags: any = {};
