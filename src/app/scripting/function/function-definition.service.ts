@@ -38,6 +38,7 @@ export class FunctionDefinitionService {
     this.orFunction();
     this.digitsFunction();
     this.intFunction();
+    this.strFunction();
     this.noBracketsFunction();
     this.pathFunction();
   }
@@ -131,6 +132,21 @@ export class FunctionDefinitionService {
       fn: args => {
         const x = args[0];
         return parseInt(x.toString(), 10);
+      }
+    });
+  }
+
+  private strFunction(): void {
+    this.functions.push({
+      name: 'str',
+      syntax: '$str(x)',
+      description: 'Converts x to string.',
+      fn: args => {
+        const x = args[0];
+        if (x !== null && x !== undefined) {
+          return x.toString();
+        }
+        return '';
       }
     });
   }

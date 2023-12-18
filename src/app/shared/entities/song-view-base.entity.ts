@@ -127,7 +127,7 @@ song.lyrics, song.grouping, song.composer, song.composerSort, song.comment,
 song.originalArtist, song.originalAlbum, song.originalReleaseYear, song.infoUrl, song.videoUrl,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
 song.favorite, song.live, song.explicit, song.addDate, song.addYear, song.changeDate, song.playDate, song.replaceDate,
-album.name AS primaryAlbumName, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.primaryArtistId,
+album.name AS primaryAlbumName, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.publisher AS primaryAlbumPublisher, album.primaryArtistId,
 artist.country, artist.name AS primaryArtistName, artist.artistSort AS primaryArtistSort, artist.artistStylized AS primaryArtistStylized, artist.artistType AS primaryArtistType
 `;
 
@@ -179,6 +179,8 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   primaryAlbumStylized: string;
   @ViewColumn()
   primaryAlbumType: string;
+  @ViewColumn()
+  primaryAlbumPublisher: string;
   @ViewColumn()
   primaryArtistSort: string;
   @ViewColumn()

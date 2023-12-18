@@ -297,6 +297,11 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }
     }
 
+    const publisher = this.first(metadata[MetaField.Publisher]);
+    if (publisher) {
+      tags.TPUB = publisher;
+    }
+
     const grouping = this.first(metadata[MetaField.Grouping]);
     if (grouping) {
       tags.TIT1 = grouping;

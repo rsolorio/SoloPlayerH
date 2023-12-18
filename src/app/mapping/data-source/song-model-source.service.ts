@@ -94,6 +94,8 @@ export class SongModelSourceService implements IDataSourceService {
         return [this.inputData.primaryAlbumSort];
       case MetaField.AlbumType:
         return [this.inputData.primaryAlbumType];
+      case MetaField.Publisher:
+        return [this.inputData.primaryAlbumPublisher];
       case MetaField.AlbumArtist:
         return [this.inputData.primaryArtistName];
       case MetaField.AlbumArtistSort:

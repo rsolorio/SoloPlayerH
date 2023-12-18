@@ -90,6 +90,7 @@ export interface ISongExtendedModel extends ISongFullModel {
   primaryAlbumSort: string;
   primaryAlbumStylized: string;
   primaryAlbumType: string;
+  primaryAlbumPublisher: string;
   primaryArtistSort: string;
   primaryArtistType: string;
 }
