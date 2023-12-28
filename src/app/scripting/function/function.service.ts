@@ -8,16 +8,18 @@ import { FunctionDefinitionService } from './function-definition.service';
 })
 export class FunctionService {
   private functionPrefix = '$';
+  private functionPattern = `\\${this.functionPrefix}\\w+\\(`;
+  private functionRegExp = new RegExp(this.functionPattern, 'g');
   constructor(
     private placeholders: PlaceholderService,
     private definitions: FunctionDefinitionService) { }
 
-  public parse(info: IParseInformation): IParseInformation {
-    this.definitions.resetCounter();
+  public parse(info: IParseInformation, keepFnCounter?: boolean): IParseInformation {
+    if (!keepFnCounter) {
+      this.definitions.resetCounter();
+    }
     const result: IParseInformation = { expression: info.expression, context: info.context, mappings: info.mappings };
-    const regExpPattern = `\\${this.functionPrefix}\\w+\\(`;
-    const functionRegExp = new RegExp(regExpPattern, 'g');
-    let functionMatches = result.expression.match(functionRegExp);
+    let functionMatches = result.expression.match(this.functionRegExp);
     while (functionMatches?.length) {
       // Get the very first function match
       const functionPrefix = functionMatches[0];
@@ -30,7 +32,7 @@ export class FunctionService {
         const functionArguments = result.expression.substring(openParenthesisIndex + 1, closeParenthesisIndex);
         if (functionArguments) {
           // Recursive call to parse functions one level deeper
-          const parseArgumentsResult = this.parse({ expression: functionArguments, context: result.context, mappings: result.mappings });
+          const parseArgumentsResult = this.parse({ expression: functionArguments, context: result.context, mappings: result.mappings }, true);
           result.context = parseArgumentsResult.context;
           // At this point, the expression should only have placeholders
           // so now split without worrying about commas from other functions
@@ -56,7 +58,7 @@ export class FunctionService {
         result.expression = result.expression.replace(fullFunctionExpression, '');
       }
       // Last step is to look for more functions
-      functionMatches = result.expression.match(functionRegExp);
+      functionMatches = result.expression.match(this.functionRegExp);
     }
     return result;
   }

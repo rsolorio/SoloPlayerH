@@ -553,10 +553,10 @@ export class AppTestService {
 
   private hash(): void {
     //const value = this.lookup.hashValueListEntry('China');
-    const value = this.lookup.hashValues(['Force File Sync']);
-    //const value = this.lookup.hashSong('G:\\Music\\Various\\Soundtrack\\Hans Zimmer - Lisa Gerrard\\2000 - Gladiator Soundtrack\\17 - now we are free.mp3');
-    //const value = this.lookup.hashAlbum('El Ruego', 1988);
-    //const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Impacto De Montemorelos\\1988 - El Ruego\\front.jpg', 0);
+    //const value = this.lookup.hashValues(['Force File Sync']);
+    //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Grupero\\Los Temerarios\\1990 - Te Quiero\\08 - te quiero.mp3');
+    //const value = this.lookup.hashAlbum('Te Quiero', 1990);
+    const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Los Temerarios\\1990 - Te Quiero\\front2.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
 
     console.log(value);

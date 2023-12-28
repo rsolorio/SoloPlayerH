@@ -5,14 +5,14 @@ import { IParseInformation } from '../script-parser/script-parser.interface';
   providedIn: 'root'
 })
 export class PlaceholderService {
-  public get limiter(): string {
-    return '%';
-  }
-
+  private placeholderLimiter = '%';
+  private placeholderPattern = `\\${this.placeholderLimiter}\\w+\\${this.placeholderLimiter}`;
+  private placeholderRegExp = new RegExp(this.placeholderPattern, 'g');
+  private placeholderLimiterRegExp = new RegExp(this.placeholderLimiter, 'g');
   constructor() { }
 
   public format(placeholderName: string): string {
-    return this.limiter + placeholderName.trim() + this.limiter;
+    return this.placeholderLimiter + placeholderName.trim() + this.placeholderLimiter;
   }
 
   /**
@@ -21,7 +21,7 @@ export class PlaceholderService {
    */
   public getToken(info: IParseInformation): any {
     // TODO: log when token values are not found
-    const placeholderName = info.expression.replace(new RegExp(this.limiter, 'g'), '');
+    const placeholderName = info.expression.replace(this.placeholderLimiterRegExp, '');
     if (info.mappings) {
       const mapping = info.mappings[placeholderName];
       if (mapping) {
@@ -33,9 +33,7 @@ export class PlaceholderService {
 
   public parse(info: IParseInformation): any {
     let parsedExpression = info.expression;
-    const regExpPattern = `\\${this.limiter}\\w+\\${this.limiter}`;
-    const placeholderRegExp = new RegExp(regExpPattern, 'g');
-    const placeholderMatches = parsedExpression.match(placeholderRegExp);
+    const placeholderMatches = parsedExpression.match(this.placeholderRegExp);
     if (placeholderMatches?.length) {
       if (placeholderMatches.length === 1 && placeholderMatches[0] === parsedExpression) {
         // This is the case where the placeholder fully matches the expression
