@@ -1014,6 +1014,7 @@ export class ScanAudioService {
    * Removes unnecessary records from the database like song records associated with missing files.
   */
   public async cleanUpDatabase(syncInfo: ISyncSongInfo): Promise<void> {
+    // IMAGES
     // 00. Start with images to delete
     // Do we really want to do this?
     const imageIdsToDelete: string[] = [];
@@ -1029,7 +1030,9 @@ export class ScanAudioService {
       await RelatedImageEntity.delete({ id: In(imageIdsToDelete) });
     }
 
+    // SONGS
     // 01. Determine songs to be deleted (missing song files)
+    // TODO: this logic does not detect song records that are no longer part of the scan directories
     syncInfo.songSkippedRecords = [];
     syncInfo.songDeletedRecords = [];
     const albumIdsToAnalyze: string[] = [];
@@ -1066,6 +1069,7 @@ export class ScanAudioService {
     // 07. Songs
     await SongEntity.delete({ id: In(songIdsToDelete) });
 
+    // ALBUMS
     // 08. Determine albums to be deleted (with no songs)
     const albumCriteria = new Criteria();
     albumCriteria.searchCriteria.push(new CriteriaItem('songCount', 0));
@@ -1086,7 +1090,11 @@ export class ScanAudioService {
     await RelatedImageEntity.delete({ relatedId: In(albumIdsToDelete) });
     // 11. Albums
     await AlbumEntity.delete({ id: In(albumIdsToDelete) });
+
+    // ARTISTS
     // 12. Determine artists to be deleted (with no albums and no songs)
+    // TODO: this logic only considers primary artists associated to deleted albums,
+    // but not considering featuring artists associated with deleted songs
     const artistIdsToAnalyze = albumsToDelete
       .map(album => album.primaryArtistId)
       // Remove duplicates

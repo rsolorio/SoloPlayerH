@@ -1,6 +1,5 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 import { IAlbumModel } from '../models/album-model.interface';
-import { AlbumEntity } from './album.entity';
 import { ListItemEntity } from './base.entity';
 
 /**
@@ -8,30 +7,23 @@ import { ListItemEntity } from './base.entity';
  */
 @ViewEntity({
   name: 'albumView',
-  expression: ds => ds
-    .createQueryBuilder(AlbumEntity, 'album')
-    .innerJoin('artist', 'artist', 'album.primaryArtistId = artist.id')
-    .innerJoin('song', 'song', 'album.id = song.primaryAlbumId')
-    .select('album.id', 'id')
-    .addSelect('artist.id', 'primaryArtistId')
-    .addSelect('album.name', 'name')
-    .addSelect('album.hash', 'hash')
-    .addSelect('album.albumType', 'albumType')
-    .addSelect('album.albumSort', 'albumSort')
-    .addSelect('album.releaseYear', 'releaseYear')
-    .addSelect('album.releaseDecade', 'releaseDecade')
-    .addSelect('album.favorite', 'favorite')
-    .addSelect('artist.name', 'primaryArtistName')
-    .addSelect('artist.artistStylized', 'primaryArtistStylized')
-    .addSelect('COUNT(album.id)', 'songCount')
-    .addSelect('SUM(song.playCount)', 'playCount')
-    .addSelect('SUM(song.seconds)', 'seconds')
-    .addSelect('MAX(song.addDate)', 'songAddDateMax')
-    .groupBy('album.id')
+  expression: `
+    SELECT album.id, album.primaryArtistId, album.name, album.hash, album.albumType, album.albumSort, album.releaseYear, album.releaseDecade, album.favorite,
+    artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized,
+    COUNT(song.id) AS songCount, SUM(song.playCount) AS playCount, SUM(song.seconds) AS seconds, MAX(song.addDate) AS songAddDateMax
+    FROM album
+    INNER JOIN artist
+    ON album.primaryArtistId = artist.id
+    LEFT JOIN song
+    ON song.primaryAlbumId = album.id
+    GROUP BY album.id, album.primaryArtistId, album.name, album.hash, album.albumType, album.albumSort, album.releaseYear, album.releaseDecade, album.favorite
+  `
 })
 export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   @ViewColumn()
   id: string;
+  @ViewColumn()
+  primaryArtistId: string;
   @ViewColumn()
   name: string;
   @ViewColumn()
@@ -39,9 +31,7 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   @ViewColumn()
   albumType: string;
   @ViewColumn()
-  songCount: number;
-  @ViewColumn()
-  playCount: number;
+  albumSort: string;
   @ViewColumn()
   releaseYear: number;
   @ViewColumn()
@@ -53,9 +43,9 @@ export class AlbumViewEntity extends ListItemEntity implements IAlbumModel {
   @ViewColumn()
   primaryArtistStylized: string;
   @ViewColumn()
-  albumSort: string;
+  songCount: number;
   @ViewColumn()
-  primaryArtistId: string;
+  playCount: number;  
   @ViewColumn()
   seconds: number;
   @ViewColumn()
