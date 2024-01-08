@@ -30,6 +30,7 @@ import { AppRoute } from 'src/app/app-routes';
 import { Bytes } from 'src/app/core/services/utility/utility.enum';
 import { FileService } from 'src/app/platform/file/file.service';
 import { AppEvent } from 'src/app/app-events';
+import { FilterTarget } from 'src/app/shared/models/music.enum';
 
 enum SongViewType {
   Standard,
@@ -278,7 +279,8 @@ export class ExportService {
     let result = 0;
     const filters = await FilterEntity.find();
     for (const filter of filters) {
-      if (filter.sync) {
+      // TODO: do this comparison with a criteria object and the database service
+      if (filter.sync && filter.target === FilterTarget.Song) {
         const criteria = await this.entities.getCriteriaFromFilter(filter);
         const playlistExported = await this.exportCriteriaAsPlaylist('Filter', criteria);
         if (playlistExported) {

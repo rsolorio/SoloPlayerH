@@ -50,9 +50,9 @@ export class AppTestService {
     //await this.insertFilters();
     //await this.updateSong();
     //await this.getPlaylistsTracks();
+    //await this.logPopularity();
     await this.logStatistics();
     //this.hash();
-    //await this.logPopularity();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -554,9 +554,9 @@ export class AppTestService {
   private hash(): void {
     //const value = this.lookup.hashValueListEntry('China');
     //const value = this.lookup.hashValues(['Force File Sync']);
-    //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Grupero\\Los Temerarios\\1990 - Te Quiero\\08 - te quiero.mp3');
-    //const value = this.lookup.hashAlbum('Te Quiero', 1990);
-    const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Los Temerarios\\1990 - Te Quiero\\front2.jpg', 0);
+    const value = this.lookup.hashSong('G:\\Music\\English\\Rock\\Bruce Springsteen\\1998 - Tracks\\04-04 - sad eyes.mp3');
+    //const value = this.lookup.hashAlbum('Mi Mayor Anhelo', 2006);
+    //const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Banda MS\\2006 - Mi Mayor Anhelo\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
 
     console.log(value);
@@ -601,7 +601,8 @@ export class AppTestService {
 
   private async logStatistics(): Promise<void> {
     const queries: string[] = [];
-    queries.push('SELECT country, COUNT(id) AS artistCount FROM artist GROUP BY country ORDER BY artistCount DESC');
+    //queries.push('SELECT country, COUNT(id) AS artistCount FROM artist GROUP BY country ORDER BY artistCount DESC');
+    queries.push(`SELECT name FROM albumArtistView WHERE country = 'Unknown' ORDER BY name`);
     queries.push('SELECT artistType, COUNT(id) AS artistCount FROM artist GROUP BY artistType ORDER BY artistCount DESC');
     queries.push('SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0'); // 225.477
     queries.push('SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade');

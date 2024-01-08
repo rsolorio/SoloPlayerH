@@ -6,4 +6,5 @@ export interface IFilterModel extends IListItemModel {
   transformAlgorithm: number;
   favorite: boolean;
   filterTypeId: string;
+  target: string;
 }

@@ -1154,6 +1154,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1164,6 +1165,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1173,6 +1175,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1182,6 +1185,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1191,6 +1195,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1200,6 +1205,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1209,6 +1215,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1218,6 +1225,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1227,6 +1235,7 @@
         "transformAlgorithm": 0,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       },
       {
@@ -1236,6 +1245,7 @@
         "transformAlgorithm": 1,
         "favorite": false,
         "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
         "sync": true
       }
     ],

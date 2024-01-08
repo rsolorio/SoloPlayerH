@@ -32,3 +32,9 @@ export enum MpegTagVersion {
   Id3v23 = 'Id3v2.3',
   Id3v24 = 'Id3v2.4'
 }
+
+export enum FilterTarget {
+  Artist = 'artist',
+  Album = 'album',
+  Song = 'song'
+}

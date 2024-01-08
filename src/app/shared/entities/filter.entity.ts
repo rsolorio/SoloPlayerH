@@ -15,6 +15,8 @@ export class FilterEntity extends ListItemEntity implements IFilterModel {
   favorite: boolean;
   @Column()
   filterTypeId: string;
+  @Column()
+  target: string;
   @Column({ nullable: true, transformer: dateTransformer })
   accessDate: Date;
   @Column()
