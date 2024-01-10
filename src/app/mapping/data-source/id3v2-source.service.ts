@@ -166,6 +166,11 @@ export class Id3v2SourceService implements IDataSourceService {
           return [this.audioInfo.metadata.common.disk.no];
         }
         break;
+      case MetaField.MediaSubtitle:
+        if (this.audioInfo.metadata.common.discsubtitle) {
+          return this.audioInfo.metadata.common.discsubtitle;
+        }
+        break;
       case MetaField.Composer:
         if (this.audioInfo.metadata.common.composer) {
           return this.audioInfo.metadata.common.composer;

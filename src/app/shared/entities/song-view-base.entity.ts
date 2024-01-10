@@ -121,7 +121,7 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
 export const songExtendedViewSelect = `
 SELECT song.id, song.name, song.cleanName, song.hash, song.primaryAlbumId, song.externalId, song.originalSongId,
 song.filePath, song.fileExtension, song.fileSize,
-song.titleSort, song.subtitle, song.featuring, song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade,
+song.titleSort, song.subtitle, song.featuring, song.trackNumber, song.mediaNumber, song.mediaSubtitle, song.releaseYear, song.releaseDecade,
 song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.language,
 song.lyrics, song.grouping, song.composer, song.composerSort, song.comment,
 song.originalArtist, song.originalAlbum, song.originalReleaseYear, song.infoUrl, song.videoUrl,
@@ -143,6 +143,8 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   titleSort: string;
   @ViewColumn()
   subtitle: string;
+  @ViewColumn()
+  mediaSubtitle: string;
   @ViewColumn()
   featuring: string;
   @ViewColumn()

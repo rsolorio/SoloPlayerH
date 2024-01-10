@@ -12,7 +12,7 @@ export class SongExtendedViewEntity extends SongExtendedViewBaseEntity {
 }
 
 @ViewEntity({
-  name: 'songExtendedByArtist',
+  name: 'songExtendedByArtistView',
   expression: `
   ${songExtendedViewSelect}, partyRelation.relatedId AS artistId
   ${songViewBaseJoins.replace('%songTable%', 'song')}
@@ -27,7 +27,7 @@ export class SongExtendedByArtistViewEntity extends SongExtendedViewBaseEntity {
 }
 
 @ViewEntity({
-  name: 'songExtendedByClassification',
+  name: 'songExtendedByClassificationView',
   expression: `
   ${songExtendedViewSelect}, songClassification.classificationId AS classificationId
   ${songViewBaseJoins.replace('%songTable%', 'song')}
@@ -40,7 +40,7 @@ export class SongExtendedByClassificationViewEntity extends SongExtendedViewBase
 }
 
 @ViewEntity({
-  name: 'songExtendedByPlaylist',
+  name: 'songExtendedByPlaylistView',
   expression: `
   ${songExtendedViewSelect}, playlistSong.playlistId, playlistSong.songId, playlistSong.sequence
   ${songViewBaseJoins.replace('%songTable%', 'song')}
@@ -65,7 +65,7 @@ export class SongExtendedByPlaylistViewEntity extends SongExtendedViewBaseEntity
 export class SongExpExtendedViewEntity extends SongExtendedViewBaseEntity {
 }
 @ViewEntity({
-  name: 'songExpExtendedByArtist',
+  name: 'songExpExtendedByArtistView',
   expression: `
   ${songExtendedViewSelect}, partyRelation.relatedId AS artistId
   ${songViewBaseJoins.replace('%songTable%', 'songExport')}
@@ -80,7 +80,7 @@ export class SongExpExtendedByArtistViewEntity extends SongExtendedViewBaseEntit
 }
 
 @ViewEntity({
-  name: 'songExpExtendedByClassification',
+  name: 'songExpExtendedByClassificationView',
   expression: `
   ${songExtendedViewSelect}, songClassification.classificationId AS classificationId
   ${songViewBaseJoins.replace('%songTable%', 'songExport')}
@@ -93,7 +93,7 @@ export class SongExpExtendedByClassificationViewEntity extends SongExtendedViewB
 }
 
 @ViewEntity({
-  name: 'songExpExtendedByPlaylist',
+  name: 'songExpExtendedByPlaylistView',
   expression: `
   ${songExtendedViewSelect}, playlistSong.playlistId, playlistSong.songId, playlistSong.sequence
   ${songViewBaseJoins.replace('%songTable%', 'songExport')}

@@ -165,6 +165,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.ReplayGain:
       case MetaField.Country:
       case MetaField.Subtitle:
+      case MetaField.MediaSubtitle:
         return [this.inputData[propertyName]];
     }
     return [];

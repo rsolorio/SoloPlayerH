@@ -561,6 +561,7 @@ export class ScanAudioService {
 
     this.setFirst(song, 'trackNumber', metadata, MetaField.TrackNumber, 0);
     this.setFirst(song, 'mediaNumber', metadata, MetaField.MediaNumber, 1);
+    this.setFirst(song, 'mediaSubtitle', metadata, MetaField.MediaSubtitle);
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 

@@ -55,6 +55,8 @@ export enum AppAttributeIcons {
   Image = 'mdi-image mdi',
   TrackNumber = 'mdi-pound mdi',
   MediaNumber = 'mdi-disc mdi',
+  MediaSubtitle = 'mdi-disc mdi',
+  Subtitle = 'mdi-subtitles mdi',
   Duration = 'mdi-timer mdi',
   PlayCount = 'mdi-counter mdi',
   AddDate = 'mdi-calendar-plus mdi',

@@ -144,6 +144,20 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
+              propertyName: 'mediaNumber',
+              icon: AppAttributeIcons.MediaNumber,
+              label: 'Disc Number'
+            },
+            {
+              propertyName: 'mediaSubtitle',
+              icon: AppAttributeIcons.MediaSubtitle,
+              label: 'Disc Title'
+            }
+          ]
+        },
+        {
+          fields: [
+            {
               propertyName: 'releaseYear',
               icon: AppAttributeIcons.Year,
               label: 'Year'

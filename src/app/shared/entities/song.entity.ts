@@ -31,6 +31,8 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   trackNumber: number;
   @Column()
   mediaNumber: number;
+  @Column({ nullable: true })
+  mediaSubtitle: string;
   @Column()
   releaseYear: number;
   @Column()

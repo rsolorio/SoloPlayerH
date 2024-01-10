@@ -99,6 +99,8 @@ export enum MetaField {
   /** String. Id3v2 */
   MediaType = 'mediaType',
   /** String. Id3v2 */
+  MediaSubtitle = 'mediaSubtitle',
+  /** String. Id3v2 */
   Composer = 'composer',
   /** String. Id3v2 */
   ComposerSort = 'composerSort',

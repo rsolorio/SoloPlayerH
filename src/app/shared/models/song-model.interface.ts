@@ -66,6 +66,7 @@ export interface ISongFullModel extends ISongModel {
   // Song info
   titleSort: string;
   subtitle: string;
+  mediaSubtitle: string;
   featuring: string;
   grouping: string;
   composer: string;
