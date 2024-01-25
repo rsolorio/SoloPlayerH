@@ -269,6 +269,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.TDRC = year.toString();
     }
 
+    const addDate = this.first(metadata[MetaField.AddDate]);
+    if (addDate) {
+      // Encoding time
+      tags.TDEN = this.utility.toDateTimeISONoTimezone(addDate);
+    }
+
     const comment = this.first(metadata[MetaField.Comment]);
     if (comment) {
       tags.COMM = [{
@@ -418,7 +424,14 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       // This is assuming a user defined property returns only one value
       const value = this.first(metadata[property]);
       if (value) {
-        result.push({ description: property, text: value.toString() });
+        let text: any;
+        if (this.utility.isDate(value)) {
+          text = this.utility.toReadableDateAndTime(value);
+        }
+        else {
+          text = value.toString();
+        }
+        result.push({ description: property, text: text });
       }
     }
     return result;

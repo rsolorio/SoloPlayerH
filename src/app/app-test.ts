@@ -552,9 +552,9 @@ export class AppTestService {
   }
 
   private hash(): void {
-    //const value = this.lookup.hashValueListEntry('China');
+    const value = this.lookup.hashValueListEntry('Finland');
     //const value = this.lookup.hashValues(['Force File Sync']);
-    const value = this.lookup.hashSong('G:\\Music\\English\\Rock\\Bruce Springsteen\\1998 - Tracks\\04-04 - sad eyes.mp3');
+    //const value = this.lookup.hashSong('G:\\Music\\English\\Rock\\Bruce Springsteen\\1998 - Tracks\\04-04 - sad eyes.mp3');
     //const value = this.lookup.hashAlbum('Mi Mayor Anhelo', 2006);
     //const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Banda MS\\2006 - Mi Mayor Anhelo\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');

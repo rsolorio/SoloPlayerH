@@ -267,18 +267,26 @@ export class UtilityService {
     return TimeAgo.Today;
   }
 
+  public formatDateTime(date: Date, dateSeparator: string, dateTimeSeparator?: string, timeSeparator?: string, millisecondSeparator?: string): string {
+    const text = this.toDateTimeText(date);
+    let result = `${text.year}${dateSeparator}${text.month}${dateSeparator}${text.day}`;
+    if (dateTimeSeparator !== undefined) {
+      result += `${dateTimeSeparator}${text.hour}${timeSeparator}${text.minute}${timeSeparator}${text.second}`;
+    }
+    if (millisecondSeparator !== undefined) {
+      result += `${millisecondSeparator}${text.millisecond}`;
+    }
+    return result;
+  }
+
   /**
    * Converts the input date to the format: yyyy-MM-dd with the specified separator.
    */
   public toReadableDate(date: Date, dateSeparator?: string): string {
-    const yearText = date.toLocaleString('default', { year: 'numeric'});
-    const monthText = date.toLocaleString('default', { month: '2-digit'});
-    const dayText = date.toLocaleString('default', { day: '2-digit'});
-
     if (!dateSeparator) {
       dateSeparator = '-';
     }
-    return `${yearText}${dateSeparator}${monthText}${dateSeparator}${dayText}`;
+    return this.formatDateTime(date, dateSeparator);
   }
 
   /**
@@ -290,16 +298,24 @@ export class UtilityService {
   }
 
   /**
-   * Converts the specified date to a single number format, example: 20230130-163559000
+   * Converts the specified date to a single number format, example: 20230130-163559123
    */
-  public toDateTimeStamp(date: Date, separator: string = ''): string {
-    const text = this.toDateTimeText(date);
-    return `${text.year}${separator}${text.month}${separator}${text.day}-${text.hour}${separator}${text.minute}${separator}${text.second}${separator}${text.millisecond}`;
+  public toDateTimeStamp(date: Date): string {
+    return this.formatDateTime(date, '', '-', '', '');
   }
 
+  /**
+   * Converts the specified date to the supported sql lite format: yyyy-MM-dd HH:mm:ss.SSS
+   */
   public toDateTimeSqlite(date: Date): string {
-    const text = this.toDateTimeText(date);
-    return `${text.year}-${text.month}-${text.day} ${text.hour}:${text.minute}:${text.second}.${text.millisecond}`;
+    return this.formatDateTime(date, '-', ' ', ':', '.');
+  }
+
+  /**
+   * Converts the specified date to the ISO format with no timezone: yyyy-MM-ddTHH:mm:ss 
+   */
+  public toDateTimeISONoTimezone(date: Date): string {
+    return this.formatDateTime(date, '-', 'T', ':');
   }
 
   /**
