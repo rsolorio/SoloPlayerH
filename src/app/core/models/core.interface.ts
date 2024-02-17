@@ -76,9 +76,24 @@ export interface IDateTimeText {
   month: string;
   day: string;
   hour: string;
+  hour12: string;
+  amPm: string;
   minute: string;
   second: string;
   millisecond: string;
+}
+
+export interface IDateTimeFormat {
+  /** The symbol that separates the date values. */
+  dateSeparator: string;
+  /** The symbol that separates the date from the time values. If undefined, the time value will not be included. */
+  dateTimeSeparator?: string;
+  /** The symbol that separates the time values (hour/minute/second). */
+  timeSeparator?: string;
+  /** The symbol that separates the milliseconds from the rest of the time values. If undefined, milliseconds will not be included in the result. */
+  millisecondSeparator?: string;
+  /** The symbol that separates the am/pm values from the rest of the time values. If specified, the time will be formatted to 12-hours. If undefined, the time will be formatted to 24-hours. */
+  amPmSeparator?: string;
 }
 
 /** Interface that provides a "selected" optional property. */

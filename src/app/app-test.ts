@@ -552,9 +552,9 @@ export class AppTestService {
   }
 
   private hash(): void {
-    const value = this.lookup.hashValueListEntry('Finland');
+    //const value = this.lookup.hashValueListEntry('Finland');
     //const value = this.lookup.hashValues(['Force File Sync']);
-    //const value = this.lookup.hashSong('G:\\Music\\English\\Rock\\Bruce Springsteen\\1998 - Tracks\\04-04 - sad eyes.mp3');
+    const value = this.lookup.hashSong('G:\\Music\\English\\Hip-Hop\\Usher\\2004 - Confessions\\02 - yeah! [feat lil jon, ludacris].mp3');
     //const value = this.lookup.hashAlbum('Mi Mayor Anhelo', 2006);
     //const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Banda MS\\2006 - Mi Mayor Anhelo\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
@@ -607,13 +607,14 @@ export class AppTestService {
     queries.push('SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0'); // 225.477
     queries.push('SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade');
     queries.push('SELECT mood, COUNT(id) AS songCount FROM song GROUP BY mood ORDER BY mood'); // Unknown: 1773
-    queries.push(`SELECT strftime('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`);
-    queries.push(`SELECT strftime('%Y', addDate) AS addYear, language, COUNT(id) AS songCount FROM song GROUP BY addYear, language ORDER BY addYear, language`);
-    queries.push(`SELECT strftime('%Y', addDate) AS addYear, strftime('%m', addDate) AS addMonth, COUNT(id) AS songCount FROM song GROUP BY addYear, addMonth ORDER BY addYear, addMonth`);
-    queries.push(`SELECT strftime('%Y', addDate) AS addYear, releaseDecade, COUNT(id) AS releaseDecadeCount FROM song GROUP BY addYear, releaseDecade ORDER BY addYear, releaseDecade`);
-    //queries.push(`SELECT strftime('%Y', addDate) AS addYear, releaseYear, COUNT(id) AS releaseYearCount FROM song GROUP BY addYear, releaseYear ORDER BY addYear, releaseYear`);
+    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`);
+    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, language, COUNT(id) AS songCount FROM song GROUP BY addYear, language ORDER BY addYear, language`);
+    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, STRFTIME('%m', addDate) AS addMonth, COUNT(id) AS songCount FROM song GROUP BY addYear, addMonth ORDER BY addYear, addMonth`);
+    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, releaseDecade, COUNT(id) AS releaseDecadeCount FROM song GROUP BY addYear, releaseDecade ORDER BY addYear, releaseDecade`);
+    //queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, releaseYear, COUNT(id) AS releaseYearCount FROM song GROUP BY addYear, releaseYear ORDER BY addYear, releaseYear`);
     queries.push('SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND vbr = 0 GROUP BY primaryArtistName ORDER BY songCount DESC'); // Artists: 1046
     queries.push('SELECT bitrate, filePath FROM song WHERE bitrate < 128000 ORDER BY bitrate ASC');
+    queries.push(`SELECT STRFTIME('%Y', replaceDate) || '/' || STRFTIME('%m', replaceDate) as replaceYearMonth, count(id) AS fileCount FROM song WHERE replaceDate IS NOT NULL GROUP BY replaceYearMonth`);
     //queries.push(`SELECT changeDate, filePath FROM song WHERE (bitrate = 320000 OR VBR = 1) AND changeDate > '2022-07-01' AND addDate < '2022-07-01' ORDER BY changeDate ASC`);
     queries.push(`
       SELECT allSongs.count AS allSongsCount, lowSongs.count AS lowSongsCount, (CAST(lowSongs.count AS float) / allSongs.count) * 100 AS lowQualityPercentage

@@ -5,7 +5,7 @@ import { BreakpointRanges } from './utility.class';
 import { EventsService } from '../../../core/services/events/events.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { IDateTimeText, IRouteInfo, ISize, ITimeSpan } from 'src/app/core/models/core.interface';
+import { IDateTimeFormat, IDateTimeText, IRouteInfo, ISize, ITimeSpan } from 'src/app/core/models/core.interface';
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
@@ -222,12 +222,17 @@ export class UtilityService {
     return false;
   }
 
+  /**
+   * Creates a IDateTimeText object from a standard Date object.
+   */
   public toDateTimeText(date: Date): IDateTimeText {
     return {
       year: this.enforceDigits(date.getFullYear(), 4),
-      month: this.enforceDigits(date.getMonth(), 2),
-      day: this.enforceDigits(date.getDay(), 2),
+      month: this.enforceDigits(date.getMonth() + 1, 2),
+      day: this.enforceDigits(date.getDate(), 2),
       hour: this.enforceDigits(date.getHours(), 2),
+      hour12: this.enforceDigits(date.getHours() % 12 || 12, 2),
+      amPm: date.getHours() < 12 ? 'AM' : 'PM',
       minute: this.enforceDigits(date.getMinutes(), 2),
       second: this.enforceDigits(date.getSeconds(), 2),
       millisecond: this.enforceDigits(date.getMilliseconds(), 3)
@@ -267,14 +272,18 @@ export class UtilityService {
     return TimeAgo.Today;
   }
 
-  public formatDateTime(date: Date, dateSeparator: string, dateTimeSeparator?: string, timeSeparator?: string, millisecondSeparator?: string): string {
+  public formatDateTime(date: Date, format: IDateTimeFormat): string {
     const text = this.toDateTimeText(date);
-    let result = `${text.year}${dateSeparator}${text.month}${dateSeparator}${text.day}`;
-    if (dateTimeSeparator !== undefined) {
-      result += `${dateTimeSeparator}${text.hour}${timeSeparator}${text.minute}${timeSeparator}${text.second}`;
-    }
-    if (millisecondSeparator !== undefined) {
-      result += `${millisecondSeparator}${text.millisecond}`;
+    let result = `${text.year}${format.dateSeparator}${text.month}${format.dateSeparator}${text.day}`;
+    if (format.dateTimeSeparator !== undefined) {
+      const hour = format.amPmSeparator ? text.hour12 : text.hour;
+      result += `${format.dateTimeSeparator}${hour}${format.timeSeparator}${text.minute}${format.timeSeparator}${text.second}`;
+      if (format.millisecondSeparator !== undefined) {
+        result += `${format.millisecondSeparator}${text.millisecond}`;
+      }
+      if (format.amPmSeparator) {
+        result += `${format.amPmSeparator}${text.amPm}`;
+      }
     }
     return result;
   }
@@ -286,36 +295,58 @@ export class UtilityService {
     if (!dateSeparator) {
       dateSeparator = '-';
     }
-    return this.formatDateTime(date, dateSeparator);
+    return this.formatDateTime(date, { dateSeparator: dateSeparator });
   }
 
   /**
    * Converts the input date to the format: yyyy-MM-dd, HH:mm:ss AM
    */
   public toReadableDateAndTime(date: Date, dateSeparator?: string): string {
-    const readableDate = this.toReadableDate(date, dateSeparator);
-    return `${readableDate}, ${date.toLocaleTimeString()}`;
+    if (!dateSeparator) {
+      dateSeparator = '-';
+    }
+    return this.formatDateTime(date, {
+      dateSeparator: dateSeparator,
+      dateTimeSeparator: ', ',
+      timeSeparator: ':',
+      amPmSeparator: ' '
+    });
   }
 
   /**
    * Converts the specified date to a single number format, example: 20230130-163559123
    */
   public toDateTimeStamp(date: Date): string {
-    return this.formatDateTime(date, '', '-', '', '');
+    return this.formatDateTime(date, {
+      dateSeparator: '',
+      dateTimeSeparator: '-',
+      timeSeparator: '',
+      millisecondSeparator: ''
+    });
   }
 
   /**
    * Converts the specified date to the supported sql lite format: yyyy-MM-dd HH:mm:ss.SSS
    */
   public toDateTimeSqlite(date: Date): string {
-    return this.formatDateTime(date, '-', ' ', ':', '.');
+    return this.formatDateTime(date, {
+      dateSeparator: '-',
+      dateTimeSeparator: ' ',
+      timeSeparator: ':',
+      millisecondSeparator: '.'
+    });
   }
 
   /**
    * Converts the specified date to the ISO format with no timezone: yyyy-MM-ddTHH:mm:ss 
    */
   public toDateTimeISONoTimezone(date: Date): string {
-    return this.formatDateTime(date, '-', 'T', ':');
+    //return this.formatDateTime(date, '-', 'T', ':');
+    return this.formatDateTime(date, {
+      dateSeparator: '-',
+      dateTimeSeparator: 'T',
+      timeSeparator: ':'
+    });
   }
 
   /**
