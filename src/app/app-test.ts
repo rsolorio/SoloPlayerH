@@ -51,8 +51,8 @@ export class AppTestService {
     //await this.updateSong();
     //await this.getPlaylistsTracks();
     //await this.logPopularity();
-    await this.logStatistics();
-    //this.hash();
+    //await this.logStatistics();
+    this.hash();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -552,11 +552,12 @@ export class AppTestService {
   }
 
   private hash(): void {
+    // Filters
+    const value = this.lookup.hashValues(['Recently Replaced']);
     //const value = this.lookup.hashValueListEntry('Finland');
-    //const value = this.lookup.hashValues(['Force File Sync']);
-    const value = this.lookup.hashSong('G:\\Music\\English\\Hip-Hop\\Usher\\2004 - Confessions\\02 - yeah! [feat lil jon, ludacris].mp3');
-    //const value = this.lookup.hashAlbum('Mi Mayor Anhelo', 2006);
-    //const value = this.lookup.hashImage('G:\\Music\\Spanish\\Grupero\\Banda MS\\2006 - Mi Mayor Anhelo\\front.jpg', 0);
+    //const value = this.lookup.hashSong('G:\\Music\\English\\Rock\\Pilot\\1974 - From The Album Of The Same Name\\02 - magic.mp3');
+    //const value = this.lookup.hashAlbum('From The Album Of The Same Name', 1974);
+    //const value = this.lookup.hashImage('G:\\Music\\English\\Rock\\Pilot\\1974 - From The Album Of The Same Name\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
 
     console.log(value);

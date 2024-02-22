@@ -9,7 +9,7 @@ song.primaryAlbumId, song.filePath, song.fileExtension, song.fileSize,
 song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.rating, song.playCount,
 song.performerCount, song.genre, song.mood, song.language, song.lyrics,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr,
-song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate,
+song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.primaryArtistId AS primaryArtistId,
 artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
 `;
@@ -27,7 +27,7 @@ ON album.primaryArtistId = artist.id
  * Fields: id, name, hash, primaryAlbumId, filePath, fileExtension, fileSize,
  * trackNumber, mediaNumber, releaseYear, releaseDecade, rating, playCount,
  * performerCount, genre, mood, language, lyrics, seconds, duration, bitrate, frequency, vbr,
- * favorite, live, explicit, addDate, playDate, primaryAlbumName, primaryArtistId,
+ * favorite, live, explicit, addDate, playDate, replaceDate, primaryAlbumName, primaryArtistId,
  * primaryArtistName, primaryArtistStylized.
  * Excluded fields:
  * externalId, cleanName, titleSort, subtitle, featuring, grouping, composer, composerSort,
@@ -103,6 +103,8 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   changeDate: Date;
   @ViewColumn({ transformer: dateTransformer })
   playDate: Date;
+  @ViewColumn({ transformer: dateTransformer })
+  replaceDate: Date;
   // Join info  
   @ViewColumn()
   primaryAlbumName: string;
@@ -171,8 +173,6 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   tempo: number;
   @ViewColumn()
   addYear: number;
-  @ViewColumn({ transformer: dateTransformer })
-  replaceDate: Date;
   @ViewColumn()
   country: string;
   @ViewColumn()

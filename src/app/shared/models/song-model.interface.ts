@@ -40,6 +40,7 @@ export interface ISongModel extends IListItemModel {
   addDate: Date;
   changeDate: Date;
   playDate: Date;
+  replaceDate: Date;
 
   // Join info
   primaryAlbumName: string;
@@ -82,8 +83,6 @@ export interface ISongFullModel extends ISongModel {
   tempo: number;
   // Dates
   addYear: number;
-  changeDate: Date;
-  replaceDate: Date;
 }
 
 export interface ISongExtendedModel extends ISongFullModel {
