@@ -191,14 +191,14 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
+              propertyName: 'rating',
+              icon: AppAttributeIcons.RatingOn,
+              label: 'Rating'
+            },
+            {
               propertyName: 'playCount',
               icon: AppAttributeIcons.PlayCount,
               label: 'Play Count'
-            },
-            {
-              propertyName: 'addDate',
-              icon: AppAttributeIcons.AddDate,
-              label: 'Add Date'
             }
           ]
         },
@@ -233,6 +233,15 @@ export class SongViewComponent implements OnInit {
                   });
                 });
               }
+            }
+          ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'addDate',
+              icon: AppAttributeIcons.AddDate,
+              label: 'Add Date'
             }
           ]
         },
