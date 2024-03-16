@@ -402,8 +402,10 @@ export class Id3v2SourceService implements IDataSourceService {
     let imageType = MusicImageType.Default;
     switch (field) {
       case MetaField.ArtistImage:
-      case MetaField.AlbumArtistImage:
         imageType = MusicImageType.Artist;
+        break;
+      case MetaField.AlbumArtistImage:
+        imageType = MusicImageType.AlbumArtist;
         break;
       case MetaField.AlbumImage:
         imageType = MusicImageType.Front;

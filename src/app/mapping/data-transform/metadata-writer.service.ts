@@ -410,7 +410,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     await this.addPicture(pictures, this.first(metadata[MetaField.AlbumImage]), AttachedPictureType.Front, 'Front');
     await this.addPicture(pictures, this.first(metadata[MetaField.AlbumSecondaryImage]), AttachedPictureType.Front, 'Front2');
     await this.addPicture(pictures, this.first(metadata[MetaField.SingleImage]), AttachedPictureType.Other, 'Single');
-    await this.addPicture(pictures, this.first(metadata[MetaField.ArtistImage]), AttachedPictureType.Front, 'Artist');
+    await this.addPicture(pictures, this.first(metadata[MetaField.AlbumArtistImage]), AttachedPictureType.LeadArtist, albumArtist);
     if (pictures.length) {
       tags.APIC = pictures;
     }

@@ -138,15 +138,10 @@ export class FileInfoSourceService implements IDataSourceService {
     let imageType = MusicImageType.Default;
 
     switch (field) {
-      case MetaField.ArtistImage:
-        fileName = 'artist.jpg';
-        levelsUp = 1;
-        imageType = MusicImageType.Artist;
-        break;
       case MetaField.AlbumArtistImage:
         fileName = 'artist.jpg';
         levelsUp = 1;
-        imageType = MusicImageType.Artist;
+        imageType = MusicImageType.AlbumArtist;
         break;
       case MetaField.AlbumImage:
         fileName = 'front.jpg';

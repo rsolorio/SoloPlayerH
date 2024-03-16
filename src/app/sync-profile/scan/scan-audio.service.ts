@@ -681,10 +681,17 @@ export class ScanAudioService {
       }
     }
 
-    if (imageType === MusicImageType.Artist) {
+    if (imageType === MusicImageType.AlbumArtist) {
       const albumArtist = this.first(metadata[MetaField.AlbumArtist]);
       if (albumArtist) {
         return albumArtist;
+      }
+    }
+
+    if (imageType === MusicImageType.Artist) {
+      const artist = this.first(metadata[MetaField.Artist]);
+      if (artist) {
+        return artist;
       }
     }
 

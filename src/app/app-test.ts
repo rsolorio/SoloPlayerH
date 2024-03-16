@@ -555,9 +555,9 @@ export class AppTestService {
     // Filters
     //const value = this.lookup.hashValues(['Recently Replaced']);
     //const value = this.lookup.hashValueListEntry('Finland');
-    const value = this.lookup.hashSong('G:\\Music\\English\\Soundtrack\\Various\\2001 - Lara Croft Tomb Raider Music\\04 - get ur freak on [missy elliott, nelly furtado].mp3');
-    //const value = this.lookup.hashAlbum('From The Album Of The Same Name', 1974);
-    //const value = this.lookup.hashImage('G:\\Music\\English\\Rock\\Pilot\\1974 - From The Album Of The Same Name\\front.jpg', 0);
+    //const value = this.lookup.hashSong('G:\\Music\\English\\Indie\\Bon Iver\\2011 - Bon Iver\\03 - holocene.mp3');
+    //const value = this.lookup.hashAlbum('Bon Iver', 2011);
+    const value = this.lookup.hashImage('G:\\Music\\English\\Indie\\Bon Iver\\2011 - Bon Iver\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
 
     console.log(value);
@@ -613,7 +613,7 @@ export class AppTestService {
     queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, STRFTIME('%m', addDate) AS addMonth, COUNT(id) AS songCount FROM song GROUP BY addYear, addMonth ORDER BY addYear, addMonth`);
     queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, releaseDecade, COUNT(id) AS releaseDecadeCount FROM song GROUP BY addYear, releaseDecade ORDER BY addYear, releaseDecade`);
     //queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, releaseYear, COUNT(id) AS releaseYearCount FROM song GROUP BY addYear, releaseYear ORDER BY addYear, releaseYear`);
-    queries.push('SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND vbr = 0 GROUP BY primaryArtistName ORDER BY songCount DESC'); // Artists: 1046
+    queries.push('SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND vbr = 0 GROUP BY primaryArtistName ORDER BY songCount DESC, primaryArtistName ASC'); // Artists: 1046
     queries.push('SELECT bitrate, filePath FROM song WHERE bitrate < 128000 ORDER BY bitrate ASC');
     queries.push(`SELECT STRFTIME('%Y', replaceDate) || '/' || STRFTIME('%m', replaceDate) as replaceYearMonth, count(id) AS fileCount FROM song WHERE replaceDate IS NOT NULL GROUP BY replaceYearMonth`);
     //queries.push(`SELECT changeDate, filePath FROM song WHERE (bitrate = 320000 OR VBR = 1) AND changeDate > '2022-07-01' AND addDate < '2022-07-01' ORDER BY changeDate ASC`);

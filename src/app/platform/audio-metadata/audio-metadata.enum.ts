@@ -1,5 +1,6 @@
 /** The image types supported by this application. */
 export enum MusicImageType {
+  AlbumArtist = 'AlbumArtist',
   Artist = 'Artist',
   Single = 'Single',
   Front = 'Front',

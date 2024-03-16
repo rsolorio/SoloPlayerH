@@ -113,7 +113,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.SingleImage:
         return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
       case MetaField.AlbumArtistImage:
-        return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.Artist);
+        return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.AlbumArtist);
       case MetaField.Title:
         return [this.inputData.name];
       case MetaField.CleanTitle:

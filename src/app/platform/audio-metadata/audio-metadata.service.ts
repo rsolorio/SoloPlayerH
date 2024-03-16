@@ -153,6 +153,8 @@ export class AudioMetadataService {
         return MusicImageType.Front;
       case AttachedPictureType.Back.toLowerCase():
         return MusicImageType.Back;
+      case AttachedPictureType.Lead.toLowerCase():
+        return MusicImageType.AlbumArtist;
       case AttachedPictureType.Artist.toLowerCase():
         return MusicImageType.Artist;
     }
