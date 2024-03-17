@@ -172,6 +172,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
   /**
    * Adds metadata tags and returns an object that follows the tag object of the mp3tag library.
+   * Id3 official site (cached): https://web.archive.org/web/20211214132114/https://id3.org/
    * Supported tags: https://mp3tag.js.org/docs/frames.html
    * Mp3Tag reference: https://docs.mp3tag.de/mapping/
    * Picard reference: https://picard-docs.musicbrainz.org/v2.6/en/appendices/tag_mapping.html
@@ -384,6 +385,17 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const udTexts = this.createUserDefineLists(metadata, [
       MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
     ]);
+
+    // From to chat gpt: the valid range of ReplayGain values is typically between -18dB to +18dB;
+    // this range allows for sufficient  adjustment to normalize the volume of audio tracks without
+    // causing distortion or clipping.
+    const replayGain = this.first(metadata[MetaField.ReplayGain]);
+    if (replayGain) {
+      udTexts.push({
+        description: 'REPLAYGAIN_TRACK_GAIN',
+        text: replayGain.toString()
+      });
+    }
 
     const userDefinedFields = metadata[MetaField.UserDefinedField];
     if (userDefinedFields?.length) {

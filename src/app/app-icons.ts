@@ -50,8 +50,8 @@ export enum AppAttributeIcons {
   LyricsOff = 'mdi-script-outline mdi',
   ExplicitOn = 'mdi-alpha-e-box mdi',
   ExplicitOff = 'mdi-alpha-e-box-outline mdi',
-  BitrateHigh = 'mdi-waveform mdi',
-  BitrateLow = 'mdi-wave mdi',
+  Bitrate = 'mdi-wave mdi',
+  Vbr = 'mdi-waveform mdi',
   Image = 'mdi-image mdi',
   TrackNumber = 'mdi-pound mdi',
   MediaNumber = 'mdi-disc mdi',
@@ -90,7 +90,12 @@ export enum AppAttributeIcons {
   Vocal = 'mdi-account-voice mdi',
   Labels = 'mdi-label-multiple-outline mdi',
   Link = 'mdi-link mdi mdi-rotate-135',
-  Video = 'mdi-video mdi'
+  Video = 'mdi-video mdi',
+  QualityLow = 'mdi-quality-low mdi',
+  QualityMedium = 'mdi-quality-medium mdi',
+  QualityHigh = 'mdi-quality-high mdi',
+  Frequency = 'mdi-resistor mdi',
+  ReplayGain = 'mdi-motion-play-outline mdi'
 }
 
 export enum AppActionIcons {

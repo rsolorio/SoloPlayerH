@@ -239,6 +239,51 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
+              propertyName: 'bitrate',
+              icon: AppAttributeIcons.Bitrate,
+              label: 'Bitrate'
+            },
+            {
+              propertyName: 'frequency',
+              icon: AppAttributeIcons.Frequency,
+              label: 'Frequency'
+            }
+          ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'vbr',
+              icon: AppAttributeIcons.Vbr,
+              label: 'VBR'
+            },
+            {
+              propertyName: 'replayGain',
+              icon: AppAttributeIcons.ReplayGain,
+              label: 'ReplayGain',
+              editorType: ValueEditorType.Number,
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                const replayGainText = this.entityEditorModel.data['replayGain'];
+                if (replayGainText) {
+                  const replayGain = parseFloat(replayGainText);
+                  if (!isNaN(replayGain)) {
+                    SongEntity.findOneBy({ id: this.songId }).then(song => {
+                      song.replayGain = replayGain;
+                      song.save();
+                    });
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          fields: [
+            {
               propertyName: 'addDate',
               icon: AppAttributeIcons.AddDate,
               label: 'Add Date'

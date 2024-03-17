@@ -33,7 +33,7 @@
         Explicit / Yellow
         Recent / Blue
        -->
-      <i *ngIf="item.bitrate < 320000 && !item.vbr" [ngClass]="AppAttributeIcons.BitrateLow" class="sp-title-icon sp-color-320" [title]="SongBadge.LowQuality"></i>
+      <i *ngIf="item.bitrate < 320000 && !item.vbr" [ngClass]="AppAttributeIcons.QualityLow" class="sp-title-icon sp-color-320" [title]="SongBadge.LowQuality"></i>
       <i *ngIf="item.lyrics" [ngClass]="AppAttributeIcons.LyricsOn" class="sp-title-icon sp-color-lyric" [title]="SongBadge.Lyrics"></i>
       <i *ngIf="item.live" [ngClass]="AppAttributeIcons.LiveOn" class="sp-title-icon sp-color-success" [title]="SongBadge.Live"></i>
       <i *ngIf="item.rating === 5" [ngClass]="AppAttributeIcons.RatingOn" class="sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
