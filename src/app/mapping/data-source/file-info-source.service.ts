@@ -100,6 +100,7 @@ export class FileInfoSourceService implements IDataSourceService {
       case MetaField.ArtistStylized:
       case MetaField.Contributor:
       case MetaField.Singer:
+        // This logic is for all meta fields that can be retrieved from the artist.json file
         if (this.jsonInfo.artistContent) {
           const propertyValue = this.jsonInfo.artistContent[propertyName];
           if (propertyValue) {
@@ -107,6 +108,18 @@ export class FileInfoSourceService implements IDataSourceService {
               return propertyValue;
             }
             return [this.jsonInfo.artistContent[propertyName]];
+          }
+        }
+        break;
+      case MetaField.MediaSubtitles:
+        // This logic is for all meta fields that can be retrieved from the album.json file
+        if (this.jsonInfo.albumContent) {
+          const propertyValue = this.jsonInfo.albumContent[propertyName];
+          if (propertyValue) {
+            if (Array.isArray(propertyValue)) {
+              return propertyValue;
+            }
+            return [this.jsonInfo.albumContent[propertyName]];
           }
         }
         break;

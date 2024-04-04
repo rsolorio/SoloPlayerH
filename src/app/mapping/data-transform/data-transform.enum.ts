@@ -100,6 +100,8 @@ export enum MetaField {
   MediaType = 'mediaType',
   /** String. Id3v2 */
   MediaSubtitle = 'mediaSubtitle',
+  /** String. FileInfo */
+  MediaSubtitles = 'mediaSubtitles',
   /** String. Id3v2 */
   Composer = 'composer',
   /** String. Id3v2 */
@@ -200,5 +202,4 @@ export enum MetaField {
   Ignored = 'ignored',
   /** ScanFileMode. None. */
   FileMode = 'fileMode'
-  /**  */
 }

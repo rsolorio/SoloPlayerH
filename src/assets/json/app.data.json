@@ -1048,7 +1048,7 @@
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "fileInfoReader",
         "type": "FileInfo",
-        "fields": "filePath,fileName,fileExtension,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,artistStylized,contributor,singer",
+        "fields": "filePath,fileName,fileExtension,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,artistStylized,contributor,singer,mediaSubtitles",
         "customMapping": false,
         "sequence": 2,
         "disabled": false,

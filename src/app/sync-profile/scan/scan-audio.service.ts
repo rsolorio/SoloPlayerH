@@ -562,6 +562,13 @@ export class ScanAudioService {
     this.setFirst(song, 'trackNumber', metadata, MetaField.TrackNumber, 0);
     this.setFirst(song, 'mediaNumber', metadata, MetaField.MediaNumber, 1);
     this.setFirst(song, 'mediaSubtitle', metadata, MetaField.MediaSubtitle);
+    if (!song.mediaSubtitle) {
+      const mediaSubtitles = metadata[MetaField.MediaSubtitles];
+      // Validate the media number has a subtitle
+      if (mediaSubtitles?.length >= song.mediaNumber) {
+        song.mediaSubtitle = mediaSubtitles[song.mediaNumber - 1];
+      }
+    }
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 
@@ -1024,7 +1031,7 @@ export class ScanAudioService {
   public async cleanUpDatabase(syncInfo: ISyncSongInfo): Promise<void> {
     // IMAGES
     // 00. Start with images to delete
-    // Do we really want to do this?
+    // We need this routine for deleting records from images that were deleted manually in disk
     const imageIdsToDelete: string[] = [];
     const skipImages = this.existingImages.filter(i => !i.isNew && i.sourceType === MusicImageSourceType.ImageFile);
     for (const image of skipImages) {
