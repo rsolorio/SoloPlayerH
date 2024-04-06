@@ -83,7 +83,13 @@ export class ValueLists {
     id: '79907d9f-1e09-4dad-a497-dfd92398bac0'
   };
   static Subgenre = {
-    id: '522b4e6c-1161-477b-ad5f-0a219f46d99d'
+    id: '522b4e6c-1161-477b-ad5f-0a219f46d99d',
+    entries: {
+      Live: {
+        id: '87f64f04-cc3d-42b0-9432-f2549f7ce553',
+        name: 'Live'
+      }
+    }
   };
   static Occasion = {
     id: '1eacb5b1-6438-4d41-aa1e-80b10c051fc4'

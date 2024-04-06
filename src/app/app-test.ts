@@ -70,8 +70,8 @@ export class AppTestService {
       mp3Tag.read();
       this.log.warn('mp3tag.js', mp3Tag.tags);
       // Display lyrics content
-      const txtFile = selectedFiles[0].replace('.mp3', '.txt');
-      if (this.fileService.exists(txtFile)) {
+      const txtFile = selectedFiles[0].replace('.mp3', '.txt').replace('.flac', '.txt');
+      if (txtFile.endsWith('.txt') && this.fileService.exists(txtFile)) {
         const lyrics = await this.fileService.getText(txtFile);
         console.log(lyrics);
       }
@@ -554,10 +554,10 @@ export class AppTestService {
   private hash(): void {
     // Filters
     //const value = this.lookup.hashValues(['Recently Replaced']);
-    //const value = this.lookup.hashValueListEntry('Finland');
+    const value = this.lookup.hashValueListEntry('Live');
     //const value = this.lookup.hashSong('G:\\Music\\English\\Indie\\Bon Iver\\2011 - Bon Iver\\03 - holocene.mp3');
     //const value = this.lookup.hashAlbum('Bon Iver', 2011);
-    const value = this.lookup.hashImage('G:\\Music\\English\\Indie\\Bon Iver\\2011 - Bon Iver\\front.jpg', 0);
+    //const value = this.lookup.hashImage('G:\\Music\\English\\Indie\\Bon Iver\\2011 - Bon Iver\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
 
     console.log(value);

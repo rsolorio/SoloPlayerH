@@ -1250,7 +1250,7 @@ export class ScanAudioService {
       // Remove classification
       const currentGenreEntry = await ValueListEntryEntity.findOneBy({ name: song.genre, valueListTypeId: ValueLists.Genre.id });
       if (currentGenreEntry) {
-        SongClassificationEntity.delete({ songId: songId, classificationId: currentGenreEntry.id });
+        await SongClassificationEntity.delete({ songId: songId, classificationId: currentGenreEntry.id });
       }
       // Replace current with new one
       song.genre = genre;

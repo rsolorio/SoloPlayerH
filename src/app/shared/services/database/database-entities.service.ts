@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AlbumEntity, ArtistEntity, DataMappingEntity, DataSourceEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongViewEntity, RelatedImageEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
+import { AlbumEntity, ArtistEntity, DataMappingEntity, DataSourceEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongViewEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
 import { IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { DbColumn, databaseColumns } from './database.columns';
-import { ChipDisplayMode, ChipSelectorType, IChipItem, IChipSelectionModel } from '../../components/chip-selection/chip-selection-model.interface';
+import { ChipSelectorType, IChipItem } from '../../components/chip-selection/chip-selection-model.interface';
 import { IDateRange, ISelectableValue } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
@@ -13,8 +13,7 @@ import { Criteria, CriteriaItem } from '../criteria/criteria.class';
 import { FilterCriteriaEntity } from '../../entities/filter-criteria.entity';
 import { FilterCriteriaItemEntity } from '../../entities/filter-criteria-item.entity';
 import { IFilterModel } from '../../models/filter-model.interface';
-import { ChipSelectionComponent } from '../../components/chip-selection/chip-selection.component';
-import { AppActionIcons, AppAttributeIcons } from 'src/app/app-icons';
+import { AppAttributeIcons } from 'src/app/app-icons';
 import { ISyncProfile, ISyncProfileParsed, SyncType } from '../../models/sync-profile-model.interface';
 import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
@@ -28,6 +27,7 @@ import { IPlaylistModel } from '../../models/playlist-model.interface';
 import { IPopularity } from '../../models/music-model.interface';
 import { RelativeDateOperator, RelativeDateTerm, RelativeDateUnit } from '../relative-date/relative-date.enum';
 import { RelativeDateService } from '../relative-date/relative-date.service';
+import { ValueLists } from './database.lists';
 
 @Injectable({
   providedIn: 'root'
@@ -152,11 +152,37 @@ export class DatabaseEntitiesService {
     await song.save();
   }
 
+  /**
+   * Sets the live flag in the song entity and also creates or deletes
+   * a song classification record associated with the song.
+   */
   public async setLive(songId: string, live: boolean): Promise<void> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.live = live;
     song.changeDate = new Date();
     await song.save();
+    await this.setLiveSubgenre(songId, live);
+  }
+
+  public async setLiveSubgenre(songId: string, live: boolean): Promise<void> {
+    // Create the classification
+    if (live) {
+      // Ensure it does not exist
+      let songClass = await SongClassificationEntity.findOneBy({
+        songId: songId,
+        classificationId: ValueLists.Subgenre.entries.Live.id });
+      if (!songClass) {
+        songClass = new SongClassificationEntity();
+        songClass.songId = songId;
+        songClass.classificationId = ValueLists.Subgenre.entries.Live.id;
+        songClass.classificationTypeId = ValueLists.Subgenre.id;
+        songClass.primary = false;
+        await songClass.save();
+        return;
+      }
+    }
+    // Remove classification
+    await SongClassificationEntity.delete({ songId: songId, classificationId: ValueLists.Subgenre.entries.Live.id });
   }
 
   public async setMood(songId: string, mood: string): Promise<void> {

@@ -604,34 +604,41 @@
         "sequence": 8
       },
       {
+        "id": "87f64f04-cc3d-42b0-9432-f2549f7ce553",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Merengue",
+        "name": "Live",
         "isClassification": true,
         "sequence": 9
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Reggaeton",
+        "name": "Merengue",
         "isClassification": true,
         "sequence": 10
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Slow Jams",
+        "name": "Reggaeton",
         "isClassification": true,
         "sequence": 11
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Soft",
+        "name": "Slow Jams",
         "isClassification": true,
         "sequence": 12
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Texano",
+        "name": "Soft",
         "isClassification": true,
         "sequence": 13
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Texano",
+        "isClassification": true,
+        "sequence": 14
       },
       {
         "//": "CATEGORY",
