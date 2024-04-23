@@ -65,6 +65,25 @@ export class ArtistViewComponent implements OnInit {
         {
           fields: [
             {
+              propertyName: 'artistStylized',
+              icon: AppAttributeIcons.ArtistStylized,
+              label: 'Stylized',
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                ArtistEntity.findOneBy({ id: this.artistId }).then(artist => {
+                  artist.artistStylized = this.entityEditorModel.data['artistStylized'];
+                  artist.save();
+                });
+              }
+            }
+          ]
+        },
+        {
+          fields: [
+            {
               propertyName: 'artistType',
               icon: AppAttributeIcons.ArtistType,
               label: 'Type',

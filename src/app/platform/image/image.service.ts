@@ -11,6 +11,10 @@ export abstract class ImageService {
 
   abstract getScreenshot(delayMs?: number): Promise<string>;
 
+  /**
+   * Creates a IImage object from a IImageSource object.
+   * The data is retrieved from the source and saved in the src property.
+   */
   public getImageFromSource(source: IImageSource): Promise<IImage> {
     if (source.sourceType === MusicImageSourceType.AudioTag) {
       return this.getImageFromTag(source);

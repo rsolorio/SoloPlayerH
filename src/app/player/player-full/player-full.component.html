@@ -19,6 +19,12 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
           class="mdi sp-text-xlarge-fixed sp-navbar-content-height sp-cursor-pointer"
           [ngClass]="model.playerList.isVisible ? AppAttributeIcons.Image : AppPlayerIcons.Queue"
           [ngStyle]="palette.secondary.cssColor"></i>
+          <i
+          (click)="onToggleAnimation()"
+          class="mdi sp-text-xlarge-fixed sp-navbar-content-height sp-cursor-pointer"
+          *ngIf="animatedImage"
+          [ngClass]="animatedImageVisible ? AppAttributeIcons.VideoOff : AppAttributeIcons.ImageAnimated"
+          [ngStyle]="palette.secondary.cssColor"></i>
           <span
           class="sp-text-large sp-navbar-content-height" style="vertical-align: top;"
           [ngStyle]="palette.primary.cssColor">&nbsp;{{model.playerList.name}}</span>
@@ -81,6 +87,14 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
         class="sp-playlist-container sp-scrollbar-hidden">
           <sp-track-list [items]="model.playerList.items" (trackClick)="onTrackClick($event)"></sp-track-list>
         </div>
+        <!-- Animated Album Art -->
+        <video autoplay loop
+        *ngIf="animatedImage && animatedImageVisible"
+        [style.width.px]="imageSize.width"
+        [style.height.px]="imageSize.height"
+        class="sp-img-animated">
+          <source [src]="animatedImage.src" type="video/mp4">
+        </video>
       </div>
     </td>
   </tr>

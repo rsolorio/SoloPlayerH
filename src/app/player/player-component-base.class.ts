@@ -1,5 +1,5 @@
 import { OnInit, Directive } from '@angular/core';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 
 import { IMenuModel } from '../core/models/menu-model.interface';
 import { PlayerOverlayStateService } from './player-overlay/player-overlay-state.service';
@@ -30,6 +30,7 @@ import { SideBarHostStateService } from '../core/components/side-bar-host/side-b
 import { ChipSelectionComponent } from '../shared/components/chip-selection/chip-selection.component';
 import { AppActionIcons, AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } from '../app-icons';
 import { AppEvent } from '../app-events';
+import { MusicImageType } from '../platform/audio-metadata/audio-metadata.enum';
 
 /**
  * Base component for any implementation of the player modes.
@@ -50,6 +51,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public images: RelatedImageEntity[] = [];
   public selectedImageIndex = -1;
   public contributors: string;
+  public animatedImage: RelatedImageEntity;
+  public animatedImageVisible = false;
 
   constructor(
     private playerServiceBase: HtmlPlayerService,
@@ -163,9 +166,10 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     this.images = [];
     this.selectedImageIndex = -1;
 
+    // Get rid of animated art
     const songImages = await RelatedImageEntity.findBy({ relatedId: song.id });
     await this.setSrc(songImages);
-    const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId });
+    const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: Not(MusicImageType.FrontAnimated) });
     await this.setSrc(albumImages);
     const artistImages = await RelatedImageEntity.findBy({ relatedId: song.primaryArtistId });
     await this.setSrc(artistImages);
@@ -178,8 +182,21 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     if (this.images.length) {
       this.selectedImageIndex = 0;
     }
+    const animatedImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: MusicImageType.FrontAnimated });
+    if (animatedImages?.length) {
+      this.animatedImage = animatedImages[0];
+      this.setSrc([this.animatedImage]);
+      this.animatedImageVisible = true;
+    }
+    else {
+      this.animatedImage = null;
+      this.animatedImageVisible = false;
+    }
   }
 
+  /**
+   * Sets src and srcType properties of the specified related image entities.
+   */
   protected async setSrc(relatedImages: RelatedImageEntity[]): Promise<void> {
     for (const relatedImage of relatedImages) {
       const image = await this.imageSvc.getImageFromSource(relatedImage);
@@ -270,6 +287,10 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   public onTogglePlaylist() {
     this.model.playerList.isVisible = !this.model.playerList.isVisible;
+  }
+
+  public onToggleAnimation() {
+    this.animatedImageVisible = !this.animatedImageVisible;
   }
 
   public onCollapseClick() {

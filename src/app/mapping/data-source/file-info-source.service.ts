@@ -96,6 +96,7 @@ export class FileInfoSourceService implements IDataSourceService {
       case MetaField.AlbumImage:
       case MetaField.AlbumSecondaryImage:
       case MetaField.SingleImage:
+      case MetaField.AlbumAnimated:
         return this.getImageFile(propertyName);
       case MetaField.ArtistStylized:
       case MetaField.Contributor:
@@ -168,6 +169,10 @@ export class FileInfoSourceService implements IDataSourceService {
         fileName = this.inputData.name + '.jpg';
         imageType = MusicImageType.Single;
         break;
+      case MetaField.AlbumAnimated:
+        fileName = 'animated.mp4';
+        imageType = MusicImageType.FrontAnimated;
+        break;
     }
 
     if (fileName) {
@@ -177,7 +182,7 @@ export class FileInfoSourceService implements IDataSourceService {
           sourcePath: filePath,
           sourceType: MusicImageSourceType.ImageFile,
           sourceIndex: 0,
-          mimeType: MimeType.Jpg,
+          mimeType: field === MetaField.AlbumAnimated ? MimeType.Mp4 : MimeType.Jpg,
           imageType: imageType
         };
         return [imageData];

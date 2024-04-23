@@ -5,6 +5,7 @@ export enum MusicImageType {
   Single = 'Single',
   Front = 'Front',
   FrontAlternate = 'FrontAlternate',
+  FrontAnimated = 'FrontAnimated',
   Back = 'Back',
   Other = 'Other',
   Default = 'Default'

@@ -197,6 +197,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       }
       if (processInfo.result.ignoredFiles.length) {
         syncMessage += ` Ignored: ${processInfo.result.ignoredFiles.length}`;
+        this.log.warn('Ignored files', processInfo.result.ignoredFiles);
       }
       
       setting.textRegular[0] = 'Click here to start synchronizing audio files.';

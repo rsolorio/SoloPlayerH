@@ -166,6 +166,8 @@ export enum MetaField {
   SingleImage = 'singleImage',
   /** IImageSource. Id3v2 */
   OtherImage = 'otherImage',
+  /** IImageSource. FileInfo */
+  AlbumAnimated = 'albumAnimated',
   /** String. FileInfo */
   FilePath = 'filePath',
   /** String. FileInfo */

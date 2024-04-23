@@ -202,6 +202,9 @@ export class ScanAudioService {
     }
   }
 
+  /**
+   * Determines the scan file mode: Add, Update or Skip.
+   */
   private async setMode(fileInfo: IFileInfo): Promise<void> {
     // TODO: if lyrics file or images files changed also set update mode
     this.songToProcess = this.lookupService.findSong(fileInfo.path, this.existingSongs);
@@ -428,6 +431,7 @@ export class ScanAudioService {
     this.processImage(existingAlbum.primaryArtistId, metadata, MetaField.ArtistImage);
     this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumImage);
     this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumSecondaryImage);
+    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumAnimated);
     this.processImage(this.songToProcess.id, metadata, MetaField.SingleImage);
     return metadata;
   }
@@ -513,6 +517,7 @@ export class ScanAudioService {
     newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
+    this.processImage(newAlbum.id, metadata, MetaField.AlbumAnimated);
 
     this.existingAlbums.push(newAlbum);
     return newAlbum;
@@ -681,7 +686,7 @@ export class ScanAudioService {
       }
     }
 
-    if (imageType === MusicImageType.Front || imageType === MusicImageType.FrontAlternate) {
+    if (imageType === MusicImageType.Front || imageType === MusicImageType.FrontAlternate || imageType === MusicImageType.FrontAnimated) {
       const album = this.first(metadata[MetaField.Album]);
       if (album) {
         return album;

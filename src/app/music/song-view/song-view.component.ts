@@ -323,7 +323,7 @@ export class SongViewComponent implements OnInit {
           fields: [
             {
               propertyName: 'videoUrl',
-              icon: AppAttributeIcons.Video,
+              icon: AppAttributeIcons.VideoOn,
               label: 'Video Url',
               onEdit: field => {
                 field.editEnabled = true;
