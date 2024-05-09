@@ -369,3 +369,6 @@ This is a list of free fonts used in this project.
   - Extra Condensed
 - [Digital-7](https://www.1001fonts.com/digital-7-font.html)
   - Mono
+
+## User Data
+You should delete the file `src/assets/user.data.json` since that's just a personal configuration just to keep track of my own configurations and for testing purposes.

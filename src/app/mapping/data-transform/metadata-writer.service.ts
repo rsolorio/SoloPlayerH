@@ -386,7 +386,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
     ]);
 
-    // From to chat gpt: the valid range of ReplayGain values is typically between -18dB to +18dB;
+    // From chat gpt: the valid range of ReplayGain values is typically between -18dB to +18dB;
     // this range allows for sufficient  adjustment to normalize the volume of audio tracks without
     // causing distortion or clipping.
     const replayGain = this.first(metadata[MetaField.ReplayGain]);
