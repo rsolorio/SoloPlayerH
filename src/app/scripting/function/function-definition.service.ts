@@ -40,6 +40,7 @@ export class FunctionDefinitionService {
     this.intFunction();
     this.strFunction();
     this.noBracketsFunction();
+    this.nowFunction();
     this.pathFunction();
   }
 
@@ -166,6 +167,17 @@ export class FunctionDefinitionService {
           }
         }
         return x;
+      }
+    });
+  }
+
+  private nowFunction(): void {
+    this.functions.push({
+      name: 'now',
+      syntax: '$now()',
+      description: 'Gets the current date and time.',
+      fn: () => {
+        return this.utility.toReadableDateAndTime(new Date());
       }
     });
   }
