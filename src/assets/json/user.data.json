@@ -257,6 +257,16 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "CD %media%",
+        "destination": "mediaSubtitle",
+        "priority": 2,
+        "sequence": 1,
+        "userDefined": false,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%playDate%",
         "destination": "PlayDate",
         "priority": 1,
@@ -783,7 +793,7 @@
         "id": "2c1d27ef-7ae1-470c-a54f-7fff10726663",
         "distinct": true,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "f3b86898-588c-46b1-9c72-e1537b36a069",
@@ -801,7 +811,7 @@
         "id": "e58eac18-13e5-4f61-8fe0-c7773f8d0018",
         "distinct": true,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "b0124e14-68bc-47a7-a924-74e1fa051576",
@@ -813,13 +823,13 @@
         "id": "4af72d18-def7-4156-b29d-0ce094bca97a",
         "distinct": true,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "3158124d-df95-4950-9c43-73cf7cbf85f8",
         "distinct": true,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "f11096f4-5bb3-4028-9307-a414da290e90",
@@ -843,7 +853,7 @@
         "id": "42579b76-58e0-4f03-8db1-b3978e4b902d",
         "distinct": true,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "6e67b90d-e165-4b7b-9cd8-f76f40b313f5",
@@ -855,7 +865,7 @@
         "id": "3a464daa-ecaf-452a-bf66-39851d858765",
         "distinct": false,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "d7aa116a-265c-480b-99f6-96b245838830",
@@ -873,13 +883,13 @@
         "id": "a821e921-3a29-475f-84b8-e9c70fd3759b",
         "distinct": false,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "1f4a2eae-5eb7-4b50-9259-3b0c37f66f75",
         "distinct": false,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "f337f67a-de3c-4fa5-9071-5a3576a4ab7a",
@@ -921,7 +931,7 @@
         "id": "493dc57b-cc55-4ff8-880c-1e0c89d31b14",
         "distinct": true,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "26b3d0ee-55d9-4007-8786-a0e3ccdb713f",
@@ -933,7 +943,7 @@
         "id": "b9cbfa1b-2c1f-4de0-8bea-2db07e8e25a6",
         "distinct": false,
         "limit": 0,
-        "random": 0
+        "random": 1
       },
       {
         "id": "b7ffad50-6a00-43e7-9008-212ba12b91ba",

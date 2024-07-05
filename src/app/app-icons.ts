@@ -66,6 +66,7 @@ export enum AppAttributeIcons {
   AccessDate = 'mdi-calendar-cursor mdi',
   PlayDate = 'mdi-calendar-check mdi',
   ArtistType = 'mdi-account-tag mdi',
+  AlbumType = 'mdi-export-variant mdi',
   Country = 'mdi-earth mdi',
   Gender = 'mdi-gender-male-female mdi',
   Directory = 'mdi-folder mdi',

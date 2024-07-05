@@ -592,6 +592,7 @@ export class AppTestService {
   }
 
   private async logPopularity(): Promise<void> {
+    // Get popularity of one year, and get only 10 results (songs).
     const entities = await this.entities.getSongPopularityByUnit(RelativeDateUnit.Year, 1, 10);
     console.log(entities);
     const songs = await SongEntity.findBy({ id: In(entities.map(e => e.id)) });

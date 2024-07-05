@@ -521,6 +521,15 @@ export class DatabaseEntitiesService {
     ]);
   }
 
+  /**
+   * Gets the popularity of each song included in the specified date range.
+   * The popularity is retrieved from the play history, grouping data by song, and getting the latest play date and the play count.
+   * The range is set from the specified date to the current day.
+   * @param unit the relative date unit of the range: d, m, y
+   * @param value the number of units for the range
+   * @param limit Max number of results (songs)
+   * @returns 
+   */
   public async getSongPopularityByUnit(unit: RelativeDateUnit, value: number, limit: number): Promise<IPopularity[]> {
     const exp = this.relativeDates.createExpression(`${RelativeDateTerm.ThisDay} ${RelativeDateOperator.Minus} ${value}${unit}`);
     if (this.relativeDates.isValid(exp)) {

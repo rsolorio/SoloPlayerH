@@ -389,6 +389,8 @@ export class ExportService {
 
   private createMoodPlaylists(): Promise<number> {
     const valuesCriteria = new Criteria();
+    // Let's do this to have a different playlist every time.
+    valuesCriteria.random = true;
     valuesCriteria.paging.distinct = true;
     valuesCriteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown', CriteriaComparison.NotEquals));
     const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'mood' }};
@@ -409,6 +411,8 @@ export class ExportService {
 
   private createClassificationPlaylist(prefix: string, playlistName: string, classificationId: string): Promise<boolean> {
     const criteria = new Criteria(playlistName);
+    // Let's do this to have a different playlist every time.
+    criteria.random = true;
     criteria.paging.distinct = true;
     const criteriaItem = new CriteriaItem('classificationId', classificationId);
     criteriaItem.ignoreInSelect = true;
@@ -447,6 +451,9 @@ export class ExportService {
     return this.playlistWriter.run(input);
   }
 
+  /**
+   * Creates 200 item playlists with unplayed songs with no mood and rating less than 4.
+   */
   private async createRandomPlaylists(): Promise<number> {
     let result = 0;
     // Number of songs to be retrieved by the query

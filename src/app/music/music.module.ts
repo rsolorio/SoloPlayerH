@@ -16,6 +16,7 @@ import { SongViewComponent } from './song-view/song-view.component';
 import { FileService } from '../platform/file/file.service';
 import { FileElectronService } from '../platform/file/file-electron.service';
 import { FileCordovaService } from '../platform/file/file-cordova.service';
+import { AlbumViewComponent } from './album-view/album-view.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { FileCordovaService } from '../platform/file/file-cordova.service';
     ClassificationListComponent,
     SongListComponent,
     ArtistViewComponent,
-    SongViewComponent
+    SongViewComponent,
+    AlbumViewComponent
   ],
   imports: [
     CommonModule,
@@ -38,6 +40,9 @@ import { FileCordovaService } from '../platform/file/file-cordova.service';
       },
       {
         path: 'songs/:id', component: SongViewComponent
+      },
+      {
+        path: 'albums/:id', component: AlbumViewComponent
       }
     ])
   ],
