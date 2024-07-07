@@ -2,11 +2,22 @@ import { ITimePeriod, KeyValueGen } from "src/app/core/models/core.interface";
 import { ISongExtendedModel } from "../../shared/models/song-model.interface";
 import { Criteria } from "../../shared/services/criteria/criteria.class";
 
+/**
+ * The export process tries to get a list of songs combining these rules:
+ * - Songs from specified playlists
+ * - Songs from specified filter
+ * - Songs from specified criteria
+ * - Songs specified by the lastAdded setting
+ * - Songs explicitly specified in the "songs" property.
+ * If all of above returns songs, that's what will be exported; if not, all songs will be exported.
+ */
 export interface IExportConfig {
   directories?: string[];
-  /** If set, this will export the last x number of songs added to the library. */
+  /** A number that specifies the last songs added to the database; if specified, the songs will be added to the combined list of songs in the export process. */
   lastAdded?: number;
+  /** The songs returned by this filter will be added to the combined list of songs in the export process. */
   filterId?: string;
+  /** The songs returned this criteria object will be added to the combined list of songs in the export process. */
   criteria?: Criteria;
   songs?: ISongExtendedModel[];
   exportTableEnabled?: boolean;

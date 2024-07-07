@@ -206,6 +206,7 @@ export class ExportService {
       await this.fillSongExport(this.config.songs);
       // Now tell the queries to get data from the export table
       this.config.exportTableEnabled = true;
+      // WE STOP HERE
       return;
     }
 
@@ -222,6 +223,10 @@ export class ExportService {
     this.config.songs = this.utility.sort(this.config.songs, 'filePath');
   }
 
+  /**
+   * The songs retrieved by the specified criteria will be added to the config.songs list.
+   * @param criteria Criteria to generate a list of songs.
+   */
   private async mergeCriteria(criteria: Criteria): Promise<void> {
     const songs = await this.getSongs(criteria);
     if (this.config.songs?.length) {
@@ -232,6 +237,11 @@ export class ExportService {
     }
   }
 
+  /**
+   * Adds all source songs to the destination without duplicating songs.
+   * @param source The list of songs to add to the destination.
+   * @param destination An existing list of songs that will be updated with more songs.
+   */
   private mergeSongs(source: ISongExtendedModel[], destination: ISongExtendedModel[]): void {
     for (const song of source) {
       if (!destination.find(s => s.id === song.id)) {

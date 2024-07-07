@@ -377,16 +377,6 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%rating%",
-        "destination": "Rating",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%albumType%",
         "destination": "MusicBrainz Album Type",
         "priority": 1,
@@ -924,7 +914,7 @@
       {
         "id": "410bb6dc-23a1-4711-85f1-3943c0e55470",
         "distinct": false,
-        "limit": 500,
+        "limit": 300,
         "random": 0
       },
       {

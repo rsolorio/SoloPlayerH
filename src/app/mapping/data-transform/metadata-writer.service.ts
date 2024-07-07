@@ -372,22 +372,29 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.PCNT = playCount.toString();
     }
 
+    const udTexts = this.createUserDefineLists(metadata, [
+      MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
+    ]);
+
     const rating = this.first(metadata[MetaField.Rating]);
     if (rating) {
+      // Standard id3 popularimeter tag
       tags.POPM = [{
         // TODO: use module option
         email: appName,
         rating: this.convert5To255(rating),
         counter: playCount ? playCount : 0
       }];
+      // Generic rating tag mostly used in flac files
+      udTexts.push({
+        description: 'RATING',
+        text: this.convert5To100(rating).toString()
+      });
     }
 
-    const udTexts = this.createUserDefineLists(metadata, [
-      MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
-    ]);
 
     // From chat gpt: the valid range of ReplayGain values is typically between -18dB to +18dB;
-    // this range allows for sufficient  adjustment to normalize the volume of audio tracks without
+    // this range allows for sufficient adjustment to normalize the volume of audio tracks without
     // causing distortion or clipping.
     const replayGain = this.first(metadata[MetaField.ReplayGain]);
     if (replayGain) {
@@ -481,6 +488,16 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     return this.utility.first(array);
   }
 
+  /**
+   * Converts 0-5 rating to 0-100 rating.
+   */
+  private convert5To100(rating: number): number {
+    return rating * 20;
+  }
+
+  /**
+   * Converts 0-5 rating to 0-255 rating.
+   */
   private convert5To255(rating: number): number {
     // Based on this thread:
     // https://www.mediamonkey.com/forum/viewtopic.php?p=450821&sid=3d55a9a4af0caeffd6fbc4147772e346#p450821
