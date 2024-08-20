@@ -184,13 +184,13 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
                 <td>
                   <i
                   (click)="toggleLive()"
-                  class="mdi sp-cursor-pointer"
+                  class="sp-cursor-pointer"
                   [ngClass]="song.live ? AppAttributeIcons.LiveOn : AppAttributeIcons.LiveOff"></i>
                 </td>
                 <!-- Lyrics icon -->
                 <td>
                   <i
-                  class="mdi sp-cursor-pointer"
+                  class="sp-cursor-pointer"
                   (click)="toggleLyrics()"
                   [ngClass]="song.lyrics ? AppAttributeIcons.LyricsOn : AppAttributeIcons.LyricsOff"></i>
                 </td>
@@ -206,14 +206,14 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
                 <!-- Mood icon -->
                 <td>
                   <i
-                  class="mdi sp-cursor-pointer"
+                  class="sp-cursor-pointer"
                   (click)="onMoodClick(song)"
                   [ngClass]="song.mood && song.mood !== 'Unknown' ? AppAttributeIcons.MoodOn : AppAttributeIcons.MoodOff"></i>
                 </td>
                 <!-- Favorite icon -->
                 <td>
                   <i
-                  class="mdi sp-cursor-pointer"
+                  class="sp-cursor-pointer"
                   (click)="onFavoriteClick(song)"
                   [ngClass]="song.favorite ? AppAttributeIcons.FavoriteOn : AppAttributeIcons.FavoriteOff"></i>
                 </td>

@@ -225,12 +225,9 @@ export class SongViewComponent implements OnInit {
               label: 'Explicit',
               editorType: ValueEditorType.YesNo,
               onEdit: () => {
-                SongEntity.findOneBy({ id: this.songId }).then(song => {
-                  song.explicit = !this.entityEditorModel.data['explicit'];
-                  song.save().then(() => {
-                    this.entityEditorModel.data['explicit'] = song.explicit;
-                    this.events.broadcast(AppEvent.ViewSongUpdated, song);
-                  });
+                this.entityService.setExplicit(this.songId, !this.entityEditorModel.data['explicit']).then(song => {
+                  this.entityEditorModel.data['explicit'] = song.explicit;
+                  this.events.broadcast(AppEvent.ViewSongUpdated, song);
                 });
               }
             }

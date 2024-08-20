@@ -513,7 +513,7 @@ export class ScanAudioService {
     newAlbum.primaryArtistId = artist.id;
     newAlbum.releaseDecade = this.utility.getDecade(newAlbum.releaseYear);
     const albumType = this.first(metadata[MetaField.AlbumType]);
-    newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.LP.name;
+    newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.Album.name;
     newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
     this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
@@ -790,7 +790,7 @@ export class ScanAudioService {
     album.releaseDecade = this.utility.getDecade(album.releaseYear);
     album.hash = this.lookupService.hashAlbum(album.name, album.releaseYear);
     album.favorite = false;
-    album.albumType = ValueLists.AlbumType.entries.LP.name;
+    album.albumType = ValueLists.AlbumType.entries.Album.name;
     return album;
   }
 

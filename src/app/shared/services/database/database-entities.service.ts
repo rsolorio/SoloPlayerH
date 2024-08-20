@@ -156,12 +156,13 @@ export class DatabaseEntitiesService {
    * Sets the live flag in the song entity and also creates or deletes
    * a song classification record associated with the song.
    */
-  public async setLive(songId: string, live: boolean): Promise<void> {
+  public async setLive(songId: string, live: boolean): Promise<SongEntity> {
     const song = await SongEntity.findOneBy({ id: songId });
     song.live = live;
     song.changeDate = new Date();
     await song.save();
     await this.setLiveSubgenre(songId, live);
+    return song;
   }
 
   public async setLiveSubgenre(songId: string, live: boolean): Promise<void> {
@@ -178,11 +179,41 @@ export class DatabaseEntitiesService {
         songClass.classificationTypeId = ValueLists.Subgenre.id;
         songClass.primary = false;
         await songClass.save();
-        return;
       }
+      return;
     }
     // Remove classification
     await SongClassificationEntity.delete({ songId: songId, classificationId: ValueLists.Subgenre.entries.Live.id });
+  }
+
+  public async setExplicit(songId: string, explicit: boolean): Promise<SongEntity> {
+    const song = await SongEntity.findOneBy({ id: songId });
+    song.explicit = explicit;
+    song.changeDate = new Date();
+    await song.save();
+    await this.setExplicitSubgenre(songId, explicit);
+    return song;
+  }
+
+  public async setExplicitSubgenre(songId: string, explicit: boolean): Promise<void> {
+    // Create the classification
+    if (explicit) {
+      // Ensure it does not exist
+      let songClass = await SongClassificationEntity.findOneBy({
+        songId: songId,
+        classificationId: ValueLists.Subgenre.entries.Explicit.id });
+      if (!songClass) {
+        songClass = new SongClassificationEntity();
+        songClass.songId = songId;
+        songClass.classificationId = ValueLists.Subgenre.entries.Explicit.id;
+        songClass.classificationTypeId = ValueLists.Subgenre.id;
+        songClass.primary = false;
+        await songClass.save();
+      }
+      return;
+    }
+    // Remove classification
+    await SongClassificationEntity.delete({ songId: songId, classificationId: ValueLists.Subgenre.entries.Explicit.id });
   }
 
   public async setMood(songId: string, mood: string): Promise<void> {

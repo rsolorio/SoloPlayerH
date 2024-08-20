@@ -263,6 +263,12 @@ export class SongModelSourceService implements IDataSourceService {
           result = instruments;
         }
         break;
+      case '$getTechInfo()':
+        result = [this.inputData.fileExtension.toUpperCase(), this.getQuality(this.inputData)];
+        if (this.inputData.replayGain !== 0) {
+          result.push(`RG ${this.inputData.replayGain}`);
+        }
+        break;
       default:
         result = this.parser.parse({
           expression: expression,
@@ -344,5 +350,15 @@ export class SongModelSourceService implements IDataSourceService {
       return [relatedImage.sourcePath];
     }
     return [];
+  }
+
+  private getQuality(songData: ISongExtendedModel): string {
+    if (songData.vbr) {
+      return 'VBR';
+    }
+    if (songData.bitrate === 320000) {
+      return 'GQ';
+    }
+    return 'LQ';
   }
 }

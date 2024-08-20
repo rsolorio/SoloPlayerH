@@ -40,6 +40,8 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
+    await this.logStatistics();
+    //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
     //await this.readUserSong();
@@ -51,8 +53,6 @@ export class AppTestService {
     //await this.updateSong();
     //await this.getPlaylistsTracks();
     //await this.logPopularity();
-    await this.logStatistics();
-    //this.hash();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -554,8 +554,8 @@ export class AppTestService {
   private hash(): void {
     // Filters
     //const value = this.lookup.hashValues(['Recently Replaced']);
-    //const value = this.lookup.hashValueListEntry('Live');
-    const value = this.lookup.hashSong('G:\\Music\\Spanish\\Ranchero\\Pedro Infante\\1952 - Peso Sobre Peso\\01 - peso sobre peso (la bartola).mp3');
+    const value = this.lookup.hashValueListEntry('Explicit');
+    //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Ranchero\\Pedro Infante\\1952 - Peso Sobre Peso\\01 - peso sobre peso (la bartola).mp3');
     //const value = this.lookup.hashAlbum('Live And Let Die Soundtrack', 1973);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Soundtrack\\Various\\1973 - Live And Let Die Soundtrack\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');

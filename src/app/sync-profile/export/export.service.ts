@@ -277,7 +277,7 @@ export class ExportService {
       const criteria = new Criteria(playlist.name);
       criteria.searchCriteria.push(new CriteriaItem('playlistId', playlist.id));
       criteria.addSorting('sequence');
-      const playlistCreated = await this.exportCriteriaAsPlaylist('List', criteria);
+      const playlistCreated = await this.exportCriteriaAsPlaylist('#List', criteria);
       if (playlistCreated) {
         result++;
       }
@@ -292,7 +292,7 @@ export class ExportService {
       // TODO: do this comparison with a criteria object and the database service
       if (filter.sync && filter.target === FilterTarget.Song) {
         const criteria = await this.entities.getCriteriaFromFilter(filter);
-        const playlistExported = await this.exportCriteriaAsPlaylist('Filter', criteria);
+        const playlistExported = await this.exportCriteriaAsPlaylist('#Filter', criteria);
         if (playlistExported) {
           result++;
         }
@@ -361,10 +361,10 @@ export class ExportService {
     let result = 0;
     result += await this.createRandomPlaylists();
     // TODO: use the value list table to get the list of types
-    result += await this.createClassificationTypePlaylists('Subgenre', ValueLists.Subgenre.id);
-    result += await this.createClassificationTypePlaylists('Instrument', ValueLists.Instrument.id);
-    result += await this.createClassificationTypePlaylists('Category', ValueLists.Category.id);
-    result += await this.createClassificationTypePlaylists('Occasion', ValueLists.Occasion.id);
+    result += await this.createClassificationTypePlaylists('#Subgenre', ValueLists.Subgenre.id);
+    result += await this.createClassificationTypePlaylists('#Instrument', ValueLists.Instrument.id);
+    result += await this.createClassificationTypePlaylists('#Category', ValueLists.Category.id);
+    result += await this.createClassificationTypePlaylists('#Occasion', ValueLists.Occasion.id);
     return result;
   }
 
@@ -386,7 +386,7 @@ export class ExportService {
     const criteria = new Criteria();
     criteria.paging.distinct = true;
     const columnQuery: IColumnQuery = { criteria: criteria, columnExpression: { expression: 'addYear' }};
-    return this.createIteratorPlaylists([columnQuery], 'Added', '%addYear%');
+    return this.createIteratorPlaylists([columnQuery], '#Added', '%addYear%');
   }
 
   private createBestByDecadePlaylists(): Promise<number> {
@@ -394,7 +394,7 @@ export class ExportService {
     valuesCriteria.paging.distinct = true;
     const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'releaseDecade' }};
     const extraCriteriaItem = new CriteriaItem('rating', 5);
-    return this.createIteratorPlaylists([columnQuery], 'Best', '%releaseDecade%\'s', [extraCriteriaItem]);
+    return this.createIteratorPlaylists([columnQuery], '#Best', '%releaseDecade%\'s', [extraCriteriaItem]);
   }
 
   private createMoodPlaylists(): Promise<number> {
@@ -404,7 +404,7 @@ export class ExportService {
     valuesCriteria.paging.distinct = true;
     valuesCriteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown', CriteriaComparison.NotEquals));
     const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'mood' }};
-    return this.createIteratorPlaylists([columnQuery], 'Mood', '%mood%');
+    return this.createIteratorPlaylists([columnQuery], '#Mood', '%mood%');
   }
 
   private async createClassificationTypePlaylists(prefix: string, classificationTypeId: string): Promise<number> {
@@ -484,7 +484,7 @@ export class ExportService {
     while (tracks.length) {
       playlistIndex++;
       const subset = tracks.splice(0, playlistSongCount);
-      const playlistCreated = await this.processPlaylist(subset, new Criteria(`Unplayed #${playlistIndex}`), 'Random');
+      const playlistCreated = await this.processPlaylist(subset, new Criteria(`Unplayed ${playlistIndex}`), '#Random');
       if (playlistCreated) {
         result++;
       }

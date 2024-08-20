@@ -372,7 +372,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.PCNT = playCount.toString();
     }
 
-    const udTexts = this.createUserDefineLists(metadata, [
+    const udTexts = this.createUserDefinedLists(metadata, [
       MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
     ]);
 
@@ -456,12 +456,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     return result;
   }
 
-  private createUserDefineLists(metadata: KeyValues, properties: string[]): IUserDefinedText[] {
+  private createUserDefinedLists(metadata: KeyValues, properties: string[]): IUserDefinedText[] {
     const result: IUserDefinedText[] = [];
     for (const property of properties) {
       const values = metadata[property];
       if (values?.length) {
-        result.push({ description: property, text: values.join(',')})
+        result.push({ description: property.toUpperCase(), text: values.join(',')})
       }
     }
     return result;

@@ -33,13 +33,13 @@ export class ValueLists {
   };
   // AlbumType or ReleaseType values:
   // https://musicbrainz.org/doc/Release_Group/Type
-  // Album, Single, EP, Broadcast, Other, Compilation, Soundtrack, Spokenword, Interview, Audiobook, Audio Drama, Live, Remix, DJ-Mix, Mixtape/Street, Demo, Field Recording
+  // Album (LP), Single, EP, Broadcast, Other, Compilation, Soundtrack, Spokenword, Interview, Audiobook, Audio Drama, Live, Remix, DJ-Mix, Mixtape/Street, Demo, Field Recording
   static AlbumType = {
     id: '6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f',
     entries: {
-      LP: {
+      Album: {
         id: 'c613d1e5-f7b1-4533-92a8-7d57b7906daf',
-        name: 'LP'
+        name: 'Album'
       }
     }
   };
@@ -91,6 +91,10 @@ export class ValueLists {
       Live: {
         id: '87f64f04-cc3d-42b0-9432-f2549f7ce553',
         name: 'Live'
+      },
+      Explicit: {
+        id: '56835b09-db59-4a35-be8d-8b41c136242c',
+        name: 'Explicit'
       }
     }
   };

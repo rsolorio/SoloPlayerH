@@ -419,27 +419,27 @@
       },
       {
         "//": "ALBUMTYPE",
+        "id": "c613d1e5-f7b1-4533-92a8-7d57b7906daf",
         "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
-        "name": "Compilation",
+        "name": "Album",
         "isClassification": false,
         "sequence": 1
       },
       {
         "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
-        "name": "EP",
+        "name": "Compilation",
         "isClassification": false,
         "sequence": 2
       },
       {
         "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
-        "name": "Live",
+        "name": "EP",
         "isClassification": false,
         "sequence": 3
       },
       {
-        "id": "c613d1e5-f7b1-4533-92a8-7d57b7906daf",
         "valueListTypeId": "6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f",
-        "name": "LP",
+        "name": "Live",
         "isClassification": false,
         "sequence": 4
       },
@@ -604,41 +604,48 @@
         "sequence": 8
       },
       {
-        "id": "87f64f04-cc3d-42b0-9432-f2549f7ce553",
+        "id": "56835b09-db59-4a35-be8d-8b41c136242c",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Live",
+        "name": "Explicit",
         "isClassification": true,
         "sequence": 9
       },
       {
+        "id": "87f64f04-cc3d-42b0-9432-f2549f7ce553",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Merengue",
+        "name": "Live",
         "isClassification": true,
         "sequence": 10
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Reggaeton",
+        "name": "Merengue",
         "isClassification": true,
         "sequence": 11
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Slow Jams",
+        "name": "Reggaeton",
         "isClassification": true,
         "sequence": 12
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Soft",
+        "name": "Slow Jams",
         "isClassification": true,
         "sequence": 13
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Texano",
+        "name": "Soft",
         "isClassification": true,
         "sequence": 14
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Texano",
+        "isClassification": true,
+        "sequence": 15
       },
       {
         "//": "CATEGORY",
