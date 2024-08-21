@@ -57,6 +57,7 @@ export class FileElectronService extends FileService {
       case 'CP1256':
       case 'CP1257':
         result = buffer.toString('latin1');
+        result = this.replace1252Codes(result);
         break;
       default:
         result = buffer.toString('utf8');
@@ -228,6 +229,27 @@ export class FileElectronService extends FileService {
       }
       return result;
     });
+  }
+
+  private replace1252Codes(value: string): string {
+    /**
+     * Full chart: https://github.com/sebkirche/pbniregex/blob/master/stuff/CP1252%20%20%20ISO-8859-1%20%20%20UTF-8%20Conversion%20Chart.htm
+     * \x85 = 133 = …
+     * \x91 = 145 = ‘
+     * \x92 = 146 = ’
+     */
+
+    const codes = [
+      { decimal: 133, char: '…' },
+      { decimal: 145, char: '‘' },
+      { decimal: 146, char: '’' },
+    ];
+
+    let newValue = value;
+    for (const code of codes) {
+      newValue = newValue.replace(new RegExp(String.fromCharCode(code.decimal), 'g'), code.char);
+    }
+    return newValue;
   }
 
   test(): void {
