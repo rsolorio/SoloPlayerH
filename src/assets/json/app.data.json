@@ -10,7 +10,7 @@
         "favorite": false,
         "vocal": true,
         "artistSort": "Various",
-        "artistStylized": "Various"
+        "artistStylized": "Variouz"
       }
     ],
     "moduleOption": [
@@ -1052,7 +1052,7 @@
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "id3v2Reader",
         "type": "Id3v2",
-        "fields": "artist,artistSort,artistType,artistStylized,albumArtist,albumArtistSort,contributor,album,albumSort,albumType,publisher,country,ufid,title,titleSort,subtitle,track,media,mediaSubtitle,composer,composerSort,originalArtist,originalAlbum,originalReleaseYear,comment,grouping,addDate,changeDate,playDate,language,mood,rating,playCount,url,videoUrl,syncLyrics,unSyncLyrics,live,explicit,favorite,performerCount,genre,subgenre,occasion,instrument,category,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,seconds,bitrate,frequency,vbr,tempo,replayGain,tagFullyParsed,error",
+        "fields": "artist,artistSort,artistType,albumArtist,albumArtistStylized,albumArtistSort,contributor,album,albumSort,albumType,publisher,country,ufid,title,titleSort,subtitle,track,media,mediaSubtitle,composer,composerSort,originalArtist,originalAlbum,originalReleaseYear,comment,grouping,addDate,changeDate,playDate,language,mood,rating,playCount,url,videoUrl,syncLyrics,unSyncLyrics,live,explicit,favorite,performerCount,genre,subgenre,occasion,instrument,category,artistImage,albumArtistImage,albumImage,albumSecondaryImage,singleImage,otherImage,seconds,bitrate,frequency,vbr,tempo,replayGain,tagFullyParsed,error",
         "customMapping": false,
         "sequence": 1,
         "disabled": false,
@@ -1062,7 +1062,7 @@
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "fileInfoReader",
         "type": "FileInfo",
-        "fields": "filePath,fileName,fileExtension,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,albumAnimated,singleImage,artistStylized,contributor,singer,mediaSubtitles",
+        "fields": "filePath,fileName,fileExtension,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,albumAnimated,singleImage,albumArtistStylized,contributor,singer,mediaSubtitles",
         "customMapping": false,
         "sequence": 2,
         "disabled": false,
@@ -1140,7 +1140,7 @@
         "name": "Default Export DataSource and Mappings",
         "type": "SongModel",
         "config": "",
-        "fields": "track,media,mediaSubtitle,year,album,albumSort,albumArtist,artistStylized,artist,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,genre,rating,playCount,mood,language,favorite,live,explicit,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,subtitle,country,albumStylized,publisher,unSyncLyrics",
+        "fields": "track,media,mediaSubtitle,year,album,albumSort,albumArtist,artist,albumImage,albumSecondaryImage,singleImage,albumArtistImage,title,artistType,genre,rating,playCount,mood,language,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,seconds,subtitle,albumStylized,publisher,unSyncLyrics",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,

@@ -98,7 +98,7 @@ export class FileInfoSourceService implements IDataSourceService {
       case MetaField.SingleImage:
       case MetaField.AlbumAnimated:
         return this.getImageFile(propertyName);
-      case MetaField.ArtistStylized:
+      case MetaField.AlbumArtistStylized:
       case MetaField.Contributor:
       case MetaField.Singer:
         // This logic is for all meta fields that can be retrieved from the artist.json file

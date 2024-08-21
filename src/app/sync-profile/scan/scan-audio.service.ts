@@ -447,7 +447,7 @@ export class ScanAudioService {
 
     const artistType = this.first(metadata[MetaField.ArtistType]);
     const country = this.first(metadata[MetaField.Country]);
-    const artistStylized = this.first(metadata[MetaField.ArtistStylized]);
+    const artistStylized = this.first(metadata[MetaField.AlbumArtistStylized]);
     const artistSort = this.first(metadata[MetaField.AlbumArtistSort]);
 
     const newArtist = this.createArtist(artistName, artistSort, artistStylized);

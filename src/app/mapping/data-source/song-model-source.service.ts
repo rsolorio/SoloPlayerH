@@ -100,10 +100,12 @@ export class SongModelSourceService implements IDataSourceService {
         return [this.inputData.primaryArtistName];
       case MetaField.AlbumArtistSort:
         return [this.inputData.primaryArtistSort];
-      case MetaField.ArtistStylized:
+      case MetaField.AlbumArtistStylized:
         return [this.inputData.primaryArtistStylized];
       case MetaField.Artist:
         return this.getArtists();
+      case MetaField.ArtistStylized:
+        return this.getStylizedArtists();
       case MetaField.UfId:
         return [this.inputData.id];
       case MetaField.AlbumImage:
@@ -269,6 +271,9 @@ export class SongModelSourceService implements IDataSourceService {
           result.push(`RG ${this.inputData.replayGain}`);
         }
         break;
+      case '$getStylizedArtists()':
+        result = this.getStylizedArtists();
+        break;
       default:
         result = this.parser.parse({
           expression: expression,
@@ -320,6 +325,29 @@ export class SongModelSourceService implements IDataSourceService {
     for (const relation of artistRelations) {
       if (!result.includes(relation.artistName)) {
         result.push(relation.artistName);
+      }
+    }
+
+    return result;
+  }
+
+  private getStylizedArtists(): string[] {
+    const result: string[] = [];
+
+    // First, the album artist as regular artist
+    result.push(this.inputData.primaryArtistStylized);
+    // Find other artists (featuring) associated with the song
+    const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === this.inputData.id);
+    for (const relation of songRelations) {
+      if (!result.includes(relation.artistStylized)) {
+        result.push(relation.artistStylized);
+      }
+    }
+    // Then find artists (contributors and singers) associated with primary artist of the song
+    const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === this.inputData.primaryArtistId);
+    for (const relation of artistRelations) {
+      if (!result.includes(relation.artistStylized)) {
+        result.push(relation.artistStylized);
       }
     }
 

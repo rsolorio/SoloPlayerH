@@ -106,6 +106,17 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     return result;
   }
 
+  /**
+   * 1. Each data source service iterates the fields and retrieves data using the getData method
+   * 2. These fields will be populated with data and they will become the metadata.
+   * 3. The songModelSource.getData method retrieves data from mappings first and then from hardcoded logic associated with each field
+   * 4. Mappings retrieve data using expressions (which eventually match with the context/input data) and the parser
+   * 5. Hardcoded logic generally retrieves data associating a meta field with the property of the input data or using built-in methods
+   * 6. Lastly it gets user defined mappings, also using expressions and the parser
+   * Once this happens, the writer will use the metadata to locate the data to write to the supported tags, and to user defined tags.
+   * @param input The song model
+   * @returns A metadata object
+   */
   protected async getData(input: ISongModel): Promise<KeyValues> {
     const result: KeyValues = {};
     for (const source of this.sources) {
@@ -179,6 +190,13 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * Other reference: https://exiftool.org/TagNames/ID3.html
    * One more with details: https://mutagen-specs.readthedocs.io/en/latest/id3/id3v2.4.0-frames.html
    * Reference to taglib: https://github.com/mono/taglib-sharp
+   * This writer consumes these meta fields:
+   * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
+   * album, albumSort, genre, track, media, year, addDate, comment, composer, composerSort,
+   * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
+   * seconds, tempo (bpm), owner, ufid, playCount, rating, replayGain, url, videoUrl,
+   * subgenre, category, occasion, instrument,
+   * albumImage, albumSecondaryImage, singleImage, albumArtistImage
    */
   private async setupV2Tags(metadata: KeyValues, v2Version: number): Promise<any> {
     const tags: any = {};

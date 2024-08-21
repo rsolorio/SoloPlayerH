@@ -269,7 +269,7 @@ export class DatabaseEntitiesService {
   public getNonPrimaryRelations(): Promise<any[]> {
     // TODO: create interface or entity for this query
     const nonPrimaryRelationsQuery = `
-      SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName
+      SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName, artist.artistStylized
       FROM partyRelation
       INNER JOIN artist
       ON partyRelation.relatedId = artist.id

@@ -96,7 +96,7 @@ export class Id3v2SourceService implements IDataSourceService {
       // User defined tags
       case MetaField.ArtistType:
       case MetaField.AlbumType:
-      case MetaField.ArtistStylized:
+      case MetaField.AlbumArtistStylized:
       case MetaField.Country:
       case MetaField.Subgenre:
       case MetaField.Occasion:

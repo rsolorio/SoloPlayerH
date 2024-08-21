@@ -57,6 +57,8 @@ export enum MetaField {
   /** String. Id3v2 */
   AlbumArtist = 'albumArtist',
   /** String. Id3v2 */
+  AlbumArtistStylized = 'albumArtistStylized',
+  /** String. Id3v2 */
   AlbumArtistSort = 'albumArtistSort',
   /** String. Id3v2, Id3v1 */
   Album = 'album',
