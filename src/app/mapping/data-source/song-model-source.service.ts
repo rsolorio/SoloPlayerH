@@ -88,6 +88,8 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.Album:
         // TODO: get unique name
         return [this.inputData.primaryAlbumName];
+      case MetaField.Description:
+        return [this.inputData.primaryAlbumDescription];
       case MetaField.AlbumStylized:
         return [this.inputData.primaryAlbumStylized];
       case MetaField.AlbumSort:
@@ -105,7 +107,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaField.Artist:
         return this.getArtists();
       case MetaField.ArtistStylized:
-        return this.getStylizedArtists();
+        return this.getStylizedArtists(this.inputData);
       case MetaField.UfId:
         return [this.inputData.id];
       case MetaField.AlbumImage:
@@ -267,12 +269,12 @@ export class SongModelSourceService implements IDataSourceService {
         break;
       case '$getTechInfo()':
         result = [this.inputData.fileExtension.toUpperCase(), this.getQuality(this.inputData)];
-        if (this.inputData.replayGain !== 0) {
-          result.push(`RG ${this.inputData.replayGain}`);
-        }
         break;
       case '$getStylizedArtists()':
-        result = this.getStylizedArtists();
+        result = this.getStylizedArtists(this.inputData);
+        break;
+      case '$getReplayGain()':
+        result = this.getReplayGain(this.inputData);
         break;
       default:
         result = this.parser.parse({
@@ -331,20 +333,20 @@ export class SongModelSourceService implements IDataSourceService {
     return result;
   }
 
-  private getStylizedArtists(): string[] {
+  private getStylizedArtists(songData: ISongExtendedModel): string[] {
     const result: string[] = [];
 
     // First, the album artist as regular artist
-    result.push(this.inputData.primaryArtistStylized);
+    result.push(songData.primaryArtistStylized);
     // Find other artists (featuring) associated with the song
-    const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === this.inputData.id);
+    const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === songData.id);
     for (const relation of songRelations) {
       if (!result.includes(relation.artistStylized)) {
         result.push(relation.artistStylized);
       }
     }
     // Then find artists (contributors and singers) associated with primary artist of the song
-    const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === this.inputData.primaryArtistId);
+    const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === songData.primaryArtistId);
     for (const relation of artistRelations) {
       if (!result.includes(relation.artistStylized)) {
         result.push(relation.artistStylized);
@@ -380,6 +382,9 @@ export class SongModelSourceService implements IDataSourceService {
     return [];
   }
 
+  /**
+   * Supported values: GQ (good quality = 320kbps), VBR (variable bitrate), LQ (low quality = everything else)
+   */
   private getQuality(songData: ISongExtendedModel): string {
     if (songData.vbr) {
       return 'VBR';
@@ -388,5 +393,16 @@ export class SongModelSourceService implements IDataSourceService {
       return 'GQ';
     }
     return 'LQ';
+  }
+
+  /**
+   * Returns the replay gain with the format: [+/-]##.##
+   * Examples: +01.15, -11.67
+   */
+  private getReplayGain(songData): string {
+    if (songData.replayGain === 0) {
+      return null;
+    }
+    return this.utility.enforceDigits(songData.replayGain, 2, true);
   }
 }

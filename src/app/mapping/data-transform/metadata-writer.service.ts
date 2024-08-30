@@ -107,10 +107,16 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   /**
+   * If you want to save data in tags:
+   * 1. Look for the supported metadata fields in the setupV2Tags method.
+   * 2. Add the metadata field to the "fields" property of the data source.
+   * 3. Confirm the (song model) source has hardcoded logic to get the data associated to the metadata field.
+   * 4. You can setup an expression in the source of the mapping if you don't want to use the default logic or if it doesn't exist.
+   * How the full logic works:
    * 1. Each data source service iterates the fields and retrieves data using the getData method
-   * 2. These fields will be populated with data and they will become the metadata.
-   * 3. The songModelSource.getData method retrieves data from mappings first and then from hardcoded logic associated with each field
-   * 4. Mappings retrieve data using expressions (which eventually match with the context/input data) and the parser
+   * 2. "Data source fields" will be populated with data and they will become the metadata fields.
+   * 3. The songModelSource.getData method retrieves data from mappings first (if exist) and then from hardcoded logic associated with each field
+   * 4. Mappings retrieve data using a parser that processes expression fields and functions ("expression fields" match columns from the views providing data)
    * 5. Hardcoded logic generally retrieves data associating a meta field with the property of the input data or using built-in methods
    * 6. Lastly it gets user defined mappings, also using expressions and the parser
    * Once this happens, the writer will use the metadata to locate the data to write to the supported tags, and to user defined tags.
@@ -192,7 +198,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * Reference to taglib: https://github.com/mono/taglib-sharp
    * This writer consumes these meta fields:
    * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
-   * album, albumSort, genre, track, media, year, addDate, comment, composer, composerSort,
+   * album, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
    * seconds, tempo (bpm), owner, ufid, playCount, rating, replayGain, url, videoUrl,
    * subgenre, category, occasion, instrument,
@@ -410,6 +416,13 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       });
     }
 
+    const description = this.first(metadata[MetaField.Description]);
+    if (description) {
+      udTexts.push({
+        description: 'DESCRIPTION',
+        text: description
+      });
+    }
 
     // From chat gpt: the valid range of ReplayGain values is typically between -18dB to +18dB;
     // this range allows for sufficient adjustment to normalize the volume of audio tracks without

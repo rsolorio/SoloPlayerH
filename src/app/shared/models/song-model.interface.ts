@@ -87,6 +87,7 @@ export interface ISongFullModel extends ISongModel {
 
 export interface ISongExtendedModel extends ISongFullModel {
   country: string;
+  primaryAlbumDescription: string;
   primaryAlbumSort: string;
   primaryAlbumStylized: string;
   primaryAlbumType: string;

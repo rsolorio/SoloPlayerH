@@ -5,6 +5,7 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -83,6 +84,24 @@ export class AlbumViewComponent implements OnInit {
               icon: AppAttributeIcons.AlbumType,
               label: 'Type',
               onEdit: () => this.editAlbumType()
+            }
+          ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'description',
+              icon: AppAttributeIcons.Description,
+              label: 'Description',
+              editorType: ValueEditorType.Multiline,
+              onEdit: field => field.editEnabled = true,
+              onOk: field => {
+                field.editEnabled = false;
+                AlbumEntity.findOneBy({ id: this.albumId }).then(album => {
+                  album.description = this.entityEditorModel.data['description'];
+                  album.save();
+                });
+              }
             }
           ]
         }

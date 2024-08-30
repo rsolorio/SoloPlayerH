@@ -6,6 +6,8 @@ import { ListItemEntity } from './base.entity';
 export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   @Column()
   primaryArtistId: string;
+  @Column({ nullable: true })
+  description: string;
   @Column()
   albumType: string;
   @Column()

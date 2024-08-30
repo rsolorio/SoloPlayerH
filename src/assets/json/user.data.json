@@ -238,6 +238,16 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$if(%replayGain%,RG: $getReplayGain())",
+        "destination": "genre",
+        "priority": 1,
+        "sequence": 10,
+        "userDefined": false,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "iterator": "$getTechInfo()",
         "source": "%item%",
         "destination": "composer",

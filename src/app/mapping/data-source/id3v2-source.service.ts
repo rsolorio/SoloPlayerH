@@ -216,6 +216,12 @@ export class Id3v2SourceService implements IDataSourceService {
           return [this.audioInfo.metadata.common.grouping];
         }
         break;
+      case MetaField.Description:
+        const description = this.metadataService.getValue<string>('DESCRIPTION', this.tags, TagPrefix.UserDefinedText);
+        if (description) {
+          return [description];
+        }
+        break;
       case MetaField.AddDate:
       case MetaField.ChangeDate:
       case MetaField.PlayDate:

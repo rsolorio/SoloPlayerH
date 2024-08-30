@@ -57,6 +57,8 @@
   border-radius: 0.25rem;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .sp-input-control-editable {
@@ -67,6 +69,10 @@
   position: absolute;
   right: 12px;
   top: 4px;
+}
+
+.sp-multiline {
+  resize: vertical;
 }
 
 .sp-input-badge {

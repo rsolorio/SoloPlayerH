@@ -67,5 +67,6 @@ export enum ValueEditorType {
   Text = 'text',
   Number = 'number',
   YesNo = 'yesNo',
+  Multiline = 'multiline',
   ValueList = 'valueList'
 }

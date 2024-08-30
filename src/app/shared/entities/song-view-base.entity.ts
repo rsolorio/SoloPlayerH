@@ -3,6 +3,16 @@ import { ISongExtendedModel, ISongModel } from "../models/song-model.interface";
 import { SongBaseEntity } from "./song-base.entity";
 import { dateTransformer } from "./date-transformer";
 
+export const songViewBaseJoins =`
+FROM %songTable% AS song
+INNER JOIN album
+ON song.primaryAlbumId = album.id
+INNER JOIN artist
+ON album.primaryArtistId = artist.id
+`;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 export const songViewBaseSelect = `
 SELECT song.id, song.name, song.cleanName, song.hash,
 song.primaryAlbumId, song.filePath, song.fileExtension, song.fileSize,
@@ -12,14 +22,6 @@ song.seconds, song.duration, song.bitrate, song.frequency, song.vbr,
 song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.primaryArtistId AS primaryArtistId,
 artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
-`;
-
-export const songViewBaseJoins =`
-FROM %songTable% AS song
-INNER JOIN album
-ON song.primaryAlbumId = album.id
-INNER JOIN artist
-ON album.primaryArtistId = artist.id
 `;
 
 /**
@@ -120,6 +122,8 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   playlistId: string;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 export const songExtendedViewSelect = `
 SELECT song.id, song.name, song.cleanName, song.hash, song.primaryAlbumId, song.externalId, song.originalSongId,
 song.filePath, song.fileExtension, song.fileSize,
@@ -129,7 +133,7 @@ song.lyrics, song.grouping, song.composer, song.composerSort, song.comment,
 song.originalArtist, song.originalAlbum, song.originalReleaseYear, song.infoUrl, song.videoUrl,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
 song.favorite, song.live, song.explicit, song.addDate, song.addYear, song.changeDate, song.playDate, song.replaceDate,
-album.name AS primaryAlbumName, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.publisher AS primaryAlbumPublisher, album.primaryArtistId,
+album.name AS primaryAlbumName, album.description AS primaryAlbumDescription, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.publisher AS primaryAlbumPublisher, album.primaryArtistId,
 artist.country, artist.name AS primaryArtistName, artist.artistSort AS primaryArtistSort, artist.artistStylized AS primaryArtistStylized, artist.artistType AS primaryArtistType
 `;
 
@@ -175,6 +179,8 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   addYear: number;
   @ViewColumn()
   country: string;
+  @ViewColumn()
+  primaryAlbumDescription: string;
   @ViewColumn()
   primaryAlbumSort: string;
   @ViewColumn()

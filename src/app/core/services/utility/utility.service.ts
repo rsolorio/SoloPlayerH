@@ -459,24 +459,38 @@ export class UtilityService {
   }
 
   /**
-   * Ensures the given value has at least the number of specified digits.
+   * Ensures the given value has at least the number of specified digits by adding leading zeros.
    * If the value is 0 and the digits is 0 then it will return an empty string.
+   * Better function name: zeroPad
    * @param value The value to format
    * @param digits The number of digits to enforce
    */
-  public enforceDigits(value: number, digits: number): string {
+  public enforceDigits(value: number, digits: number, enforceSign?: boolean): string {
     if (digits === 0 && value === 0) {
       // In this particular case return an empty string
       return '';
     }
-    let numberText = value.toString();
-    const numberDigits = numberText.length;
+    // Keep the sign since we will get the absolute value
+    const sign = Math.sign(value);
+    // Absolute value to text
+    const fullNumberText = Math.abs(value).toString();
+    // Handle decimal values
+    const numberParts = fullNumberText.split('.');
+    const integerPart = numberParts[0].padStart(digits, '0');
+    const decimalPart = numberParts.length > 1 ? '.' + numberParts[1] : '';
+    const numberText = integerPart + decimalPart;
 
-    if (numberDigits < digits) {
-      for (let d = numberDigits; d < digits; d++) {
-        numberText = '0' + numberText;
-      }
+    // Negative sign
+    if (sign === -1) {
+      return `-${numberText}`;
     }
+
+    // At this point, we can assume it is a positive sign
+    // Enforce?
+    if (enforceSign) {
+      return `+${numberText}`;
+    }
+    // Positive number, no sign
     return numberText;
   }
 

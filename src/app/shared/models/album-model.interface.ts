@@ -1,6 +1,7 @@
 import { IListItemModel } from './base-model.interface';
 
 export interface IAlbumModel extends IListItemModel {
+  description: string;
   albumType: string;
   releaseYear: number;
   releaseDecade: number;
