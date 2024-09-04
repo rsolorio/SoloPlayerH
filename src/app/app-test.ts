@@ -63,7 +63,7 @@ export class AppTestService {
       this.log.warn('File info.', fileInfo);
       const buffer = await this.fileService.getBuffer(fileInfo.path);
       // Use music-metadata
-      const audioInfo = await this.metadataService.getMetadata(buffer, this.utility.getMimeType(fileInfo.extension.replace('.', '')), true);      
+      const audioInfo = await this.metadataService.getMetadata(buffer, this.utility.getMimeType(fileInfo.extension.replace('.', '')), true);
       this.log.warn('music-metadata.', audioInfo);
       // Use mp3tag
       const mp3Tag = new MP3Tag(buffer, true);

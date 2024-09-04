@@ -31,9 +31,10 @@ export class ValueLists {
       QuickFilters: 'a8c2aeb1-184f-4299-870d-90ffc9715f09'
     }
   };
-  // AlbumType or ReleaseType values:
+  // AlbumType (ReleaseType) values:
   // https://musicbrainz.org/doc/Release_Group/Type
-  // Album (LP), Single, EP, Broadcast, Other, Compilation, Soundtrack, Spokenword, Interview, Audiobook, Audio Drama, Live, Remix, DJ-Mix, Mixtape/Street, Demo, Field Recording
+  // Primary types: Album (LP), Single, EP, Broadcast, Other
+  // Secondary types: Compilation, Soundtrack, Spokenword, Interview, Audiobook, Audio Drama, Live, Remix, DJ-Mix, Mixtape/Street, Demo, Field Recording
   static AlbumType = {
     id: '6dc5ea64-3c1a-4f38-b4c1-510f1ec20d2f',
     entries: {

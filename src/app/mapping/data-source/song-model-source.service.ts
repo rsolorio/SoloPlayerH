@@ -224,6 +224,7 @@ export class SongModelSourceService implements IDataSourceService {
   private async getDataFromExpression(expression: string, predefinedMappings: KeyValueGen<string>): Promise<any> {
     let result: any = null;
     // Hack to implement custom functions
+    // These functions are supported alone and not combined with any other expression
     switch (expression) {
       case '$getSingleImage()':
         const singleImagePaths = await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
@@ -272,9 +273,6 @@ export class SongModelSourceService implements IDataSourceService {
         break;
       case '$getStylizedArtists()':
         result = this.getStylizedArtists(this.inputData);
-        break;
-      case '$getReplayGain()':
-        result = this.getReplayGain(this.inputData);
         break;
       default:
         result = this.parser.parse({
@@ -393,16 +391,5 @@ export class SongModelSourceService implements IDataSourceService {
       return 'GQ';
     }
     return 'LQ';
-  }
-
-  /**
-   * Returns the replay gain with the format: [+/-]##.##
-   * Examples: +01.15, -11.67
-   */
-  private getReplayGain(songData): string {
-    if (songData.replayGain === 0) {
-      return null;
-    }
-    return this.utility.enforceDigits(songData.replayGain, 2, true);
   }
 }

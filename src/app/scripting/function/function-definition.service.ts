@@ -36,7 +36,7 @@ export class FunctionDefinitionService {
     this.notFunction();
     this.andFunction();
     this.orFunction();
-    this.digitsFunction();
+    this.padFunction();
     this.intFunction();
     this.strFunction();
     this.noBracketsFunction();
@@ -112,15 +112,16 @@ export class FunctionDefinitionService {
     });
   }
 
-  private digitsFunction(): void {
+  private padFunction(): void {
     this.functions.push({
-      name: 'digits',
-      syntax: '$digits(x,y)',
-      description: 'Returns x with at least the number of digits specified in y.',
+      name: 'pad',
+      syntax: '$pad(x,y,z)',
+      description: 'Returns x with at least the number of digits specified in y adding leading zeros.',
       fn: args => {
         const x = args[0];
         const y = args[1];
-        return this.utility.enforceDigits(x, y);
+        const z = args[2];
+        return this.utility.enforceDigits(x, y, z);
       }
     });
   }
