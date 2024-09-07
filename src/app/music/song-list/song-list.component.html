@@ -43,6 +43,7 @@
       <i *ngIf="item.mood === 'Unknown'" [ngClass]="AppAttributeIcons.MoodOff" class="sp-title-icon sp-color-warning" [title]="SongBadge.NoMood"></i>
       <!-- <i *ngIf="item.recentPlayIcon" [ngClass]="[AppAttributeIcons.Recent, item.recentPlayIcon.styleClass]" class="sp-title-icon sp-color-info" [title]="item.recentPlayIcon.tooltip"></i> -->
     </span>
+    <!-- Line Break -->
     <br>
     <!-- Extra Info -->
     <span class="sp-color-on-bg-low sp-text-small sp-no-select" [ngClass]="{ 'sp-color-primary-low': item.playerStatus === PlayerSongStatus.Playing }">

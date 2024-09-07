@@ -259,12 +259,12 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
             <table class="sp-full-width">
               <tr>
                 <td class="sp-td-play-control sp-text-big-fixed">
-                  <i *ngIf="model.playerList.play === PlayMode.Sequence" class="mdi-shuffle-disabled mdi"></i>
-                  <i *ngIf="model.playerList.play === PlayMode.Random" class="mdi-shuffle mdi"></i>
+                  <i *ngIf="model.playerList.play === PlayMode.Sequence" [ngClass]="AppPlayerIcons.ShuffleOff"></i>
+                  <i *ngIf="model.playerList.play === PlayMode.Random" [ngClass]="AppPlayerIcons.ShuffleOn"></i>
                 </td>
                 <td class="sp-td-play-control sp-text-big-fixed">
                   <div (click)="onPrevious()" class="sp-player-button sp-back-forward">
-                    <i class="mdi-skip-previous mdi sp-player-icon sp-back-forward"></i>
+                    <i [ngClass]="AppPlayerIcons.Previous" class="sp-player-icon sp-back-forward"></i>
                   </div>
                 </td>
                 <td class="sp-td-play-control sp-text-huge-fixed">
@@ -275,13 +275,13 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
                 </td>
                 <td class="sp-td-play-control sp-text-big-fixed">
                   <div (click)="onNext()" class="sp-player-button sp-back-forward">
-                    <i class="mdi-skip-next mdi sp-player-icon sp-back-forward"></i>
+                    <i [ngClass]="AppPlayerIcons.Next" class="sp-player-icon sp-back-forward"></i>
                   </div>
                 </td>
                 <td class="sp-td-play-control sp-text-big-fixed">
-                  <i *ngIf="model.playerList.repeat === RepeatMode.All" class="mdi-repeat mdi"></i>
-                  <i *ngIf="model.playerList.repeat === RepeatMode.One" class="mdi-repeat-once mdi"></i>
-                  <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" class="mdi-repeat-off mdi"></i>
+                  <i *ngIf="model.playerList.repeat === RepeatMode.All" [ngClass]="AppPlayerIcons.RepeatAll"></i>
+                  <i *ngIf="model.playerList.repeat === RepeatMode.One" [ngClass]="AppPlayerIcons.RepeatOne"></i>
+                  <i *ngIf="model.playerList.repeat === RepeatMode.Disabled" [ngClass]="AppPlayerIcons.RepeatOff"></i>
                 </td>
               </tr>
             </table>
@@ -292,10 +292,10 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
       <table *ngIf="imageControlsEnabled" class="sp-table sp-full-height sp-full-width" style="table-layout: fixed;">
         <!-- Image Toolbar -->
         <tr class="sp-tr-image-toolbar">
-          <td><i class="mdi-undo-variant mdi sp-text-big sp-cursor-pointer" (click)="onToolbarReset()"></i></td>
-          <td><i class="mdi-chevron-left mdi sp-text-big sp-cursor-pointer" [ngClass]="{ 'sp-color-item-disabled': images.length < 2 }" (click)="onToolbarBack($event)"></i></td>
+          <td><i [ngClass]="AppActionIcons.Undo" class="sp-text-big sp-cursor-pointer" (click)="onToolbarReset()"></i></td>
+          <td><i [ngClass]="[AppActionIcons.ChevronLeft, images.length < 2 ? 'sp-color-item-disabled' : '']" class="sp-text-big sp-cursor-pointer" (click)="onToolbarBack($event)"></i></td>
           <td><span *ngIf="image" class="sp-text-large">{{image.imageType.toUpperCase()}}</span></td>
-          <td><i class="mdi-chevron-right mdi sp-text-big sp-cursor-pointer" [ngClass]="{ 'sp-color-item-disabled': images.length < 2 }" (click)="onToolbarNext($event)"></i></td>
+          <td><i [ngClass]="[AppActionIcons.ChevronRight, images.length < 2 ? 'sp-color-item-disabled' : '']" class="sp-text-big sp-cursor-pointer" (click)="onToolbarNext($event)"></i></td>
           <td>
             <i *ngIf="!isLoadingPalette" (click)="onImageControlsClose($event)" [ngClass]="AppActionIcons.CloseClear" class="sp-text-big sp-cursor-pointer"></i>
             <i *ngIf="isLoadingPalette" [ngClass]="AppActionIcons.Loading" class="sp-text-big"></i>
@@ -310,32 +310,32 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
               <div class="sp-full-height sp-full-width">
                 <!-- Hover Color -->
                 <div class="sp-color-bar" >
-                  <i class="mdi-bullseye mdi sp-color-icon"></i>
+                  <i [ngClass]="AppActionIcons.Aim" class="sp-color-icon"></i>
                   <div id="divHoverColor" class="sp-full-height sp-full-width sp-color-bar-outline"></div>
                 </div>
                 <!-- Selected Color -->
                 <div class="sp-color-bar">
-                  <i class="mdi-cursor-default-click-outline mdi sp-color-icon"></i>
+                  <i [ngClass]="AppActionIcons.Click" class="sp-color-icon"></i>
                   <div class="sp-full-height sp-full-width sp-color-bar-outline sp-clickable sp-ease-background-color-1" (click)="onSelectedColorClick()" [ngStyle]="colorSelected.cssBgColor"></div>
                 </div>
                 <!-- Palette -->
                 <div class="sp-color-palette sp-color-bar">
                   <div class="sp-full-height sp-color-bar-small">
-                    <i class="mdi-alpha-b-box-outline mdi sp-color-icon"></i>
+                    <i [ngClass]="AppAttributeIcons.BackgroundColor" class="mdi-alpha-b-box-outline mdi sp-color-icon"></i>
                     <div
                     (click)="onBackgroundColorClick()"
                     class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline sp-ease-background-color-1"
                     [ngStyle]="palette.background.cssBgColor"></div>
                   </div>
                   <div class="sp-full-height sp-color-bar-small">
-                    <i class="mdi-numeric-1-box-outline mdi sp-color-icon"></i>
+                    <i [ngClass]="AppAttributeIcons.PrimaryColor" class="sp-color-icon"></i>
                     <div
                     (click)="onPrimaryColorClick()"
                     class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline sp-ease-background-color-1"
                     [ngStyle]="palette.primary.cssBgColor"></div>
                   </div>
                   <div class="sp-full-height sp-color-bar-small">
-                    <i class="mdi-numeric-2-box-outline mdi sp-color-icon"></i>
+                    <i [ngClass]="AppAttributeIcons.SecondaryColor" class="sp-color-icon"></i>
                     <div
                     (click)="onSecondaryColorClick()"
                     class="sp-full-height sp-full-width sp-clickable sp-color-bar-outline sp-ease-background-color-1"

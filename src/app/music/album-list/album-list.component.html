@@ -12,7 +12,23 @@
         *ngIf="item.recentIcon && !item.recentIcon.hidden"
         class="sp-new-item-icon"
         [ngClass]="[item.recentIcon.icon, item.recentIcon.styleClass]"  [title]="item.recentIcon.tooltip"></i>
+        <!-- Title -->
         <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
+        <!-- Other Indicators -->
+        <span class="sp-text-medium">
+          <!-- 
+            Icon / Color
+            Live / Green
+            Soundtrack / BlueLight
+            Compilation / Orange
+            Single / Yellow
+          -->
+          <i *ngIf="item.albumType === 'Live'" [ngClass]="AppAttributeIcons.LiveOn" class="sp-title-icon sp-color-green"></i>
+          <i *ngIf="item.albumType === 'Soundtrack'" [ngClass]="AppAttributeIcons.Soundtrack" class="sp-title-icon sp-color-blue-light"></i>
+          <i *ngIf="item.albumType === 'Compilation'" [ngClass]="AppAttributeIcons.Compilation" class="sp-title-icon sp-color-orange"></i>
+          <i *ngIf="item.albumType === 'Single'" [ngClass]="AppAttributeIcons.Single" class="sp-title-icon sp-color-yellow"></i>
+        </span>
+        <!-- Line Break -->
         <br>
         <span class="sp-color-on-bg-low sp-text-small sp-no-select">
           <i [ngClass]="AppAttributeIcons.ArtistName">&nbsp;</i><span>{{item.primaryArtistStylized}}&nbsp;&nbsp;&nbsp;</span>

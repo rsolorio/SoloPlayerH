@@ -45,8 +45,8 @@ export enum AppAttributeIcons {
   RatingHalf = 'mdi-star-half-full mdi',
   FavoriteOn = 'mdi-heart mdi',
   FavoriteOff = 'mdi-heart-outline mdi',
-  LiveOn = 'mdi-broadcast mdi',
-  LiveOff = 'mdi-broadcast-off mdi',
+  LiveOn = 'mdi-access-point mdi',
+  LiveOff = 'mdi-access-point-off mdi',
   LyricsOn = 'mdi-script-text-outline mdi',
   LyricsOff = 'mdi-script-outline mdi',
   ExplicitOn = 'mdi-alpha-e-box mdi',
@@ -99,7 +99,13 @@ export enum AppAttributeIcons {
   QualityMedium = 'mdi-quality-medium mdi',
   QualityHigh = 'mdi-quality-high mdi',
   Frequency = 'mdi-resistor mdi',
-  ReplayGain = 'mdi-motion-play-outline mdi'
+  ReplayGain = 'mdi-volume-equal mdi',
+  BackgroundColor = 'mdi-alpha-b-box-outline mdi',
+  PrimaryColor = 'mdi-numeric-1-box-outline mdi',
+  SecondaryColor = 'mdi-numeric-2-box-outline mdi',
+  Soundtrack = 'mdi-filmstrip mdi',
+  Compilation = 'mdi-music-box-multiple-outline mdi',
+  Single = 'mdi-numeric-1-circle-outline mdi'
 }
 
 export enum AppActionIcons {
@@ -155,7 +161,12 @@ export enum AppActionIcons {
   TimeBackward = 'mdi-replay mdi',
   TimeForward = 'mdi-replay mdi-flip-h mdi',
   PlusOne = 'mdi-numeric-positive-1 mdi',
-  FileSync = 'mdi-file-sync mdi'
+  FileSync = 'mdi-file-sync mdi',
+  Click = 'mdi-cursor-default-click-outline mdi',
+  Aim = 'mdi-bullseye mdi',
+  Undo = 'mdi-undo-variant mdi',
+  ChevronLeft = 'mdi-chevron-left mdi',
+  ChevronRight = 'mdi-chevron-right mdi'
 }
 
 export enum AppPlayerIcons {
