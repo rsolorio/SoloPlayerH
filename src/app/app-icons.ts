@@ -104,8 +104,9 @@ export enum AppAttributeIcons {
   PrimaryColor = 'mdi-numeric-1-box-outline mdi',
   SecondaryColor = 'mdi-numeric-2-box-outline mdi',
   Soundtrack = 'mdi-filmstrip mdi',
-  Compilation = 'mdi-music-box-multiple-outline mdi',
-  Single = 'mdi-numeric-1-circle-outline mdi'
+  Compilation = 'mdi-music-box-multiple mdi',
+  Single = 'mdi-numeric-1-box mdi',
+  Ep = 'mdi-numeric-1-box-multiple mdi'
 }
 
 export enum AppActionIcons {

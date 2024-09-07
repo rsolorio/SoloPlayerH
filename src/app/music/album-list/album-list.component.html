@@ -21,12 +21,14 @@
             Live / Green
             Soundtrack / BlueLight
             Compilation / Orange
-            Single / Yellow
+            Single / Yellow,
+            EP / Yellow
           -->
           <i *ngIf="item.albumType === 'Live'" [ngClass]="AppAttributeIcons.LiveOn" class="sp-title-icon sp-color-green"></i>
           <i *ngIf="item.albumType === 'Soundtrack'" [ngClass]="AppAttributeIcons.Soundtrack" class="sp-title-icon sp-color-blue-light"></i>
-          <i *ngIf="item.albumType === 'Compilation'" [ngClass]="AppAttributeIcons.Compilation" class="sp-title-icon sp-color-orange"></i>
+          <i *ngIf="item.albumType === 'Compilation'" [ngClass]="AppAttributeIcons.Compilation" class="sp-title-icon sp-color-pink"></i>
           <i *ngIf="item.albumType === 'Single'" [ngClass]="AppAttributeIcons.Single" class="sp-title-icon sp-color-yellow"></i>
+          <i *ngIf="item.albumType === 'EP'" [ngClass]="AppAttributeIcons.Ep" class="sp-title-icon sp-color-yellow"></i>
         </span>
         <!-- Line Break -->
         <br>
