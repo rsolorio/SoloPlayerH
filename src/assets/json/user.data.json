@@ -740,6 +740,16 @@
         "sync": true
       },
       {
+        "name": "Salsa 80s-90s",
+        "description": "Musica salsa 80s y 90s.",
+        "filterCriteriaId": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",
+        "transformAlgorithm": 1,
+        "favorite": false,
+        "filterTypeId": "336ffcd4-941e-4aea-b94e-292ad5d6e36d",
+        "target": "song",
+        "sync": true
+      },
+      {
         "name": "Soundtracks Eng",
         "description": "Soundtrack music in English.",
         "filterCriteriaId": "b9cbfa1b-2c1f-4de0-8bea-2db07e8e25a6",
@@ -967,6 +977,12 @@
       },
       {
         "id": "cb5cf6b9-03db-4e80-b5b1-e9f16af2fa91",
+        "distinct": false,
+        "limit": 0,
+        "random": 0
+      },
+      {
+        "id": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",
         "distinct": false,
         "limit": 0,
         "random": 0
@@ -2515,6 +2531,74 @@
         "isRelativeDate": false,
         "displayName": "Vbr",
         "displayValue": "No"
+      },
+      {
+        "filterCriteriaId": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",
+        "columnName": "genre",
+        "columnValue": "Salsa",
+        "comparison": 1,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 0,
+        "sortSequence": 0,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Genre",
+        "displayValue": "Salsa"
+      },
+      {
+        "filterCriteriaId": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",
+        "columnName": "releaseDecade",
+        "columnValue": "1980",
+        "comparison": 1,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 0,
+        "sortSequence": 0,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Release Decade",
+        "displayValue": "1980"
+      },
+      {
+        "filterCriteriaId": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",
+        "columnName": "releaseDecade",
+        "columnValue": "1990",
+        "comparison": 1,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 0,
+        "sortSequence": 0,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Release Decade",
+        "displayValue": "1990"
+      },
+      {
+        "filterCriteriaId": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",
+        "columnName": "rating",
+        "comparison": 0,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 1,
+        "sortSequence": 1,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Sort By",
+        "displayValue": "Rating"
+      },
+      {
+        "filterCriteriaId": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",
+        "columnName": "playCount",
+        "comparison": 0,
+        "valuesOperator": 0,
+        "expressionOperator": 0,
+        "sortDirection": 1,
+        "sortSequence": 2,
+        "ignoreInSelect": false,
+        "isRelativeDate": false,
+        "displayName": "Sort By",
+        "displayValue": "Play Count"
       }
     ]
   },
