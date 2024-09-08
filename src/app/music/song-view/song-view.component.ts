@@ -334,6 +334,26 @@ export class SongViewComponent implements OnInit {
               }
             },
           ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'comment',
+              icon: AppAttributeIcons.Description,
+              label: 'Comment',
+              editorType: ValueEditorType.Multiline,
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                SongEntity.findOneBy({ id: this.songId }).then(song => {
+                  song.comment = this.entityEditorModel.data['comment'];
+                  song.save();
+                });
+              }
+            },
+          ]
         }
       ]
     };
