@@ -41,6 +41,10 @@ export class ValueLists {
       Album: {
         id: 'c613d1e5-f7b1-4533-92a8-7d57b7906daf',
         name: 'Album'
+      },
+      Soundtrack: {
+        id: '98f441d4-4bd1-da01-faee-ab7432a89ca1',
+        name: 'Soundtrack'
       }
     }
   };
@@ -84,7 +88,13 @@ export class ValueLists {
     id: '41c17123-ba0a-43ea-bc32-39b3b6d4ed52'
   };
   static Genre = {
-    id: '79907d9f-1e09-4dad-a497-dfd92398bac0'
+    id: '79907d9f-1e09-4dad-a497-dfd92398bac0',
+    entries: {
+      Soundtrack: {
+        id: '',
+        name: 'Soundtrack'
+      }
+    }
   };
   static Subgenre = {
     id: '522b4e6c-1161-477b-ad5f-0a219f46d99d',

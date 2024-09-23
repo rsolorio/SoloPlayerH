@@ -313,6 +313,13 @@ export class ScanAudioService {
     if (genres.length) {
       // Set the first genre found as the main genre
       this.songToProcess.genre = genres[0].name;
+
+      // Special case for soundtracks
+      if (this.songToProcess.genre === ValueLists.Genre.entries.Soundtrack.name &&
+        primaryAlbum.albumType != ValueLists.AlbumType.entries.Soundtrack.name)
+      {
+        primaryAlbum.albumType = ValueLists.AlbumType.entries.Soundtrack.name;
+      }
     }
 
     // Same for classifications

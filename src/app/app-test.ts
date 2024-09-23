@@ -605,7 +605,8 @@ export class AppTestService {
     const queries: string[] = [];
     //queries.push('SELECT country, COUNT(id) AS artistCount FROM artist GROUP BY country ORDER BY artistCount DESC');
     queries.push(`SELECT name FROM albumArtistView WHERE country = 'Unknown' ORDER BY name`);
-    queries.push('SELECT artistType, COUNT(id) AS artistCount FROM artist GROUP BY artistType ORDER BY artistCount DESC');
+    queries.push('SELECT artistType, COUNT(id) AS artistCount FROM albumArtistView GROUP BY artistType ORDER BY artistCount DESC');
+    queries.push('SELECT albumType, COUNT(id) AS albumCount FROM album GROUP BY albumType ORDER BY albumCount DESC');
     queries.push('SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0'); // 225.477
     queries.push('SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade');
     queries.push('SELECT mood, COUNT(id) AS songCount FROM song GROUP BY mood ORDER BY mood'); // Unknown: 1773

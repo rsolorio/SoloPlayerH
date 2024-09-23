@@ -15,7 +15,7 @@
     <!-- Input -->
     <ng-container [ngSwitch]="field.editorType">
       <input *ngSwitchCase="ValueEditorType.YesNo" type="text" [ngModel]="getYesNoValue(field)" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>
-      <textarea *ngSwitchCase="ValueEditorType.Multiline" type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium sp-multiline" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" [readonly]="!field.editEnabled"></textarea>
+      <textarea *ngSwitchCase="ValueEditorType.Multiline" type="text" [(ngModel)]="model.data[field.propertyName]" [title]="model.data[field.propertyName]" class="sp-input-control sp-text-medium sp-multiline" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" [readonly]="!field.editEnabled"></textarea>
       <input *ngSwitchDefault type="text" [(ngModel)]="model.data[field.propertyName]" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" [readonly]="!field.editEnabled">
     </ng-container>
     
