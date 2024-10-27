@@ -165,30 +165,10 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Decade: $str(%decade%)",
-        "destination": "genre",
-        "priority": 1,
-        "sequence": 3,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Mood: %mood%",
-        "destination": "genre",
-        "priority": 1,
-        "sequence": 4,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "Language: %language%",
         "destination": "genre",
         "priority": 1,
-        "sequence": 5,
+        "sequence": 3,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -199,7 +179,7 @@
         "source": "Category: %item%",
         "destination": "genre",
         "priority": 1,
-        "sequence": 6,
+        "sequence": 4,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -210,7 +190,7 @@
         "source": "Occasion: %item%",
         "destination": "genre",
         "priority": 1,
-        "sequence": 7,
+        "sequence": 5,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -221,7 +201,7 @@
         "source": "Instrument: %item%",
         "destination": "genre",
         "priority": 1,
-        "sequence": 8,
+        "sequence": 6,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -231,7 +211,7 @@
         "source": "Country: %country%",
         "destination": "genre",
         "priority": 1,
-        "sequence": 9,
+        "sequence": 7,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -241,7 +221,7 @@
         "source": "$if(%replayGain%,RG: $pad(%replayGain%,2,1))",
         "destination": "genre",
         "priority": 1,
-        "sequence": 10,
+        "sequence": 8,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -259,18 +239,8 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$str(%decade%)/%genre%/%language%",
+        "source": "Decade: $str(%decade%)",
         "destination": "publisher",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%albumType%",
-        "destination": "mood",
         "priority": 1,
         "sequence": 1,
         "userDefined": false,
@@ -401,6 +371,16 @@
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%albumType%",
         "destination": "MusicBrainz Album Type",
+        "priority": 1,
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$str(%decade%)/%language%",
+        "destination": "Style",
         "priority": 1,
         "sequence": 1,
         "userDefined": true,
