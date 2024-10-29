@@ -18,6 +18,8 @@ export class ArtistEntity extends ListItemEntity implements IArtistModel {
   favorite: boolean;
   @Column()
   vocal: boolean;
+  @Column({ nullable: true })
+  mbId: string;
 
   // Properties for views
   albumCount: number;

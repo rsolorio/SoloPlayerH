@@ -106,7 +106,8 @@ export enum AppAttributeIcons {
   Soundtrack = 'mdi-filmstrip mdi',
   Compilation = 'mdi-music-box-multiple mdi',
   Single = 'mdi-numeric-1-box mdi',
-  Ep = 'mdi-numeric-1-box-multiple mdi'
+  Ep = 'mdi-numeric-1-box-multiple mdi',
+  MbId = 'mdi-identifier mdi'
 }
 
 export enum AppActionIcons {

@@ -108,11 +108,7 @@ export class ArtistViewComponent implements OnInit {
               icon: AppAttributeIcons.Gender,
               label: 'Gender',
               onEdit: () => this.editGender()
-            }
-          ]
-        },
-        {
-          fields: [
+            },
             {
               propertyName: 'vocal',
               icon: AppAttributeIcons.Vocal,
@@ -124,6 +120,25 @@ export class ArtistViewComponent implements OnInit {
                   artist.save().then(() => {
                     this.entityEditorModel.data['vocal'] = artist.vocal;
                   });
+                });
+              }
+            }
+          ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'mbId',
+              icon: AppAttributeIcons.MbId,
+              label: 'MbId',
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                ArtistEntity.findOneBy({ id: this.artistId }).then(artist => {
+                  artist.mbId = this.entityEditorModel.data['mbId'];
+                  artist.save();
                 });
               }
             }
