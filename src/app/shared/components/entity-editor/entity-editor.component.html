@@ -1,17 +1,14 @@
 <div *ngFor="let group of model.groups" class="sp-field-group">
   <div *ngFor="let field of group.fields" class="sp-input-group">
-    <!-- Field Icon -->
     <span
-    *ngIf="!field.labelVisible"
-    class="sp-input-prepend-icon sp-text-large sp-clickable"
-    (click)="onPrependClick(field)"
-    ><i [ngClass]="field.icon"></i></span>
-    <!-- Field Label -->
-    <span
-    *ngIf="field.labelVisible"
     class="sp-input-prepend-label sp-text-large sp-clickable"
-    (click)="onPrependClick(field)"
-    >{{field.label}}</span>
+    [ngClass]="{ 'sp-color-primary': hasValue(field) }"
+    (click)="onPrependClick(field)">
+      <!-- Field Label -->
+      <ng-container *ngIf="field.labelVisible">{{field.label}}</ng-container>
+      <!-- Field Icon -->
+      <ng-container *ngIf="!field.labelVisible"><i [ngClass]="field.icon"></i></ng-container>
+    </span>
     <!-- Input -->
     <ng-container [ngSwitch]="field.editorType">
       <input *ngSwitchCase="ValueEditorType.YesNo" type="text" [ngModel]="getYesNoValue(field)" class="sp-input-control sp-text-medium" [ngClass]="{ 'sp-input-control-editable': field.onEdit }" readonly>

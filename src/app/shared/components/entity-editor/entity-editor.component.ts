@@ -33,4 +33,18 @@ export class EntityEditorComponent implements OnInit {
     return 'No';
   }
 
+  public hasValue(field: IEntityFieldModel): boolean {
+    const data = this.model.data[field.propertyName];
+    if (data === undefined || data === null || data === '') {
+      return false;
+    }
+    if (field.editorType === ValueEditorType.Number && data === 0) {
+      return false;
+    }
+    if (field.editorType === ValueEditorType.ValueList && data === '<None>') {
+      return false;
+    }
+    return true;
+  }
+
 }

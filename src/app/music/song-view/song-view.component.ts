@@ -85,6 +85,7 @@ export class SongViewComponent implements OnInit {
         propertyName: classificationType.name,
         icon: this.getClassificationTypeIcon(classificationType.id),
         label: classificationType.name,
+        editorType: ValueEditorType.ValueList,
         onEdit: () => {
           let selectedEntries: string[] = [];
           if (this.entityEditorModel.data[classificationType.id]) {
@@ -252,7 +253,8 @@ export class SongViewComponent implements OnInit {
             {
               propertyName: 'vbr',
               icon: AppAttributeIcons.Vbr,
-              label: 'VBR'
+              label: 'VBR',
+              editorType: ValueEditorType.YesNo
             },
             {
               propertyName: 'replayGain',
