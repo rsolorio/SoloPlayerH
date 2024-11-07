@@ -396,9 +396,9 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.PCNT = playCount.toString();
     }
 
-    const udTexts = this.createUserDefinedLists(metadata, [
+    const udTexts = this.createUserDefinedTexts(metadata, [
       MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
-    ]);
+    ], true);
 
     const rating = this.first(metadata[MetaField.Rating]);
     if (rating) {
@@ -437,7 +437,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     const userDefinedFields = metadata[MetaField.UserDefinedField];
     if (userDefinedFields?.length) {
-      tags.TXXX = udTexts.concat(this.createUserDefinedTexts(metadata, userDefinedFields));
+      tags.TXXX = udTexts.concat(this.createUserDefinedTexts(metadata, userDefinedFields, false));
     }
     else {
       tags.TXXX = udTexts;
@@ -468,31 +468,19 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     return tags;
   }
 
-  private createUserDefinedTexts(metadata: KeyValues, properties: string[]): IUserDefinedText[] {
+  private createUserDefinedTexts(metadata: KeyValues, properties: string[], upperCaseDescription: boolean): IUserDefinedText[] {
     const result: IUserDefinedText[] = [];
     for (const property of properties) {
-      // This is assuming a user defined property returns only one value
-      const value = this.first(metadata[property]);
-      if (value) {
-        let text: any;
-        if (this.utility.isDate(value)) {
-          text = this.utility.toReadableDateAndTime(value);
-        }
-        else {
-          text = value.toString();
-        }
-        result.push({ description: property, text: text });
-      }
-    }
-    return result;
-  }
-
-  private createUserDefinedLists(metadata: KeyValues, properties: string[]): IUserDefinedText[] {
-    const result: IUserDefinedText[] = [];
-    for (const property of properties) {
-      const values = metadata[property];
+      let values = metadata[property];
       if (values?.length) {
-        result.push({ description: property.toUpperCase(), text: values.join(',')})
+        // Format as date or string
+        values = values.map(value => {
+          if (this.utility.isDate(value)) {
+            return this.utility.toReadableDateAndTime(value);
+          }
+          return value.toString();
+        });
+        result.push({ description: upperCaseDescription ? property.toUpperCase() : property, text: values.join(',')});
       }
     }
     return result;

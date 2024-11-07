@@ -208,20 +208,10 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Country: %country%",
-        "destination": "genre",
-        "priority": 1,
-        "sequence": 7,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "$if(%replayGain%,RG: $pad(%replayGain%,2,1))",
         "destination": "genre",
         "priority": 1,
-        "sequence": 8,
+        "sequence": 7,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -239,7 +229,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Decade: $str(%decade%)",
+        "source": "%publisher%",
         "destination": "publisher",
         "priority": 1,
         "sequence": 1,
@@ -329,16 +319,6 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%artistType%",
-        "destination": "ArtistType",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%favorite%",
         "destination": "Favorite",
         "priority": 1,
@@ -383,6 +363,36 @@
         "destination": "Style",
         "priority": 1,
         "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Decade: $str(%decade%)",
+        "destination": "Tags",
+        "priority": 1,
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Country: %country%",
+        "destination": "Album_Artists_Tags",
+        "priority": 1,
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Type: %artistType%",
+        "destination": "Album_Artists_Tags",
+        "priority": 1,
+        "sequence": 2,
         "userDefined": true,
         "disabled": false,
         "system": false
