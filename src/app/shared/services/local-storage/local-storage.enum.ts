@@ -12,5 +12,6 @@ export enum LocalStorageKeys {
     Filters = 'sp.Filters',
     ValueListEntries = 'sp.ValueListEntries',
     ColorUtility = 'sp.ColorUtility',
-    DebugMode = 'sp.DebugMode'
+    DebugMode = 'sp.DebugMode',
+    LastFmSessionKey = 'sp.LastFmSessionKey'
 }
