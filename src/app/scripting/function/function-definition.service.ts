@@ -39,6 +39,7 @@ export class FunctionDefinitionService {
     this.padFunction();
     this.intFunction();
     this.strFunction();
+    this.upperFunction();
     this.noBracketsFunction();
     this.nowFunction();
     this.pathFunction();
@@ -147,6 +148,21 @@ export class FunctionDefinitionService {
         const x = args[0];
         if (x !== null && x !== undefined) {
           return x.toString();
+        }
+        return '';
+      }
+    });
+  }
+
+  private upperFunction(): void {
+    this.functions.push({
+      name: 'upper',
+      syntax: '$upper(x)',
+      description: 'Converts x to upper case.',
+      fn: args => {
+        const x = args[0];
+        if (x !== null && x !== undefined) {
+          return x.toUpperCase();
         }
         return '';
       }

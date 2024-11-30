@@ -144,7 +144,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Genre: %genre%",
+        "source": "%genre%",
         "destination": "genre",
         "priority": 1,
         "sequence": 1,
@@ -154,8 +154,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "iterator": "$getSubGenres()",
-        "source": "Genre: %item%",
+        "source": "%genre%/%language%",
         "destination": "genre",
         "priority": 1,
         "sequence": 2,
@@ -165,7 +164,8 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Language: %language%",
+        "iterator": "$getSubGenres()",
+        "source": "%item%",
         "destination": "genre",
         "priority": 1,
         "sequence": 3,
@@ -175,8 +175,8 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "iterator": "$getCategories()",
-        "source": "Category: %item%",
+        "iterator": "$getSubGenres()",
+        "source": "%item%/%language%",
         "destination": "genre",
         "priority": 1,
         "sequence": 4,
@@ -186,40 +186,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "iterator": "$getOccasions()",
-        "source": "Occasion: %item%",
-        "destination": "genre",
-        "priority": 1,
-        "sequence": 5,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "iterator": "$getInstruments()",
-        "source": "Instrument: %item%",
-        "destination": "genre",
-        "priority": 1,
-        "sequence": 6,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$if(%replayGain%,RG: $pad(%replayGain%,2,1))",
-        "destination": "genre",
-        "priority": 1,
-        "sequence": 7,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "iterator": "$getTechInfo()",
-        "source": "%item%",
+        "source": "$getTechInfo()",
         "destination": "composer",
         "priority": 1,
         "sequence": 1,
@@ -229,7 +196,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%publisher%",
+        "source": "$upper(%ext%)",
         "destination": "publisher",
         "priority": 1,
         "sequence": 1,
@@ -359,7 +326,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$str(%decade%)/%language%",
+        "source": "$str(%decade%)/%genre%",
         "destination": "Style",
         "priority": 1,
         "sequence": 1,
@@ -373,6 +340,69 @@
         "destination": "Tags",
         "priority": 1,
         "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Language: %language%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "iterator": "$getCategories()",
+        "source": "Category: %item%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 2,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "iterator": "$getOccasions()",
+        "source": "Occasion: %item%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 3,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "iterator": "$getInstruments()",
+        "source": "Instrument: %item%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 4,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Mood: %mood%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 5,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$if(%replayGain%,RG: $pad(%replayGain%,2,1))",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 5,
         "userDefined": true,
         "disabled": false,
         "system": false
