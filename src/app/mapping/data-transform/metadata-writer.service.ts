@@ -204,7 +204,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
    * album, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
-   * seconds, tempo (bpm), owner, ufid, playCount, rating, replayGain, url, videoUrl,
+   * seconds, tempo (bpm), owner, ufid, playCount, rating, replayGain, url, videoUrl, advisory,
    * subgenre, category, occasion, instrument,
    * albumImage, albumSecondaryImage, singleImage, albumArtistImage
    */
@@ -417,6 +417,14 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       udTexts.push({
         description: 'RATING',
         text: this.convert5To100(rating).toString()
+      });
+    }
+
+    const advisory = this.first(metadata[MetaAttribute.Advisory]);
+    if (advisory) {
+      udTexts.push({
+        description: 'ITUNESADVISORY',
+        text: advisory.toString()
       });
     }
 

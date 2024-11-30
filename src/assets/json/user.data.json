@@ -39,7 +39,7 @@
         "name": "dbToId3Mappings",
         "type": "SongModel",
         "config": "",
-        "attributes": "track,media,mediaSubtitle,year,album,albumSort,albumArtist,artist,ufId,albumImage,title,cleanTitle,artistType,owner,genre,subgenre,occasion,instrument,category,rating,playCount,performerCount,mood,language,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,description,seconds,url,tempo,replayGain,subtitle,albumStylized,publisher,playHistory,unSyncLyrics",
+        "attributes": "track,media,mediaSubtitle,year,album,albumSort,albumArtist,artist,ufId,albumImage,title,cleanTitle,artistType,owner,genre,subgenre,occasion,instrument,category,rating,advisory,playCount,performerCount,mood,language,addDate,changeDate,playDate,filePath,fileName,grouping,composer,composerSort,titleSort,albumArtistSort,comment,description,seconds,url,tempo,replayGain,subtitle,albumStylized,publisher,playHistory,unSyncLyrics",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,
