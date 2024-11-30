@@ -6,7 +6,7 @@ import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DataSourceType } from '../data-source/data-source.enum';
 import { SongModelSourceService } from '../data-source/song-model-source.service';
 import { FileService } from 'src/app/platform/file/file.service';
-import { MetaField } from './data-transform.enum';
+import { MetaAttribute } from './data-transform.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 /**
@@ -33,7 +33,7 @@ export class MetadataNetWriterService extends DataTransformServiceBase<ISongMode
     // 1. Get the metadata
     const metadata = await this.getData(input);
     // 2. Create the file
-    const filePath = this.utility.first(metadata[MetaField.FilePath]);
+    const filePath = this.utility.first(metadata[MetaAttribute.FilePath]);
     await this.fileService.copyFile(input.filePath, filePath);
     // 3. Write metadata
     await this.writeMetadata(metadata);

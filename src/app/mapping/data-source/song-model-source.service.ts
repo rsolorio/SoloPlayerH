@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IDataSourceParsed, IDataSourceService } from './data-source.interface';
 import { ISongExtendedModel } from 'src/app/shared/models/song-model.interface';
-import { MetaField } from '../data-transform/data-transform.enum';
+import { MetaAttribute } from '../data-transform/data-transform.enum';
 import { DataMappingEntity, RelatedImageEntity, SongClassificationEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
@@ -13,8 +13,11 @@ import { appName } from 'src/app/app-exports';
 
 /**
  * A data source that retrieves information from a ISongModel object.
- * It has a hardcoded mapping to get the data from specific properties in the object, but it supports
- * mapping which means it can be configured to get the data using script expressions.
+ * It has a hardcoded logic to get the data from specific properties in the object, but it supports
+ * user mapping which means it can be configured to get the data using script expressions.
+ * In other words, attribute data is retrieved either by:
+ * - Processing a user mapping which contains an expression (hardcoded text and/or placeholders)
+ * - Running hardcoded logic associated with the given attribute
  */
 @Injectable({
   providedIn: 'root'
@@ -68,109 +71,109 @@ export class SongModelSourceService implements IDataSourceService {
     return true;
   }
 
-  public async getData(propertyName: string): Promise<any[]> {
-    const mappings = this.getMappings(propertyName);
+  public async getData(attributeName: string): Promise<any[]> {
+    const mappings = this.getMappings(attributeName);
     if (mappings?.length) {
       // Prefer user mappings over default mappings
       return this.getDataFromMappings(mappings);
     }
-    switch (propertyName) {
-      case MetaField.FileName:
+    switch (attributeName) {
+      case MetaAttribute.FileName:
         const parts = this.inputData.filePath.split('\\');
         const fileName = parts[parts.length - 1].replace('.' + this.inputData.fileExtension, '');
         return [fileName];
-      case MetaField.TrackNumber:
+      case MetaAttribute.TrackNumber:
         return [this.inputData.trackNumber];
-      case MetaField.MediaNumber:
+      case MetaAttribute.MediaNumber:
         return [this.inputData.mediaNumber];
-      case MetaField.Year:
+      case MetaAttribute.Year:
         return [this.inputData.releaseYear];
-      case MetaField.Album:
+      case MetaAttribute.Album:
         // TODO: get unique name
         return [this.inputData.primaryAlbumName];
-      case MetaField.Description:
+      case MetaAttribute.Description:
         return [this.inputData.primaryAlbumDescription];
-      case MetaField.AlbumStylized:
+      case MetaAttribute.AlbumStylized:
         return [this.inputData.primaryAlbumStylized];
-      case MetaField.AlbumSort:
+      case MetaAttribute.AlbumSort:
         return [this.inputData.primaryAlbumSort];
-      case MetaField.AlbumType:
+      case MetaAttribute.AlbumType:
         return [this.inputData.primaryAlbumType];
-      case MetaField.Publisher:
+      case MetaAttribute.Publisher:
         return [this.inputData.primaryAlbumPublisher];
-      case MetaField.AlbumArtist:
+      case MetaAttribute.AlbumArtist:
         return [this.inputData.primaryArtistName];
-      case MetaField.AlbumArtistSort:
+      case MetaAttribute.AlbumArtistSort:
         return [this.inputData.primaryArtistSort];
-      case MetaField.AlbumArtistStylized:
+      case MetaAttribute.AlbumArtistStylized:
         return [this.inputData.primaryArtistStylized];
-      case MetaField.Artist:
+      case MetaAttribute.Artist:
         return this.getArtists();
-      case MetaField.ArtistStylized:
+      case MetaAttribute.ArtistStylized:
         return this.getStylizedArtists(this.inputData);
-      case MetaField.UfId:
+      case MetaAttribute.UfId:
         return [this.inputData.id];
-      case MetaField.AlbumImage:
+      case MetaAttribute.AlbumImage:
         return await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.Front);
-      case MetaField.AlbumSecondaryImage:
+      case MetaAttribute.AlbumSecondaryImage:
         return await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.FrontAlternate);
-      case MetaField.SingleImage:
+      case MetaAttribute.SingleImage:
         return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
-      case MetaField.AlbumArtistImage:
+      case MetaAttribute.AlbumArtistImage:
         return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.AlbumArtist);
-      case MetaField.Title:
+      case MetaAttribute.Title:
         return [this.inputData.name];
-      case MetaField.CleanTitle:
+      case MetaAttribute.CleanTitle:
         return [this.inputData.cleanName];
-      case MetaField.ArtistType:
+      case MetaAttribute.ArtistType:
         return [this.inputData.primaryArtistType];
-      case MetaField.UnSyncLyrics:
+      case MetaAttribute.UnSyncLyrics:
         // TODO: remove this property and implement a method to get this data
         return [this.inputData.lyrics];
-      case MetaField.Owner:
+      case MetaAttribute.Owner:
         // TODO: a module option?
         return [appName];
-      case MetaField.Genre:
+      case MetaAttribute.Genre:
         return this.getClassifications(this.inputData.id, ValueLists.Genre.id);
-      case MetaField.Subgenre:
+      case MetaAttribute.Subgenre:
         return this.getClassifications(this.inputData.id, ValueLists.Subgenre.id);
-      case MetaField.Category:
+      case MetaAttribute.Category:
         return this.getClassifications(this.inputData.id, ValueLists.Category.id);
-      case MetaField.Occasion:
+      case MetaAttribute.Occasion:
         return this.getClassifications(this.inputData.id, ValueLists.Occasion.id);
-      case MetaField.Instrument:
+      case MetaAttribute.Instrument:
         return this.getClassifications(this.inputData.id, ValueLists.Instrument.id);
-      case MetaField.Url:
+      case MetaAttribute.Url:
         return [this.inputData.infoUrl];
-      case MetaField.PlayHistory:
+      case MetaAttribute.PlayHistory:
         return []; // ToDo
-      case MetaField.Rating:
-      case MetaField.PlayCount:
-      case MetaField.PerformerCount:
-      case MetaField.Mood:
-      case MetaField.Language:
-      case MetaField.Favorite:
-      case MetaField.Live:
-      case MetaField.Explicit:
-      case MetaField.AddDate:
-      case MetaField.ChangeDate:
-      case MetaField.PlayDate:
-      case MetaField.FilePath:
-      case MetaField.Grouping:
-      case MetaField.Composer:
-      case MetaField.ComposerSort:
-      case MetaField.OriginalArtist:
-      case MetaField.OriginalAlbum:
-      case MetaField.OriginalReleaseYear:
-      case MetaField.TitleSort:
-      case MetaField.Comment:
-      case MetaField.Seconds:
-      case MetaField.Tempo:
-      case MetaField.ReplayGain:
-      case MetaField.Country:
-      case MetaField.Subtitle:
-      case MetaField.MediaSubtitle:
-        return [this.inputData[propertyName]];
+      case MetaAttribute.Rating:
+      case MetaAttribute.PlayCount:
+      case MetaAttribute.PerformerCount:
+      case MetaAttribute.Mood:
+      case MetaAttribute.Language:
+      case MetaAttribute.Favorite:
+      case MetaAttribute.Live:
+      case MetaAttribute.Explicit:
+      case MetaAttribute.AddDate:
+      case MetaAttribute.ChangeDate:
+      case MetaAttribute.PlayDate:
+      case MetaAttribute.FilePath:
+      case MetaAttribute.Grouping:
+      case MetaAttribute.Composer:
+      case MetaAttribute.ComposerSort:
+      case MetaAttribute.OriginalArtist:
+      case MetaAttribute.OriginalAlbum:
+      case MetaAttribute.OriginalReleaseYear:
+      case MetaAttribute.TitleSort:
+      case MetaAttribute.Comment:
+      case MetaAttribute.Seconds:
+      case MetaAttribute.Tempo:
+      case MetaAttribute.ReplayGain:
+      case MetaAttribute.Country:
+      case MetaAttribute.Subtitle:
+      case MetaAttribute.MediaSubtitle:
+        return [this.inputData[attributeName]];
     }
     return [];
   }
@@ -269,7 +272,7 @@ export class SongModelSourceService implements IDataSourceService {
         }
         break;
       case '$getTechInfo()':
-        result = [this.inputData.fileExtension.toUpperCase(), this.getQuality(this.inputData)];
+        result = `${this.inputData.fileExtension.toUpperCase()}/${this.getQuality(this.inputData)}`;
         break;
       case '$getStylizedArtists()':
         result = this.getStylizedArtists(this.inputData);

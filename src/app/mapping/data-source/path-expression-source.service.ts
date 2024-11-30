@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
 import { IDataSourceParsed, IDataSourceService } from './data-source.interface';
-import { MetaField } from '../data-transform/data-transform.enum';
+import { MetaAttribute } from '../data-transform/data-transform.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IFileInfo } from 'music-metadata-browser';
 
+/**
+ * A data source that retrieves information from the path of a file.
+ * The list of attributes are processed as regex groups and used to get the data from the path.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -24,9 +28,9 @@ export class PathExpressionSourceService implements IDataSourceService {
     if (!this.entityData || this.entityData.config !== entity.config) {
       // 1. Convert tokens into regex groups
       this.regExpText = entity.config;
-      for (const field of entity.fieldArray) {
-        const token = `%${field}%`;
-        const group = `(?<${field}>[^\\\\]+)`;
+      for (const attribute of entity.attributeArray) {
+        const token = `%${attribute}%`;
+        const group = `(?<${attribute}>[^\\\\]+)`;
         this.regExpText = this.regExpText.replace(token, group);
       }
       // 2. Escape backslashes since they are special characters in reg exp
@@ -51,25 +55,25 @@ export class PathExpressionSourceService implements IDataSourceService {
     return true;
   }
 
-  public async getData(propertyName: string): Promise<any[]> {
+  public async getData(attributeName: string): Promise<any[]> {
     if (!this.matchInfo || !this.matchInfo.groups) {
       return [];
     }
 
-    switch (propertyName) {
-      case MetaField.Language:
-      case MetaField.Genre:
-      case MetaField.Artist:
-      case MetaField.Album:
-      case MetaField.Title:
-        const valueText = this.matchInfo.groups[propertyName];
+    switch (attributeName) {
+      case MetaAttribute.Language:
+      case MetaAttribute.Genre:
+      case MetaAttribute.Artist:
+      case MetaAttribute.Album:
+      case MetaAttribute.Title:
+        const valueText = this.matchInfo.groups[attributeName];
         if (valueText) {
           return [valueText];
         }
         break;
-      case MetaField.Contributor:
+      case MetaAttribute.Contributor:
         // Try to get contributors from the artist
-        const artist = this.matchInfo.groups[MetaField.Artist];
+        const artist = this.matchInfo.groups[MetaAttribute.Artist];
         if (artist) {
           const artists = artist.split(' - ');
           if (artists.length > 1) {
@@ -78,9 +82,9 @@ export class PathExpressionSourceService implements IDataSourceService {
           }
         }
         break;
-      case MetaField.FeaturingArtist:
+      case MetaAttribute.FeaturingArtist:
         const featuring: string[] = [];
-        const title = this.matchInfo.groups[MetaField.Title];
+        const title = this.matchInfo.groups[MetaAttribute.Title];
         const bracketsContents = title.match(/(?<=\[).+?(?=\])/g);
         if (bracketsContents && bracketsContents.length) {
           for (const content of bracketsContents) {
@@ -91,10 +95,10 @@ export class PathExpressionSourceService implements IDataSourceService {
           }
         }
         return featuring;
-      case MetaField.Year:
-      case MetaField.MediaNumber:
-      case MetaField.TrackNumber:
-        const valueNumber = this.matchInfo.groups[propertyName];
+      case MetaAttribute.Year:
+      case MetaAttribute.MediaNumber:
+      case MetaAttribute.TrackNumber:
+        const valueNumber = this.matchInfo.groups[attributeName];
         if (valueNumber) {
           const number = parseInt(valueNumber, 10);
           if (number && !Number.isNaN(number)) {

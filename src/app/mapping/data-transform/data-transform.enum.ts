@@ -41,9 +41,9 @@ PRIV  Private                 Yes
 */
 
 /**
- * Supported fields for the transform tasks.
+ * Supported attributes for the transform tasks.
  */
-export enum MetaField {
+export enum MetaAttribute {
   /** String. Id3v2, Id3v1 */
   Artist = 'artist',
   /** String. Id3v2 */

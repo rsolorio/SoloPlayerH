@@ -449,7 +449,7 @@ export class DatabaseEntitiesService {
           id: sourceRow.id,
           type: sourceRow.type,
           config: sourceRow.config ? JSON.parse(sourceRow.config) : null,
-          fieldArray: sourceRow.fields ? sourceRow.fields.split(',') : null,
+          attributeArray: sourceRow.attributes ? sourceRow.attributes.split(',') : null,
           sequence: sourceRow.sequence,
           disabled: sourceRow.disabled,
           mappings: await DataMappingEntity.findBy({ dataSourceId: sourceRow.id })

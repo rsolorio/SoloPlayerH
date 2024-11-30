@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IDataSourceParsed, IDataSourceService } from './data-source.interface';
-import { MetaField } from '../data-transform/data-transform.enum';
+import { MetaAttribute } from '../data-transform/data-transform.enum';
 import { FileService } from 'src/app/platform/file/file.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { IImageSource } from 'src/app/core/models/core.interface';
@@ -68,59 +68,59 @@ export class FileInfoSourceService implements IDataSourceService {
     return true;
   }
 
-  public async getData(propertyName: string): Promise<any[]> {
+  public async getData(attributeName: string): Promise<any[]> {
     if (!this.inputData) {
       return null;
     }
-    switch (propertyName) {
-      case MetaField.FilePath:
+    switch (attributeName) {
+      case MetaAttribute.FilePath:
         return [this.inputData.path];
-      case MetaField.FileName:
+      case MetaAttribute.FileName:
         return [this.inputData.name];
-      case MetaField.FileExtension:
+      case MetaAttribute.FileExtension:
         return [this.inputData.extension.replace('.', '')];
-      case MetaField.AddDate:
+      case MetaAttribute.AddDate:
         return [this.inputData.addDate];
-      case MetaField.ChangeDate:
+      case MetaAttribute.ChangeDate:
         return [this.inputData.changeDate];
-      case MetaField.FileSize:
+      case MetaAttribute.FileSize:
         return [this.inputData.size];
-      case MetaField.UnSyncLyrics:
+      case MetaAttribute.UnSyncLyrics:
         const lyrics = await this.getLyrics(this.inputData);
         if (lyrics) {
           return [lyrics];
         }
         break;
-      case MetaField.ArtistImage:
-      case MetaField.AlbumArtistImage:
-      case MetaField.AlbumImage:
-      case MetaField.AlbumSecondaryImage:
-      case MetaField.SingleImage:
-      case MetaField.AlbumAnimated:
-        return this.getImageFile(propertyName);
-      case MetaField.AlbumArtistStylized:
-      case MetaField.Contributor:
-      case MetaField.Singer:
-        // This logic is for all meta fields that can be retrieved from the artist.json file
+      case MetaAttribute.ArtistImage:
+      case MetaAttribute.AlbumArtistImage:
+      case MetaAttribute.AlbumImage:
+      case MetaAttribute.AlbumSecondaryImage:
+      case MetaAttribute.SingleImage:
+      case MetaAttribute.AlbumAnimated:
+        return this.getImageFile(attributeName);
+      case MetaAttribute.AlbumArtistStylized:
+      case MetaAttribute.Contributor:
+      case MetaAttribute.Singer:
+        // This logic is for all meta attributes that can be retrieved from the artist.json file
         if (this.jsonInfo.artistContent) {
-          const propertyValue = this.jsonInfo.artistContent[propertyName];
+          const propertyValue = this.jsonInfo.artistContent[attributeName];
           if (propertyValue) {
             if (Array.isArray(propertyValue)) {
               return propertyValue;
             }
-            return [this.jsonInfo.artistContent[propertyName]];
+            return [this.jsonInfo.artistContent[attributeName]];
           }
         }
         break;
-      case MetaField.MediaSubtitles:
-        // This logic is for all meta fields that can be retrieved from the album.json file
+      case MetaAttribute.MediaSubtitles:
+        // This logic is for all meta attributes that can be retrieved from the album.json file
         if (this.jsonInfo.albumContent) {
-          const propertyValue = this.jsonInfo.albumContent[propertyName];
+          const propertyValue = this.jsonInfo.albumContent[attributeName];
           if (propertyValue) {
             if (Array.isArray(propertyValue)) {
               return propertyValue;
             }
-            return [this.jsonInfo.albumContent[propertyName]];
+            return [this.jsonInfo.albumContent[attributeName]];
           }
         }
         break;
@@ -146,30 +146,30 @@ export class FileInfoSourceService implements IDataSourceService {
     return result;
   }
 
-  private getImageFile(field: MetaField): IImageSource[] {
+  private getImageFile(field: MetaAttribute): IImageSource[] {
     let fileName = '';
     let levelsUp = 0;
     let imageType = MusicImageType.Default;
 
     switch (field) {
-      case MetaField.AlbumArtistImage:
+      case MetaAttribute.AlbumArtistImage:
         fileName = 'artist.jpg';
         levelsUp = 1;
         imageType = MusicImageType.AlbumArtist;
         break;
-      case MetaField.AlbumImage:
+      case MetaAttribute.AlbumImage:
         fileName = 'front.jpg';
         imageType = MusicImageType.Front;
         break;
-      case MetaField.AlbumSecondaryImage:
+      case MetaAttribute.AlbumSecondaryImage:
         fileName = 'front2.jpg';
         imageType = MusicImageType.FrontAlternate;
         break;
-      case MetaField.SingleImage:
+      case MetaAttribute.SingleImage:
         fileName = this.inputData.name + '.jpg';
         imageType = MusicImageType.Single;
         break;
-      case MetaField.AlbumAnimated:
+      case MetaAttribute.AlbumAnimated:
         fileName = 'animated.mp4';
         imageType = MusicImageType.FrontAnimated;
         break;
@@ -182,7 +182,7 @@ export class FileInfoSourceService implements IDataSourceService {
           sourcePath: filePath,
           sourceType: MusicImageSourceType.ImageFile,
           sourceIndex: 0,
-          mimeType: field === MetaField.AlbumAnimated ? MimeType.Mp4 : MimeType.Jpg,
+          mimeType: field === MetaAttribute.AlbumAnimated ? MimeType.Mp4 : MimeType.Jpg,
           imageType: imageType
         };
         return [imageData];

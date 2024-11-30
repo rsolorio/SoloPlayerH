@@ -8,7 +8,7 @@ import { FileInfoSourceService } from '../data-source/file-info-source.service';
 import { PathExpressionSourceService } from '../data-source/path-expression-source.service';
 import { IDataSourceService } from '../data-source/data-source.interface';
 import { DataSourceType } from '../data-source/data-source.enum';
-import { MetaField } from './data-transform.enum';
+import { MetaAttribute } from './data-transform.enum';
 
 /**
  * A transform service to retrieve metadata from a list of data sources;
@@ -17,7 +17,7 @@ import { MetaField } from './data-transform.enum';
  * This service assumes all the data sources have the same responsibility: read metadata from a file;
  * each data source type has an implicit way of reading metadata, but they all return
  * the same data type depending on the attribute being retrieved.
- * Each data source has its own configuration and its own list of supported fields to read.
+ * Each data source has its own configuration and its own list of supported attributes to read.
  * Although a generic data source can have mappings, currently, data sources for the metadata reader don't
  * support mappings, which means that the mappings between the metadata and the database are "hardcoded"
  * and cannot be customized.
@@ -35,23 +35,23 @@ export class MetadataReaderService extends DataTransformServiceBase<IFileInfo, I
     super();
   }
 
-  public run(input: IFileInfo, fieldArrayOverride?: string[]): Promise<KeyValues> {
-    return this.getData(input, fieldArrayOverride);
+  public run(input: IFileInfo, attributeArrayOverride?: string[]): Promise<KeyValues> {
+    return this.getData(input, attributeArrayOverride);
   }
 
-  protected async getData(input: IFileInfo, fieldArrayOverride?: string[]): Promise<KeyValues> {
+  protected async getData(input: IFileInfo, attributeArrayOverride?: string[]): Promise<KeyValues> {
     // All values for a given destination will be saved in an array
     const result: KeyValues = {};
     for (const source of this.sources) {
       if (source.service) {
         const initResult = await source.service.setSource(input, source);
         if (initResult.error) {
-          result[MetaField.Error] = [initResult.error];
+          result[MetaAttribute.Error] = [initResult.error];
           // TODO: continueOnError for other data sources
           return result;
         }
         else {
-          await this.setValuesAndMappings(result, source, fieldArrayOverride);
+          await this.setValuesAndMappings(result, source, attributeArrayOverride);
         }
       }
       else {

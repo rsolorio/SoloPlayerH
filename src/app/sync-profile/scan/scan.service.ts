@@ -8,7 +8,7 @@ import { ScanPlaylistsService } from './scan-playlists.service';
 import { IProcessDuration } from 'src/app/core/models/core.interface';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { PlaylistEntity, PlaylistSongEntity } from '../../shared/entities';
-import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { MetaAttribute } from 'src/app/mapping/data-transform/data-transform.enum';
 import { PeriodTimer } from 'src/app/core/models/timer.class';
 import { AppEvent } from 'src/app/app-events';
 
@@ -90,7 +90,7 @@ export class ScanService {
       const info: IScanItemInfo<IFileInfo> = { progress: fileCount, item: file, total: files.length };
       this.events.broadcast(AppEvent.ScanAudioFileStart, info);
       const metadata = await this.scanAudioService.processAudioFile(file);
-      const ignoredData = metadata[MetaField.Ignored];
+      const ignoredData = metadata[MetaAttribute.Ignored];
       if (ignoredData?.length && ignoredData[0]) {
         result.ignoredFiles.push(file.path);
       }

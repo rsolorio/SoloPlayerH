@@ -23,7 +23,7 @@ import { DatabaseOptionsService } from '../../shared/services/database/database-
 import { DatabaseLookupService } from '../../shared/services/database/database-lookup.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { ValueLists } from '../../shared/services/database/database.lists';
-import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { MetaAttribute } from 'src/app/mapping/data-transform/data-transform.enum';
 import { ISyncSongInfo } from './scan.interface';
 import { In, Not } from 'typeorm';
 import { AlbumName, ArtistName, EntityId, ImageName, ModuleOptionId, SyncProfileId } from '../../shared/services/database/database.seed';
@@ -63,7 +63,7 @@ export class ScanAudioService {
   private scanMode: ScanFileMode;
   private songToProcess: SongEntity;
   /** List of classification types that will be processed. */
-  private classTypeFields = [MetaField.Subgenre, MetaField.Category, MetaField.Occasion, MetaField.Instrument];
+  private classTypeFields = [MetaAttribute.Subgenre, MetaAttribute.Category, MetaAttribute.Occasion, MetaAttribute.Instrument];
   // Options
   private ignoreNumericGenres = false;
   private genreSplitSymbols: string[] = [];
@@ -252,23 +252,23 @@ export class ScanAudioService {
 
     if (this.scanMode === ScanFileMode.Skip) {
       return {
-        [MetaField.FileMode]: [this.scanMode],
-        [MetaField.Error]: []
+        [MetaAttribute.FileMode]: [this.scanMode],
+        [MetaAttribute.Error]: []
       };
     }
 
     const metadata = await this.metadataReader.run(fileInfo);
-    metadata[MetaField.FileMode] = [this.scanMode];
+    metadata[MetaAttribute.FileMode] = [this.scanMode];
 
-    let errors = metadata[MetaField.Error];
+    let errors = metadata[MetaAttribute.Error];
     if (!errors) {
-      errors = metadata[MetaField.Error] = [];
+      errors = metadata[MetaAttribute.Error] = [];
     }
 
     if (this.minimumAudioDuration) {
-      const seconds = this.first(metadata[MetaField.Seconds]);
+      const seconds = this.first(metadata[MetaAttribute.Seconds]);
       if (seconds && seconds < this.minimumAudioDuration) {
-        metadata[MetaField.Ignored] = [true];
+        metadata[MetaAttribute.Ignored] = [true];
         return metadata;
       }
     }
@@ -348,9 +348,9 @@ export class ScanAudioService {
 
   private async updateAudioFile(metadata: KeyValues): Promise<KeyValues> {
     // Lyrics
-    let lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
+    let lyrics = this.first(metadata[MetaAttribute.UnSyncLyrics]);
     if (!lyrics) {
-      lyrics = this.first(metadata[MetaField.SyncLyrics]);
+      lyrics = this.first(metadata[MetaAttribute.SyncLyrics]);
     }
     if (lyrics && lyrics !== this.songToProcess.lyrics) {
       this.songToProcess.lyrics = lyrics;
@@ -361,7 +361,7 @@ export class ScanAudioService {
     let replaced = false;
     // Use the following properties to determine if the file changed:
     // seconds, bitrate, frequency, replayGain, fileSize
-    let seconds = this.first(metadata[MetaField.Seconds]);
+    let seconds = this.first(metadata[MetaAttribute.Seconds]);
     if (seconds) {
       seconds = this.utility.round(seconds, 4);
       if (seconds !== this.songToProcess.seconds) {
@@ -370,7 +370,7 @@ export class ScanAudioService {
         replaced = true;
       }
     }
-    let bitrate = this.first(metadata[MetaField.Bitrate]);
+    let bitrate = this.first(metadata[MetaAttribute.Bitrate]);
     if (bitrate) {
       bitrate = this.utility.round(bitrate, 4);
       if (bitrate !== this.songToProcess.bitrate) {
@@ -378,28 +378,28 @@ export class ScanAudioService {
         replaced = true;
       }
     }
-    const frequency = this.first(metadata[MetaField.Frequency]);
+    const frequency = this.first(metadata[MetaAttribute.Frequency]);
     if (frequency && frequency !== this.songToProcess.frequency) {
       this.songToProcess.frequency = frequency;
       replaced = true;
     }
-    const vbr = metadata[MetaField.Vbr];
+    const vbr = metadata[MetaAttribute.Vbr];
     if (vbr?.length && vbr[0] !== this.songToProcess.vbr) {
       this.songToProcess.vbr = vbr[0];
       replaced = true;
     }
-    const replayGain = this.first(metadata[MetaField.ReplayGain]);
+    const replayGain = this.first(metadata[MetaAttribute.ReplayGain]);
     if (replayGain && replayGain !== this.songToProcess.replayGain) {
       this.songToProcess.replayGain = replayGain;
       replaced = true;
     }
-    const fileSize = this.first(metadata[MetaField.FileSize]);
+    const fileSize = this.first(metadata[MetaAttribute.FileSize]);
     if (fileSize && fileSize !== this.songToProcess.fileSize) {
       this.songToProcess.fileSize = fileSize;
       replaced = true;
     }
 
-    let fileAddDate = this.first(metadata[MetaField.AddDate]) as Date;
+    let fileAddDate = this.first(metadata[MetaAttribute.AddDate]) as Date;
     if (!fileAddDate) {
       fileAddDate = new Date();
     }
@@ -435,27 +435,27 @@ export class ScanAudioService {
 
     // Images
     const existingAlbum = this.existingAlbums.find(a => a.id === this.songToProcess.primaryAlbumId);
-    this.processImage(existingAlbum.primaryArtistId, metadata, MetaField.ArtistImage);
-    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumImage);
-    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumSecondaryImage);
-    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaField.AlbumAnimated);
-    this.processImage(this.songToProcess.id, metadata, MetaField.SingleImage);
+    this.processImage(existingAlbum.primaryArtistId, metadata, MetaAttribute.ArtistImage);
+    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumImage);
+    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumSecondaryImage);
+    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumAnimated);
+    this.processImage(this.songToProcess.id, metadata, MetaAttribute.SingleImage);
     return metadata;
   }
 
   private processAlbumArtist(metadata: KeyValues): ArtistEntity {
-    let artistName = this.first(metadata[MetaField.AlbumArtist]);
+    let artistName = this.first(metadata[MetaAttribute.AlbumArtist]);
     if (!artistName) {
-      artistName = this.first(metadata[MetaField.Artist]);
+      artistName = this.first(metadata[MetaAttribute.Artist]);
       if (!artistName) {
         artistName = ArtistName.Unknown
       }
     }
 
-    const artistType = this.first(metadata[MetaField.ArtistType]);
-    const country = this.first(metadata[MetaField.Country]);
-    const artistStylized = this.first(metadata[MetaField.AlbumArtistStylized]);
-    const artistSort = this.first(metadata[MetaField.AlbumArtistSort]);
+    const artistType = this.first(metadata[MetaAttribute.ArtistType]);
+    const country = this.first(metadata[MetaAttribute.Country]);
+    const artistStylized = this.first(metadata[MetaAttribute.AlbumArtistStylized]);
+    const artistSort = this.first(metadata[MetaAttribute.AlbumArtistSort]);
 
     const newArtist = this.createArtist(artistName, artistSort, artistStylized);
     newArtist.artistType = artistType ? this.registerValueListEntry(artistType, ValueLists.ArtistType.id, this.existingArtistTypes) : ValueLists.ArtistType.entries.Unknown.name;
@@ -482,19 +482,19 @@ export class ScanAudioService {
       return existingArtist;
     }
 
-    this.processImage(newArtist.id, metadata, MetaField.AlbumArtistImage);
+    this.processImage(newArtist.id, metadata, MetaAttribute.AlbumArtistImage);
     this.existingArtists.push(newArtist);
     return newArtist;
   }
 
   private processAlbum(artist: ArtistEntity, metadata: KeyValues): AlbumEntity {
     const newAlbum = new AlbumEntity();
-    this.setFirst(newAlbum, 'name', metadata, MetaField.Album, AlbumName.Unknown);
+    this.setFirst(newAlbum, 'name', metadata, MetaAttribute.Album, AlbumName.Unknown);
     // Is this actually the album year? Album year and song year might be different.
-    this.setFirst(newAlbum, 'releaseYear', metadata, MetaField.Year, 0);
-    this.setFirst(newAlbum, 'albumStylized', metadata, MetaField.AlbumStylized, newAlbum.name);
-    this.setFirst(newAlbum, 'albumSort', metadata, MetaField.AlbumSort, newAlbum.name);
-    this.setFirst(newAlbum, 'publisher', metadata, MetaField.Publisher);
+    this.setFirst(newAlbum, 'releaseYear', metadata, MetaAttribute.Year, 0);
+    this.setFirst(newAlbum, 'albumStylized', metadata, MetaAttribute.AlbumStylized, newAlbum.name);
+    this.setFirst(newAlbum, 'albumSort', metadata, MetaAttribute.AlbumSort, newAlbum.name);
+    this.setFirst(newAlbum, 'publisher', metadata, MetaAttribute.Publisher);
 
     const existingAlbum = this.lookupService.findAlbum(newAlbum.name, newAlbum.releaseYear, artist.id, this.existingAlbums);
     if (existingAlbum) {
@@ -519,12 +519,12 @@ export class ScanAudioService {
     newAlbum.favorite = false;
     newAlbum.primaryArtistId = artist.id;
     newAlbum.releaseDecade = this.utility.getDecade(newAlbum.releaseYear);
-    const albumType = this.first(metadata[MetaField.AlbumType]);
+    const albumType = this.first(metadata[MetaAttribute.AlbumType]);
     newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.Album.name;
     newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
-    this.processImage(newAlbum.id, metadata, MetaField.AlbumImage);
-    this.processImage(newAlbum.id, metadata, MetaField.AlbumSecondaryImage);
-    this.processImage(newAlbum.id, metadata, MetaField.AlbumAnimated);
+    this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumImage);
+    this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumSecondaryImage);
+    this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumAnimated);
 
     this.existingAlbums.push(newAlbum);
     return newAlbum;
@@ -534,12 +534,12 @@ export class ScanAudioService {
     const song = new SongEntity();
     song.id = this.utility.newGuid();
     song.isNew = true;
-    song.filePath = this.first(metadata[MetaField.FilePath]);
-    song.fileExtension = this.first(metadata[MetaField.FileExtension]);
+    song.filePath = this.first(metadata[MetaAttribute.FilePath]);
+    song.fileExtension = this.first(metadata[MetaAttribute.FileExtension]);
     song.hash = this.lookupService.hashSong(song.filePath);
 
-    this.setFirst(song, 'externalId', metadata, MetaField.UfId);
-    this.setFirst(song, 'name', metadata, MetaField.Title, this.first(metadata[MetaField.FileName]));
+    this.setFirst(song, 'externalId', metadata, MetaAttribute.UfId);
+    this.setFirst(song, 'name', metadata, MetaAttribute.Title, this.first(metadata[MetaAttribute.FileName]));
 
     // Clean file name from brackets
     // TODO: use a module option to perform this action
@@ -553,7 +553,7 @@ export class ScanAudioService {
       song.cleanName = song.name;
     }
 
-    song.subtitle = this.first(metadata[MetaField.Subtitle]);
+    song.subtitle = this.first(metadata[MetaAttribute.Subtitle]);
     if (!song.subtitle) {
       const parenthesis = this.utility.matchParenthesis(song.name);
       if (parenthesis?.length) {
@@ -561,7 +561,7 @@ export class ScanAudioService {
       }
     }
 
-    const featuringArtists = metadata[MetaField.FeaturingArtist];
+    const featuringArtists = metadata[MetaAttribute.FeaturingArtist];
     if (featuringArtists?.length) {
       song.featuring = featuringArtists.join(', ');
     }
@@ -571,11 +571,11 @@ export class ScanAudioService {
 
     song.primaryAlbumId = album.id;
 
-    this.setFirst(song, 'trackNumber', metadata, MetaField.TrackNumber, 0);
-    this.setFirst(song, 'mediaNumber', metadata, MetaField.MediaNumber, 1);
-    this.setFirst(song, 'mediaSubtitle', metadata, MetaField.MediaSubtitle);
+    this.setFirst(song, 'trackNumber', metadata, MetaAttribute.TrackNumber, 0);
+    this.setFirst(song, 'mediaNumber', metadata, MetaAttribute.MediaNumber, 1);
+    this.setFirst(song, 'mediaSubtitle', metadata, MetaAttribute.MediaSubtitle);
     if (!song.mediaSubtitle) {
-      const mediaSubtitles = metadata[MetaField.MediaSubtitles];
+      const mediaSubtitles = metadata[MetaAttribute.MediaSubtitles];
       // Validate the media number has a subtitle
       if (mediaSubtitles?.length >= song.mediaNumber) {
         song.mediaSubtitle = mediaSubtitles[song.mediaNumber - 1];
@@ -584,21 +584,21 @@ export class ScanAudioService {
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 
-    this.setFirst(song, 'composer', metadata, MetaField.Composer);
-    this.setFirst(song, 'composerSort', metadata, MetaField.ComposerSort);
-    this.setFirst(song, 'originalArtist', metadata, MetaField.OriginalArtist);
-    this.setFirst(song, 'originalAlbum', metadata, MetaField.OriginalAlbum);
-    this.setFirst(song, 'originalReleaseYear', metadata, MetaField.OriginalReleaseYear, 0);
-    this.setFirst(song, 'comment', metadata, MetaField.Comment);
-    this.setFirst(song, 'grouping', metadata, MetaField.Grouping);
+    this.setFirst(song, 'composer', metadata, MetaAttribute.Composer);
+    this.setFirst(song, 'composerSort', metadata, MetaAttribute.ComposerSort);
+    this.setFirst(song, 'originalArtist', metadata, MetaAttribute.OriginalArtist);
+    this.setFirst(song, 'originalAlbum', metadata, MetaAttribute.OriginalAlbum);
+    this.setFirst(song, 'originalReleaseYear', metadata, MetaAttribute.OriginalReleaseYear, 0);
+    this.setFirst(song, 'comment', metadata, MetaAttribute.Comment);
+    this.setFirst(song, 'grouping', metadata, MetaAttribute.Grouping);
 
     // Add Date
-    let addDate = this.first(metadata[MetaField.AddDate]) as Date;
+    let addDate = this.first(metadata[MetaAttribute.AddDate]) as Date;
     if (!addDate) {
       addDate = new Date();
     }
     // We only use the change date to see which one is older
-    let changeDate = this.first(metadata[MetaField.ChangeDate]) as Date;
+    let changeDate = this.first(metadata[MetaAttribute.ChangeDate]) as Date;
     if (changeDate) {
       const addTime = addDate.getTime();
       const changeTime = changeDate.getTime();
@@ -616,49 +616,49 @@ export class ScanAudioService {
     // TODO: Set dates in file
 
     // TODO: add language/mood to value list entry if it doesn't exist
-    this.setFirst(song, 'language', metadata, MetaField.Language, ValueLists.Language.entries.Unknown.name);
-    this.setFirst(song, 'mood', metadata, MetaField.Mood, ValueLists.Mood.entries.Unknown.name);
+    this.setFirst(song, 'language', metadata, MetaAttribute.Language, ValueLists.Language.entries.Unknown.name);
+    this.setFirst(song, 'mood', metadata, MetaAttribute.Mood, ValueLists.Mood.entries.Unknown.name);
 
-    this.setFirst(song, 'rating', metadata, MetaField.Rating, 0);
-    this.setFirst(song, 'playCount', metadata, MetaField.PlayCount, 0);
+    this.setFirst(song, 'rating', metadata, MetaAttribute.Rating, 0);
+    this.setFirst(song, 'playCount', metadata, MetaAttribute.PlayCount, 0);
 
-    let lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
+    let lyrics = this.first(metadata[MetaAttribute.UnSyncLyrics]);
     if (!lyrics) {
-      lyrics = this.first(metadata[MetaField.SyncLyrics]);
+      lyrics = this.first(metadata[MetaAttribute.SyncLyrics]);
     }
     if (lyrics) {
       song.lyrics = lyrics;
     }
 
-    this.setFirst(song, 'titleSort', metadata, MetaField.TitleSort, song.name);
-    this.setFirst(song, 'live', metadata, MetaField.Live, false);
-    this.setFirst(song, 'favorite', metadata, MetaField.Favorite, false);
-    this.setFirst(song, 'explicit', metadata, MetaField.Explicit, false);
+    this.setFirst(song, 'titleSort', metadata, MetaAttribute.TitleSort, song.name);
+    this.setFirst(song, 'live', metadata, MetaAttribute.Live, false);
+    this.setFirst(song, 'favorite', metadata, MetaAttribute.Favorite, false);
+    this.setFirst(song, 'explicit', metadata, MetaAttribute.Explicit, false);
 
     // Let's start with zero but this cannot be the final value, it should be at least 1
     // If this value is not found here, the processArtistRelations will figure it out
-    this.setFirst(song, 'performerCount', metadata, MetaField.PerformerCount, 0);
+    this.setFirst(song, 'performerCount', metadata, MetaAttribute.PerformerCount, 0);
 
-    let bitrate = this.first(metadata[MetaField.Bitrate]);
+    let bitrate = this.first(metadata[MetaAttribute.Bitrate]);
     song.bitrate = bitrate ? this.utility.round(bitrate, 4) : 0;
 
-    this.setFirst(song, 'frequency', metadata, MetaField.Frequency, 0);
-    this.setFirst(song, 'tempo', metadata, MetaField.Tempo, 0);
-    this.setFirst(song, 'replayGain', metadata, MetaField.ReplayGain, 0);
+    this.setFirst(song, 'frequency', metadata, MetaAttribute.Frequency, 0);
+    this.setFirst(song, 'tempo', metadata, MetaAttribute.Tempo, 0);
+    this.setFirst(song, 'replayGain', metadata, MetaAttribute.ReplayGain, 0);
 
-    let seconds = this.first(metadata[MetaField.Seconds]);
+    let seconds = this.first(metadata[MetaAttribute.Seconds]);
     song.seconds = seconds ? this.utility.round(seconds, 4) : 0;
     song.duration = this.utility.secondsToMinutes(song.seconds);
-    song.vbr = this.first(metadata[MetaField.Vbr]);
-    song.fileSize = this.first(metadata[MetaField.FileSize]);
-    song.infoUrl = this.first(metadata[MetaField.Url]);
-    song.videoUrl = this.first(metadata[MetaField.VideoUrl]);
+    song.vbr = this.first(metadata[MetaAttribute.Vbr]);
+    song.fileSize = this.first(metadata[MetaAttribute.FileSize]);
+    song.infoUrl = this.first(metadata[MetaAttribute.Url]);
+    song.videoUrl = this.first(metadata[MetaAttribute.VideoUrl]);
 
-    this.processImage(song.id, metadata, MetaField.SingleImage);
+    this.processImage(song.id, metadata, MetaAttribute.SingleImage);
     return song;
   }
 
-  private processImage(relatedId: string, metadata: KeyValues, field: MetaField): void {
+  private processImage(relatedId: string, metadata: KeyValues, field: MetaAttribute): void {
     const image = this.first(metadata[field]) as IImageSource;
 
     if (image && image.sourcePath) {
@@ -683,32 +683,32 @@ export class ScanAudioService {
 
   private getImageName(metadata: KeyValues, imageType: MusicImageType): string {
     if (imageType === MusicImageType.Single) {
-      const title = this.first(metadata[MetaField.Title]);
+      const title = this.first(metadata[MetaAttribute.Title]);
       if (title) {
         return title;
       }
-      const fileName = this.first(metadata[MetaField.FileName]);
+      const fileName = this.first(metadata[MetaAttribute.FileName]);
       if (fileName) {
         return fileName;
       }
     }
 
     if (imageType === MusicImageType.Front || imageType === MusicImageType.FrontAlternate || imageType === MusicImageType.FrontAnimated) {
-      const album = this.first(metadata[MetaField.Album]);
+      const album = this.first(metadata[MetaAttribute.Album]);
       if (album) {
         return album;
       }
     }
 
     if (imageType === MusicImageType.AlbumArtist) {
-      const albumArtist = this.first(metadata[MetaField.AlbumArtist]);
+      const albumArtist = this.first(metadata[MetaAttribute.AlbumArtist]);
       if (albumArtist) {
         return albumArtist;
       }
     }
 
     if (imageType === MusicImageType.Artist) {
-      const artist = this.first(metadata[MetaField.Artist]);
+      const artist = this.first(metadata[MetaAttribute.Artist]);
       if (artist) {
         return artist;
       }
@@ -722,12 +722,12 @@ export class ScanAudioService {
     const result: ArtistEntity[] = [];
 
     let artistNames: string[] = [];
-    const otherArtists = metadata[MetaField.Artist];
+    const otherArtists = metadata[MetaAttribute.Artist];
     if (otherArtists && otherArtists.length) {
       artistNames = artistNames.concat(otherArtists);
     }
-    const artistSorts = metadata[MetaField.ArtistSort];
-    const featuringArtists = metadata[MetaField.FeaturingArtist];
+    const artistSorts = metadata[MetaAttribute.ArtistSort];
+    const featuringArtists = metadata[MetaAttribute.FeaturingArtist];
     if (featuringArtists && featuringArtists.length) {
       artistNames = artistNames.concat(featuringArtists);
     }
@@ -838,7 +838,7 @@ export class ScanAudioService {
 
   private processGenres(metadata: KeyValues, splitSymbols: string[]): ValueListEntryEntity[] {
     const result: ValueListEntryEntity[] = [];
-    const genres = metadata[MetaField.Genre];
+    const genres = metadata[MetaAttribute.Genre];
     if (genres?.length) {
       for (const genreName of genres) {
         if (!genreName) {
@@ -981,7 +981,7 @@ export class ScanAudioService {
     }
 
     // Singers
-    const singers = metadata[MetaField.Singer];
+    const singers = metadata[MetaAttribute.Singer];
     if (singers && singers.length) {
       for (const singer of singers) {
         let newRelatedId: string;
@@ -1009,7 +1009,7 @@ export class ScanAudioService {
     }
 
     // Contributors
-    const contributors = metadata[MetaField.Contributor];
+    const contributors = metadata[MetaAttribute.Contributor];
     if (contributors?.length) {
       for (const contributor of contributors) {
         let contributorId: string;
@@ -1204,9 +1204,9 @@ export class ScanAudioService {
     let primaryAlbum = await AlbumEntity.findOneBy({ id: song.primaryAlbumId });
     let primaryArtist = await ArtistEntity.findOneBy({ id: primaryAlbum.primaryArtistId });
 
-    const newArtistName = this.first(metadata[MetaField.AlbumArtist]);
-    const newAlbumName = this.first(metadata[MetaField.Album]);
-    const year = this.first(metadata[MetaField.Year]);
+    const newArtistName = this.first(metadata[MetaAttribute.AlbumArtist]);
+    const newAlbumName = this.first(metadata[MetaAttribute.Album]);
+    const year = this.first(metadata[MetaAttribute.Year]);
     const releaseYear = year ? year : 0;
 
     // If the artist is different create or update the artist
@@ -1257,7 +1257,7 @@ export class ScanAudioService {
     song.releaseDecade = primaryAlbum.releaseDecade;
 
     // GENRE
-    const genre = this.first(metadata[MetaField.Genre]);
+    const genre = this.first(metadata[MetaAttribute.Genre]);
     if (genre && song.genre !== genre) {
       // Remove classification
       const currentGenreEntry = await ValueListEntryEntity.findOneBy({ name: song.genre, valueListTypeId: ValueLists.Genre.id });
@@ -1293,7 +1293,7 @@ export class ScanAudioService {
     // SONG
     song.filePath = newFilePath;
     song.hash = this.lookupService.hashSong(song.filePath);
-    this.setFirst(song, 'name', metadata, MetaField.Title, this.first(metadata[MetaField.FileName]));
+    this.setFirst(song, 'name', metadata, MetaAttribute.Title, this.first(metadata[MetaAttribute.FileName]));
 
     const brackets = this.utility.matchBrackets(song.name);
     if (brackets?.length) {
@@ -1305,7 +1305,7 @@ export class ScanAudioService {
       song.cleanName = song.name;
     }
 
-    const featuringArtists = metadata[MetaField.FeaturingArtist];
+    const featuringArtists = metadata[MetaAttribute.FeaturingArtist];
     if (featuringArtists?.length) {
       song.featuring = featuringArtists.join(', ');
     }
@@ -1313,10 +1313,10 @@ export class ScanAudioService {
       song.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
     }
 
-    this.setFirst(song, 'trackNumber', metadata, MetaField.TrackNumber, 0);
-    this.setFirst(song, 'mediaNumber', metadata, MetaField.MediaNumber, 1);
-    this.setFirst(song, 'titleSort', metadata, MetaField.TitleSort, song.name);
-    this.setFirst(song, 'language', metadata, MetaField.Language);
+    this.setFirst(song, 'trackNumber', metadata, MetaAttribute.TrackNumber, 0);
+    this.setFirst(song, 'mediaNumber', metadata, MetaAttribute.MediaNumber, 1);
+    this.setFirst(song, 'titleSort', metadata, MetaAttribute.TitleSort, song.name);
+    this.setFirst(song, 'language', metadata, MetaAttribute.Language);
     song.performerCount = 0;
 
     // UPDATE NEW FILE DATES
@@ -1347,7 +1347,7 @@ export class ScanAudioService {
     this.log.info(result);
   }
 
-  private setFirst(obj: any, propertyName: string, metadata: KeyValues, field: MetaField, defaultValue?: any): void {
+  private setFirst(obj: any, propertyName: string, metadata: KeyValues, field: MetaAttribute, defaultValue?: any): void {
     const value = this.first(metadata[field]);
     if (value) {
       obj[propertyName] = value;

@@ -6,7 +6,7 @@ import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { DataSourceType } from '../data-source/data-source.enum';
 import { SongModelSourceService } from '../data-source/song-model-source.service';
 import { FileService } from 'src/app/platform/file/file.service';
-import { MetaField } from './data-transform.enum';
+import { MetaAttribute } from './data-transform.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ImageSrcType, MimeType } from 'src/app/core/models/core.enum';
 import { ImageService } from 'src/app/platform/image/image.service';
@@ -81,7 +81,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
   public async run(input: ISongModel): Promise<IMetadataWriterOutput> {
     // 1. Get only the filePath metadata to determine if we need to keep getting the rest of the metadata
-    const values = await this.getFieldData(input, MetaField.FilePath);
+    const values = await this.getAttributeData(input, MetaAttribute.FilePath);
     const destinationPath = this.first(values);
 
     const result: IMetadataWriterOutput = {
@@ -92,7 +92,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     if (this.fileService.exists(destinationPath)) {
       result.metadata = {};
-      result.metadata[MetaField.FilePath] = values;
+      result.metadata[MetaAttribute.FilePath] = values;
       result.skipped = true;
       return result;
     }
@@ -107,17 +107,21 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   /**
+   * placeholder (field, function), expression
    * If you want to save data in tags:
-   * 1. Look for the supported metadata fields in the setupV2Tags method.
-   * 2. Add the metadata field to the "fields" property of the data source.
-   * 3. Confirm the (song model) source has hardcoded logic to get the data associated to the metadata field.
+   * 1. Look for the metadata attributes supported (consumed) by the setupV2Tags method.
+   * 2. Add the metadata attribute to the "attributes" property of the data source. This will ensure the attributes are populated with a value.
+   * 3. Confirm the (song model) source has hardcoded logic to find the data associated to the metadata attribute.
    * 4. You can setup an expression in the source of the mapping if you don't want to use the default logic or if it doesn't exist.
+   * 4a. Remember, an expression is a combination of hardcoded text and/or placeholders (fields or functions)
+   * 4b. Do not confuse a field placeholder used in an expression with a metadata attribute.
+   * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the (song model) source.
    * How the full logic works:
-   * 1. Each data source service iterates the fields and retrieves data using the getData method
-   * 2. "Data source fields" will be populated with data and they will become the metadata fields.
-   * 3. The songModelSource.getData method retrieves data from mappings first (if exist) and then from hardcoded logic associated with each field
+   * 1. Each data source service iterates the attributes and retrieves data using the getData method
+   * 2. Attributes will be populated with data and they will become the metadata attributes.
+   * 3. The songModelSource.getData method retrieves data from mappings first (if exist) and then from hardcoded logic associated with each attribute
    * 4. Mappings retrieve data using a parser that processes expression fields and functions ("expression fields" match columns from the views providing data)
-   * 5. Hardcoded logic generally retrieves data associating a meta field with the property of the input data or using built-in methods
+   * 5. Hardcoded logic generally retrieves data associating a meta attribute with the property of the input data or using built-in methods
    * 6. Lastly it gets user defined mappings, also using expressions and the parser
    * Once this happens, the writer will use the metadata to locate the data to write to the supported tags, and to user defined tags.
    * @param input The song model
@@ -136,13 +140,13 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     return result;
   }
 
-  protected async getFieldData(input: ISongModel, field: MetaField): Promise<any[]> {
+  protected async getAttributeData(input: ISongModel, attribute: MetaAttribute): Promise<any[]> {
     let result: any[] = [];
     for (const source of this.sources) {
       if (source.service) {
         const initResult = await source.service.setSource(input, source, this.syncProfile);
         if (!initResult.error && !result.length) {
-          result = await source.service.getData(field);
+          result = await source.service.getData(attribute);
         }
       }
     }
@@ -180,7 +184,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
 
     // Setting the change date will only happen if the changeDate field is configured in the data source
-    const changeDate = this.first(metadata[MetaField.ChangeDate]) as Date;
+    const changeDate = this.first(metadata[MetaAttribute.ChangeDate]) as Date;
     if (changeDate) {
       // Write this info to the actual file
       this.fileService.setTimes(newFilePath, changeDate, changeDate);
@@ -196,7 +200,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * Other reference: https://exiftool.org/TagNames/ID3.html
    * One more with details: https://mutagen-specs.readthedocs.io/en/latest/id3/id3v2.4.0-frames.html
    * Reference to taglib: https://github.com/mono/taglib-sharp
-   * This writer consumes these meta fields:
+   * This writer consumes these meta attributes:
    * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
    * album, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
@@ -209,22 +213,22 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const frameSeparator = '\\\\';
     const valueSeparator = ', ';
 
-    const title = this.first(metadata[MetaField.Title]);
+    const title = this.first(metadata[MetaAttribute.Title]);
     if (title) {
       tags.TIT2 = title;
     }
 
-    const titleSort = this.first(metadata[MetaField.TitleSort]);
+    const titleSort = this.first(metadata[MetaAttribute.TitleSort]);
     if (titleSort) {
       tags.TSOT = titleSort;
     }
 
-    const subtitle = this.first(metadata[MetaField.Subtitle]);
+    const subtitle = this.first(metadata[MetaAttribute.Subtitle]);
     if (subtitle) {
       tags.TIT3 = subtitle;
     }
 
-    const artists = metadata[MetaField.Artist];
+    const artists = metadata[MetaAttribute.Artist];
     if (artists?.length) {
       if (v2Version === 4) {
         tags.TPE1 = artists.join(frameSeparator);
@@ -234,7 +238,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }
     }
 
-    const artistSorts = metadata[MetaField.ArtistSort];
+    const artistSorts = metadata[MetaAttribute.ArtistSort];
     if (artistSorts?.length) {
       if (v2Version === 4) {
         tags.TSOP = artistSorts.join(frameSeparator);
@@ -244,27 +248,27 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }
     }
 
-    const albumArtist = this.first(metadata[MetaField.AlbumArtist]);
+    const albumArtist = this.first(metadata[MetaAttribute.AlbumArtist]);
     if (albumArtist) {
       tags.TPE2 = albumArtist;
     }
 
-    const albumArtistSort = this.first(metadata[MetaField.AlbumArtistSort]);
+    const albumArtistSort = this.first(metadata[MetaAttribute.AlbumArtistSort]);
     if (albumArtistSort) {
       tags.TSO2 = albumArtistSort;
     }
 
-    const album = this.first(metadata[MetaField.Album]);
+    const album = this.first(metadata[MetaAttribute.Album]);
     if (album) {
       tags.TALB = album;
     }
 
-    const albumSort = this.first(metadata[MetaField.AlbumSort]);
+    const albumSort = this.first(metadata[MetaAttribute.AlbumSort]);
     if (albumSort) {
       tags.TSOA = albumSort;
     }
 
-    const genres = metadata[MetaField.Genre];
+    const genres = metadata[MetaAttribute.Genre];
     if (genres?.length) {
       if (v2Version === 4) {
         tags.TCON = genres.join(frameSeparator);
@@ -274,17 +278,17 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }
     }
 
-    const trackNumber = this.first(metadata[MetaField.TrackNumber]);
+    const trackNumber = this.first(metadata[MetaAttribute.TrackNumber]);
     if (trackNumber) {
       tags.TRCK = trackNumber.toString();
     }
 
-    const mediaNumber = this.first(metadata[MetaField.MediaNumber]);
+    const mediaNumber = this.first(metadata[MetaAttribute.MediaNumber]);
     if (mediaNumber) {
       tags.TPOS = mediaNumber.toString();
     }
 
-    const year = this.first(metadata[MetaField.Year]);
+    const year = this.first(metadata[MetaAttribute.Year]);
     if (year) {
       // Recording year (v2.3), for backwards compatibility
       tags.TYER = year.toString();
@@ -294,13 +298,13 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.TDRC = year.toString();
     }
 
-    const addDate = this.first(metadata[MetaField.AddDate]);
+    const addDate = this.first(metadata[MetaAttribute.AddDate]);
     if (addDate) {
       // Encoding time
       tags.TDEN = this.utility.toDateTimeISONoTimezone(addDate);
     }
 
-    const comment = this.first(metadata[MetaField.Comment]);
+    const comment = this.first(metadata[MetaAttribute.Comment]);
     if (comment) {
       tags.COMM = [{
         language: 'eng',
@@ -309,7 +313,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }];
     }
 
-    const composers = metadata[MetaField.Composer];
+    const composers = metadata[MetaAttribute.Composer];
     if (composers?.length) {
       if (v2Version === 4) {
         tags.TCOM = composers.join(frameSeparator);
@@ -319,7 +323,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }
     }
 
-    const composerSorts = metadata[MetaField.ComposerSort];
+    const composerSorts = metadata[MetaAttribute.ComposerSort];
     if (composerSorts?.length) {
       if (v2Version === 4) {
         tags.TSOC = composerSorts.join(frameSeparator);
@@ -329,17 +333,17 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }
     }
 
-    const publisher = this.first(metadata[MetaField.Publisher]);
+    const publisher = this.first(metadata[MetaAttribute.Publisher]);
     if (publisher) {
       tags.TPUB = publisher;
     }
 
-    const grouping = this.first(metadata[MetaField.Grouping]);
+    const grouping = this.first(metadata[MetaAttribute.Grouping]);
     if (grouping) {
       tags.TIT1 = grouping;
     }
 
-    const lyrics = this.first(metadata[MetaField.UnSyncLyrics]);
+    const lyrics = this.first(metadata[MetaAttribute.UnSyncLyrics]);
     if (lyrics) {
       tags.USLT = [{
         language: 'eng',
@@ -348,42 +352,42 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }];
     }
 
-    const language = this.first(metadata[MetaField.Language]);
+    const language = this.first(metadata[MetaAttribute.Language]);
     if (language) {
       tags.TLAN = language;
     }
 
-    const mood = this.first(metadata[MetaField.Mood]);
+    const mood = this.first(metadata[MetaAttribute.Mood]);
     if (mood) {
       tags.TMOO = mood;
     }
 
-    const mediaType = this.first(metadata[MetaField.MediaType]);
+    const mediaType = this.first(metadata[MetaAttribute.MediaType]);
     if (mediaType) {
       tags.TMED = mediaType;
     }
 
-    const mediaSubtitle = this.first(metadata[MetaField.MediaSubtitle]);
+    const mediaSubtitle = this.first(metadata[MetaAttribute.MediaSubtitle]);
     if (mediaSubtitle) {
       tags.TSST = mediaSubtitle;
     }
 
-    const seconds = this.first(metadata[MetaField.Seconds]);
+    const seconds = this.first(metadata[MetaAttribute.Seconds]);
     if (seconds) {
       tags.TLEN = (seconds * 1000).toString();
     }
 
-    const tempo = this.first(metadata[MetaField.Tempo]);
+    const tempo = this.first(metadata[MetaAttribute.Tempo]);
     if (tempo) {
       tags.TBPM = tempo;
     }
 
-    const owner = this.first(metadata[MetaField.Owner]);
+    const owner = this.first(metadata[MetaAttribute.Owner]);
     if (owner) {
       tags.TOWN = owner;
     }
 
-    const ufId = this.first(metadata[MetaField.UfId]);
+    const ufId = this.first(metadata[MetaAttribute.UfId]);
     if (ufId) {
       tags.UFID = [{
         ownerId: appName,
@@ -391,16 +395,16 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }];
     }
 
-    const playCount = this.first(metadata[MetaField.PlayCount]);
+    const playCount = this.first(metadata[MetaAttribute.PlayCount]);
     if (playCount) {
       tags.PCNT = playCount.toString();
     }
 
     const udTexts = this.createUserDefinedTexts(metadata, [
-      MetaField.Subgenre, MetaField. Category, MetaField.Occasion, MetaField.Instrument
+      MetaAttribute.Subgenre, MetaAttribute. Category, MetaAttribute.Occasion, MetaAttribute.Instrument
     ], true);
 
-    const rating = this.first(metadata[MetaField.Rating]);
+    const rating = this.first(metadata[MetaAttribute.Rating]);
     if (rating) {
       // Standard id3 popularimeter tag
       tags.POPM = [{
@@ -416,7 +420,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       });
     }
 
-    const description = this.first(metadata[MetaField.Description]);
+    const description = this.first(metadata[MetaAttribute.Description]);
     if (description) {
       udTexts.push({
         description: 'DESCRIPTION',
@@ -427,7 +431,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     // From chat gpt: the valid range of ReplayGain values is typically between -18dB to +18dB;
     // this range allows for sufficient adjustment to normalize the volume of audio tracks without
     // causing distortion or clipping.
-    const replayGain = this.first(metadata[MetaField.ReplayGain]);
+    const replayGain = this.first(metadata[MetaAttribute.ReplayGain]);
     if (replayGain) {
       udTexts.push({
         description: 'REPLAYGAIN_TRACK_GAIN',
@@ -435,7 +439,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       });
     }
 
-    const userDefinedFields = metadata[MetaField.UserDefinedField];
+    const userDefinedFields = metadata[MetaAttribute.UserDefinedField];
     if (userDefinedFields?.length) {
       tags.TXXX = udTexts.concat(this.createUserDefinedTexts(metadata, userDefinedFields, false));
     }
@@ -444,11 +448,11 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
 
     const urls: IUserDefinedUrl[] = [];
-    const url = this.first(metadata[MetaField.Url]);
+    const url = this.first(metadata[MetaAttribute.Url]);
     if (url) {
       urls.push({ description: '', url: url });
     }
-    const videoUrl = this.first(metadata[MetaField.VideoUrl]);
+    const videoUrl = this.first(metadata[MetaAttribute.VideoUrl]);
     if (videoUrl) {
       urls.push({ description: 'Video', url: videoUrl });
     }
@@ -457,10 +461,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
 
     const pictures: IAttachedPicture[] = [];
-    await this.addPicture(pictures, this.first(metadata[MetaField.AlbumImage]), AttachedPictureType.Front, 'Front');
-    await this.addPicture(pictures, this.first(metadata[MetaField.AlbumSecondaryImage]), AttachedPictureType.Front, 'Front2');
-    await this.addPicture(pictures, this.first(metadata[MetaField.SingleImage]), AttachedPictureType.Other, 'Single');
-    await this.addPicture(pictures, this.first(metadata[MetaField.AlbumArtistImage]), AttachedPictureType.LeadArtist, albumArtist);
+    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumImage]), AttachedPictureType.Front, 'Front');
+    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumSecondaryImage]), AttachedPictureType.Front, 'Front2');
+    await this.addPicture(pictures, this.first(metadata[MetaAttribute.SingleImage]), AttachedPictureType.Other, 'Single');
+    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumArtistImage]), AttachedPictureType.LeadArtist, albumArtist);
     if (pictures.length) {
       tags.APIC = pictures;
     }

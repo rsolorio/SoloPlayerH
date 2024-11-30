@@ -12,7 +12,7 @@ export class DataSourceEntity extends DbEntity {
   @Column()
   customMapping: boolean;
   @Column({ nullable: true })
-  fields: string;
+  attributes: string;
   @Column()
   sequence: number;
   @Column()

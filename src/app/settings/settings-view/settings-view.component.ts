@@ -18,7 +18,7 @@ import { IPlaylistSongModel } from 'src/app/shared/models/playlist-song-model.in
 import { IMetadataWriterOutput } from 'src/app/mapping/data-transform/data-transform.interface';
 import { IExportResult } from 'src/app/sync-profile/export/export.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { MetaField } from 'src/app/mapping/data-transform/data-transform.enum';
+import { MetaAttribute } from 'src/app/mapping/data-transform/data-transform.enum';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { AppViewIcons } from 'src/app/app-icons';
 
@@ -201,7 +201,7 @@ export class SettingsViewComponent extends CoreComponent implements OnInit {
       }
       
       setting.textRegular[0] = 'Click here to start synchronizing audio files.';
-      const errorFiles = processInfo.result.metadataResults.filter(r => r[MetaField.Error].length);
+      const errorFiles = processInfo.result.metadataResults.filter(r => r[MetaAttribute.Error].length);
       if (errorFiles.length) {
         syncMessage += ` Errors: ${errorFiles.length}.`;
         setting.textWarning = `Sync process done. ${syncMessage}`;
