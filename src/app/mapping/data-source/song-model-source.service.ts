@@ -154,7 +154,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaAttribute.Language:
       case MetaAttribute.Favorite:
       case MetaAttribute.Live:
-      case MetaAttribute.Explicit:
+      case MetaAttribute.Advisory:
       case MetaAttribute.AddDate:
       case MetaAttribute.ChangeDate:
       case MetaAttribute.PlayDate:

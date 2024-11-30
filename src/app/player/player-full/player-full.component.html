@@ -102,7 +102,7 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
   <tr class="sp-tr-song-info">
     <td colspan="3" class="sp-td-song-info sp-text-overflow-ellipsis" [attr.style]="getEllipsisColorVar()">
       <!-- Title and Song Count -->
-      <i *ngIf="song.explicit" [ngClass]="AppAttributeIcons.ExplicitOn" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
+      <i *ngIf="song.advisory === 1" [ngClass]="AppAttributeIcons.ExplicitOn" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <i [ngClass]="AppAttributeIcons.SongName" class="sp-text-xlarge" [ngStyle]="palette.secondary.cssColor"></i>
       <span
       class="sp-text-xlarge sp-text-bold"

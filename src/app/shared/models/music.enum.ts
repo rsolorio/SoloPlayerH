@@ -6,6 +6,7 @@ export enum SongBadge {
   Favorite = 'FAVORITE',
   TopRated = 'TOP RATED',
   Explicit = 'EXPLICIT',
+  Clean = 'CLEAN',
   LowQuality = 'LOW QUALITY',
   NotRated = 'NOT RATED',
   NoMood = 'NO MOOD'

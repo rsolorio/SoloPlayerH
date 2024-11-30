@@ -35,7 +35,7 @@ export interface ISongModel extends IListItemModel {
   // Flags
   favorite: boolean;
   live: boolean;
-  explicit: boolean;
+  advisory: number;
   // Dates
   addDate: Date;
   changeDate: Date;

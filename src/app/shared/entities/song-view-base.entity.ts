@@ -19,7 +19,7 @@ song.primaryAlbumId, song.filePath, song.fileExtension, song.fileSize,
 song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.rating, song.playCount,
 song.performerCount, song.genre, song.mood, song.language, song.lyrics,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr,
-song.favorite, song.live, song.explicit, song.addDate, song.changeDate, song.playDate, song.replaceDate,
+song.favorite, song.live, song.advisory, song.addDate, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.primaryArtistId AS primaryArtistId,
 artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
 `;
@@ -29,7 +29,7 @@ artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
  * Fields: id, name, hash, primaryAlbumId, filePath, fileExtension, fileSize,
  * trackNumber, mediaNumber, releaseYear, releaseDecade, rating, playCount,
  * performerCount, genre, mood, language, lyrics, seconds, duration, bitrate, frequency, vbr,
- * favorite, live, explicit, addDate, playDate, replaceDate, primaryAlbumName, primaryArtistId,
+ * favorite, live, advisory, addDate, playDate, replaceDate, primaryAlbumName, primaryArtistId,
  * primaryArtistName, primaryArtistStylized.
  * Excluded fields:
  * externalId, cleanName, titleSort, subtitle, featuring, grouping, composer, composerSort,
@@ -97,7 +97,7 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   live: boolean;
   @ViewColumn()
-  explicit: boolean;
+  advisory: number;
   // Dates
   @ViewColumn({ transformer: dateTransformer })
   addDate: Date;
@@ -132,7 +132,7 @@ song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.la
 song.lyrics, song.grouping, song.composer, song.composerSort, song.comment,
 song.originalArtist, song.originalAlbum, song.originalReleaseYear, song.infoUrl, song.videoUrl,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
-song.favorite, song.live, song.explicit, song.addDate, song.addYear, song.changeDate, song.playDate, song.replaceDate,
+song.favorite, song.live, song.advisory, song.addDate, song.addYear, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.description AS primaryAlbumDescription, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.publisher AS primaryAlbumPublisher, album.primaryArtistId,
 artist.country, artist.name AS primaryArtistName, artist.artistSort AS primaryArtistSort, artist.artistStylized AS primaryArtistStylized, artist.artistType AS primaryArtistType
 `;

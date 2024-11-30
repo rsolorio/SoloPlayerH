@@ -90,7 +90,7 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column()
   live: boolean;
   @Column()
-  explicit: boolean;
+  advisory: number;
   // Dates
   @Column()
   addDate: Date;

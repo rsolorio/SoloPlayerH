@@ -215,9 +215,9 @@ All standard entities have three main fields:
   - Flag that indicates if this track is a live performance
   - ID3 mapping: custom TXXX:Live
   - It can be set the by user
-- explicit
-  - Flag that indicates if the song has explicit content
-  - ID3 mapping: iTunesAdvisory or TXXX:Explicit
+- advisory
+  - Flag that indicates if the song content rating 
+  - ID3 mapping: iTunesAdvisory (None=0, Explicit=1, Clean=2)
   - It can be set the by user
 - performerCount
   - Number of artists performing the song

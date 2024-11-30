@@ -188,7 +188,7 @@ export class DatabaseEntitiesService {
 
   public async setExplicit(songId: string, explicit: boolean): Promise<SongEntity> {
     const song = await SongEntity.findOneBy({ id: songId });
-    song.explicit = explicit;
+    song.advisory = explicit ? 1 : 0;
     song.changeDate = new Date();
     await song.save();
     await this.setExplicitSubgenre(songId, explicit);

@@ -76,7 +76,7 @@ export class DatabaseFiltersService {
     this.addQuickFilterChip('quickFilter-ratingTop', 'rating', 5, CriteriaComparison.Equals, AppAttributeIcons.RatingOn, 'Top Rated', result, existingCriteria.quickCriteria);
     this.addQuickFilterChip('quickFilter-ratingHigh', 'rating', 4, CriteriaComparison.GreaterThanOrEqualTo, AppAttributeIcons.RatingHalf, 'High Rated', result, existingCriteria.quickCriteria);
     this.addQuickFilterChip('quickFilter-live', 'live', true, CriteriaComparison.Equals, AppAttributeIcons.LiveOn, 'Live', result, existingCriteria.quickCriteria);
-    this.addQuickFilterChip('quickFilter-explicit', 'explicit', true, CriteriaComparison.Equals, AppAttributeIcons.ExplicitOn, 'Explicit', result, existingCriteria.quickCriteria);
+    this.addQuickFilterChip('quickFilter-explicit', 'advisory', 1, CriteriaComparison.Equals, AppAttributeIcons.ExplicitOn, 'Explicit', result, existingCriteria.quickCriteria);
     this.addQuickFilterChip('quickFilter-performerCount', 'performerCount', 1, CriteriaComparison.GreaterThan, AppAttributeIcons.PerformerCount, 'Multi Artist', result, existingCriteria.quickCriteria);
     return result;
   }

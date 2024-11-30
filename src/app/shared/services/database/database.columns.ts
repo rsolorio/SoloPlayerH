@@ -20,7 +20,7 @@ export enum DbColumn {
   Language = 'language',
   Favorite = 'favorite',
   Live = 'live',
-  Explicit = 'explicit',
+  Advisory = 'advisory',
   PerformerCount = 'performerCount',
   ReleaseYear = 'releaseYear',
   ReleaseDecade = 'releaseDecade',
@@ -54,7 +54,7 @@ databaseColumns[DbColumn.Seconds] = { name: DbColumn.Seconds, caption: 'Duration
 databaseColumns[DbColumn.Language] = { name: DbColumn.Language, caption: 'Language', icon: AppAttributeIcons.Language, dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.Live] = { name: DbColumn.Live, caption: 'Live', icon: AppAttributeIcons.LiveOn, dataType: CriteriaDataType.Boolean };
 databaseColumns[DbColumn.Favorite] = { name: DbColumn.Favorite, caption: 'Favorite', icon: AppAttributeIcons.FavoriteOn, dataType: CriteriaDataType.Boolean };
-databaseColumns[DbColumn.Explicit] = { name: DbColumn.Explicit, caption: 'Explicit', icon: AppAttributeIcons.ExplicitOn, dataType: CriteriaDataType.Boolean };
+databaseColumns[DbColumn.Advisory] = { name: DbColumn.Advisory, caption: 'Advisory', icon: AppAttributeIcons.Advisory, dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.PerformerCount] = { name: DbColumn.PerformerCount, caption: 'Performers', icon: AppAttributeIcons.PerformerCount, dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.ReleaseYear] = { name: DbColumn.ReleaseYear, caption: 'Year', icon: AppAttributeIcons.Year, dataType: CriteriaDataType.Number };
 databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Decade', icon: AppAttributeIcons.Decade, dataType: CriteriaDataType.Number };

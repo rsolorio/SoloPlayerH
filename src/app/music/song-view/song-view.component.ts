@@ -221,15 +221,11 @@ export class SongViewComponent implements OnInit {
               }
             },
             {
-              propertyName: 'explicit',
-              icon: AppAttributeIcons.ExplicitOn,
-              label: 'Explicit',
-              editorType: ValueEditorType.YesNo,
+              propertyName: 'advisory',
+              icon: AppAttributeIcons.Advisory,
+              label: 'Advisory',
+              editorType: ValueEditorType.Number,
               onEdit: () => {
-                this.entityService.setExplicit(this.songId, !this.entityEditorModel.data['explicit']).then(song => {
-                  this.entityEditorModel.data['explicit'] = song.explicit;
-                  this.events.broadcast(AppEvent.ViewSongUpdated, song);
-                });
               }
             }
           ]

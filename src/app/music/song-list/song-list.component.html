@@ -39,7 +39,7 @@
       <i *ngIf="item.rating === 5" [ngClass]="AppAttributeIcons.RatingOn" class="sp-title-icon sp-color-rating" [title]="SongBadge.TopRated"></i>
       <i *ngIf="item.rating === 0" [ngClass]="AppAttributeIcons.RatingOff" class="sp-title-icon sp-color-rating" [title]="SongBadge.NotRated"></i>
       <i *ngIf="item.favorite" [ngClass]="AppAttributeIcons.FavoriteOn" class="sp-title-icon sp-color-heart" [title]="SongBadge.Favorite"></i>
-      <i *ngIf="item.explicit" [ngClass]="AppAttributeIcons.ExplicitOn" class="sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
+      <i *ngIf="item.advisory === 1" [ngClass]="AppAttributeIcons.ExplicitOn" class="sp-title-icon sp-color-yellow" [title]="SongBadge.Explicit"></i>
       <i *ngIf="item.mood === 'Unknown'" [ngClass]="AppAttributeIcons.MoodOff" class="sp-title-icon sp-color-warning" [title]="SongBadge.NoMood"></i>
       <!-- <i *ngIf="item.recentPlayIcon" [ngClass]="[AppAttributeIcons.Recent, item.recentPlayIcon.styleClass]" class="sp-title-icon sp-color-info" [title]="item.recentPlayIcon.tooltip"></i> -->
     </span>

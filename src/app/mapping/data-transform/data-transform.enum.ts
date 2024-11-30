@@ -154,8 +154,8 @@ export enum MetaAttribute {
   Live = 'live',
   /** Boolean. Id3v2. */
   Favorite = 'favorite',
-  /** Boolean. Id3v2. */
-  Explicit = 'explicit',
+  /** Number. Id3v2. */
+  Advisory = 'advisory',
   /** Number. Id3v2. */
   PerformerCount = 'performerCount',
   /** IImageSource. FileInfo, Id3v2 */

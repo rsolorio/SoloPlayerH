@@ -327,14 +327,13 @@ export class Id3v2SourceService implements IDataSourceService {
           return this.audioInfo.metadata.common.genre;
         }
         break;
-      case MetaAttribute.Explicit:
+      case MetaAttribute.Advisory:
         const advisoryText = this.metadataService.getValue<string>('iTunesAdvisory', this.tags, TagPrefix.UserDefinedText);
         if (advisoryText) {
-          return [this.utility.isTrue(advisoryText)];
-        }
-        const explicitText = this.metadataService.getValue<string>(attributeName, this.tags, TagPrefix.UserDefinedText);
-        if (explicitText) {
-          return [this.utility.isTrue(explicitText)];
+          const number = parseInt(advisoryText);
+          if (!isNaN(number)) {
+            return [number];
+          }
         }
         break;
       case MetaAttribute.Classification:

@@ -633,7 +633,7 @@ export class ScanAudioService {
     this.setFirst(song, 'titleSort', metadata, MetaAttribute.TitleSort, song.name);
     this.setFirst(song, 'live', metadata, MetaAttribute.Live, false);
     this.setFirst(song, 'favorite', metadata, MetaAttribute.Favorite, false);
-    this.setFirst(song, 'explicit', metadata, MetaAttribute.Explicit, false);
+    this.setFirst(song, 'advisory', metadata, MetaAttribute.Advisory, 0);
 
     // Let's start with zero but this cannot be the final value, it should be at least 1
     // If this value is not found here, the processArtistRelations will figure it out

@@ -254,7 +254,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
       item.rating = song.rating;
       item.mood = song.mood;
       item.favorite = song.favorite;
-      item.explicit = song.explicit;
+      item.advisory = song.advisory;
       item.playCount = song.playCount;
       item.recentPlayIcon = song.recentPlayIcon;
       this.cd.detectChanges();

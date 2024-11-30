@@ -196,7 +196,7 @@ export class AppTestService {
       song.hasChanges = true;
       song.favorite = row['Favorite'];
       song.live = row['Live'];
-      song.explicit = row['Explicit'];
+      //song.explicit = row['Explicit'];
       song.rating = parseInt(row['Rating'].toString());
       song.playCount = row['PlayCount'];
       if (row['PlayDate']) {
@@ -240,7 +240,7 @@ export class AppTestService {
       }
     }
 
-    await this.db.bulkUpdate(SongEntity, songs.filter(s => s.hasChanges), ['favorite', 'rating', 'playCount', 'playDate', 'mood', 'live', 'explicit']);
+    await this.db.bulkUpdate(SongEntity, songs.filter(s => s.hasChanges), ['favorite', 'rating', 'playCount', 'playDate', 'mood', 'live']);
     console.log('done');
   }
 

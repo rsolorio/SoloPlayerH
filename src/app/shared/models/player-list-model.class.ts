@@ -54,7 +54,7 @@ export class PlayerListModel implements IDbModel {
     vbr: false,
     favorite: false,
     live: false,
-    explicit: false,
+    advisory: 0,
     addDate: null,
     changeDate: null,
     replaceDate: null,
