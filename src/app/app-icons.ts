@@ -110,7 +110,10 @@ export enum AppAttributeIcons {
   Compilation = 'mdi-music-box-multiple mdi',
   Single = 'mdi-numeric-1-box mdi',
   Ep = 'mdi-numeric-1-box-multiple mdi',
-  MbId = 'mdi-identifier mdi'
+  MbId = 'mdi-identifier mdi',
+  User = 'mdi-account mdi',
+  Password = 'mdi-lock mdi',
+  Key = 'mdi-key mdi'
 }
 
 export enum AppActionIcons {

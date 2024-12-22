@@ -183,6 +183,36 @@
         "multipleValues": false,
         "system": false,
         "values": "false"
+      },
+      {
+        "id": "7a09f27b-bfba-4f93-861c-d141725b905c",
+        "name": "Last.FM Username",
+        "moduleName": "Scrobbling",
+        "description": "The user name of the account associated with the scrobbles.",
+        "valueEditorType": "text",
+        "multipleValues": false,
+        "system": false,
+        "values": ""
+      },
+      {
+        "id": "c868fc44-a731-4997-9062-ad370ef10f46",
+        "name": "Last.FM Password",
+        "moduleName": "Scrobbling",
+        "description": "The password of the account associated with the scrobble.",
+        "valueEditorType": "password",
+        "multipleValues": false,
+        "system": false,
+        "values": ""
+      },
+      {
+        "id": "b8331f4d-b68f-4ee0-bf8d-db909675f1fd",
+        "name": "Last.FM API Secret",
+        "moduleName": "Scrobbling",
+        "description": "The secret key to connect to the Last.FM API.",
+        "valueEditorType": "password",
+        "multipleValues": false,
+        "system": false,
+        "values": ""
       }
     ],
     "relatedImage": [

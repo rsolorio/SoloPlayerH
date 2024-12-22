@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, tap, mergeMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { md5 } from 'src/app/core/models/md5';
 import { ILastFmArtistResponse, ILastFmImage, ILastFmScrobbleResponse, ILastFmSessionResponse } from './last-fm.interface';
 import { LocalStorageService } from '../local-storage/local-storage.service';
@@ -9,6 +9,10 @@ import { LocalStorageKeys } from '../local-storage/local-storage.enum';
 import { appName } from 'src/app/app-exports';
 import { LastFmImageSize } from './last-fm.enum';
 
+/**
+ * Service that provides access to the Last.Fm API.
+ * https://www.last.fm/api
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -31,6 +35,16 @@ export class LastFmService {
     this.apiSecret = secret;
   }
 
+  /**
+   * https://www.last.fm/api/show/track.scrobble
+   * https://www.last.fm/api/scrobbling
+   * .net api: https://github.com/inflatablefriends/lastfm/blob/next/doc/scrobbling.md
+   * Last.fm does not accept scrobbles which are older than two weeks (UTC);
+   * there's no point sending them, so scrobbles older than two weeks will be silently dropped.
+   * There must be at least 30 seconds in between each scrobble;
+   * this means you may scrobble at most (24 * 60 * 60) / 30 = 2880 tracks in one day.
+   * The Last.fm API supports up to 50 scrobbles being sent at a time but this method only allows one at a time.
+   */
   public scrobble(albumArtist: string, artist: string, track: string, album: string): Observable<ILastFmScrobbleResponse> {
     return this.setupSessionKey(this.user, this.pwd).pipe(
       mergeMap(() => {
@@ -45,6 +59,9 @@ export class LastFmService {
     );
   }
 
+  /**
+   * https://www.last.fm/api/show/track.updateNowPlaying
+   */
   public nowPlaying(albumArtist: string, artist: string, track: string, album: string): Observable<any> {
     return this.setupSessionKey(this.user, this.pwd).pipe(
       mergeMap(() => {
@@ -58,6 +75,9 @@ export class LastFmService {
     );
   }
 
+  /**
+   * https://www.last.fm/api/show/artist.getInfo
+   */
   public getArtist(artistName: string): Observable<ILastFmArtistResponse> {
     let params = this.buildBasicHttpParams('artist.getinfo');
     params = this.appendArtist(params, artistName);
@@ -92,6 +112,9 @@ export class LastFmService {
     );
   }
 
+  /**
+   * https://www.last.fm/api/show/auth.getMobileSession
+   */
   private getMobileSession(username: string, password: string): Observable<ILastFmSessionResponse> {
     let params = this.buildBasicHttpParams('auth.getMobileSession');
     params = this.appendAuth(params, username, password);

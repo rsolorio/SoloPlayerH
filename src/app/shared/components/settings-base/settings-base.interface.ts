@@ -6,11 +6,11 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   name: string;
   /** If this is an editable setting, the data type specifies how this data can be edited.*/
   editorType?: string;
-  /** A list of texts supporting HTML format. */
+  /** A list of texts that describe the setting. It supports HTML format. */
   textHtml?: string;
-  /** Regular text, HTML not supported. */
+  /** A list of texts that describe the setting. It supports regular text, not HTML. */
   textRegular?: string[];
-  /** Editable/selected data to be displayed. */
+  /** The human readable data to be displayed. */
   textData?: string[];
   /** A text with warning color, HTML not supported. */
   textWarning?: string;
@@ -18,9 +18,9 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   textError?: string;
   /** If the setting should be displayed as disabled. */
   disabled?: boolean;
-  /** If true this will displaying a running animation. */
+  /** If true this will display a running animation. */
   running?: boolean;
-  /** Data to be bound to the setting. */
+  /** The actual data to be bound to the setting. */
   data?: any;
   /** Event to be fired if the data changed. */
   onChange?: (setting: ISetting) => void;

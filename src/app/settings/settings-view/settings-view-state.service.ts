@@ -239,6 +239,45 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
         ]
       },
       {
+        name: 'Scrobbling',
+        settings: [
+          {
+            name: 'Last.FM Username',
+            icon: AppAttributeIcons.User,
+            textRegular: ['The user name of the account associated with the scrobbles.'],
+            editorType: SettingsEditorType.Text,
+            textData: [this.options.getText(ModuleOptionId.LastFmUsername)],
+            data: this.options.getText(ModuleOptionId.LastFmUsername),
+            onChange: setting => {
+              setting.textData = [setting.data];
+              this.options.saveText(ModuleOptionId.LastFmUsername, setting.textData);
+            }
+          },
+          {
+            name: 'Last.FM Password',
+            icon: AppAttributeIcons.Password,
+            textRegular: ['The password of the account associated with the scrobble.'],
+            editorType: SettingsEditorType.Text,
+            textData: ['*******'],
+            data: this.options.getPassword(ModuleOptionId.LastFmPassword),
+            onChange: setting => {
+              this.options.savePassword(ModuleOptionId.LastFmPassword, setting.data);
+            }
+          },
+          {
+            name: 'Last.FM API Secret',
+            icon: AppAttributeIcons.Key,
+            textRegular: ['The secret key to connect to the Last.FM API.'],
+            editorType: SettingsEditorType.Text,
+            textData: ['*******'],
+            data: this.options.getPassword(ModuleOptionId.LastFmApiKey),
+            onChange: setting => {
+              this.options.savePassword(ModuleOptionId.LastFmApiKey, setting.data);
+            }
+          }
+        ]
+      },
+      {
         name: 'Developer Options',
         settings: [
           {

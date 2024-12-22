@@ -29,6 +29,9 @@ export class SettingsBaseComponent implements OnInit {
     if (setting.action) {
       setting.action(setting);
     }
+    else if (setting.editorType === SettingsEditorType.Text) {
+      this.openTextEditorPanel(setting);
+    }
     else if (setting.editorType === SettingsEditorType.YesNo) {
       setting.data = !setting.data;
       if (setting.onChange) {
@@ -44,6 +47,26 @@ export class SettingsBaseComponent implements OnInit {
     else if (setting.editorType === SettingsEditorType.ListMultiple) {
       this.openListMultipleEditorPanel(setting);
     }
+  }
+
+  private async openTextEditorPanel(setting: ISetting): Promise<void> {
+    const model: IInputEditorModel = {
+      componentType: InputEditorComponent,
+      title: 'Edit',
+      titleIcon: AppActionIcons.Edit,
+      type: 'text',
+      value: setting.data,
+      label: '',
+      onOk: result => {
+        const inputResult = result as IInputEditorModel;
+        setting.data = inputResult.value;
+        setting.onChange(setting);
+      }
+    };
+    if (setting.beforePanelOpen) {
+      await setting.beforePanelOpen(model);
+    }
+    this.sidebarHostService.loadContent(model);
   }
 
   private async openNumericEditorPanel(setting: ISetting): Promise<void> {
@@ -105,5 +128,4 @@ export class SettingsBaseComponent implements OnInit {
     }
     this.sidebarHostService.loadContent(model);
   }
-
 }

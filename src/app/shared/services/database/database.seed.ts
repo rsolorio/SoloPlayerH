@@ -43,7 +43,10 @@ export enum ModuleOptionId {
   MinimumAudioDuration = '0cad8c29-3af4-41c2-b10b-8a9ec7832f30',
   IncludeAssociatedArtistSongs = '1cf0024d-d5c1-46a8-b89c-06d61c25cd95',
   PlayPercentage = '89a480bf-2693-423b-8239-1ea071bf8421',
-  ForceFileSync = '5008ff66-e737-4662-88ca-8e20206f09f7'
+  ForceFileSync = '5008ff66-e737-4662-88ca-8e20206f09f7',
+  LastFmUsername = '7a09f27b-bfba-4f93-861c-d141725b905c',
+  LastFmPassword = 'c868fc44-a731-4997-9062-ad370ef10f46',
+  LastFmApiKey = 'b8331f4d-b68f-4ee0-bf8d-db909675f1fd'
 }
 
 export enum SyncProfileId {

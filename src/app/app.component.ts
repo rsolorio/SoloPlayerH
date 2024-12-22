@@ -15,6 +15,7 @@ import { ModuleOptionId } from './shared/services/database/database.seed';
 import { DatabaseOptionsService } from './shared/services/database/database-options.service';
 import { CoreEvent } from './app-events';
 import { HtmlPlayerService } from './shared/services/html-player/html-player.service';
+import { LastFmService } from './shared/services/last-fm/last-fm.service';
 
 /**
  * The main app component.
@@ -41,6 +42,7 @@ export class AppComponent implements OnInit {
     private featureService: FeatureDetectionService,
     private navbarService: NavBarStateService,
     private playerService: HtmlPlayerService,
+    private lastFm: LastFmService,
     private navigation: NavigationService)
   {
     doc.addEventListener('DOMContentLoaded', this.onDomContentLoaded);
@@ -64,7 +66,13 @@ export class AppComponent implements OnInit {
       this.navbarService.enableAutoHide();
     }
 
-    this.playerService.getState().playPercentage = this.options.getNumber(ModuleOptionId.PlayPercentage)
+    this.playerService.getState().playPercentage = this.options.getNumber(ModuleOptionId.PlayPercentage);
+
+    this.lastFm.setupAuthentication(
+      this.options.getText(ModuleOptionId.LastFmUsername),
+      this.options.getPassword(ModuleOptionId.LastFmPassword),
+      this.options.getPassword(ModuleOptionId.LastFmApiKey)
+    );
   }
 
   @HostListener('window:scroll', ['$event'])

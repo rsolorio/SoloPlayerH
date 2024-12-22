@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { ModuleOptionEntity } from '../../entities';
 import { DatabaseLookupService } from './database-lookup.service';
 import { ValueEditorType } from 'src/app/core/models/core.enum';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { cryptKey } from 'src/app/app-exports';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseOptionsService {
   private options: ModuleOptionEntity[];
-  constructor(private lookup: DatabaseLookupService) { }
+  constructor(private lookup: DatabaseLookupService, private utility: UtilityService) { }
 
   public async init(): Promise<void> {
     this.options = await ModuleOptionEntity.find();
@@ -52,6 +54,15 @@ export class DatabaseOptionsService {
     return 0;
   }
 
+  public getPassword(id: string): string {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
+    if (moduleOption.values) {
+      const encryptedValue = JSON.parse(moduleOption.values) as string;
+      return this.utility.decrypt(encryptedValue, cryptKey);
+    }
+    return null;
+  }
+
   public async saveText(id: string, values: string[]): Promise<void> {
     const moduleOption = this.lookup.findModuleOption(id, this.options);
     if (moduleOption) {
@@ -63,6 +74,12 @@ export class DatabaseOptionsService {
       }
       await moduleOption.save();
     }
+  }
+
+  public async savePassword(id: string, value: string): Promise<void> {
+    const moduleOption = this.lookup.findModuleOption(id, this.options);
+    moduleOption.values = JSON.stringify(this.utility.encrypt(value, cryptKey));
+    await moduleOption.save();
   }
 
   public async saveBoolean(id: string, value: boolean): Promise<void> {

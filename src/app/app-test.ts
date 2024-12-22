@@ -552,8 +552,8 @@ export class AppTestService {
   }
 
   private hash(): void {
-    // Filters (name)
-    const value = this.lookup.hashValues(['Salsa 80s-90s']);
+    // Filters (name), Module Options (name)
+    const value = this.lookup.hashValues(['Last.FM API Secret']);
     //const value = this.lookup.hashValueListEntry('Explicit');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Ranchero\\Pedro Infante\\1952 - Peso Sobre Peso\\01 - peso sobre peso (la bartola).mp3');
     //const value = this.lookup.hashAlbum('Live And Let Die Soundtrack', 1973);

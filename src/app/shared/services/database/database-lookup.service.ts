@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import * as objectHash from 'object-hash'
 import { AlbumEntity, ArtistEntity, DbEntity, ModuleOptionEntity, PartyRelationEntity, PlaylistEntity, RelatedImageEntity, SongEntity, ValueListEntryEntity } from '../../entities';
 import { PartyRelationType } from '../../models/music.enum';
 import { IImageSource } from 'src/app/core/models/core.interface';
 import { FilterEntity } from '../../entities/filter.entity';
+import * as objectHash from 'object-hash'
 
 @Injectable({
   providedIn: 'root'

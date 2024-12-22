@@ -211,6 +211,24 @@ export class UtilityService {
     return appRoutes[this.getCurrentRoute()];
   }
 
+  public encrypt(value: string, key: string): string {
+    let encryptedValue = '';
+    for (let i = 0; i < value.length; i++) {
+      encryptedValue += String.fromCharCode(value.charCodeAt(i) ^ key.charCodeAt(Math.floor(i % key.length)));
+    }
+    const encodedValue = btoa(encryptedValue);
+    return encodedValue;
+  }
+
+  public decrypt(value: string, key: string): string {
+    const decodedValue = atob(value);
+    let decryptedValue = '';
+    for (let i = 0; i < decodedValue.length; i++) {
+      decryptedValue += String.fromCharCode(decodedValue.charCodeAt(i) ^ key.charCodeAt(Math.floor(i % key.length)));
+    }
+    return decryptedValue;
+  }
+
   public bytesTo(value: number, unit: Bytes): number {
     return value / unit;
   }
