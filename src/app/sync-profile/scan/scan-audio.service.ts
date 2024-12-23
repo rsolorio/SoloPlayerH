@@ -492,9 +492,20 @@ export class ScanAudioService {
     this.setFirst(newAlbum, 'name', metadata, MetaAttribute.Album, AlbumName.Unknown);
     // Is this actually the album year? Album year and song year might be different.
     this.setFirst(newAlbum, 'releaseYear', metadata, MetaAttribute.Year, 0);
-    this.setFirst(newAlbum, 'albumStylized', metadata, MetaAttribute.AlbumStylized, newAlbum.name);
     this.setFirst(newAlbum, 'albumSort', metadata, MetaAttribute.AlbumSort, newAlbum.name);
     this.setFirst(newAlbum, 'publisher', metadata, MetaAttribute.Publisher);
+
+    let albumCleanName = '';
+    const brackets = this.utility.matchBrackets(newAlbum.name);
+    if (brackets?.length) {
+      for (const bracket of brackets) {
+        albumCleanName = newAlbum.name.replace(bracket, '').trim();
+      }
+    }
+    else {
+      albumCleanName = newAlbum.name;
+    }
+    this.setFirst(newAlbum, 'albumStylized', metadata, MetaAttribute.AlbumStylized, albumCleanName);
 
     const existingAlbum = this.lookupService.findAlbum(newAlbum.name, newAlbum.releaseYear, artist.id, this.existingAlbums);
     if (existingAlbum) {
@@ -508,7 +519,7 @@ export class ScanAudioService {
         this.setChangesIfNotNew(existingAlbum);
       }
       if (existingAlbum.albumSort === existingAlbum.name && existingAlbum.albumSort !== newAlbum.albumSort) {
-        existingAlbum.albumStylized = newAlbum.albumSort;
+        existingAlbum.albumSort = newAlbum.albumSort;
         this.setChangesIfNotNew(existingAlbum);
       }
       return existingAlbum;

@@ -20,7 +20,7 @@ song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.r
 song.performerCount, song.genre, song.mood, song.language, song.lyrics,
 song.seconds, song.duration, song.bitrate, song.frequency, song.vbr,
 song.favorite, song.live, song.advisory, song.addDate, song.changeDate, song.playDate, song.replaceDate,
-album.name AS primaryAlbumName, album.primaryArtistId AS primaryArtistId,
+album.name AS primaryAlbumName, album.albumStylized AS primaryAlbumStylized, album.primaryArtistId AS primaryArtistId,
 artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
 `;
 
@@ -29,11 +29,11 @@ artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
  * Fields: id, name, hash, primaryAlbumId, filePath, fileExtension, fileSize,
  * trackNumber, mediaNumber, releaseYear, releaseDecade, rating, playCount,
  * performerCount, genre, mood, language, lyrics, seconds, duration, bitrate, frequency, vbr,
- * favorite, live, advisory, addDate, playDate, replaceDate, primaryAlbumName, primaryArtistId,
+ * favorite, live, advisory, addDate, playDate, replaceDate, primaryAlbumName, primaryAlbumStylized, primaryArtistId,
  * primaryArtistName, primaryArtistStylized.
  * Excluded fields:
  * externalId, cleanName, titleSort, subtitle, featuring, grouping, composer, composerSort,
- * primaryAlbumSort, primaryAlbumStylized, primaryAlbumType, country, primaryArtistSort, primaryArtistType,
+ * primaryAlbumSort, primaryAlbumType, country, primaryArtistSort, primaryArtistType,
  * originalArtist, originalAlbum, originalReleaseYear, comment,
  * infoUrl, videoUrl, replayGain, tempo, addYear, changeDate, replaceDate
  */
@@ -111,6 +111,8 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   primaryAlbumName: string;
   @ViewColumn()
+  primaryAlbumStylized: string;
+  @ViewColumn()
   primaryArtistId: string;
   @ViewColumn()
   primaryArtistName: string;
@@ -183,8 +185,6 @@ export class SongExtendedViewBaseEntity extends SongViewBaseEntity implements IS
   primaryAlbumDescription: string;
   @ViewColumn()
   primaryAlbumSort: string;
-  @ViewColumn()
-  primaryAlbumStylized: string;
   @ViewColumn()
   primaryAlbumType: string;
   @ViewColumn()

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AlbumEntity, ArtistEntity, DataMappingEntity, DataSourceEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongViewEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
+import { AlbumEntity, ArtistEntity, DataMappingEntity, DataSourceEntity, FilterEntity, PartyRelationEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongViewEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongViewEntity, SyncProfileEntity, ValueListEntryEntity } from '../../entities';
 import { ISongModel } from '../../models/song-model.interface';
-import { IsNull, Not } from 'typeorm';
+import { In, IsNull, Not } from 'typeorm';
 import { ICriteriaValueSelector } from '../criteria/criteria.interface';
 import { DbColumn, databaseColumns } from './database.columns';
 import { ChipSelectorType, IChipItem } from '../../components/chip-selection/chip-selection-model.interface';
@@ -28,6 +28,9 @@ import { IPopularity } from '../../models/music-model.interface';
 import { RelativeDateOperator, RelativeDateTerm, RelativeDateUnit } from '../relative-date/relative-date.enum';
 import { RelativeDateService } from '../relative-date/relative-date.service';
 import { ValueLists } from './database.lists';
+import { LastFmService } from '../last-fm/last-fm.service';
+import { EntityId } from './database.seed';
+import { ILastFmScrobbleRequest } from '../last-fm/last-fm.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +42,8 @@ export class DatabaseEntitiesService {
     private db: DatabaseService,
     private fileService: FileService,
     private storage: LocalStorageService,
-    private relativeDates: RelativeDateService) { }
+    private relativeDates: RelativeDateService,
+    private lastFm: LastFmService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -77,10 +81,27 @@ export class DatabaseEntitiesService {
   }
 
   /**
+   * Gets all featuring artists associated with the specified song.
+   * @param songId The id of the song.
+   * @returns Artist stylized names separated by comma.
+   */
+  public async getSongContributors(songId: string): Promise<string> {
+    const relations = await PartyRelationEntity.findBy({ songId: songId, relationTypeId: PartyRelationType.Featuring });
+    if (relations.length) {
+      const artists = await ArtistEntity.findBy({ id: In(relations.map(r => r.relatedId ))});
+      if (artists.length) {
+        return artists.map(a => a.artistStylized).join(', ');
+      }
+    }
+    return null;
+  }
+
+  /**
    * Adds a play history record and updates the song entity if needed.
    * This method does nothing in debug mode.
    * @param songId The id of the song.
-   * @param count The number of plays for that song.
+   * @param count The number of plays for that song. It is usually set to 1, and the number is added to the total play count.
+   * If set to 0, the method will do nothing and return null.
    * @param progress The % play progress when it was recorded.
    * @returns A song entity if it was updated.
    */
@@ -96,17 +117,53 @@ export class DatabaseEntitiesService {
     playRecord.playDate = new Date();
     playRecord.playCount = count;
     playRecord.progress = progress;
+    if (count) {
+      playRecord.scrobbled = await this.scrobble(songId);
+    }
+    else {
+      playRecord.scrobbled = false;
+    }
+    
     await playRecord.save();
     // Increase play count
     if (!count) {
       return null;
     }
+
     const song = await SongEntity.findOneBy({ id: songId });
     song.playCount = song.playCount + count;
     song.playDate = playRecord.playDate;
     song.changeDate = playRecord.playDate;
     await song.save();
     return song;
+  }
+
+  public async prepareScrobbleRequest(songId: string): Promise<ILastFmScrobbleRequest> {
+    const song = await SongViewEntity.findOneBy({ id: songId });
+    const contributors = await this.getSongContributors(songId);
+    let artistName = song.primaryArtistStylized;
+    if (contributors) {
+      if (song.primaryArtistId === EntityId.ArtistVarious) {
+        // Ensure "Various" doesn't end up as Artist if there are actual artists
+        artistName = contributors;
+      }
+      else {
+        // Album artist and contributors should be part of the Artist
+        artistName += ', ' + contributors;
+      }
+    }
+    return {
+      albumArtistName: song.primaryArtistId === EntityId.ArtistVarious ? song.primaryArtistName : song.primaryArtistStylized,
+      artistName: artistName,
+      trackTitle: song.cleanName,
+      albumName: song.primaryAlbumStylized
+    };
+  }
+
+  public async scrobble(songId: string): Promise<boolean> {
+    const scrobbleRequest = await this.prepareScrobbleRequest(songId);
+    const result = await this.lastFm.scrobble(scrobbleRequest);
+    return true;
   }
 
   public async setFavoriteSong(songId: string, favorite: boolean): Promise<ISongModel> {

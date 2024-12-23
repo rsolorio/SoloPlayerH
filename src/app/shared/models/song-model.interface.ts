@@ -44,6 +44,7 @@ export interface ISongModel extends IListItemModel {
 
   // Join info
   primaryAlbumName: string;
+  primaryAlbumStylized: string;
   primaryArtistId: string;
   primaryArtistName: string;
   primaryArtistStylized: string;
@@ -89,7 +90,6 @@ export interface ISongExtendedModel extends ISongFullModel {
   country: string;
   primaryAlbumDescription: string;
   primaryAlbumSort: string;
-  primaryAlbumStylized: string;
   primaryAlbumType: string;
   primaryAlbumPublisher: string;
   primaryArtistSort: string;

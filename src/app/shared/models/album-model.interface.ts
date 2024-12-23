@@ -7,6 +7,7 @@ export interface IAlbumModel extends IListItemModel {
   releaseDecade: number;
   favorite: boolean;
   albumSort: string;
+  albumStylized: string;
   /** Name of the artist. Unavailable in AlbumEntity. */
   primaryArtistName: string;
   /** Stylized name of the artist. Unavailable in AlbumEntity. */

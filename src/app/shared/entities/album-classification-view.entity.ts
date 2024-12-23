@@ -7,12 +7,13 @@ import { ListItemEntity } from './base.entity';
  * It is intended to be used by filtering using the classificationId column;
  * if that's not the case, the view will return duplicate album records.
  * If using more than one classificationId values, you will need to use a DISTINCT clause.
- * Fields: id, primaryArtistId, name, hash, description, albumType, albumSort, releaseYear, releaseDecade, favorite, primaryArtistName, primaryArtistStylized, classificationId, songCount, playCount, seconds, songAddDateMax
+ * Fields: id, primaryArtistId, name, hash, description, albumType, albumSort, releaseYear, releaseDecade, favorite, albumStylized, primaryArtistName, primaryArtistStylized, classificationId, songCount, playCount, seconds, songAddDateMax
  */
  @ViewEntity({
   name: 'albumClassificationView',
   expression: `
-  SELECT album.id, album.primaryArtistId, album.name, album.hash, album.description, album.albumType, album.albumSort, album.releaseYear, album.releaseDecade, album.favorite, artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount, SUM(songClass.playCount) AS playCount, SUM(songClass.seconds) AS seconds, MAX(songClass.addDate) AS songAddDateMax
+  SELECT album.id, album.primaryArtistId, album.name, album.hash, album.description, album.albumType, album.albumSort, album.releaseYear, album.releaseDecade, album.favorite, album.albumStylized,
+  artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized, songClass.classificationId, COUNT(songClass.id) AS songCount, SUM(songClass.playCount) AS playCount, SUM(songClass.seconds) AS seconds, MAX(songClass.addDate) AS songAddDateMax
   FROM album INNER JOIN artist
   ON album.primaryArtistId = artist.id INNER JOIN (
     SELECT song.id, song.primaryAlbumId, song.playCount, song.seconds, song.addDate, songClassification.classificationId
@@ -44,6 +45,8 @@ export class AlbumClassificationViewEntity extends ListItemEntity implements IAl
   releaseDecade: number;
   @ViewColumn()
   favorite: boolean;
+  @ViewColumn()
+  albumStylized: string;
   @ViewColumn()
   primaryArtistName: string;
   @ViewColumn()

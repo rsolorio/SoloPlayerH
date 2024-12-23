@@ -10,6 +10,7 @@ import { ListItemEntity } from "./base.entity";
 export class SongBaseEntity extends ListItemEntity {
   // Join info
   primaryAlbumName: string;
+  primaryAlbumStylized: string;
   primaryArtistId: string;
   primaryArtistName: string;
   primaryArtistStylized: string;

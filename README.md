@@ -93,7 +93,7 @@ The application gets a list of dominant colors for each album art, and you can c
 ## Technologies
 This is a hybrid app built with Electron/Angular/Sqlite.
 
-## Database schema
+## Database Schema
 All standard entities have three main fields:
 - id
   - unique identifier

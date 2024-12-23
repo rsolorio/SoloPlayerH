@@ -48,7 +48,7 @@
     <!-- Extra Info -->
     <span class="sp-color-on-bg-low sp-text-small sp-no-select" [ngClass]="{ 'sp-color-primary-low': item.playerStatus === PlayerSongStatus.Playing }">
       <i [ngClass]="AppAttributeIcons.ArtistName">&nbsp;</i><span>{{item.primaryArtistStylized}}&nbsp;&nbsp;</span>
-      <i [ngClass]="AppAttributeIcons.AlbumName">&nbsp;</i><span>{{item.primaryAlbumName}}&nbsp;&nbsp;</span>
+      <i [ngClass]="AppAttributeIcons.AlbumName">&nbsp;</i><span>{{item.primaryAlbumStylized}}&nbsp;&nbsp;</span>
       <ng-container *ngIf="item.releaseYear > 0">
         <i [ngClass]="AppAttributeIcons.Year">&nbsp;</i><span>{{item.releaseYear}}&nbsp;&nbsp;</span>
       </ng-container>

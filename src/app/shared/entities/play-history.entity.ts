@@ -10,4 +10,6 @@ export class PlayHistoryEntity extends BaseEntity {
   playCount: number;
   @Column()
   progress: number;
+  @Column()
+  scrobbled: boolean;
 }

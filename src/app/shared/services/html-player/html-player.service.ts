@@ -372,6 +372,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       }
     }
     this.events.broadcast(AppEvent.PlayerPositionChanged, { oldValue: this.state.previousElapsedSeconds, newValue: this.state.elapsedSeconds });
+    // Fire track count only if: it hasn't been fire before and it is greater than the play percentage config
     if (!this.played && this.state.elapsedPercentage >= this.state.playPercentage) {
       this.played = true;
       const countInfo: IPlayerTrackCount = {
@@ -479,6 +480,7 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
       this.played = false;
     }
     else if (this.state.playerList.hasTrack()) {
+      // TODO: is this really needed? With count = 0 the event is practically ignored.
       // Using the previous percentage because at this point the song should have been stopped
       // and the current percentage should be 0
       const countInfo: IPlayerTrackCount = {

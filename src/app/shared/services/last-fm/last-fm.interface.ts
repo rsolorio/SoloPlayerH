@@ -8,18 +8,36 @@ export interface ILastFmSessionResponse {
   session: ILastFmSession;
 }
 
+export interface ILastFmScrobbleRequest {
+  albumName: string;
+  albumArtistName: string;
+  artistName: string;
+  trackTitle: string;
+}
+
 export interface ILastFmScrobble {
   album: any;
   albumArtist: any;
   artist: any;
-  ignoredMessage: any;
-  timestamp: string;
+  ignoredMessage?: any;
+  timestamp?: string;
   track: any;
 }
 
 export interface ILastFmScrobbles {
   scrobble: ILastFmScrobble;
-  '@attr': any;
+  '@attr': ILastFmAttributes;
+}
+
+export interface ILastFmAttributes {
+  /** Number of accepted scrobbles. */
+  accepted?: number;
+  /** Ignored message codes. 1: Artist ignored, 2: Track ignored, 3: Timestamp too old, 4: Timestamp too new, 5: Daily scrobble limit exceeded */
+  code?: number;
+  /** Number of ignored scrobbles. */
+  ignored?: number;
+  /** 1 if this track, artist or album name was automatically corrected, 0 otherwise. */
+  corrected?: any;
 }
 
 export interface ILastFmScrobbleResponse {

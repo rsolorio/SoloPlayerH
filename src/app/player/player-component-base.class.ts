@@ -31,6 +31,7 @@ import { ChipSelectionComponent } from '../shared/components/chip-selection/chip
 import { AppActionIcons, AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } from '../app-icons';
 import { AppEvent } from '../app-events';
 import { MusicImageType } from '../platform/audio-metadata/audio-metadata.enum';
+import { LastFmService } from '../shared/services/last-fm/last-fm.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -64,7 +65,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private utilityService: UtilityService,
     private sidebarHostStateService: SideBarHostStateService,
     private imageSvc: ImageService,
-    private optionsService: DatabaseOptionsService)
+    private optionsService: DatabaseOptionsService,
+    private lastFmService: LastFmService)
   {
     super();
   }
@@ -135,6 +137,9 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   protected onTrackChanged(eventArgs: IEventArgs<IPlaylistSongModel>): void {
     this.setupAssociatedData(eventArgs.newValue);
+    this.databaseEntityService.prepareScrobbleRequest(eventArgs.newValue.id).then(scrobbleReq => {
+      this.lastFmService.nowPlaying(scrobbleReq);
+    });
   }
 
   /**
@@ -152,14 +157,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   protected async setupContributors(songId: string): Promise<void> {
-    this.contributors = null;
-    const relations = await PartyRelationEntity.findBy({ songId: songId, relationTypeId: PartyRelationType.Featuring });
-    if (relations.length) {
-      const artists = await ArtistEntity.findBy({ id: In(relations.map(r => r.relatedId ))});
-      if (artists.length) {
-        this.contributors = artists.map(a => a.artistStylized).join(', ');
-      }
-    }
+    this.contributors = await this.databaseEntityService.getSongContributors(songId);
   }
 
   protected async setupImages(song: ISongModel): Promise<void> {

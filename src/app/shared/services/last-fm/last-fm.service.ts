@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { md5 } from 'src/app/core/models/md5';
-import { ILastFmArtistResponse, ILastFmImage, ILastFmScrobbleResponse, ILastFmSessionResponse } from './last-fm.interface';
+import { ILastFmArtistResponse, ILastFmImage, ILastFmScrobbleRequest, ILastFmScrobbleResponse, ILastFmSessionResponse } from './last-fm.interface';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { LocalStorageKeys } from '../local-storage/local-storage.enum';
 import { appName } from 'src/app/app-exports';
@@ -45,51 +45,50 @@ export class LastFmService {
    * this means you may scrobble at most (24 * 60 * 60) / 30 = 2880 tracks in one day.
    * The Last.fm API supports up to 50 scrobbles being sent at a time but this method only allows one at a time.
    */
-  public scrobble(albumArtist: string, artist: string, track: string, album: string): Observable<ILastFmScrobbleResponse> {
+  public scrobble(scrobbleRequest: ILastFmScrobbleRequest): Promise<ILastFmScrobbleResponse> {
     return this.setupSessionKey(this.user, this.pwd).pipe(
       mergeMap(() => {
         let params = this.buildBasicHttpParams('track.scrobble');
-        params = this.appendMusicInfo(params, albumArtist, artist, track, album);
+        params = this.appendMusicInfo(params, scrobbleRequest.albumArtistName, scrobbleRequest.artistName, scrobbleRequest.trackTitle, scrobbleRequest.albumName);
         params = this.appendTimestamp(params);
         params = this.appendSessionKey(params);
         params = this.appendSignature(params);
         params = this.appendFormat(params);
         return this.http.post<ILastFmScrobbleResponse>(this.rootUrl, null, { params: params });
       })
-    );
+    ).toPromise();
   }
 
   /**
    * https://www.last.fm/api/show/track.updateNowPlaying
    */
-  public nowPlaying(albumArtist: string, artist: string, track: string, album: string): Observable<any> {
+  public nowPlaying(scrobbleRequest: ILastFmScrobbleRequest): Promise<any> {
     return this.setupSessionKey(this.user, this.pwd).pipe(
       mergeMap(() => {
         let params = this.buildBasicHttpParams('track.updateNowPlaying');
-        params = this.appendMusicInfo(params, albumArtist, artist, track, album);
+        params = this.appendMusicInfo(params, scrobbleRequest.albumArtistName, scrobbleRequest.artistName, scrobbleRequest.trackTitle, scrobbleRequest.albumName);
         params = this.appendSessionKey(params);
         params = this.appendSignature(params);
         params = this.appendFormat(params);
         return this.http.post<any>(this.rootUrl, null, { params: params });
       })
-    );
+    ).toPromise();
   }
 
   /**
    * https://www.last.fm/api/show/artist.getInfo
    */
-  public getArtist(artistName: string): Observable<ILastFmArtistResponse> {
+  public getArtist(artistName: string): Promise<ILastFmArtistResponse> {
     let params = this.buildBasicHttpParams('artist.getinfo');
     params = this.appendArtist(params, artistName);
     params = this.appendAuth(params, this.user);
     params = this.appendFormat(params);
-    return this.http.get<ILastFmArtistResponse>(this.rootUrl, { params: params });
+    return this.http.get<ILastFmArtistResponse>(this.rootUrl, { params: params }).toPromise();
   }
 
-  public getArtistImageUrl(artistName: string, imageSize?: LastFmImageSize): Observable<string> {
-    return this.getArtist(artistName).pipe(
-      map(artistResponse => this.getImageUrl(artistResponse.artist.image, imageSize))
-    );
+  public async getArtistImageUrl(artistName: string, imageSize?: LastFmImageSize): Promise<string> {
+    const artistResponse = await this.getArtist(artistName);
+    return this.getImageUrl(artistResponse.artist.image, imageSize);
   }
 
   /**
@@ -148,7 +147,7 @@ export class LastFmService {
     return params;
   }
 
-  private appendArtist(httpParams: HttpParams, artistName: string, mbid?: string) {
+  private appendArtist(httpParams: HttpParams, artistName: string, mbid?: string): HttpParams {
     if (mbid) {
       return httpParams.append('mbid', mbid);
     }

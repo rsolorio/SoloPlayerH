@@ -13,6 +13,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { AppActionIcons } from 'src/app/app-icons';
+import { LastFmService } from 'src/app/shared/services/last-fm/last-fm.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -33,9 +34,10 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private dialog: DialogService,
     private sidebarHostService: SideBarHostStateService,
     private imageService: ImageService,
-    private options: DatabaseOptionsService)
+    private options: DatabaseOptionsService,
+    private lastFm: LastFmService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, sidebarHostService, imageService, options);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, sidebarHostService, imageService, options, lastFm);
   }
 
   public ngOnInit() {
