@@ -21,6 +21,7 @@ export enum AppRoute {
   Filters = '/filters',
   FilterView = '/filters/view',
   Settings = '/settings',
+  Quiz = '/quiz',
   Log = '/log',
   Queries = '/queries',
   Files = '/filebrowser',
@@ -64,6 +65,11 @@ appRoutes[AppRoute.Settings] = { route: AppRoute.Settings,
   icon: AppViewIcons.Settings,
   name: 'Settings',
   menuEnabled: true };
+appRoutes[AppRoute.Quiz] = { route: AppRoute.Quiz,
+  icon: AppViewIcons.Quiz,
+  name: 'Quiz',
+  menuEnabled: true
+};
 appRoutes[AppRoute.Log] = { route: AppRoute.Log,
   icon: AppViewIcons.Log,
   name: 'Event Log' };

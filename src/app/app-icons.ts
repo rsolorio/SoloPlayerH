@@ -174,7 +174,9 @@ export enum AppActionIcons {
   Aim = 'mdi-bullseye mdi',
   Undo = 'mdi-undo-variant mdi',
   ChevronLeft = 'mdi-chevron-left mdi',
-  ChevronRight = 'mdi-chevron-right mdi'
+  ChevronRight = 'mdi-chevron-right mdi',
+  Show = 'mdi-eye-outline mdi',
+  Hide = 'mdi-eye-off-outline mdi'
 }
 
 export enum AppPlayerIcons {
@@ -203,7 +205,8 @@ export enum AppViewIcons {
   Home = 'mdi-home mdi',
   Settings = 'mdi-cogs mdi',
   Log = "mdi-file-document-edit mdi",
-  About = 'mdi-owl mdi'
+  About = 'mdi-owl mdi',
+  Quiz = 'mdi-help-box-multiple mdi'
 }
 
 export function getNumericCircleIcon(value: number): string {

@@ -1,0 +1,118 @@
+@import "../../../styles-variables";
+
+.sp-field-group {
+  display: flex;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  column-gap: 10px;
+}
+
+.sp-input-group {
+  // Allows to place the edit icon properly
+  position: relative;
+  // This is the container property so its children can use flex
+  display: flex;
+  // These are flex item properties since its parent is also a flex container
+  flex-grow: 1; // All with the same size
+  flex-basis: 0; // When set to 0 all elements have the same starting point to calculate size, ending with the same size
+}
+
+.sp-input-prepend-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 34px;
+  min-width: 34px;
+  // Blends the right margin of this element with the left margin of the input
+  margin-right: -1px;
+  border: 1px solid $sp-color-on-background-low;
+  border-radius: 0.25rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.sp-input-prepend-label {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  height: 34px;
+  // Blends the right margin of this element with the left margin of the input
+  margin-right: -1px;
+  border: 1px solid $sp-color-on-background-low;
+  border-radius: 0.25rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  white-space: nowrap;
+}
+
+.sp-input-control {
+  height: 34px;
+  padding-left: 10px;
+  padding-right: 10px;
+  outline: none;
+  border: 1px solid $sp-color-on-background-low;
+  border-radius: 0.25rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.sp-input-control-with-icon {
+  padding-right: 35px;
+}
+
+.sp-input-edit {
+  position: absolute;
+  right: 12px;
+  top: 4px;
+}
+
+.sp-multiline {
+  resize: vertical;
+  overflow: hidden;
+}
+
+.sp-input-badge {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  border-radius: 50%;
+  height: 17px;
+  width: 17px;
+  line-height: 17px;
+  text-align: center;
+  // Inverted colors
+  color: $sp-color-background;
+  background-color: $sp-color-on-background;
+}
+
+.sp-placeholder {
+  height: $sp-navbar-height;
+}
+
+.sp-time-text {
+  display: block;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.sp-play-pause {
+  height: 80px;
+  width: 80px;
+}
+
+.sp-player-button {
+  border-radius: 50%;
+  background-color: $sp-color-overlay-02;
+  margin: 0 auto; // this will horizontally center div in the td
+}
+
+.sp-player-icon {
+  vertical-align: middle;
+  text-align: center;
+  display: table-cell;
+}

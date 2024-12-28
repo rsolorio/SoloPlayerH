@@ -587,7 +587,7 @@ export class DatabaseService {
   ): SelectQueryBuilder<T> {
     let queryBuilder = repo.createQueryBuilder(entityAlias);
 
-    if (!criteria.hasItems()) {
+    if (!criteria.hasItems() && !criteria.random && !criteria.hasPaging()) {
       return queryBuilder;
     }
 
@@ -811,6 +811,9 @@ export class DatabaseService {
     return queryBuilder;
   }
 
+  /**
+   * Changes the content and order of the specified list of items.
+   */
   private transform<T>(items: T[], criteria: Criteria): T[] {
     let transformedResult = this.transformService.transform(items, criteria.transformAlgorithm);
     // Individual alternate transforms

@@ -1,0 +1,138 @@
+<table class="sp-full-width">
+  <!-- Criteria -->
+  <tr>
+    <td colspan="3">
+      <div class="sp-field-group">
+        <!-- Language -->
+        <div class="sp-input-group">
+           <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Language"></i></span>
+           <input [(ngModel)]="languageName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
+           <span (click)="onLanguageEditClick()" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Edit"></i></span>
+        </div>
+        <!-- Genre -->
+        <div class="sp-input-group">
+          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.GenreName"></i></span>
+          <input [(ngModel)]="genre" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
+          <span (click)="onGenreEditClick()" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Edit"></i></span>
+        </div>
+       <!-- Decade -->
+        <div class="sp-input-group">
+          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Decade"></i></span>
+          <input [(ngModel)]="decade" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
+          <span (click)="onDecadeEditClick()" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Edit"></i></span>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <!-- Buttons -->
+  <tr>
+    <td colspan="3"><table class="sp-full-width"><tr>
+      <td style="width: 50%;">
+        <div (click)="onFindClick()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+          <span class="sp-chip-text">
+            <i [ngClass]="AppActionIcons.Search">&nbsp;&nbsp;</i>
+            <span>Find</span>
+          </span>
+        </div>
+      </td>
+      <td style="width: 50%;">
+        <div (click)="onClearClick()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+          <span class="sp-chip-text">
+            <i [ngClass]="AppActionIcons.CloseClear">&nbsp;&nbsp;</i>
+            <span>Clear</span>
+          </span>
+        </div>
+      </td>
+    </tr></table></td>
+  </tr>
+  <!-- Info -->
+  <tr>
+    <td colspan="3">
+      <div class="sp-field-group">
+        <!-- Song -->
+        <div class="sp-input-group">
+           <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.SongName"></i></span>
+           <input [(ngModel)]="songName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
+           <span class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Show"></i></span>
+        </div>
+        <!-- Artist -->
+        <div class="sp-input-group">
+          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.ArtistName"></i></span>
+          <input [(ngModel)]="artistName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
+          <span class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Show"></i></span>
+        </div>
+      </div>
+      <div class="sp-field-group">
+        <!-- Album -->
+        <div class="sp-input-group">
+           <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.AlbumName"></i></span>
+           <input [(ngModel)]="albumName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
+           <span class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Show"></i></span>
+        </div>
+        <!-- Year -->
+        <div class="sp-input-group">
+          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Year"></i></span>
+          <input [(ngModel)]="releaseYear" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
+          <span class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Show"></i></span>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <!-- Snippets -->
+  <tr>
+    <td>
+      <div (click)="play10sec()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+        <span class="sp-chip-text">
+          <i [ngClass]="AppActionIcons.TimeForward">&nbsp;&nbsp;</i>
+          <span>10 sec</span>
+        </span>
+      </div>
+    </td>
+    <td>
+      <div (click)="play20sec()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+        <span class="sp-chip-text">
+          <i [ngClass]="AppActionIcons.TimeForward">&nbsp;&nbsp;</i>
+          <span>20 sec</span>
+        </span>
+      </div>
+    </td>
+    <td>
+      <div (click)="play30sec()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+        <span class="sp-chip-text">
+          <i [ngClass]="AppActionIcons.TimeForward">&nbsp;&nbsp;</i>
+          <span>30 sec</span>
+        </span>
+      </div>
+    </td>
+  </tr>
+  <!-- Progress Bar -->
+  <tr>
+    <td colspan="3"></td>
+  </tr>
+  <!-- Play Controls -->
+  <tr>
+    <td>
+      <sp-time-display
+      class="sp-time-text sp-text-jumbo sp-text-center sp-clickable"
+      [blinkEnabled]="true"
+      [totalSeconds]="elapsedTime"
+      [placeholderClass]="'sp-color-overlay-02'"
+      [hoursHidden]="true">
+      </sp-time-display>
+    </td>
+    <td class="sp-td-play-control sp-text-huge-fixed">
+      <div class="sp-play-pause sp-player-button">
+        <i [ngClass]="AppPlayerIcons.Play" class="sp-play-pause sp-player-icon"></i>
+    </div>
+    </td>
+    <td>
+      <sp-time-display
+      class="sp-time-text sp-text-jumbo sp-text-center sp-clickable"
+      [blinkEnabled]="true"
+      [totalSeconds]="remainingTime"
+      [placeholderClass]="'sp-color-overlay-02'"
+      [hoursHidden]="true">
+      </sp-time-display>
+    </td>
+  </tr>
+</table>

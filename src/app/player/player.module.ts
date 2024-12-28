@@ -7,6 +7,7 @@ import { CoreModule } from '../core/core.module';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { PlaylistModule } from '../playlist/playlist.module';
+import { PlayerQuizComponent } from './player-quiz/player-quiz.component';
 
 
 
@@ -14,7 +15,8 @@ import { PlaylistModule } from '../playlist/playlist.module';
   declarations: [
     PlayerOverlayComponent,
     PlayerSmallComponent,
-    PlayerFullComponent
+    PlayerFullComponent,
+    PlayerQuizComponent
   ],
   imports: [
     CommonModule,

@@ -50,6 +50,9 @@ export class Criteria {
     return result;
   }
 
+  /**
+   * Determines if the object has any kind of criteria: system, breadcrumb, search, user, quick, sorting.
+   */
   public hasItems(): boolean {
     return this.systemCriteria.length > 0 ||
       this.breadcrumbCriteria.length > 0 ||
@@ -57,6 +60,13 @@ export class Criteria {
       this.userCriteria.length > 0 ||
       this.quickCriteria.length > 0 ||
       this.sortingCriteria.length > 0;
+  }
+
+  /**
+   * Determines if the object has a distinct clause enabled, multiple page numbers or a specific page size.
+   */
+  public hasPaging(): boolean {
+    return this.paging.distinct || this.paging.pageNumber > 1 || this.paging.pageSize > 0;
   }
 
   public hasComparison(ignoreSystem?: boolean, columnName?: string) {

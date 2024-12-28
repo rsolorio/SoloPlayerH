@@ -18,6 +18,7 @@ import { FilterModule } from './filter/filter.module';
 import { PlaylistModule } from './playlist/playlist.module';
 import { SyncProfileListComponent } from './sync-profile/sync-profile-list/sync-profile-list.component';
 import { SyncProfileModule } from './sync-profile/sync-profile.module';
+import { PlayerQuizComponent } from './player/player-quiz/player-quiz.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeViewComponent },
@@ -33,6 +34,7 @@ const routes: Routes = [
   { path: 'filters', component: FilterListComponent },
   { path: 'syncprofiles', component: SyncProfileListComponent },
   { path: 'log', component: LogViewComponent },
+  { path: 'quiz', component: PlayerQuizComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

@@ -785,6 +785,13 @@ export class UtilityService {
     };
   }
 
+  /**
+   * Plays a piece of audio.
+   * @param src Audio source.
+   * @param start Start position in seconds.
+   * @param stop End position in seconds.
+   * @returns 
+   */
   public playPortion(src: string, start: number, stop: number): Promise<void> {
     const audioPortion = new Audio();
     audioPortion.src = src;

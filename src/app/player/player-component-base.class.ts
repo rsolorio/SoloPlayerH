@@ -1,5 +1,5 @@
 import { OnInit, Directive } from '@angular/core';
-import { In, Not } from 'typeorm';
+import { Not } from 'typeorm';
 
 import { IMenuModel } from '../core/models/menu-model.interface';
 import { PlayerOverlayStateService } from './player-overlay/player-overlay-state.service';
@@ -15,13 +15,12 @@ import { ISongModel } from '../shared/models/song-model.interface';
 import { DialogService } from '../platform/dialog/dialog.service';
 import { UtilityService } from '../core/services/utility/utility.service';
 import { ValueLists } from '../shared/services/database/database.lists';
-import { ArtistEntity, PartyRelationEntity, RelatedImageEntity, ValueListEntryEntity } from '../shared/entities';
+import { RelatedImageEntity, ValueListEntryEntity } from '../shared/entities';
 import { RelatedImageId } from '../shared/services/database/database.seed';
 import { ImageService } from '../platform/image/image.service';
 import { PlayerOverlayMode } from './player-overlay/player-overlay.enum';
 import { DatabaseEntitiesService } from '../shared/services/database/database-entities.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from '../shared/components/chip-selection/chip-selection-model.interface';
-import { PartyRelationType } from '../shared/models/music.enum';
 import { DatabaseOptionsService } from '../shared/services/database/database-options.service';
 import { ModuleOptionId } from '../shared/services/database/database.seed';
 import { IImagePreviewModel } from '../related-image/image-preview/image-preview-model.interface';

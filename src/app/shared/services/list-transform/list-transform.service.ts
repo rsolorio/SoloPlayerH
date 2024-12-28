@@ -18,6 +18,13 @@ export class ListTransformService {
     this.factories.push(factory);
   }
 
+  /**
+   * Changes the content and order of a list of items based on the specified algorithm.
+   * @param items List of items to transform
+   * @param algorithm Algorithm used to transform the list
+   * @param properties 
+   * @returns 
+   */
   public transform<T>(items: T[], algorithm: CriteriaTransformAlgorithm, properties?: string[]): T[] {
     const validatorInfo = this.findValidator(algorithm);
     if (!validatorInfo) {

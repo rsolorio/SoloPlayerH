@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ILogEntry } from './log.interface';
+import { ILogEntry, ILogTabularData } from './log.interface';
 import { LogLevel, LogType } from './log.enum';
 import { ColorCode } from '../../models/core.enum';
 
@@ -26,6 +26,10 @@ export class LogService {
     this.entries = [];
   }
 
+  public clearConsole(): void {
+    console.clear();
+  }
+
   /** Gets a reference to the list of all logs. */
   public get(): ILogEntry[] {
     return this.entries;
@@ -38,8 +42,8 @@ export class LogService {
    * @param columns An array of column names to display.
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/console/table
    */
-  public table(message: string, data: any, columns?: string[]): void {
-    this.debug(message, { tabularData: data, columns: columns }, false);
+  public table(message: string, tabularData: ILogTabularData): void {
+    this.debug(message, tabularData, false);
   }
 
   /**
@@ -103,8 +107,8 @@ export class LogService {
     console.log('%c%s', `color: ${color}`, message);
 
     if (data) {
-      if (data.tabularData) {
-        console.table(data.tabularData, data.columns);
+      if (data.tabular) {
+        console.table(data.tabular, data.columns);
       }
       else {
         console.log(data);

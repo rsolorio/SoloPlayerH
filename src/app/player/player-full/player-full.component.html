@@ -269,8 +269,8 @@ class="sp-full-height sp-full-width sp-table sp-table-no-padding sp-table-suppor
                 </td>
                 <td class="sp-td-play-control sp-text-huge-fixed">
                   <div (click)="onPlayPause()" class="sp-play-pause sp-player-button">
-                      <i *ngIf="model.status !== PlayerStatus.Playing" class="mdi-play mdi sp-play-pause sp-player-icon"></i>
-                      <i *ngIf="model.status === PlayerStatus.Playing" class="mdi-pause mdi sp-play-pause sp-player-icon"></i>
+                      <i *ngIf="model.status !== PlayerStatus.Playing" [ngClass]="AppPlayerIcons.Play" class="sp-play-pause sp-player-icon"></i>
+                      <i *ngIf="model.status === PlayerStatus.Playing" [ngClass]="AppPlayerIcons.Pause" class="sp-play-pause sp-player-icon"></i>
                   </div>
                 </td>
                 <td class="sp-td-play-control sp-text-big-fixed">
