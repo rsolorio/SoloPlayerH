@@ -31,6 +31,7 @@ import { AppActionIcons, AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } fr
 import { AppEvent } from '../app-events';
 import { MusicImageType } from '../platform/audio-metadata/audio-metadata.enum';
 import { LastFmService } from '../shared/services/last-fm/last-fm.service';
+import { LogService } from '../core/services/log/log.service';
 
 /**
  * Base component for any implementation of the player modes.
@@ -65,7 +66,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     private sidebarHostStateService: SideBarHostStateService,
     private imageSvc: ImageService,
     private optionsService: DatabaseOptionsService,
-    private lastFmService: LastFmService)
+    private lastFmService: LastFmService,
+    private logService: LogService)
   {
     super();
   }
@@ -137,7 +139,9 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   protected onTrackChanged(eventArgs: IEventArgs<IPlaylistSongModel>): void {
     this.setupAssociatedData(eventArgs.newValue);
     this.databaseEntityService.prepareScrobbleRequest(eventArgs.newValue.id).then(scrobbleReq => {
-      this.lastFmService.nowPlaying(scrobbleReq);
+      this.lastFmService.nowPlaying(scrobbleReq).catch(error => {
+        this.logService.warn('Error setting now playing state.', error);
+      });
     });
   }
 

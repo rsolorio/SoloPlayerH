@@ -638,7 +638,7 @@ A longer duration allows to properly see the transition in the whole page. */
 
 // Components *************************************************************************************
 
-input[type="text"], input[type="search"], textarea {
+input[type="text"], input[type="search"], input[type="password"], textarea {
     background-color: $sp-color-background;
     color: $sp-color-on-background-high;
     width: 100%;

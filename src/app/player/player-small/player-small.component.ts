@@ -12,8 +12,9 @@ import { ImageService } from 'src/app/platform/image/image.service';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { AppActionIcons } from 'src/app/app-icons';
+import { AppActionIcons, AppViewIcons } from 'src/app/app-icons';
 import { LastFmService } from 'src/app/shared/services/last-fm/last-fm.service';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 @Component({
   selector: 'sp-player-small',
@@ -35,9 +36,10 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     private sidebarHostService: SideBarHostStateService,
     private imageService: ImageService,
     private options: DatabaseOptionsService,
-    private lastFm: LastFmService)
+    private lastFm: LastFmService,
+    private log: LogService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, sidebarHostService, imageService, options, lastFm);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utilities, sidebarHostService, imageService, options, lastFm, log);
   }
 
   public ngOnInit() {
@@ -55,7 +57,7 @@ export class PlayerSmallComponent extends PlayerComponentBase {
     });
     this.menuList.push({
       caption: 'Log Info',
-      icon: 'mdi mdi-file-document-edit-outline',
+      icon: AppViewIcons.Log,
       action: () => {
         // TODO
       }

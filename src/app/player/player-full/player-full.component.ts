@@ -25,6 +25,7 @@ import { DatabaseOptionsService } from 'src/app/shared/services/database/databas
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { AppEvent } from 'src/app/app-events';
 import { LastFmService } from 'src/app/shared/services/last-fm/last-fm.service';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 @Component({
   selector: 'sp-player-full',
@@ -58,9 +59,10 @@ export class PlayerFullComponent extends PlayerComponentBase {
     private utility: UtilityService,
     private sidebarHostService: SideBarHostStateService,
     private options: DatabaseOptionsService,
-    private lastFm: LastFmService)
+    private lastFm: LastFmService,
+    private log: LogService)
   {
-    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, sidebarHostService, imageService, options, lastFm);
+    super(playerService, playerOverlayService, events, menuService, entityService, dialog, utility, sidebarHostService, imageService, options, lastFm, log);
   }
 
   public onInit(): void {

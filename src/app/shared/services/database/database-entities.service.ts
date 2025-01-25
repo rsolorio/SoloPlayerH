@@ -31,6 +31,7 @@ import { ValueLists } from './database.lists';
 import { LastFmService } from '../last-fm/last-fm.service';
 import { EntityId } from './database.seed';
 import { ILastFmScrobbleRequest } from '../last-fm/last-fm.interface';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +44,8 @@ export class DatabaseEntitiesService {
     private fileService: FileService,
     private storage: LocalStorageService,
     private relativeDates: RelativeDateService,
-    private lastFm: LastFmService) { }
+    private lastFm: LastFmService,
+    private log: LogService) { }
 
   public getSongsFromArtist(artistId: string): Promise<SongEntity[]> {
     return SongEntity
@@ -138,6 +140,9 @@ export class DatabaseEntitiesService {
     return song;
   }
 
+  /**
+   * Creates an object with proper album, artist and track information.
+   */
   public async prepareScrobbleRequest(songId: string): Promise<ILastFmScrobbleRequest> {
     const song = await SongViewEntity.findOneBy({ id: songId });
     const contributors = await this.getSongContributors(songId);
@@ -162,7 +167,12 @@ export class DatabaseEntitiesService {
 
   public async scrobble(songId: string): Promise<boolean> {
     const scrobbleRequest = await this.prepareScrobbleRequest(songId);
-    const result = await this.lastFm.scrobble(scrobbleRequest);
+    try {
+      const result = await this.lastFm.scrobble(scrobbleRequest);
+    }
+    catch (error) {
+      this.log.warn('Error scrobbling.', error);
+    }
     return true;
   }
 

@@ -8,6 +8,7 @@ import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { SongEntity, SongExtendedViewEntity } from 'src/app/shared/entities';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
+import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 
@@ -23,17 +24,21 @@ export class PlayerQuizComponent implements OnInit {
   public AppActionIcons = AppActionIcons;
 
   // FIELDS
-  public languageName: string;
-  public genre: string;
-  public decade: number;
+  public languageNameSearch: string;
+  public genreSearch: string;
+  public decadeSearch: number;
   public filePath: string;
   public imageSrc: string;
   public songName: string;
   public artistName: string;
   public albumName: string;
   public releaseYear: number;
+  public languageName: string;
+  public genre: string;
+  public decade: number;
   public elapsedTime: number = 0;
   public remainingTime: number = 0;
+  public songInfoVisible = false;
 
   constructor(
     private sidebarHostService: SideBarHostStateService,
@@ -46,15 +51,15 @@ export class PlayerQuizComponent implements OnInit {
   }
 
   public onLanguageEditClick() {
-    this.criteriaEdit('language', this.languageName, 'Language', AppAttributeIcons.Language, value => this.languageName = value);
+    this.criteriaEdit('language', this.languageNameSearch, 'Language', AppAttributeIcons.Language, value => this.languageNameSearch = value);
   }
 
   public onGenreEditClick() {
-    this.criteriaEdit('genre', this.genre, 'Genre', AppAttributeIcons.GenreName, value => this.genre = value);
+    this.criteriaEdit('genre', this.genreSearch, 'Genre', AppAttributeIcons.GenreName, value => this.genreSearch = value);
   }
 
   public onDecadeEditClick() {
-    this.criteriaEdit('releaseDecade', this.decade, 'Decade', AppAttributeIcons.Decade, value => this.decade = value);
+    this.criteriaEdit('releaseDecade', this.decadeSearch, 'Decade', AppAttributeIcons.Decade, value => this.decadeSearch = value);
   }
 
   public onFindClick() {
@@ -62,17 +67,24 @@ export class PlayerQuizComponent implements OnInit {
   }
 
   public onClearClick() {
-    this.languageName = null;
-    this.genre = null;
-    this.decade = null;
+    this.languageNameSearch = null;
+    this.genreSearch = null;
+    this.decadeSearch = null;
     this.filePath = null;
     this.imageSrc = null;
     this.songName = null;
     this.artistName = null;
     this.albumName = null;
     this.releaseYear = null;
+    this.languageName = null;
+    this.genre = null;
+    this.decade = null;
     this.elapsedTime = 0;
     this.remainingTime = 0;
+  }
+
+  public onShowClick() {
+    this.songInfoVisible = true;
   }
 
   public play10sec() {
@@ -119,18 +131,25 @@ export class PlayerQuizComponent implements OnInit {
   }
 
   private async find() {
+    this.songInfoVisible = false;
     const criteria = new Criteria();
     criteria.paging.pageSize = 1;
     criteria.random = true;
-    if (this.languageName) {
-      criteria.searchCriteria.push(new CriteriaItem('language', this.languageName));
+    if (this.languageNameSearch) {
+      criteria.searchCriteria.push(new CriteriaItem('language', this.languageNameSearch));
     }
-    if (this.genre) {
-      criteria.searchCriteria.push(new CriteriaItem('genre', this.genre));
+    if (this.genreSearch) {
+      criteria.searchCriteria.push(new CriteriaItem('genre', this.genreSearch));
     }
-    if (this.decade) {
-      criteria.searchCriteria.push(new CriteriaItem('releaseDecade', this.decade));
+    else {
+      // Ignore classical music
+      criteria.searchCriteria.push(new CriteriaItem('genre', 'Classical', CriteriaComparison.NotEquals));
     }
+    if (this.decadeSearch) {
+      criteria.searchCriteria.push(new CriteriaItem('releaseDecade', this.decadeSearch));
+    }
+    // Ignore "bad" music
+    criteria.searchCriteria.push(new CriteriaItem('rating', 2, CriteriaComparison.GreaterThan));
     const songs = await this.db.getList(SongExtendedViewEntity, criteria);
 
     if (songs.length) {
@@ -150,6 +169,9 @@ export class PlayerQuizComponent implements OnInit {
       this.artistName = artists;
       this.albumName = song.primaryAlbumStylized;
       this.releaseYear = song.releaseYear;
+      this.languageName = song.language;
+      this.genre = song.genre;
+      this.decade = song.releaseDecade;
       this.elapsedTime = 0;
       this.remainingTime = song.seconds;
     }

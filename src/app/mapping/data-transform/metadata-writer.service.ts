@@ -107,15 +107,15 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   /**
-   * placeholder (field, function), expression
    * If you want to save data in tags:
    * 1. Look for the metadata attributes supported (consumed) by the setupV2Tags method.
    * 2. Add the metadata attribute to the "attributes" property of the data source. This will ensure the attributes are populated with a value.
-   * 3. Confirm the (song model) source has hardcoded logic to find the data associated to the metadata attribute.
-   * 4. You can setup an expression in the source of the mapping if you don't want to use the default logic or if it doesn't exist.
+   * 2a. Adding the attribute is mandatory since the attribute value will be used to populate the tag.
+   * 3. Confirm the source (song model) has hardcoded logic to find the data associated to the metadata attribute.
+   * 4. If you don't want to use the default logic or if it doesn't exist, you can setup a mapping and use an expression to get the data from the source.
    * 4a. Remember, an expression is a combination of hardcoded text and/or placeholders (fields or functions)
    * 4b. Do not confuse a field placeholder used in an expression with a metadata attribute.
-   * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the (song model) source.
+   * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the source (song model).
    * How the full logic works:
    * 1. Each data source service iterates the attributes and retrieves data using the getData method
    * 2. Attributes will be populated with data and they will become the metadata attributes.
@@ -181,13 +181,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       mp3Tag.read();
       // Write the buffer of the existing file to a new file
       await this.fileService.writeBuffer(newFilePath, mp3Tag.buffer as Buffer);
-    }
-
-    // Setting the change date will only happen if the changeDate field is configured in the data source
-    const changeDate = this.first(metadata[MetaAttribute.ChangeDate]) as Date;
-    if (changeDate) {
-      // Write this info to the actual file
-      this.fileService.setTimes(newFilePath, changeDate, changeDate);
+      // Setting the change date will only happen if the changeDate field is configured in the data source
+      const changeDate = this.first(metadata[MetaAttribute.ChangeDate]) as Date;
+      if (changeDate) {
+        // Write this info to the actual file
+        this.fileService.setTimes(newFilePath, changeDate, changeDate);
+      }
     }
   }
 
