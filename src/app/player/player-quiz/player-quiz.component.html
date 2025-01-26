@@ -51,6 +51,13 @@
       </div>
     </td>
   </tr>
+  <!-- Image -->
+  <tr>
+    <td colspan="3" class="sp-text-center">
+      <img *ngIf="songInfoVisible && imageSrc" style="height: 500px;" [src]="imageSrc" />
+      <img *ngIf="!songInfoVisible || !imageSrc" style="height: 500px;" [src]="RelatedImageSrc.DefaultLarge" />
+    </td>
+  </tr>
   <!-- Info -->
   <tr>
     <td colspan="3">
@@ -145,8 +152,9 @@
     </td>
     <td class="sp-td-play-control sp-text-huge-fixed">
       <div class="sp-play-pause sp-player-button">
-        <i [ngClass]="AppPlayerIcons.Play" class="sp-play-pause sp-player-icon"></i>
-    </div>
+        <i *ngIf="!isPlaying" (click)="onPlayPause()" [ngClass]="AppPlayerIcons.Play" class="sp-play-pause sp-player-icon"></i>
+        <i *ngIf="isPlaying" (click)="onPlayPause()" [ngClass]="AppPlayerIcons.Pause" class="sp-play-pause sp-player-icon"></i>
+      </div>
     </td>
     <td>
       <sp-time-display

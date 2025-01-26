@@ -1,16 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { AppActionIcons, AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { ISelectableValue } from 'src/app/core/models/core.interface';
+import { IImage, ISelectableValue } from 'src/app/core/models/core.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
+import { ImageService } from 'src/app/platform/image/image.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
-import { SongEntity, SongExtendedViewEntity } from 'src/app/shared/entities';
+import { RelatedImageEntity, SongEntity, SongExtendedViewEntity } from 'src/app/shared/entities';
 import { Criteria, CriteriaItem } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
+import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
+import { HtmlMediaEvent } from 'src/app/shared/services/html-player/html-player.enum';
+import { Not } from 'typeorm';
 
 @Component({
   selector: 'sp-player-quiz',
@@ -22,6 +27,7 @@ export class PlayerQuizComponent implements OnInit {
   public AppFeatureIcons = AppFeatureIcons;
   public AppAttributeIcons = AppAttributeIcons;
   public AppActionIcons = AppActionIcons;
+  public RelatedImageSrc = RelatedImageSrc;
 
   // FIELDS
   public languageNameSearch: string;
@@ -40,14 +46,21 @@ export class PlayerQuizComponent implements OnInit {
   public remainingTime: number = 0;
   public songInfoVisible = false;
 
+  private htmlAudio = new Audio();
+  private playTimer = null;
+  private isReplacing = false;
+  public isPlaying = false;
+
   constructor(
     private sidebarHostService: SideBarHostStateService,
     private db: DatabaseService,
     private entities: DatabaseEntitiesService,
     private utility: UtilityService,
+    private imageService: ImageService,
     private log: LogService) { }
 
   ngOnInit(): void {
+    this.subscribeToAudioEvents();
   }
 
   public onLanguageEditClick() {
@@ -81,10 +94,20 @@ export class PlayerQuizComponent implements OnInit {
     this.decade = null;
     this.elapsedTime = 0;
     this.remainingTime = 0;
+    this.pause();
   }
 
   public onShowClick() {
     this.songInfoVisible = true;
+  }
+
+  public onPlayPause() {
+    if (this.isPlaying) {
+      this.pause()
+    }
+    else {
+      this.play();
+    }
   }
 
   public play10sec() {
@@ -97,6 +120,27 @@ export class PlayerQuizComponent implements OnInit {
 
   public play30sec() {
     this.utility.playPortion(this.filePath, 0, 30);
+  }
+
+  private replaceAudioSource() {
+    this.htmlAudio.src = this.utility.fileToUrl(this.filePath);
+    this.htmlAudio.load();
+  }
+
+  private async play() {
+    if (this.filePath) {
+      this.songInfoVisible = true;
+      await this.htmlAudio.play();
+    }
+  }
+
+  private pause() {
+    this.htmlAudio.pause();
+  }
+
+  private pauseAndReplaceAudioSource() {
+    this.isReplacing = true;
+    this.pause();
   }
 
   private async criteriaEdit(columnName: string, currentValue: any, title: string, icon: string, onOk: (value) => void) {
@@ -154,6 +198,20 @@ export class PlayerQuizComponent implements OnInit {
 
     if (songs.length) {
       const song = songs[0];
+      let image: IImage;
+      const songImages = await RelatedImageEntity.findBy({ relatedId: song.id });
+      if (songImages.length) {
+        image = await this.imageService.getImageFromSource(songImages[0]);
+      }
+      else {
+        const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: Not(MusicImageType.FrontAnimated) });
+        if (albumImages.length) {
+          image = await this.imageService.getImageFromSource(albumImages[0]);
+        }
+      }
+      if (image) {
+        this.imageSrc = image.src;
+      }
       const artists = await (await this.entities.prepareScrobbleRequest(song.id)).artistName;
       this.log.clearConsole();
       this.log.table('Song found:', { tabular: {
@@ -174,12 +232,66 @@ export class PlayerQuizComponent implements OnInit {
       this.decade = song.releaseDecade;
       this.elapsedTime = 0;
       this.remainingTime = song.seconds;
+
+      if (this.isPlaying) {
+        this.pauseAndReplaceAudioSource();
+      }
+      else {
+        this.replaceAudioSource();
+      }
     }
     else {
-
+      // TODO: song not found message
     }
+  }
 
+  private subscribeToAudioEvents() {
+    this.htmlAudio.addEventListener(HtmlMediaEvent.TimeUpdate, () => {
+      if (this.htmlAudio.currentTime) {
+        // this.log.debug('timeupdate ' + this.htmlAudio.currentTime);
+      }
+      else {
+      }
+    });
 
+    this.htmlAudio.addEventListener(HtmlMediaEvent.Playing, () => {
+      this.restartPlayTimer();
+      this.isPlaying = true;
+    });
+
+    this.htmlAudio.addEventListener(HtmlMediaEvent.Pause, () => {
+      this.cancelPlayTimer();
+      this.isPlaying = false;
+
+      if (this.isReplacing) {
+        this.replaceAudioSource();
+        this.isReplacing = false;
+      }
+    });
+
+    this.htmlAudio.addEventListener(HtmlMediaEvent.Ended, () => {
+    });
+
+    this.htmlAudio.addEventListener(HtmlMediaEvent.Stops, () => {
+    });
+
+    this.htmlAudio.addEventListener(HtmlMediaEvent.Error, (errorInfo) => {
+    });
+  }
+
+  private cancelPlayTimer() {
+    if (this.playTimer) {
+      clearInterval(this.playTimer);
+      this.playTimer = null;
+    }
+  }
+
+  private restartPlayTimer() {
+    this.cancelPlayTimer();
+
+    this.playTimer = setInterval(() => {
+      this.elapsedTime = this.htmlAudio.currentTime;
+    }, 1000);
   }
 
 }

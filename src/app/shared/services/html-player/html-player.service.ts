@@ -67,6 +67,12 @@ export class HtmlPlayerService implements IPlayer, IStateService<IPlayerState> {
     return this.state;
   }
 
+  /**
+   * Stops the audio being played.
+   * This is a promise because internally, the audio is being paused, and we need to wait for the
+   * Pause event listener to report back the audio has been stopped; the same listener then restart the
+   * current time position at zero.
+   */
   public stop(): Promise<boolean> {
     const stopPromise = new Promise<boolean>(resolve => {
       // Save the resolve function to be called later
