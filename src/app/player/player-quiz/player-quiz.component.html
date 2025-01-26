@@ -54,8 +54,8 @@
   <!-- Image -->
   <tr>
     <td colspan="3" class="sp-text-center">
-      <img *ngIf="songInfoVisible && imageSrc" style="height: 500px;" [src]="imageSrc" />
-      <img *ngIf="!songInfoVisible || !imageSrc" style="height: 500px;" [src]="RelatedImageSrc.DefaultLarge" />
+      <img *ngIf="songInfoVisible && imageSrc" style="height: 450px;" [src]="imageSrc" />
+      <img *ngIf="!songInfoVisible || !imageSrc" style="height: 450px;" [src]="RelatedImageSrc.DefaultLarge" />
     </td>
   </tr>
   <!-- Info -->
@@ -143,6 +143,7 @@
   <tr>
     <td>
       <sp-time-display
+      (click)="onElapsedTimeClick()"
       class="sp-time-text sp-text-jumbo sp-text-center sp-clickable"
       [blinkEnabled]="true"
       [totalSeconds]="elapsedTime"
@@ -158,6 +159,7 @@
     </td>
     <td>
       <sp-time-display
+      (click)="onRemainingTimeClick()"
       class="sp-time-text sp-text-jumbo sp-text-center sp-clickable"
       [blinkEnabled]="true"
       [totalSeconds]="remainingTime"

@@ -70,7 +70,6 @@ export class PlayerQuizComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscribeToAudioEvents();
-    this.initializeNavBar();
     const cacheData = this.localStorage.getByKey<IQuizCache>(this.cacheKey);
     if (cacheData) {
       this.cache = cacheData;
@@ -80,16 +79,36 @@ export class PlayerQuizComponent implements OnInit {
         songs: []
       };
     }
+    this.initializeNavBar();
+  }
+
+  private refreshTitle() {
+    const navbar = this.navbarService.getState();
+    if (this.cache && this.cache.songs.length) {
+      navbar.title = `Quiz (${this.cache.songs.length})`;
+    }
+    else {
+      navbar.title = 'Quiz';
+    }
   }
 
   public initializeNavBar() {
+    this.refreshTitle();
     const navbar = this.navbarService.getState();
-    navbar.title = 'Quiz';
     navbar.mode = NavbarDisplayMode.Title;
     navbar.menuList = [{
       icon: AppActionIcons.Delete,
-      caption: 'Clear History'
+      caption: 'Clear History',
+      action: () => {
+        this.clearCache();
+      }
     }];
+  }
+
+  private clearCache() {
+    this.cache.songs = [];
+    this.saveCache();
+    this.refreshTitle();
   }
 
   public onLanguageEditClick() {
@@ -102,6 +121,20 @@ export class PlayerQuizComponent implements OnInit {
 
   public onDecadeEditClick() {
     this.criteriaEdit('releaseDecade', this.decadeSearch, 'Decade', AppAttributeIcons.Decade, value => this.decadeSearch = value);
+  }
+
+  public onElapsedTimeClick() {
+    const newTime = this.htmlAudio.currentTime - 10;
+    if (newTime < 0) {
+      this.htmlAudio.currentTime = 0;
+    }
+    else {
+      this.htmlAudio.currentTime = newTime;
+    }
+  }
+
+  public onRemainingTimeClick() {
+    this.htmlAudio.currentTime += 30;
   }
 
   public onFindClick() {
@@ -172,6 +205,10 @@ export class PlayerQuizComponent implements OnInit {
     this.pause();
   }
 
+  private saveCache() {
+    this.localStorage.setByKey(this.cacheKey, this.cache);
+  }
+
   private async criteriaEdit(columnName: string, currentValue: any, title: string, icon: string, onOk: (value) => void) {
     const criteria = new Criteria();
     criteria.paging.distinct = true;
@@ -229,7 +266,8 @@ export class PlayerQuizComponent implements OnInit {
         const matchingSong = this.cache.songs.find(songId => songId === song.id);
         if (!matchingSong) {
           this.cache.songs.push(song.id);
-          this.localStorage.setByKey(this.cacheKey, this.cache);
+          this.saveCache();
+          this.refreshTitle();
           return song;
         }
       }
