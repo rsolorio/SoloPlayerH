@@ -10,8 +10,6 @@ import { DatabaseService } from 'src/app/shared/services/database/database.servi
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { DialogService } from 'src/app/platform/dialog/dialog.service';
 import { AppTestService } from 'src/app/app-test';
-import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
-import { LocalStorageKeys } from 'src/app/shared/services/local-storage/local-storage.enum';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
 import { ISetting, ISettingCategory } from 'src/app/shared/components/settings-base/settings-base.interface';
 import { SettingsEditorType } from 'src/app/shared/components/settings-base/settings-base.enum';
@@ -23,6 +21,8 @@ import { MpegTagVersion } from 'src/app/shared/models/music.enum';
 import { In } from 'typeorm';
 import { ExportService } from 'src/app/sync-profile/export/export.service';
 import { ScanService } from 'src/app/sync-profile/scan/scan.service';
+import { LogService } from 'src/app/core/services/log/log.service';
+import { LogLevel } from 'src/app/core/services/log/log.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -36,9 +36,9 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
     private db: DatabaseService,
     private dialog: DialogService,
     private tester: AppTestService,
-    private storage: LocalStorageService,
     private navigation: NavigationService,
     private exporter: ExportService,
+    private log: LogService,
     private scanner: ScanService)
   {
   }
@@ -289,15 +289,17 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
             }
           },
           {
-            id: 'debugMode',
-            name: 'Debug',
-            icon: AppActionIcons.Debug,
-            textRegular: ['Click here to turn on or off debug mode.'],
-            editorType: SettingsEditorType.YesNo,
-            data: this.storage.getByKey(LocalStorageKeys.DebugMode),
+            id: 'logLevel',
+            name: 'Log Level',
+            icon: AppViewIcons.Log,
+            editorType: SettingsEditorType.Number,
+            textRegular: ['Click here to set the log level: Verbose=0, Info=1, Warn=2, Error=3.'],
+            textData: [this.log.level.toString()],
+            data: this.log.level,
             onChange: setting => {
-              setting.running = true;
-              this.storage.setByKey(LocalStorageKeys.DebugMode, setting.data);
+              // The value comes as text since it comes from a text box
+              const levelNumber = parseInt(setting.data, 10);
+              this.log.level = levelNumber as LogLevel;
               this.utility.reloadApp();
             }
           },

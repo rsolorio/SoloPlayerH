@@ -4,7 +4,6 @@ import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
 import { IImage, ISelectableValue } from 'src/app/core/models/core.interface';
-import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
@@ -18,7 +17,7 @@ import { DatabaseEntitiesService } from 'src/app/shared/services/database/databa
 import { RelatedImageSrc } from 'src/app/shared/services/database/database.seed';
 import { DatabaseService } from 'src/app/shared/services/database/database.service';
 import { HtmlMediaEvent } from 'src/app/shared/services/html-player/html-player.enum';
-import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage/local-storage.service';
 import { Not } from 'typeorm';
 import { IQuizCache } from './player-quiz.interface';
 
@@ -40,6 +39,7 @@ export class PlayerQuizComponent implements OnInit {
   public decadeSearch: number;
   public filePath: string;
   public imageSrc: string;
+  public animatedImage = false;
   public songName: string;
   public artistName: string;
   public albumName: string;
@@ -56,7 +56,7 @@ export class PlayerQuizComponent implements OnInit {
   private isReplacing = false;
   public isPlaying = false;
   private cache: IQuizCache;
-  private cacheKey = 'QuizCache'
+  private cacheKey = 'sp.QuizCache'
 
   constructor(
     private sidebarHostService: SideBarHostStateService,
@@ -156,6 +156,7 @@ export class PlayerQuizComponent implements OnInit {
     this.decade = null;
     this.elapsedTime = 0;
     this.remainingTime = 0;
+    this.animatedImage = false;
     this.pause();
   }
 
@@ -242,7 +243,6 @@ export class PlayerQuizComponent implements OnInit {
 
   private async findSong(): Promise<SongExtendedViewEntity> {
     const criteria = new Criteria();
-    criteria.paging.pageSize = 1;
     criteria.random = true;
     if (this.languageNameSearch) {
       criteria.searchCriteria.push(new CriteriaItem('language', this.languageNameSearch));
@@ -281,25 +281,39 @@ export class PlayerQuizComponent implements OnInit {
 
     if (!song) {
       // TODO: song not found message
+      this.log.info('Song not found.');
       return;
     }
 
     let image: IImage;
-    const songImages = await RelatedImageEntity.findBy({ relatedId: song.id });
-    if (songImages.length) {
-      image = await this.imageService.getImageFromSource(songImages[0]);
+    const animatedImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: MusicImageType.FrontAnimated });
+    if (animatedImages.length) {
+      image = await this.imageService.getImageFromSource(animatedImages[0]);
+      this.animatedImage = true;
+      this.log.info('Animated image found.');
     }
     else {
-      const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: Not(MusicImageType.FrontAnimated) });
-      if (albumImages.length) {
-        image = await this.imageService.getImageFromSource(albumImages[0]);
+      this.animatedImage = false;
+      const songImages = await RelatedImageEntity.findBy({ relatedId: song.id });
+      if (songImages.length) {
+        image = await this.imageService.getImageFromSource(songImages[0]);
+        this.log.info('Single image found.');
+      }
+      else {
+        const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: Not(MusicImageType.FrontAnimated) });
+        if (albumImages.length) {
+          image = await this.imageService.getImageFromSource(albumImages[0]);
+          this.log.info('Album image found.');
+        }
+        else {
+          this.log.warn('No image found.');
+        }
       }
     }
     if (image) {
       this.imageSrc = image.src;
     }
     const artists = await (await this.entities.prepareScrobbleRequest(song.id)).artistName;
-    this.log.clearConsole();
     this.log.table('Song found:', { tabular: {
       name: song.name,
       cleanName: song.cleanName,

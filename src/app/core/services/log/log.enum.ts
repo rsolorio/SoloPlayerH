@@ -1,12 +1,12 @@
 export enum LogType {
-  Info = 'mdi mdi-alpha-i-box-outline sp-color-info',
-  Warning = 'mdi mdi-exclamation-thick sp-color-warning',
-  Error = 'mdi mdi-close sp-color-error',
-  Debug = 'mdi mdi-bug-outline sp-color-debug'
+  Info = 'mdi-alpha-i-box-outline sp-color-info mdi',
+  Warning = 'mdi-exclamation-thick sp-color-warning mdi',
+  Error = 'mdi-close sp-color-error mdi',
+  Debug = 'mdi-bug-outline sp-color-debug mdi'
 }
 
 export enum LogLevel {
-  /** Logs everything. */
+  /** Logs everything including debug data. */
   Verbose,
   /** Logs everything but debug messages. */
   Info,

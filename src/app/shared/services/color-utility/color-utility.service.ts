@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { IColorExtractionData } from 'src/app/core/models/color-extractor-factory.class';
 import { ColorG, IColorBucket } from 'src/app/core/models/color-g.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
-import { LocalStorageKeys } from '../local-storage/local-storage.enum';
-import { LocalStorageService } from '../local-storage/local-storage.service';
+import { LocalStorageKeys } from '../../../core/services/local-storage/local-storage.enum';
+import { LocalStorageService } from '../../../core/services/local-storage/local-storage.service';
 import { ColorOrganisolService } from './color-organisol.service';
 import { BucketPalette } from './color-utility.class';
 import {

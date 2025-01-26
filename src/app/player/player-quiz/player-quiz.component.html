@@ -51,11 +51,12 @@
       </div>
     </td>
   </tr>
-  <!-- Image -->
+  <!-- Image/Video -->
   <tr>
     <td colspan="3" class="sp-text-center">
-      <img *ngIf="songInfoVisible && imageSrc" style="height: 450px;" [src]="imageSrc" />
-      <img *ngIf="!songInfoVisible || !imageSrc" style="height: 450px;" [src]="RelatedImageSrc.DefaultLarge" />
+      <img *ngIf="!animatedImage && songInfoVisible && imageSrc" style="height: 450px;" [src]="imageSrc" />
+      <img *ngIf="!songInfoVisible || (!imageSrc && !animatedImage)" style="height: 450px;" [src]="RelatedImageSrc.DefaultLarge" />
+      <video *ngIf="animatedImage && songInfoVisible" style="height: 450px;" autoplay loop><source [src]="imageSrc" type="video/mp4"></video>
     </td>
   </tr>
   <!-- Info -->

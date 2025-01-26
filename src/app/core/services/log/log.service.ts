@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { ILogEntry, ILogTabularData } from './log.interface';
 import { LogLevel, LogType } from './log.enum';
 import { ColorCode } from '../../models/core.enum';
+import { LocalStorageService } from 'src/app/core/services/local-storage/local-storage.service';
+import { LocalStorageKeys } from 'src/app/core/services/local-storage/local-storage.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,16 @@ export class LogService {
 
   private entries: ILogEntry[] = [];
   private maxEntries: 1000;
-  public level = LogLevel.Info;
+  private logLevel = LogLevel.Info;
+
+  get level(): LogLevel {
+    return this.logLevel;
+  }
+
+  set level(val: LogLevel) {
+    this.logLevel = val;
+    this.localStorage.setByKey(LocalStorageKeys.LogLevel, this.logLevel);
+  }
   /**
    * This value specifies when the excess of the list should be trim.
    * Setting to 0 will remove excess every time one single item exceeds.
@@ -19,7 +30,12 @@ export class LogService {
   private maxEntriesExcess = 50;
 
   /*tslint:disable:no-console */
-  constructor() { }
+  constructor(private localStorage: LocalStorageService) {
+    const logLevelStorage = this.localStorage.getByKey(LocalStorageKeys.LogLevel);
+    if (logLevelStorage !== undefined && logLevelStorage !== null) {
+      this.logLevel = logLevelStorage as LogLevel;
+    }
+  }
 
   // Public Methods *******************************************************************************
   public clear(): void {
@@ -36,14 +52,14 @@ export class LogService {
   }
 
   /**
-   * Records a debug message with tabular data.
+   * Records an info message with tabular data.
    * @param message The debug message.
    * @param data Array or object to display as table.
    * @param columns An array of column names to display.
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/console/table
    */
   public table(message: string, tabularData: ILogTabularData): void {
-    this.debug(message, tabularData, false);
+    this.info(message, tabularData, false);
   }
 
   /**

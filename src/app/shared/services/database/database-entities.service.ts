@@ -19,8 +19,6 @@ import { IPlaylistSongModel } from '../../models/playlist-song-model.interface';
 import { IDataSourceParsed } from 'src/app/mapping/data-source/data-source.interface';
 import { PartyRelationType } from '../../models/music.enum';
 import { FileService } from 'src/app/platform/file/file.service';
-import { LocalStorageService } from '../local-storage/local-storage.service';
-import { LocalStorageKeys } from '../local-storage/local-storage.enum';
 import { IAlbumModel } from '../../models/album-model.interface';
 import { IArtistModel } from '../../models/artist-model.interface';
 import { IPlaylistModel } from '../../models/playlist-model.interface';
@@ -32,6 +30,7 @@ import { LastFmService } from '../last-fm/last-fm.service';
 import { EntityId } from './database.seed';
 import { ILastFmScrobbleRequest } from '../last-fm/last-fm.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
+import { LogLevel } from 'src/app/core/services/log/log.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +41,6 @@ export class DatabaseEntitiesService {
     private utilities: UtilityService,
     private db: DatabaseService,
     private fileService: FileService,
-    private storage: LocalStorageService,
     private relativeDates: RelativeDateService,
     private lastFm: LastFmService,
     private log: LogService) { }
@@ -108,9 +106,8 @@ export class DatabaseEntitiesService {
    * @returns A song entity if it was updated.
    */
   public async registerPlayHistory(songId: string, count: number, progress: number): Promise<SongEntity> {
-    // This particular functionality will be disabled when debug is on.
-    const debugMode = this.storage.getByKey(LocalStorageKeys.DebugMode);
-    if (debugMode) {
+    // This particular functionality will be disabled when debug (verbose) is on.
+    if (this.log.level === LogLevel.Verbose) {
       return null;
     }
     // Add play record

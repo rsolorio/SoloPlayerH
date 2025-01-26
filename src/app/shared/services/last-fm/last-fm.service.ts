@@ -4,8 +4,8 @@ import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { md5 } from 'src/app/core/models/md5';
 import { ILastFmArtistResponse, ILastFmImage, ILastFmScrobbleRequest, ILastFmScrobbleResponse, ILastFmSessionResponse } from './last-fm.interface';
-import { LocalStorageService } from '../local-storage/local-storage.service';
-import { LocalStorageKeys } from '../local-storage/local-storage.enum';
+import { LocalStorageService } from '../../../core/services/local-storage/local-storage.service';
+import { LocalStorageKeys } from '../../../core/services/local-storage/local-storage.enum';
 import { appName } from 'src/app/app-exports';
 import { LastFmImageSize } from './last-fm.enum';
 
