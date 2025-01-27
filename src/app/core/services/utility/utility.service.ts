@@ -790,24 +790,27 @@ export class UtilityService {
    * @param src Audio source.
    * @param start Start position in seconds.
    * @param stop End position in seconds.
-   * @returns 
+   * @returns A promise that will be resolved when the audio stops.
    */
-  public playPortion(src: string, start: number, stop: number): Promise<void> {
-    const audioPortion = new Audio();
-    audioPortion.src = src;
-    audioPortion.load();
-    audioPortion.currentTime = start;
-    this.ngZone.runOutsideAngular(() => {
-      let timer = setInterval(() => {
-        if (audioPortion.currentTime > stop) {
-          audioPortion.pause();
-          clearInterval(timer);
-          timer = null;
-          audioPortion.remove();
-        }
+  public playPortion(src: string, start: number, stop: number): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      const audioPortion = new Audio();
+      audioPortion.src = src;
+      audioPortion.load();
+      audioPortion.currentTime = start;
+      this.ngZone.runOutsideAngular(() => {
+        let timer = setInterval(() => {
+          if (audioPortion.currentTime > stop) {
+            audioPortion.pause();
+            clearInterval(timer);
+            timer = null;
+            audioPortion.remove();
+            resolve(true);
+          }
+        }, 1000);
       });
+      audioPortion.play();
     });
-    return audioPortion.play();
   }
 
   /**

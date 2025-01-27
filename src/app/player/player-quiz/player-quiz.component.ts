@@ -57,6 +57,7 @@ export class PlayerQuizComponent implements OnInit {
   public isPlaying = false;
   private cache: IQuizCache;
   private cacheKey = 'sp.QuizCache'
+  private stopAt = 0;
 
   constructor(
     private sidebarHostService: SideBarHostStateService,
@@ -174,20 +175,28 @@ export class PlayerQuizComponent implements OnInit {
   }
 
   public play10sec() {
-    this.utility.playPortion(this.filePath, 0, 10);
+    this.playPortion(10);
   }
 
   public play20sec() {
-    this.utility.playPortion(this.filePath, 0, 20);
+    this.playPortion(20);
   }
 
   public play30sec() {
-    this.utility.playPortion(this.filePath, 0, 30);
+    this.playPortion(30);
   }
 
   private replaceAudioSource() {
     this.htmlAudio.src = this.utility.fileToUrl(this.filePath);
     this.htmlAudio.load();
+  }
+
+  private async playPortion(secs: number): Promise<void> {
+    if (this.filePath) {
+      this.htmlAudio.currentTime = 0;
+      this.stopAt = secs;
+      await this.htmlAudio.play();
+    }
   }
 
   private async play() {
@@ -342,14 +351,6 @@ export class PlayerQuizComponent implements OnInit {
   }
 
   private subscribeToAudioEvents() {
-    this.htmlAudio.addEventListener(HtmlMediaEvent.TimeUpdate, () => {
-      if (this.htmlAudio.currentTime) {
-        // this.log.debug('timeupdate ' + this.htmlAudio.currentTime);
-      }
-      else {
-      }
-    });
-
     this.htmlAudio.addEventListener(HtmlMediaEvent.Playing, () => {
       this.restartPlayTimer();
       this.isPlaying = true;
@@ -387,6 +388,10 @@ export class PlayerQuizComponent implements OnInit {
 
     this.playTimer = setInterval(() => {
       this.elapsedTime = this.htmlAudio.currentTime;
+      if (this.elapsedTime > this.stopAt && this.stopAt > 0) {
+        this.pause();
+        this.stopAt = 0;
+      }
     }, 1000);
   }
 
