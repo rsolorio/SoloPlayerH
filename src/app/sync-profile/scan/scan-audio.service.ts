@@ -1187,102 +1187,131 @@ export class ScanAudioService {
   }
 
   public async moveSong(songId: string, newDirectoryPath: string, newFileName: string): Promise<void> {
-    const song = await SongEntity.findOneBy({ id: songId });
+    const existingSong = await SongEntity.findOneBy({ id: songId });
     const newFilePath = this.fileService.combine(newDirectoryPath, newFileName);
     if (this.fileService.exists(newFilePath)) {
       return;
     }
 
-    // TODO: move lyrics file and single image?
-    await this.fileService.copyFile(song.filePath, newFilePath);
+    
+    // Move file
+    await this.fileService.copyFile(existingSong.filePath, newFilePath);
+    // Get metadata using the new location
     const newFileInfo = await this.fileService.getFileInfo(newFilePath);
-    const metadata = await this.metadataReader.run(newFileInfo);
+    const newMetadata = await this.metadataReader.run(newFileInfo);
+    // TODO: move (copy and then delete old ones) lyrics file and single image?
 
     // Things that can change when the file path changes:
     // Language (DONE)
     // Genre (DONE)
     // Artist Name (DONE)
+    // Artist Stylized
     // Year/Decade (DONE)
     // Featuring (DONE)
-    // PerformerCount
     // Album Name (DONE)
-    // Contributors/Party Relation
+    // Contributors/Party Relation/Performer Count
     // Artist Image
     // Album Image
     // Single Image
 
-    // ARTIST AND ALBUM
-    let primaryAlbum = await AlbumEntity.findOneBy({ id: song.primaryAlbumId });
+    // ARTIST
+
+    /** Starts as the original album but it may change to a different existing album or a new one. */
+    let primaryAlbum = await AlbumEntity.findOneBy({ id: existingSong.primaryAlbumId });
+    /** Starts as the original artist but it may change to a different existing artist or a new one. */
     let primaryArtist = await ArtistEntity.findOneBy({ id: primaryAlbum.primaryArtistId });
 
-    const newArtistName = this.first(metadata[MetaAttribute.AlbumArtist]);
-    const newAlbumName = this.first(metadata[MetaAttribute.Album]);
-    const year = this.first(metadata[MetaAttribute.Year]);
-    const releaseYear = year ? year : 0;
+    const newArtistName = this.first(newMetadata[MetaAttribute.AlbumArtist]);
+    const newAlbumName = this.first(newMetadata[MetaAttribute.Album]);
+    const newYear = this.first(newMetadata[MetaAttribute.Year]);
+    const newReleaseYear = newYear ? newYear : 0;
 
     // If the artist is different create or update the artist
     if (primaryArtist.name !== newArtistName) {
       const artistSongCount = await SongViewEntity.findBy({ primaryArtistId: primaryArtist.id });
+      // Rename the existing artist since there's only one song
       if (artistSongCount.length === 1) {
-        // Rename the existing artist
         primaryArtist.name = newArtistName;
         primaryArtist.artistSort = newArtistName;
         primaryArtist.artistStylized = newArtistName;
         primaryArtist.hash = this.lookupService.hashArtist(primaryArtist.name);
         await primaryArtist.save();
       }
+      // This means only this song is being moved to a different artist
       else if (artistSongCount.length > 1) {
-        // Create new artist
-        primaryArtist = this.createArtist(newArtistName, newArtistName, newArtistName);
+        // Does the artist exist?
+        primaryArtist = await this.lookupService.lookupArtist(newArtistName);
+        // If not, create a new one
+        if (!primaryArtist) {
+          // PARTY RELATION: PRIMARY
+          // Before creating artist, get the party relation
+          const primaryArtistRelation = await PartyRelationEntity.findOneBy({ relatedId: primaryAlbum.id, songId: songId, relationTypeId: PartyRelationType.Primary });
+          primaryArtist = this.createArtist(newArtistName, newArtistName, newArtistName);
+          // Save new artist id
+          primaryArtistRelation.relatedId = primaryArtist.id;
+          await primaryArtistRelation.save();
+        }
         await primaryArtist.save();
       }
     }
 
-    // Add new album when: new artist OR same artist and different album name (and year) and more than one album songs
-    // Edit album when: same artist and different album name (and year) and only one album song
+    // FEATURING ARTISTS
+    // const featuringRelations = await PartyRelationEntity.findBy({ songId: songId, relationTypeId: PartyRelationType.Featuring });
+    // This is for now disabled assuming that we are just moving a file but not changing its name (which would affect the featuring artists)
+    // Eventually we should support this
+    // Performer count is also calculated here
+
+    // SINGERS
+    // CONTRIBUTORS
+
+    // ALBUM
     let needsNewAlbum = false;
     if (primaryArtist.id === primaryAlbum.primaryArtistId) {
-      if (primaryAlbum.name !== newAlbumName || primaryAlbum.releaseYear !== releaseYear) {
+      // Same artist, but album name or year different?
+      if (primaryAlbum.name !== newAlbumName || primaryAlbum.releaseYear !== newReleaseYear) {
         const songs = await SongViewEntity.findBy({ primaryAlbumId: primaryAlbum.id });
+        // If same artist, but different album name/year and the album has multiple songs, we need a new album
         needsNewAlbum = songs.length > 1;
       }
     }
+    // If the artist changed, a new album is needed
     else {
       needsNewAlbum = true;
     }
 
     if (needsNewAlbum) {
-      primaryAlbum = this.createAlbum(primaryArtist.id, newAlbumName, releaseYear);
+      primaryAlbum = this.createAlbum(primaryArtist.id, newAlbumName, newReleaseYear);
     }
+    // Update album data if a new one was not created
     else {
       primaryAlbum.name = newAlbumName;
       primaryAlbum.albumSort = newAlbumName;
       primaryAlbum.albumStylized = newAlbumName;
-      primaryAlbum.releaseYear = releaseYear;
+      primaryAlbum.releaseYear = newReleaseYear;
       primaryAlbum.releaseDecade = this.utility.getDecade(primaryAlbum.releaseYear);
       primaryAlbum.hash = this.lookupService.hashAlbum(primaryAlbum.name, primaryAlbum.releaseYear);
     }
     await primaryAlbum.save();
-    song.primaryAlbumId = primaryAlbum.id;
-    song.releaseYear = primaryAlbum.releaseYear;
-    song.releaseDecade = primaryAlbum.releaseDecade;
+    existingSong.primaryAlbumId = primaryAlbum.id;
+    existingSong.releaseYear = primaryAlbum.releaseYear;
+    existingSong.releaseDecade = primaryAlbum.releaseDecade;
 
     // GENRE
-    const genre = this.first(metadata[MetaAttribute.Genre]);
-    if (genre && song.genre !== genre) {
+    const genre = this.first(newMetadata[MetaAttribute.Genre]);
+    if (genre && existingSong.genre !== genre) {
       // Remove classification
-      const currentGenreEntry = await ValueListEntryEntity.findOneBy({ name: song.genre, valueListTypeId: ValueLists.Genre.id });
+      const currentGenreEntry = await ValueListEntryEntity.findOneBy({ name: existingSong.genre, valueListTypeId: ValueLists.Genre.id });
       if (currentGenreEntry) {
         await SongClassificationEntity.delete({ songId: songId, classificationId: currentGenreEntry.id });
       }
       // Replace current with new one
-      song.genre = genre;
+      existingSong.genre = genre;
       // Add new classification
-      let newGenreEntry = await ValueListEntryEntity.findOneBy({ name: song.genre, valueListTypeId: ValueLists.Genre.id });
+      let newGenreEntry = await ValueListEntryEntity.findOneBy({ name: existingSong.genre, valueListTypeId: ValueLists.Genre.id });
       if (!newGenreEntry) {
         newGenreEntry = new ValueListEntryEntity();
         newGenreEntry.id = this.utility.newGuid();
-        newGenreEntry.name = song.genre;
+        newGenreEntry.name = existingSong.genre;
         newGenreEntry.hash = this.lookupService.hashValueListEntry(newGenreEntry.name);
         newGenreEntry.valueListTypeId = ValueLists.Genre.id;
         newGenreEntry.isClassification = true;
@@ -1299,38 +1328,42 @@ export class ScanAudioService {
       }
     }
 
-    // PARTY RELATION
-
     // SONG
-    song.filePath = newFilePath;
-    song.hash = this.lookupService.hashSong(song.filePath);
-    this.setFirst(song, 'name', metadata, MetaAttribute.Title, this.first(metadata[MetaAttribute.FileName]));
+    existingSong.filePath = newFilePath;
+    existingSong.hash = this.lookupService.hashSong(existingSong.filePath);
+    this.setFirst(existingSong, 'name', newMetadata, MetaAttribute.Title, this.first(newMetadata[MetaAttribute.FileName]));
 
-    const brackets = this.utility.matchBrackets(song.name);
+    const brackets = this.utility.matchBrackets(existingSong.name);
     if (brackets?.length) {
       for (const bracket of brackets) {
-        song.cleanName = song.name.replace(bracket, '').trim();
+        existingSong.cleanName = existingSong.name.replace(bracket, '').trim();
       }
     }
     else {
-      song.cleanName = song.name;
+      existingSong.cleanName = existingSong.name;
     }
 
-    const featuringArtists = metadata[MetaAttribute.FeaturingArtist];
+    const featuringArtists = newMetadata[MetaAttribute.FeaturingArtist];
     if (featuringArtists?.length) {
-      song.featuring = featuringArtists.join(', ');
+      existingSong.featuring = featuringArtists.join(', ');
     }
     else if (brackets?.length) {
-      song.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
+      existingSong.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
     }
 
-    this.setFirst(song, 'trackNumber', metadata, MetaAttribute.TrackNumber, 0);
-    this.setFirst(song, 'mediaNumber', metadata, MetaAttribute.MediaNumber, 1);
-    this.setFirst(song, 'titleSort', metadata, MetaAttribute.TitleSort, song.name);
-    this.setFirst(song, 'language', metadata, MetaAttribute.Language);
-    song.performerCount = 0;
+    this.setFirst(existingSong, 'trackNumber', newMetadata, MetaAttribute.TrackNumber, 0);
+    this.setFirst(existingSong, 'mediaNumber', newMetadata, MetaAttribute.MediaNumber, 1);
+    this.setFirst(existingSong, 'titleSort', newMetadata, MetaAttribute.TitleSort, existingSong.name);
+    this.setFirst(existingSong, 'language', newMetadata, MetaAttribute.Language);
+    existingSong.performerCount = 0;
 
     // UPDATE NEW FILE DATES
+    await this.setFileAddDate(existingSong.filePath, existingSong.addDate);
+    // change date also needed?
+
+    // RELATED IMAGES
+
+    // ALSO MOVE ASSOCIATED FILES (json, txt, jpg)
     // DELETE FILE
   }
 
@@ -1344,6 +1377,10 @@ export class ScanAudioService {
     return this.utility.first(array);
   }
 
+  /**
+   * Sets a new date in the creation date attribute of the file.
+   * It uses a cmd file that calls a .net library.
+   */
   private async setFileAddDate(filePath: string, addDate: Date): Promise<void> {
     // This is a hack that uses a .net cmd file to update the creation date,
     // since node doesn't support this.

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AppActionIcons, AppAttributeIcons, AppFeatureIcons, AppPlayerIcons } from 'src/app/app-icons';
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
@@ -20,13 +20,14 @@ import { HtmlMediaEvent } from 'src/app/shared/services/html-player/html-player.
 import { LocalStorageService } from 'src/app/core/services/local-storage/local-storage.service';
 import { Not } from 'typeorm';
 import { IQuizCache } from './player-quiz.interface';
+import { PlayerOverlayStateService } from '../player-overlay/player-overlay-state.service';
 
 @Component({
   selector: 'sp-player-quiz',
   templateUrl: './player-quiz.component.html',
   styleUrls: ['./player-quiz.component.scss']
 })
-export class PlayerQuizComponent implements OnInit {
+export class PlayerQuizComponent implements OnInit, OnDestroy {
   public AppPlayerIcons = AppPlayerIcons;
   public AppFeatureIcons = AppFeatureIcons;
   public AppAttributeIcons = AppAttributeIcons;
@@ -67,6 +68,7 @@ export class PlayerQuizComponent implements OnInit {
     private imageService: ImageService,
     private navbarService: NavBarStateService,
     private localStorage: LocalStorageService,
+    private playerOverlay: PlayerOverlayStateService,
     private log: LogService) { }
 
   ngOnInit(): void {
@@ -81,6 +83,11 @@ export class PlayerQuizComponent implements OnInit {
       };
     }
     this.initializeNavBar();
+    this.playerOverlay.hide();
+  }
+
+  ngOnDestroy(): void {
+    this.playerOverlay.restore();
   }
 
   private refreshTitle() {
@@ -113,15 +120,15 @@ export class PlayerQuizComponent implements OnInit {
   }
 
   public onLanguageEditClick() {
-    this.criteriaEdit('language', this.languageNameSearch, 'Language', AppAttributeIcons.Language, value => this.languageNameSearch = value);
+    this.criteriaEdit('language', this.languageNameSearch, 'Language', AppAttributeIcons.Language, [], value => this.languageNameSearch = value);
   }
 
   public onGenreEditClick() {
-    this.criteriaEdit('genre', this.genreSearch, 'Genre', AppAttributeIcons.GenreName, value => this.genreSearch = value);
+    this.criteriaEdit('genre', this.genreSearch, 'Genre', AppAttributeIcons.GenreName, ['Classical'], value => this.genreSearch = value);
   }
 
   public onDecadeEditClick() {
-    this.criteriaEdit('releaseDecade', this.decadeSearch, 'Decade', AppAttributeIcons.Decade, value => this.decadeSearch = value);
+    this.criteriaEdit('releaseDecade', this.decadeSearch, 'Decade', AppAttributeIcons.Decade, [0], value => this.decadeSearch = value);
   }
 
   public onElapsedTimeClick() {
@@ -219,11 +226,16 @@ export class PlayerQuizComponent implements OnInit {
     this.localStorage.setByKey(this.cacheKey, this.cache);
   }
 
-  private async criteriaEdit(columnName: string, currentValue: any, title: string, icon: string, onOk: (value) => void) {
+  private async criteriaEdit(columnName: string, currentValue: any, title: string, icon: string, excludeValues: any[], onOk: (value) => void) {
     const criteria = new Criteria();
     criteria.paging.distinct = true;
     criteria.addSorting(columnName);
-    const results = await this.db.getColumnValues(SongEntity, criteria, { expression: columnName });
+    let results = await this.db.getColumnValues(SongEntity, criteria, { expression: columnName });
+    if (excludeValues && excludeValues.length) {
+      for (const excludeValue of excludeValues) {
+        results = results.filter(item => item[columnName] !== excludeValue);
+      }
+    }
     const valuePairs = results.map(result => {
       const valuePair: ISelectableValue = {
         value: result[columnName],
@@ -260,11 +272,15 @@ export class PlayerQuizComponent implements OnInit {
       criteria.searchCriteria.push(new CriteriaItem('genre', this.genreSearch));
     }
     else {
-      // Ignore classical music
+      // Ignore classical music; also ignored in the genre list
       criteria.searchCriteria.push(new CriteriaItem('genre', 'Classical', CriteriaComparison.NotEquals));
     }
     if (this.decadeSearch) {
       criteria.searchCriteria.push(new CriteriaItem('releaseDecade', this.decadeSearch));
+    }
+    else {
+      // Ignore music with no decade; also ignored in the decade list
+      criteria.searchCriteria.push(new CriteriaItem('releaseDecade', 0, CriteriaComparison.NotEquals));
     }
     // Ignore "bad" music
     criteria.searchCriteria.push(new CriteriaItem('rating', 2, CriteriaComparison.GreaterThan));
