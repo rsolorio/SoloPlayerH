@@ -12,6 +12,7 @@ export class LocalStorageService {
   /**
    * Gets a value from local storage based on the specified key.
    * @param key The unique identifier of the storage object.
+   * @returns The value parsed as JSON.
    */
   public getByKey<T>(key: string): T {
     const stringItem = localStorage.getItem(key);
@@ -21,6 +22,7 @@ export class LocalStorageService {
 
   /**
    * Sets the specified value in local storage based on the specified key.
+   * The value is first stringified and then saved in local storage.
    * @param key The unique identifier of the storage object.
    * @param value The value to save.
    */

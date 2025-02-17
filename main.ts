@@ -24,6 +24,19 @@ function createWindow(): void {
   mainWindow.maximize();
   remoteMain.enable(mainWindow.webContents);
 
+  // SPECIFY ORIGIN
+  // mainWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+  //   if (details.url.startsWith('https://amp-api.music.apple.com')) {
+  //     callback({ requestHeaders: { origin: 'https://music.apple.com', ...details.requestHeaders }});
+  //   }
+  //   else {
+  //     callback({ requestHeaders: details.requestHeaders });
+  //   }
+  // });
+  // mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+  //   callback({ responseHeaders: { 'Access-Control-Allow-Origin': ['*'], ...details.responseHeaders }});
+  // });
+
   if (serve) {
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`),

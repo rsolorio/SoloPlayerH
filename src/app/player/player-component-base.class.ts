@@ -138,11 +138,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   protected onTrackChanged(eventArgs: IEventArgs<IPlaylistSongModel>): void {
     this.setupAssociatedData(eventArgs.newValue);
-    this.databaseEntityService.prepareScrobbleRequest(eventArgs.newValue.id).then(scrobbleReq => {
-      this.lastFmService.nowPlaying(scrobbleReq).catch(error => {
-        this.logService.warn('Error setting now playing state.', error);
+    // Prevent empty track from being scrobbled
+    if (eventArgs.newValue.id !== '0') {
+      this.databaseEntityService.prepareScrobbleRequest(eventArgs.newValue.id).then(scrobbleReq => {
+        this.lastFmService.nowPlaying(scrobbleReq).catch(error => {
+          this.logService.warn('Error setting now playing state.', error);
+        });
       });
-    });
+    }
   }
 
   /**

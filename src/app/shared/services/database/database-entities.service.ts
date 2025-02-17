@@ -143,6 +143,9 @@ export class DatabaseEntitiesService {
   public async prepareScrobbleRequest(songId: string): Promise<ILastFmScrobbleRequest> {
     const song = await SongViewEntity.findOneBy({ id: songId });
     const contributors = await this.getSongContributors(songId);
+    if (!song) {
+      this.log.warn(`Song id ${songId} not found.`);
+    }
     let artistName = song.primaryArtistStylized;
     if (contributors) {
       if (song.primaryArtistId === EntityId.ArtistVarious) {

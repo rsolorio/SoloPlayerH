@@ -8,7 +8,7 @@ import { LogService } from "./core/services/log/log.service";
 import { DatabaseService } from "./shared/services/database/database.service";
 import { DatabaseEntitiesService } from "./shared/services/database/database-entities.service";
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
-import { ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedByPlaylistViewEntity, SongExtendedViewEntity, ValueListEntryEntity } from "./shared/entities";
+import { AlbumViewEntity, ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedByPlaylistViewEntity, SongExtendedViewEntity, SongViewEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
@@ -16,6 +16,9 @@ import { In, IsNull } from "typeorm";
 import { Criteria, CriteriaItem } from "./shared/services/criteria/criteria.class";
 import { CriteriaComparison } from "./shared/services/criteria/criteria.enum";
 import { RelativeDateUnit } from "./shared/services/relative-date/relative-date.enum";
+import { HttpClient } from "@angular/common/http";
+import { LocalStorageService } from "./core/services/local-storage/local-storage.service";
+import { MusicImageType } from "./platform/audio-metadata/audio-metadata.enum";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -28,6 +31,7 @@ const MP3Tag = require('mp3tag.js');
 export class AppTestService {
   constructor(
     private log: LogService,
+    private http: HttpClient,
     private exporter: ExportService,
     private dialog: DialogService,
     private fileService: FileService,
@@ -36,6 +40,7 @@ export class AppTestService {
     private options: DatabaseOptionsService,
     private utility: UtilityService,
     private lookup: DatabaseLookupService,
+    private storage: LocalStorageService,
     private metadataService: AudioMetadataService) {}
 
   public async test(): Promise<void> {
@@ -52,7 +57,8 @@ export class AppTestService {
     //await this.insertFilters();
     //await this.updateSong();
     //await this.getPlaylistsTracks();
-    //await this.logPopularity();
+    //await this.logPopularity();    
+    //await this.getAvailableAlbumArt();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -629,5 +635,86 @@ export class AppTestService {
       const result = await this.db.run(query);
       console.log(result);
     }
+  }
+
+  /**
+   * Uses the apple api to search the specified album and get its metadata (especially if it has animated art).
+   */
+  private async getAlbumMetadata(albumRow: AlbumViewEntity): Promise<any> {
+    const albumMetadata = { id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
+    const token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzM3NDgwNzIxLCJleHAiOjE3NDQ3MzgzMjEsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.n_2fV0lbEYcLIKyt590X3A0oH8VFugS53cmTFiGHYxy1ilDRd-rWp9K1Ka2r5aAf-cRdsMaHx7VZSJ4IwG9UnQ';
+    const url = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumMetadata.albumName + ' ' + albumMetadata.artistName);
+    try {
+      const response = await this.http.get(url, { headers: { authorization: 'Bearer ' + token }}).toPromise();
+      const searchData = response as any;
+      if (searchData?.results?.albums?.data?.length) {
+        const album = searchData.results.albums.data[0];
+        albumMetadata.url = album.attributes.url;
+        if (album?.attributes?.editorialVideo?.motionSquareVideo1x1?.video) {
+          albumMetadata.hasAnimatedArt = true;
+        }
+      }
+    }
+    catch (err) {
+      albumMetadata.error = err;
+    }
+    
+    return albumMetadata;
+  }
+
+  /**
+   * Iterates the list of all albums and determines (by reading data from local storage)
+   * if metadata has not retrieved yet, if not, it will get it from the apple api
+   * and save it in local storage.
+   */
+  private async findAnimatedArt(): Promise<void> {
+    let processedAlbums = this.storage.getByKey<any[]>('sp.AnimatedArtAlbums');
+    if (!processedAlbums) {
+      processedAlbums = [];
+    }
+    const result = [];
+    let albums = await AlbumViewEntity.find();
+    albums = this.utility.sort(albums, 'releaseYear', true);
+    for (const album of albums) {
+      const processedAlbum = processedAlbums.find(i => i.id === album.id);
+      if (!processedAlbum) {
+        const albumMetadata = await this.getAlbumMetadata(album);
+        if (albumMetadata.error) {
+          console.log(albumMetadata.error);
+          console.log(result);
+          this.storage.setByKey('sp.AnimatedArtAlbums', processedAlbums);
+          return;
+        }
+        processedAlbums.push(albumMetadata);
+        if (albumMetadata.hasAnimatedArt) {
+          console.log(albumMetadata);
+          result.push(albumMetadata);
+        }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
+    this.storage.setByKey('sp.AnimatedArtAlbums', processedAlbums);
+    console.log(result);
+  }
+
+  /**
+   * Finds albums with no animated art, and then determines if there's metadata in local storage
+   * that indicates there's animated art in the apple api.
+   */
+  private async getAvailableAlbumArt(): Promise<void> {
+    const processedAlbums = this.storage.getByKey<any[]>('sp.AnimatedArtAlbums');
+    const availableAlbumArt = [];
+    let albums = await AlbumViewEntity.find();
+    albums = this.utility.sort(albums, 'primaryArtistName');
+    for (const album of albums) {
+      const animatedArt = await RelatedImageEntity.findOneBy({ relatedId: album.id, imageType: MusicImageType.FrontAnimated });
+      if (!animatedArt) {
+        const processedAlbum = processedAlbums.find(i => i.id === album.id);
+        if (processedAlbum && processedAlbum.hasAnimatedArt) {
+          availableAlbumArt.push(processedAlbum);
+        }
+      }
+    }
+    console.log(availableAlbumArt);
   }
 }
