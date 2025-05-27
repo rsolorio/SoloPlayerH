@@ -90,6 +90,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       destinationPath: destinationPath
     };
 
+    // If the file already exists in the destination, skip it
     if (this.fileService.exists(destinationPath)) {
       result.metadata = {};
       result.metadata[MetaAttribute.FilePath] = values;

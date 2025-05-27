@@ -125,6 +125,7 @@ export class ExportService {
       // This process must return a mapping between the original path and the new path
       const writeResult = await this.writer.run(song);
       this.config.playlistConfig.fileMappings[writeResult.sourcePath] = writeResult.destinationPath;
+      // Files skipped during the writer process will be ignored in the calculation
       if (!writeResult.skipped) {
         bytes += song.fileSize;
         seconds += song.seconds;

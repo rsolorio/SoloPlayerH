@@ -63,6 +63,7 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     const extension = '.' + format;
     const filePath = this.fileService.combine(this.config.path, fileName + extension);
 
+    // Do not create the playlist if the file already exists
     if (this.fileService.exists(filePath)) {
       return false;
     }

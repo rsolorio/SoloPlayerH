@@ -561,9 +561,9 @@ export class AppTestService {
     // Filters (name), Module Options (name)
     //const value = this.lookup.hashValues(['Last.FM API Secret']);
     //const value = this.lookup.hashValueListEntry('Explicit');
-    //const value = this.lookup.hashSong('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\01 - came here for love (acoustic) [feat ella eyre].mp3');
+    const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
     //const value = this.lookup.hashAlbum('Came Here For Love (Acoustic) [Single]', 2017);
-    const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
+    //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
 
     console.log(value);
