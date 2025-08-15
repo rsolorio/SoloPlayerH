@@ -293,12 +293,23 @@ export abstract class ImageService {
   }
 
   private async getImageFromTag(source: IImageSource): Promise<IImage> {
-    const buffer = await this.fileSvc.getBuffer(source.sourcePath);
-    const audioInfo = await this.metadataSvc.getMetadata(buffer);
-    if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
-      const picture = audioInfo.metadata.common.picture[source.sourceIndex];
-      if (picture) {
-        return this.metadataSvc.getImage([picture]);
+    let buffer: Buffer;
+    try {
+      buffer = await this.fileSvc.getBuffer(source.sourcePath);
+    }
+    catch (ex) {
+      // Can this service use the log service?
+      console.warn('Image service failure.');
+      console.warn(ex);
+    }
+
+    if (buffer) {
+      const audioInfo = await this.metadataSvc.getMetadata(buffer);
+      if (audioInfo.metadata.common.picture && audioInfo.metadata.common.picture.length) {
+        const picture = audioInfo.metadata.common.picture[source.sourceIndex];
+        if (picture) {
+          return this.metadataSvc.getImage([picture]);
+        }
       }
     }
     return null;

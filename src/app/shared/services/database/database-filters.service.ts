@@ -78,6 +78,8 @@ export class DatabaseFiltersService {
     this.addQuickFilterChip('quickFilter-live', 'live', true, CriteriaComparison.Equals, AppAttributeIcons.LiveOn, 'Live', result, existingCriteria.quickCriteria);
     this.addQuickFilterChip('quickFilter-explicit', 'advisory', 1, CriteriaComparison.Equals, AppAttributeIcons.ExplicitOn, 'Explicit', result, existingCriteria.quickCriteria);
     this.addQuickFilterChip('quickFilter-performerCount', 'performerCount', 1, CriteriaComparison.GreaterThan, AppAttributeIcons.PerformerCount, 'Multi Artist', result, existingCriteria.quickCriteria);
+    // Temp filters
+    //this.addQuickFilterChip('quickFilter-indifferent', 'mood', 'Indifferent', CriteriaComparison.Equals, AppAttributeIcons.MoodOn, 'Indifferent', result, existingCriteria.quickCriteria);
     return result;
   }
 

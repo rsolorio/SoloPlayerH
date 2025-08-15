@@ -389,63 +389,93 @@
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Depressed",
+        "name": "Upset",
+        "description": "Angry, aggressive, intense, rebellious, cathartic",
         "isClassification": false,
         "sequence": 2
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Sad",
+        "name": "Dark",
+        "description": "Mysterious, suspenseful, curious, uncertain",
         "isClassification": false,
         "sequence": 3
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Melancholy",
+        "name": "Sad",
+        "description": "Depressed, lone, isolated, vulnerable, raw",
         "isClassification": false,
         "sequence": 4
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Indifferent",
+        "name": "Melancholy",
+        "description": "Emotional, tender, often slow and expressive",
         "isClassification": false,
         "sequence": 5
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Relaxed",
+        "name": "Bittersweet",
+        "description": "A mixed of happy and sad emotions",
         "isClassification": false,
         "sequence": 6
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Peaceful",
+        "name": "Indifferent",
         "isClassification": false,
         "sequence": 7
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Grateful",
+        "name": "Sleepy",
+        "description": "Lullaby, very gentle, for winding down, slow paced",
         "isClassification": false,
         "sequence": 8
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Happy",
+        "name": "Peaceful",
+        "description": "Chill, smooth, easy going, background friendly, centering, spiritual, meditative, serene, calm, nature like, soothing, reflective, contemplative, thoughtful, introspective, dreamy, atmospheric",
         "isClassification": false,
         "sequence": 9
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Excited",
+        "name": "Relaxed",
+        "description": "Sexy, sensual, seductive, intimate vibe, passionate",
         "isClassification": false,
         "sequence": 10
       },
       {
         "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
-        "name": "Energetic",
+        "name": "Grateful",
+        "description": "Motivational, empowering, inspiring, confident, bold, hopeful, optimistic, positive, bright, forward looking",
         "isClassification": false,
         "sequence": 11
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Happy",
+        "description": "Uplifting, joyful, catchy, lighthearted, humorous, offbeat, playful",
+        "isClassification": false,
+        "sequence": 12
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Excited",
+        "description": "Catchy rhythms, triumphant, victorious, winning, success driven",
+        "isClassification": false,
+        "sequence": 13
+      },
+      {
+        "valueListTypeId": "4f9cbc6b-a841-47a5-8c4d-11197337e95e",
+        "name": "Energetic",
+        "description": "Fast, high energy, hype, great for workouts, powerful",
+        "isClassification": false,
+        "sequence": 14
       },
       {
         "//": "ALBUMTYPE",

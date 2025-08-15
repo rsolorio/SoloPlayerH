@@ -204,8 +204,10 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   protected async setSrc(relatedImages: RelatedImageEntity[]): Promise<void> {
     for (const relatedImage of relatedImages) {
       const image = await this.imageSvc.getImageFromSource(relatedImage);
-      relatedImage.src = image.src;
-      relatedImage.srcType = image.srcType;
+      if (image) {
+        relatedImage.src = image.src;
+        relatedImage.srcType = image.srcType;
+      }
     }
   }
 
@@ -256,7 +258,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   public onMoodClick(song: ISongModel): void {
     ValueListEntryEntity.findBy({ valueListTypeId: ValueLists.Mood.id}).then(entries => {
-      const values = entries.map(e => {
+      const sortedEntries = this.utilityService.sort(entries, 'sequence');
+      const values = sortedEntries.map(e => {
         const valuePair: ISelectableValue = {
           value: e.id,
           caption: e.name
