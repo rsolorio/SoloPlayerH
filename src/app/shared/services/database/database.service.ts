@@ -111,6 +111,8 @@ export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   queries: IColumnQuery[];
   /** The total number of results to be retrieved on each result. */
   pageSize?: number;
+  /** Determines if every result should be sorted randomly. */
+  random?: boolean;
   /** If you are  looking to split the result on smaller chunks you can use this value to specify the number of items for each chunk. */
   chunkSize?: number;
   /** The entity that will be used to query and get results. */
@@ -534,6 +536,7 @@ export class DatabaseService {
         if (options.pageSize) {
           criteria.paging.pageSize = options.pageSize;
         }
+        criteria.random = options.random;
         const results = await this.getList(options.entity, criteria);
         if (results.length) {
           if (options.chunkSize) {

@@ -395,17 +395,16 @@ export class ExportService {
     valuesCriteria.paging.distinct = true;
     const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'releaseDecade' }};
     const extraCriteriaItem = new CriteriaItem('rating', 5);
-    return this.createIteratorPlaylists([columnQuery], '#Best', '%releaseDecade%\'s', [extraCriteriaItem]);
+    return this.createIteratorPlaylists([columnQuery], '#Best', '%releaseDecade%\'s', false, [extraCriteriaItem]);
   }
 
   private createMoodPlaylists(): Promise<number> {
     const valuesCriteria = new Criteria();
     // Let's do this to have a different playlist every time.
-    valuesCriteria.random = true;
     valuesCriteria.paging.distinct = true;
     valuesCriteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown', CriteriaComparison.NotEquals));
     const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'mood' }};
-    return this.createIteratorPlaylists([columnQuery], '#Mood', '%mood%');
+    return this.createIteratorPlaylists([columnQuery], '#Mood', '%mood%', true);
   }
 
   private async createClassificationTypePlaylists(prefix: string, classificationTypeId: string): Promise<number> {
@@ -431,11 +430,20 @@ export class ExportService {
     return this.exportCriteriaAsPlaylist(prefix, criteria);
   }
 
-  private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string, extraCriteria?: CriteriaItem[]): Promise<number> {
+  /**
+   * It will create a playlist for each value returned by the prefix expression.
+   * @param queries Queries used to get the list of values.
+   * @param prefixExpression Script expression to be used as prefix in the name of the playlist file.
+   * @param nameExpression Script expression to be used in the name of the playlist file.
+   * @param extraCriteria Additional criteria to be used when getting the final list of results.
+   * @returns The number of playlists created in the process.
+   */
+  private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string, random?: boolean, extraCriteria?: CriteriaItem[]): Promise<number> {
     let result = 0;
     const options: IResultsIteratorOptions<any> = {
       entity: this.getSongViewEntity(SongViewType.Standard),
       queries: queries,
+      random: random,
       extraCriteria: extraCriteria,
       onResult: async (valuesObj: KeyValueGen<any>, items: any[]) => {
         if (items?.length) {

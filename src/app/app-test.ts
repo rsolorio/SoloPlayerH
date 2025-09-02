@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { ModuleOptionId } from "./shared/services/database/database.seed";
 import { ExportService } from "./sync-profile/export/export.service";
 import { DialogService } from "./platform/dialog/dialog.service";
 import { FileService } from "./platform/file/file.service";
@@ -45,7 +44,7 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    //await this.logStatistics();
+    await this.logStatistics();
     //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
