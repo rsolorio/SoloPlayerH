@@ -51,6 +51,9 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   public elapsedTime: number = 0;
   public remainingTime: number = 0;
   public songInfoVisible = false;
+  public sec10Playing = false;
+  public sec20Playing = false;
+  public sec30Playing = false;
 
   private htmlAudio = new Audio();
   private playTimer = null;
@@ -165,6 +168,9 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     this.elapsedTime = 0;
     this.remainingTime = 0;
     this.animatedImage = false;
+    this.sec10Playing = false;
+    this.sec20Playing = false;
+    this.sec30Playing = false;
     this.pause();
   }
 
@@ -182,14 +188,17 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   }
 
   public play10sec() {
+    this.sec10Playing = true;
     this.playPortion(10);
   }
 
   public play20sec() {
+    this.sec20Playing = true;
     this.playPortion(20);
   }
 
   public play30sec() {
+    this.sec30Playing = true;
     this.playPortion(30);
   }
 
@@ -357,6 +366,9 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     this.decade = song.releaseDecade;
     this.elapsedTime = 0;
     this.remainingTime = song.seconds;
+    this.sec10Playing = false;
+    this.sec20Playing = false;
+    this.sec30Playing = false;
 
     if (this.isPlaying) {
       this.pauseAndReplaceAudioSource();

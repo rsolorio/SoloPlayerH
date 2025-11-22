@@ -112,7 +112,7 @@
   <!-- Snippets -->
   <tr>
     <td>
-      <div (click)="play10sec()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+      <div (click)="play10sec()" [ngClass]="[sec10Playing ? 'sp-bg-primary' : 'sp-bg-primary-variant']" class="sp-chip-item sp-clickable sp-text-large sp-text-center">
         <span class="sp-chip-text">
           <i [ngClass]="AppActionIcons.TimeForward">&nbsp;&nbsp;</i>
           <span>10 sec</span>
@@ -120,7 +120,7 @@
       </div>
     </td>
     <td>
-      <div (click)="play20sec()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+      <div (click)="play20sec()" [ngClass]="[sec20Playing ? 'sp-bg-primary' : 'sp-bg-primary-variant']" class="sp-chip-item sp-clickable sp-text-large sp-text-center">
         <span class="sp-chip-text">
           <i [ngClass]="AppActionIcons.TimeForward">&nbsp;&nbsp;</i>
           <span>20 sec</span>
@@ -128,7 +128,7 @@
       </div>
     </td>
     <td>
-      <div (click)="play30sec()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
+      <div (click)="play30sec()" [ngClass]="[sec30Playing ? 'sp-bg-primary' : 'sp-bg-primary-variant']" class="sp-chip-item sp-clickable sp-text-large sp-text-center">
         <span class="sp-chip-text">
           <i [ngClass]="AppActionIcons.TimeForward">&nbsp;&nbsp;</i>
           <span>30 sec</span>

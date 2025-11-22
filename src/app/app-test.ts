@@ -9,6 +9,7 @@ import { DatabaseEntitiesService } from "./shared/services/database/database-ent
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
 import { AlbumViewEntity, ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedByPlaylistViewEntity, SongExtendedViewEntity, SongViewEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
+import { IValuePair } from "./core/models/core.interface";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
 import { In, IsNull } from "typeorm";
@@ -559,7 +560,7 @@ export class AppTestService {
   private hash(): void {
     // Filters (name), Module Options (name)
     //const value = this.lookup.hashValues(['Last.FM API Secret']);
-    const value = this.lookup.hashValueListEntry('Upset');
+    const value = this.lookup.hashValueListEntry('Cha Cha Cha');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
     //const value = this.lookup.hashAlbum('Came Here For Love (Acoustic) [Single]', 2017);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
@@ -607,69 +608,115 @@ export class AppTestService {
   }
 
   private async logStatistics(): Promise<void> {
-    const queries: string[] = [];
+    const queries: IValuePair[] = [];
+
+    // ARTISTS -----------------------------------------------------
 
     // Artists by country
     //queries.push('SELECT country, COUNT(id) AS artistCount FROM artist GROUP BY country ORDER BY artistCount DESC');
 
-    // Artists with no country
-    queries.push(`SELECT name FROM albumArtistView WHERE country = 'Unknown' ORDER BY name`);
+    queries.push({
+      caption: 'Artists with no country',
+      value: `SELECT name FROM albumArtistView WHERE country = 'Unknown' ORDER BY name`
+    });
 
-    // Songs by artist type
-    queries.push('SELECT artistType, COUNT(id) AS artistCount FROM albumArtistView GROUP BY artistType ORDER BY artistCount DESC');
+    queries.push({
+      caption: 'Songs by artist type',
+      value: 'SELECT artistType, COUNT(id) AS artistCount FROM albumArtistView GROUP BY artistType ORDER BY artistCount DESC'
+    });
 
-    // Songs by album type
-    queries.push('SELECT albumType, COUNT(id) AS albumCount FROM album GROUP BY albumType ORDER BY albumCount DESC');
+    // ALBUMS ------------------------------------------------------
 
-    // Overall bitrate
-    // Initial value: 225.477
-    queries.push('SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0');
+    queries.push({
+      caption: 'Songs by album type',
+      value: 'SELECT albumType, COUNT(id) AS albumCount FROM album GROUP BY albumType ORDER BY albumCount DESC'
+    });
 
-    // Bitrate by decade
-    queries.push('SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade');
-    // Songs by mood
-    // Initial Unknown value: 1173
-    queries.push('SELECT mood, COUNT(id) AS songCount FROM song GROUP BY mood ORDER BY mood');
+    queries.push({
+      caption: 'Overall bitrate. Initial value: 225.477',
+      value: 'SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0'
+    });
 
-    // Songs added by year
-    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`);
+    queries.push({
+      caption: 'Bitrate by decade',
+      value: 'SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade'
+    });
 
-    // Songs added by year/month
-    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, STRFTIME('%m', addDate) AS addMonth, COUNT(id) AS songCount FROM song GROUP BY addYear, addMonth ORDER BY addYear, addMonth`);
+    // MOOD ----------------------------------------------------------
+    queries.push({
+      caption: 'Songs by mood. Initial Unknown value: 1173',
+      value: 'SELECT mood, COUNT(id) AS songCount FROM song GROUP BY mood ORDER BY mood'
+    });
 
-    // Songs added by year/language
-    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, language, COUNT(id) AS songCount FROM song GROUP BY addYear, language ORDER BY addYear, language`);
+    // DATES ----------------------------------------------------------
 
-    // Songs added by year/release decade
-    queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, releaseDecade, COUNT(id) AS releaseDecadeCount FROM song GROUP BY addYear, releaseDecade ORDER BY addYear, releaseDecade`);
+    queries.push({
+      caption: 'Songs by artist no release year. Initial value: 36',
+      value: 'SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE releaseYear = 0 GROUP BY primaryArtistName ORDER BY songCount DESC, primaryArtistName ASC'
+    });
+
+    queries.push({
+      caption: 'Songs added by year',
+      value: `SELECT STRFTIME('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`
+    });
+
+    queries.push({
+      caption: 'Songs added by year/month',
+      value: `SELECT STRFTIME('%Y', addDate) AS addYear, STRFTIME('%m', addDate) AS addMonth, COUNT(id) AS songCount FROM song GROUP BY addYear, addMonth ORDER BY addYear, addMonth`
+    });
+
+    queries.push({
+      caption: 'Songs added by year/language',
+      value: `SELECT STRFTIME('%Y', addDate) AS addYear, language, COUNT(id) AS songCount FROM song GROUP BY addYear, language ORDER BY addYear, language`
+    });
+
+    queries.push({
+      caption: 'Songs added by year/release decade',
+      value: `SELECT STRFTIME('%Y', addDate) AS addYear, releaseDecade, COUNT(id) AS releaseDecadeCount FROM song GROUP BY addYear, releaseDecade ORDER BY addYear, releaseDecade`
+    });
 
     // Songs added by add year/release year
     //queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, releaseYear, COUNT(id) AS releaseYearCount FROM song GROUP BY addYear, releaseYear ORDER BY addYear, releaseYear`);
 
-    // Low quality songs by artist
-    // Initial artist count: 1046
-    queries.push('SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND vbr = 0 GROUP BY primaryArtistName ORDER BY songCount DESC, primaryArtistName ASC');
+    // QUALITY ------------------------------------------------------------
 
-    // Poor quality song count
-    queries.push('SELECT bitrate, filePath FROM song WHERE bitrate < 128000 ORDER BY bitrate ASC');
+    queries.push({
+      caption: 'Low quality songs by artist. Initial artist count: 1046',
+      value: 'SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND vbr = 0 GROUP BY primaryArtistName ORDER BY songCount DESC, primaryArtistName ASC'
+    });
 
-    // Replaced songs by year/month
-    queries.push(`SELECT STRFTIME('%Y', replaceDate) || '/' || STRFTIME('%m', replaceDate) as replaceYearMonth, count(id) AS fileCount FROM song WHERE replaceDate IS NOT NULL GROUP BY replaceYearMonth`);
+    queries.push({
+      caption: 'Poor quality song count',
+      value: 'SELECT bitrate, filePath FROM song WHERE bitrate < 128000 ORDER BY bitrate ASC'
+    });
+
+    queries.push({
+      caption: 'Replaced songs by year/month',
+      value: `SELECT STRFTIME('%Y', replaceDate) || '/' || STRFTIME('%m', replaceDate) as replaceYearMonth, count(id) AS fileCount FROM song WHERE replaceDate IS NOT NULL GROUP BY replaceYearMonth`
+    });
 
     // High quality songs updated after 2022-07-01 and added before 2022-07-01
     //queries.push(`SELECT changeDate, filePath FROM song WHERE (bitrate = 320000 OR VBR = 1) AND changeDate > '2022-07-01' AND addDate < '2022-07-01' ORDER BY changeDate ASC`);
 
-    // Low quality percentage
-    // Initial value: 40.15
-    queries.push(`
-      SELECT allSongs.count AS allSongsCount, lowSongs.count AS lowSongsCount, (CAST(lowSongs.count AS float) / allSongs.count) * 100 AS lowQualityPercentage
-      FROM
-      (SELECT COUNT(*) AS count FROM song) AS allSongs, (SELECT COUNT(*) AS count FROM song WHERE bitrate < 320000 AND Vbr = 0) AS lowSongs
-    `); // 40.15
+    queries.push({
+      caption: 'Low quality percentage. Initial value: 40.15',
+      value: `
+        SELECT allSongs.count AS allSongsCount, lowSongs.count AS lowSongsCount, (CAST(lowSongs.count AS float) / allSongs.count) * 100 AS lowQualityPercentage
+        FROM
+        (SELECT COUNT(*) AS count FROM song) AS allSongs, (SELECT COUNT(*) AS count FROM song WHERE bitrate < 320000 AND Vbr = 0) AS lowSongs
+      `
+    });
 
     for (const query of queries) {
-      const result = await this.db.run(query);
+      const result = await this.db.run(query.value);
+      if (query.caption) {
+        console.log(query.caption);
+      }
+      else {
+        console.log('');
+      }
       console.log(result);
+      console.log('');
     }
   }
 
@@ -680,6 +727,7 @@ export class AppTestService {
     const albumMetadata = { id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
     const token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzM3NDgwNzIxLCJleHAiOjE3NDQ3MzgzMjEsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.n_2fV0lbEYcLIKyt590X3A0oH8VFugS53cmTFiGHYxy1ilDRd-rWp9K1Ka2r5aAf-cRdsMaHx7VZSJ4IwG9UnQ';
     const url = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumMetadata.albumName + ' ' + albumMetadata.artistName);
+    
     try {
       const response = await this.http.get(url, { headers: { authorization: 'Bearer ' + token }}).toPromise();
       const searchData = response as any;

@@ -459,7 +459,8 @@ export class SongViewComponent implements OnInit {
 
   private async editClassification(classificationTypeId: string, classificationTypeName: string, selectedEntries: string[]): Promise<void> {
     const entries = await ValueListEntryEntity.findBy({ valueListTypeId: classificationTypeId });
-    const valuePairs = entries.map(entry => {
+    const sortedEntries = this.utility.sort(entries, 'sequence');
+    const valuePairs = sortedEntries.map(entry => {
       const valuePair: ISelectableValue = {
         value: entry.id,
         caption: entry.name
