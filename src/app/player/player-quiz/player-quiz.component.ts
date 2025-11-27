@@ -235,6 +235,13 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     this.localStorage.setByKey(this.cacheKey, this.cache);
   }
 
+  public hasValue(val: any): boolean {
+    if (val === undefined || val === null || val === '') {
+      return false;
+    }
+    return true;
+  }
+
   private async criteriaEdit(columnName: string, currentValue: any, title: string, icon: string, excludeValues: any[], onOk: (value) => void) {
     const criteria = new Criteria();
     criteria.paging.distinct = true;

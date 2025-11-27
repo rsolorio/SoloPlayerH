@@ -5,19 +5,19 @@
       <div class="sp-field-group">
         <!-- Language -->
         <div class="sp-input-group">
-           <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Language"></i></span>
+           <span [ngClass]="{ 'sp-color-primary': hasValue(languageNameSearch)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Language"></i></span>
            <input [(ngModel)]="languageNameSearch" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" placeholder="Language..." readonly>
            <span (click)="onLanguageEditClick()" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Edit"></i></span>
         </div>
         <!-- Genre -->
         <div class="sp-input-group">
-          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.GenreName"></i></span>
+          <span [ngClass]="{ 'sp-color-primary': hasValue(genreSearch)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.GenreName"></i></span>
           <input [(ngModel)]="genreSearch" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" placeholder="Genre..." readonly>
           <span (click)="onGenreEditClick()" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Edit"></i></span>
         </div>
        <!-- Decade -->
         <div class="sp-input-group">
-          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Decade"></i></span>
+          <span [ngClass]="{ 'sp-color-primary': hasValue(decadeSearch)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Decade"></i></span>
           <input [(ngModel)]="decadeSearch" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" placeholder="Decade..." readonly>
           <span (click)="onDecadeEditClick()" class="sp-input-edit sp-clickable"><i [ngClass]="AppActionIcons.Edit"></i></span>
         </div>
@@ -65,13 +65,13 @@
       <div class="sp-field-group">
         <!-- Song -->
         <div class="sp-input-group">
-           <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.SongName"></i></span>
+           <span [ngClass]="{ 'sp-color-primary': hasValue(songName)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.SongName"></i></span>
            <input *ngIf="songInfoVisible" [(ngModel)]="songName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
            <input *ngIf="!songInfoVisible" [(ngModel)]="songName" type="password" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
         </div>
         <!-- Artist -->
         <div class="sp-input-group">
-          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.ArtistName"></i></span>
+          <span [ngClass]="{ 'sp-color-primary': hasValue(artistName)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.ArtistName"></i></span>
           <input *ngIf="songInfoVisible" [(ngModel)]="artistName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
           <input *ngIf="!songInfoVisible" [(ngModel)]="artistName" type="password" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
         </div>
@@ -79,13 +79,13 @@
       <div class="sp-field-group">
         <!-- Album -->
         <div class="sp-input-group">
-           <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.AlbumName"></i></span>
+           <span [ngClass]="{ 'sp-color-primary': hasValue(albumName)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.AlbumName"></i></span>
            <input *ngIf="songInfoVisible" [(ngModel)]="albumName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
            <input *ngIf="!songInfoVisible" [(ngModel)]="albumName" type="password" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
         </div>
         <!-- Year -->
         <div class="sp-input-group">
-          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Year"></i></span>
+          <span [ngClass]="{ 'sp-color-primary': hasValue(releaseYear)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Year"></i></span>
           <input *ngIf="songInfoVisible" [(ngModel)]="releaseYear" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
           <input *ngIf="!songInfoVisible" [(ngModel)]="releaseYear" type="password" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
         </div>
@@ -93,17 +93,17 @@
       <div class="sp-field-group">
         <!-- Language -->
         <div class="sp-input-group">
-           <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Language"></i></span>
+           <span [ngClass]="{ 'sp-color-primary': hasValue(languageName)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Language"></i></span>
            <input [(ngModel)]="languageName" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
         </div>
         <!-- Genre -->
         <div class="sp-input-group">
-          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.GenreName"></i></span>
+          <span [ngClass]="{ 'sp-color-primary': hasValue(genre)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.GenreName"></i></span>
           <input [(ngModel)]="genre" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
         </div>
        <!-- Decade -->
         <div class="sp-input-group">
-          <span class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Decade"></i></span>
+          <span [ngClass]="{ 'sp-color-primary': hasValue(decade)}" class="sp-input-prepend-label sp-text-large sp-clickable"><i [ngClass]="AppAttributeIcons.Decade"></i></span>
           <input [(ngModel)]="decade" type="text" class="sp-input-control sp-input-control-with-icon sp-text-medium" readonly>
         </div>
       </div>
