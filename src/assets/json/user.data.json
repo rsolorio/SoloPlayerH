@@ -144,7 +144,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%genre%/$pad(%decade%,4)/%language%",
+        "source": "%genre%",
         "destination": "genre",
         "priority": 1,
         "sequence": 1,
@@ -155,7 +155,7 @@
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "iterator": "$getSubGenres()",
-        "source": "%item%/$pad(%decade%,4)/%language%",
+        "source": "%item%",
         "destination": "genre",
         "priority": 1,
         "sequence": 2,
@@ -185,19 +185,9 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%comment%",
+        "source": "%genre%/$pad(%decade%,4)/%language%",
         "destination": "comment",
         "priority": 1,
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Synced: $now()",
-        "destination": "comment",
-        "priority": 2,
         "sequence": 1,
         "userDefined": false,
         "disabled": false,
@@ -247,6 +237,16 @@
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%changeDate%",
         "destination": "ChangeDate",
+        "priority": 1,
+        "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Synced: $now()",
+        "destination": "SyncDate",
         "priority": 1,
         "sequence": 1,
         "userDefined": true,
@@ -369,16 +369,6 @@
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "Mood: %mood%",
-        "destination": "Track_Tags",
-        "priority": 1,
-        "sequence": 5,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$if(%replayGain%,RG: $pad(%replayGain%,2,1))",
         "destination": "Track_Tags",
         "priority": 1,
         "sequence": 5,
