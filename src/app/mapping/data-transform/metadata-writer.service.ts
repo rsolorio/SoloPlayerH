@@ -401,7 +401,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
 
     const udTexts = this.createUserDefinedTexts(metadata, [
-      MetaAttribute.Subgenre, MetaAttribute. Category, MetaAttribute.Occasion, MetaAttribute.Instrument
+      MetaAttribute.Subgenre, MetaAttribute.Category, MetaAttribute.Occasion, MetaAttribute.Instrument
     ], true);
 
     const rating = this.first(metadata[MetaAttribute.Rating]);
@@ -480,6 +480,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     return tags;
   }
 
+  /** 
+   * Creates user defined tags for the specified properties in the metadata.
+   * When a property has multiple values, they are added as a single text (comma separated list).
+   */
   private createUserDefinedTexts(metadata: KeyValues, properties: string[], upperCaseDescription: boolean): IUserDefinedText[] {
     const result: IUserDefinedText[] = [];
     for (const property of properties) {

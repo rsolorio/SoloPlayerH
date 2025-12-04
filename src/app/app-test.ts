@@ -560,7 +560,8 @@ export class AppTestService {
   private hash(): void {
     // Filters (name), Module Options (name)
     //const value = this.lookup.hashValues(['Last.FM API Secret']);
-    const value = this.lookup.hashValueListEntry('Cha Cha Cha');
+
+    const value = this.lookup.hashValueListEntry('Collaboration');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
     //const value = this.lookup.hashAlbum('Came Here For Love (Acoustic) [Single]', 2017);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);

@@ -106,6 +106,10 @@ export class ValueLists {
       Explicit: {
         id: '56835b09-db59-4a35-be8d-8b41c136242c',
         name: 'Explicit'
+      },
+      Collaboration: {
+        id: 'a731c02a-0957-4581-8354-05185dfe98de',
+        name: 'Collaboration'
       }
     }
   };

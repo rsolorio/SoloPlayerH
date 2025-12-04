@@ -659,60 +659,67 @@
         "sequence": 7
       },
       {
+        "id": "a731c02a-0957-4581-8354-05185dfe98de",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Con Mariachi",
+        "name": "Collaboration",
         "isClassification": true,
         "sequence": 8
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
-        "name": "Easy Listening",
+        "name": "Con Mariachi",
         "isClassification": true,
         "sequence": 9
+      },
+      {
+        "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
+        "name": "Easy Listening",
+        "isClassification": true,
+        "sequence": 10
       },
       {
         "id": "56835b09-db59-4a35-be8d-8b41c136242c",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Explicit",
         "isClassification": true,
-        "sequence": 10
+        "sequence": 11
       },
       {
         "id": "87f64f04-cc3d-42b0-9432-f2549f7ce553",
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Live",
         "isClassification": true,
-        "sequence": 11
+        "sequence": 12
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Merengue",
         "isClassification": true,
-        "sequence": 12
+        "sequence": 13
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Reggaeton",
         "isClassification": true,
-        "sequence": 13
+        "sequence": 14
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Slow Jams",
         "isClassification": true,
-        "sequence": 14
+        "sequence": 15
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Soft",
         "isClassification": true,
-        "sequence": 15
+        "sequence": 16
       },
       {
         "valueListTypeId": "522b4e6c-1161-477b-ad5f-0a219f46d99d",
         "name": "Texano",
         "isClassification": true,
-        "sequence": 16
+        "sequence": 17
       },
       {
         "//": "CATEGORY",

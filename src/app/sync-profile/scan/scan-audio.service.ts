@@ -294,13 +294,6 @@ export class ScanAudioService {
     // PRIMARY ALBUM
     const primaryAlbum = this.processAlbum(primaryArtist, metadata);
 
-    // GENRES
-    // TODO: add default genre if no one found
-    const genres = this.processGenres(metadata, this.genreSplitSymbols);
-
-    // CLASSIFICATIONS
-    const classifications = this.processClassifications(metadata);
-
     // MAIN SONG
     this.songToProcess = this.processSong(primaryAlbum, metadata);
     // Add the new song
@@ -308,6 +301,17 @@ export class ScanAudioService {
 
     // PARTY RELATIONS
     this.processArtistRelations(metadata, primaryArtist, artists);
+
+    // GENRES
+    // TODO: add default genre if no one found
+    const genres = this.processGenres(metadata, this.genreSplitSymbols);
+
+    // CLASSIFICATIONS
+    const classifications = this.processClassifications(metadata);
+    // Extra classifications from other metadata
+    if (this.songToProcess.performerCount > 1) {
+      this.addClassification(ValueLists.Subgenre.entries.Collaboration.name, ValueLists.Subgenre.id, classifications);
+    }
 
     // SONG/CLASSIFICATIONS
     if (genres.length) {
@@ -952,6 +956,24 @@ export class ScanAudioService {
       }
     }
     return result;
+  }
+
+  /**
+   * Adds the specified classification to the specified list of classifications.
+   * The classification will be added only if it exists in the existingClassifications list.
+   * This method takes the classification name over classification id as tag data usually contains readable text and not ids.
+   * @param name Name of the classification.
+   * @param classificationTypeId Type id of the classification.
+   * @param classifications List of classifications to update.
+   */
+  private addClassification(name: string, classificationTypeId: string, classifications: ValueListEntryEntity[]): void {
+    const existingGlobalClass = this.lookupService.findValueListEntry(name, classificationTypeId, this.existingClassifications);
+    if (existingGlobalClass) {
+      const existingLocalClass = classifications.find(c => c.id === existingGlobalClass.id);
+      if (!existingLocalClass) {
+        classifications.push(existingGlobalClass);
+      }
+    }
   }
 
   private processArtistRelations(metadata: KeyValues, primaryArtist: ArtistEntity, artists: ArtistEntity[]): void {

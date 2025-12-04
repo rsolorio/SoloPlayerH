@@ -190,12 +190,14 @@ export class SongModelSourceService implements IDataSourceService {
     // Mappings will be grouped and sorted by priority
     const groupedMappings = this.utility.groupByKey(associatedMappings, 'priority');
     const groupKeys = Object.keys(groupedMappings);
-    // If there are no results in a given priority we will move to the next priority to get results, and so on
+    // This loop iterates each priority group
+    // If there are no results in a given priority, it will move to the next priority to get results, and so on
     for (const groupKey of groupKeys) {
       const result: any[] = [];
       const groupMappings = groupedMappings[groupKey];
       // Within a priority group, the mappings should be processed ordered by sequence
       const sortedMappings = this.utility.sort(groupMappings, 'sequence');
+      // This loop iterates each mapping within a given group
       for (const mapping of sortedMappings) {
         if (mapping.iterator) {
           const data = await this.getDataFromExpression(mapping.iterator, this.placeholders);
@@ -216,10 +218,11 @@ export class SongModelSourceService implements IDataSourceService {
           this.addValueToArray(result, value);
         }
       }
+      // If the iteration yielded at least one result stop here
       if (result.length) {
-        // Stop iterating groups and return the result
         return result;
       }
+      // If not, continue the next priority group
     }
     return [];
   }
@@ -242,33 +245,38 @@ export class SongModelSourceService implements IDataSourceService {
         }
         break;
       case '$getGenres()':
+      case '$getGenresDelimited()':
         const genres = await this.getClassifications(this.inputData.id, ValueLists.Genre.id);
         if (genres?.length) {
-          result = genres;
+          result = expression === '$getGenres()' ? genres : genres.join('/')
         }
         break;
       case '$getSubGenres()':
+      case '$getSubGenresDelimited()':
         const subGenres = await this.getClassifications(this.inputData.id, ValueLists.Subgenre.id);
         if (subGenres?.length) {
-          result = subGenres;
+          result = expression === '$getSubGenres()' ? subGenres : subGenres.join('/');
         }
         break;
       case '$getCategories()':
+      case '$getCategoriesDelimited()':
         const categories = await this.getClassifications(this.inputData.id, ValueLists.Category.id);
         if (categories?.length) {
-          result = categories;
+          result = expression === '$getCategories()' ? categories : categories.join('/');
         }
         break;
       case '$getOccasions()':
+      case '$getOccasionsDelimited()':
         const occasions = await this.getClassifications(this.inputData.id, ValueLists.Occasion.id);
         if (occasions?.length) {
-          result = occasions;
+          result = expression === '$getOccasions()' ? occasions : occasions.join('/');
         }
         break;
       case '$getInstruments()':
+      case '$getInstrumentsDelimited()':
         const instruments = await this.getClassifications(this.inputData.id, ValueLists.Instrument.id);
         if (instruments?.length) {
-          result = instruments;
+          result = expression === '$getInstruments()' ? instruments : instruments.join('/');
         }
         break;
       case '$getTechInfo()':
@@ -288,6 +296,7 @@ export class SongModelSourceService implements IDataSourceService {
     return result;
   }
 
+  /** Helper function to a single value or an array of values to an existing array. */
   private addValueToArray(array: any[], value: any): void {
     if (value) {
       if (Array.isArray(value)) {
