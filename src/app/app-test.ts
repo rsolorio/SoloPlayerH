@@ -12,13 +12,14 @@ import { UtilityService } from "./core/services/utility/utility.service";
 import { IValuePair } from "./core/models/core.interface";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
-import { In, IsNull } from "typeorm";
+import { In, IsNull, Like, MoreThan, Not } from "typeorm";
 import { Criteria, CriteriaItem } from "./shared/services/criteria/criteria.class";
 import { CriteriaComparison } from "./shared/services/criteria/criteria.enum";
 import { RelativeDateUnit } from "./shared/services/relative-date/relative-date.enum";
 import { HttpClient } from "@angular/common/http";
 import { LocalStorageService } from "./core/services/local-storage/local-storage.service";
 import { MusicImageType } from "./platform/audio-metadata/audio-metadata.enum";
+import { RelatedImageId } from "./shared/services/database/database.seed";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -59,6 +60,11 @@ export class AppTestService {
     //await this.getPlaylistsTracks();
     //await this.logPopularity();    
     //await this.getAvailableAlbumArt();
+
+    // await this.updateSongs();
+    // console.log('songs');
+    // await this.updateImages();
+    // console.log('images');
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -561,7 +567,7 @@ export class AppTestService {
     // Filters (name), Module Options (name)
     //const value = this.lookup.hashValues(['Last.FM API Secret']);
 
-    const value = this.lookup.hashValueListEntry('Collaboration');
+    const value = this.lookup.hashValueListEntry('Other');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
     //const value = this.lookup.hashAlbum('Came Here For Love (Acoustic) [Single]', 2017);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
@@ -801,5 +807,51 @@ export class AppTestService {
       }
     }
     console.log(availableAlbumArt);
+  }
+
+  private async updateSongs(): Promise<void> {
+    const songs = await SongEntity.findBy({ language: Not(In(['English', 'Spanish']))});
+    for (const song of songs) {
+      const updated = await this.updateSongLanguage(song, 'None');
+      if (!updated) {
+        await this.updateSongLanguage(song, 'Other');
+      }
+    }
+  }
+
+  private async updateSongLanguage(song: SongEntity, newLanguage: string): Promise<boolean> {
+    const newPath = song.filePath.replace('\\Various\\', `\\${newLanguage}\\`);
+    if (this.fileService.exists(newPath)) {
+      if (song.language === 'Various') {
+        song.language = newLanguage;
+      }
+      song.filePath = newPath;
+      song.hash = this.lookup.hashSong(newPath);
+      await song.save();
+      return true;
+    }
+    return false;
+  }
+
+  private async updateImages(): Promise<void> {
+    const images = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Various\\%')});
+    for (const image of images) {
+      if (!this.fileService.exists(image.sourcePath)) {
+        let newPath = image.sourcePath.replace('\\Various\\', '\\None\\');
+        if (this.fileService.exists(newPath)) {
+          image.sourcePath = newPath;
+          image.hash = this.lookup.hashImage(newPath, 0);
+          await image.save();
+        }
+        else {
+          newPath = image.sourcePath.replace('\\Various\\', '\\Other\\');
+          if (this.fileService.exists(newPath)) {
+            image.sourcePath = newPath;
+            image.hash = this.lookup.hashImage(newPath, 0);
+            await image.save();
+          }
+        }
+      }
+    }
   }
 }

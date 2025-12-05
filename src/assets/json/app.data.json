@@ -942,26 +942,26 @@
       },
       {
         "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
-        "name": "Portuguese",
+        "name": "Other",
         "isClassification": true,
         "sequence": 6
       },
       {
         "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
-        "name": "Spanish",
+        "name": "Portuguese",
         "isClassification": true,
         "sequence": 7
+      },
+      {
+        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
+        "name": "Spanish",
+        "isClassification": true,
+        "sequence": 8
       },
       {
         "id": "a1cce2a5-bb02-aa46-693a-76ad7788cd00",
         "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
         "name": "Unknown",
-        "isClassification": true,
-        "sequence": 8
-      },
-      {
-        "valueListTypeId": "65c31ee4-fbba-4086-b4eb-5fa6b2a499f7",
-        "name": "Various",
         "isClassification": true,
         "sequence": 9
       },

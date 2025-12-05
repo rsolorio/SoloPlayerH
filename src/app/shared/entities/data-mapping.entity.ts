@@ -7,7 +7,9 @@ export class DataMappingEntity extends BaseEntity {
   @Column()
   dataSourceId: string;
   @Column({ nullable: true, comment: 'Expression that should return a list of values; each value will be processed using the source expression where you can refer to each value as %item%.' })
-  iterator: string;  
+  iterator: string;
+  @Column({ nullable: true, comment: `List of string values separated by | which won't be mapped if found.` })
+  ignore: string;
   @Column({ comment: 'Expression to retrieve data from a data source.' })
   source: string;
   @Column({ comment: 'The name of the field where the data will be inserted.' })

@@ -199,6 +199,7 @@ export class SongModelSourceService implements IDataSourceService {
       const sortedMappings = this.utility.sort(groupMappings, 'sequence');
       // This loop iterates each mapping within a given group
       for (const mapping of sortedMappings) {
+        const valuesToIgnore = mapping.ignore ? mapping.ignore.split('|') : [];
         if (mapping.iterator) {
           const data = await this.getDataFromExpression(mapping.iterator, this.placeholders);
           if (Array.isArray(data)) {
@@ -207,7 +208,7 @@ export class SongModelSourceService implements IDataSourceService {
               // Add the data item as one more property to the context as %item%
               this.context.item = item;
               const value = await this.getDataFromExpression(mapping.source, this.placeholders);
-              this.addValueToArray(result, value);
+              this.addValueToArray(result, value, valuesToIgnore);
             }
             // Remove the data item from the context
             delete this.context.item;
@@ -215,7 +216,7 @@ export class SongModelSourceService implements IDataSourceService {
         }
         else {
           const value = await this.getDataFromExpression(mapping.source, this.placeholders);
-          this.addValueToArray(result, value);
+          this.addValueToArray(result, value, valuesToIgnore);
         }
       }
       // If the iteration yielded at least one result stop here
@@ -297,13 +298,20 @@ export class SongModelSourceService implements IDataSourceService {
   }
 
   /** Helper function to a single value or an array of values to an existing array. */
-  private addValueToArray(array: any[], value: any): void {
+  private addValueToArray(array: any[], value: any, ignoreArray: any[]): void {
     if (value) {
+      const inputArray: any[] = [];
       if (Array.isArray(value)) {
-        array.push(...value);
+        inputArray.push(...value);
       }
       else {
-        array.push(value);
+        inputArray.push(value);
+      }
+
+      for (const inputValue of inputArray) {
+        if (!ignoreArray.includes(value)) {
+          array.push(inputValue);
+        }
       }
     }
   }
