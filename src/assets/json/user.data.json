@@ -146,6 +146,7 @@
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "%genre%",
         "destination": "genre",
+        "ignore": "Other",
         "priority": 1,
         "sequence": 1,
         "userDefined": false,
@@ -159,6 +160,50 @@
         "destination": "genre",
         "priority": 1,
         "sequence": 2,
+        "userDefined": false,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "iterator": "$getOccasions()",
+        "source": "%item%",
+        "destination": "genre",
+        "priority": 1,
+        "sequence": 3,
+        "userDefined": false,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "%mood%",
+        "destination": "genre",
+        "ignore": "Unknown",
+        "priority": 1,
+        "sequence": 4,
+        "userDefined": false,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "iterator": "$getCategories()",
+        "source": "%item%",
+        "destination": "genre",
+        "priority": 1,
+        "sequence": 5,
+        "userDefined": false,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "iterator": "$getInstruments()",
+        "source": "%item%",
+        "destination": "genre",
+        "priority": 1,
+        "sequence": 6,
         "userDefined": false,
         "disabled": false,
         "system": false
@@ -185,7 +230,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%genre%/$pad(%decade%,4)/%language%",
+        "source": "$join(%comma%%space%,$if($eq(%language%,Other),%empty%,Language:%space%%language%),$if($eq(%country%,Unknown),%empty%,Country:%space%%country%),$if($eq(%artistType%,Unknown),%empty%,Type:%space%%artistType%))",
         "destination": "comment",
         "priority": 1,
         "sequence": 1,
@@ -325,10 +370,31 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Language: %language%",
+        "source": "Genre: %genre%",
         "destination": "Track_Tags",
         "priority": 1,
         "sequence": 1,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "iterator": "$getSubGenres()",
+        "source": "Subgenre: %item%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 2,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Language: %language%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 3,
         "userDefined": true,
         "disabled": false,
         "system": false
@@ -339,7 +405,7 @@
         "source": "Category: %item%",
         "destination": "Track_Tags",
         "priority": 1,
-        "sequence": 2,
+        "sequence": 4,
         "userDefined": true,
         "disabled": false,
         "system": false
@@ -350,7 +416,7 @@
         "source": "Occasion: %item%",
         "destination": "Track_Tags",
         "priority": 1,
-        "sequence": 3,
+        "sequence": 5,
         "userDefined": true,
         "disabled": false,
         "system": false
@@ -361,7 +427,7 @@
         "source": "Instrument: %item%",
         "destination": "Track_Tags",
         "priority": 1,
-        "sequence": 4,
+        "sequence": 6,
         "userDefined": true,
         "disabled": false,
         "system": false
@@ -371,7 +437,27 @@
         "source": "Mood: %mood%",
         "destination": "Track_Tags",
         "priority": 1,
-        "sequence": 5,
+        "sequence": 7,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "Style: %genre%/$pad(%decade%,4)/%language%",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 8,
+        "userDefined": true,
+        "disabled": false,
+        "system": false
+      },
+      {
+        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
+        "source": "$if(%replayGain%,ReplayGain: $pad(%replayGain%,2,1))",
+        "destination": "Track_Tags",
+        "priority": 1,
+        "sequence": 9,
         "userDefined": true,
         "disabled": false,
         "system": false

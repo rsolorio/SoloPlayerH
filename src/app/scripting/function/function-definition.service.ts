@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { IFunctionDefinition, IFunctionResult } from './function.interface';
 
+/**
+ * Service that contains default function definitions.
+ * Each independent source can add more functions, like the SongModelSource.
+ * When working with expressions, these functions can be combined with the ScriptParerService which contains system placeholders.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -37,6 +42,7 @@ export class FunctionDefinitionService {
     this.andFunction();
     this.orFunction();
     this.padFunction();
+    this.joinFunction();
     this.intFunction();
     this.strFunction();
     this.upperFunction();
@@ -123,6 +129,25 @@ export class FunctionDefinitionService {
         const y = args[1];
         const z = args[2];
         return this.utility.enforceDigits(x, y, z);
+      }
+    });
+  }
+
+  private joinFunction(): void {
+    this.functions.push({
+      name: 'join',
+      syntax: '$join(x, ...y)',
+      description: 'Joins a list of non-empty values (y) with the specified delimiter (x)',
+      fn: args => {
+        const x = args[0];
+        const values = [];
+        for (let i = 1; i < args.length; i++) {
+          const value = args[i];
+          if (!this.utility.isNullOrEmpty(value)) {
+            values.push(value);
+          }
+        }
+        return values.join(x);
       }
     });
   }

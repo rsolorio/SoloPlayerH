@@ -56,8 +56,13 @@ export class UtilityService {
     return arg !== undefined && arg !== null && typeof arg === 'function';
   }
 
-  public isNumber(value?: string | number): boolean {
+  public isNumber(value: string | number): boolean {
     return (value !== null && value !== '' && !isNaN(Number(value.toString())));
+  }
+
+  /** Returns true if the value is undefined, null or empty string. */
+  public isNullOrEmpty(value: string): boolean {
+    return value === undefined || value === null || value === '';
   }
 
   /**
