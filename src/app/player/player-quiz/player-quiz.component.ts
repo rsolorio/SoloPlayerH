@@ -55,6 +55,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   public sec20Playing = false;
   public sec30Playing = false;
   public isSearching = false;
+  public imageSize = 500;
 
   private htmlAudio = new Audio();
   private playTimer = null;
@@ -109,6 +110,21 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     const navbar = this.navbarService.getState();
     navbar.mode = NavbarDisplayMode.Title;
     navbar.menuList = [{
+      icon: AppActionIcons.ImageAdd,
+      caption: 'Bigger Image',
+      action: () => {
+        this.imageSize += 50;
+      }
+    },
+    {
+      icon: AppActionIcons.ImageRemove,
+      caption: 'Smaller Image',
+      action: () => {
+        if (this.imageSize > 0) {
+          this.imageSize -= 50;
+        }
+      }
+    },{
       icon: AppActionIcons.Delete,
       caption: 'Clear History',
       action: () => {

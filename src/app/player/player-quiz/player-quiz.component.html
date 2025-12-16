@@ -54,9 +54,9 @@
   <!-- Image/Video -->
   <tr>
     <td colspan="3" class="sp-text-center">
-      <img *ngIf="!animatedImage && songInfoVisible && imageSrc" class="sp-image-height" [src]="imageSrc" />
-      <img *ngIf="!songInfoVisible || (!imageSrc && !animatedImage)" class="sp-image-height" [src]="RelatedImageSrc.DefaultLarge" />
-      <video *ngIf="animatedImage && songInfoVisible" class="sp-image-height" autoplay loop><source [src]="imageSrc" type="video/mp4"></video>
+      <img *ngIf="!animatedImage && songInfoVisible && imageSrc" [style.height.px]="imageSize" [src]="imageSrc" />
+      <img *ngIf="!songInfoVisible || (!imageSrc && !animatedImage)" [style.height.px]="imageSize" [src]="RelatedImageSrc.DefaultLarge" />
+      <video *ngIf="animatedImage && songInfoVisible" [style.height.px]="imageSize" autoplay loop><source [src]="imageSrc" type="video/mp4"></video>
     </td>
   </tr>
   <!-- Info -->

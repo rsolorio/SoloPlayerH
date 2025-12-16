@@ -177,7 +177,9 @@ export enum AppActionIcons {
   ChevronLeft = 'mdi-chevron-left mdi',
   ChevronRight = 'mdi-chevron-right mdi',
   Show = 'mdi-eye-outline mdi',
-  Hide = 'mdi-eye-off-outline mdi'
+  Hide = 'mdi-eye-off-outline mdi',
+  ImageAdd = 'mdi-image-plus mdi',
+  ImageRemove = 'mdi-image-minus mdi'
 }
 
 export enum AppPlayerIcons {
