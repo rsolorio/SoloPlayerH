@@ -34,6 +34,7 @@ export enum AppAttributeIcons {
   SongCount = 'mdi-music mdi',
   GenreName = 'mdi-tag mdi',
   FileInfo = 'mdi-file-music mdi',
+  FilePath = 'mdi-file-link mdi',
   ClassificationType = 'mdi-shape mdi',
   Language = 'mdi-translate mdi',
   MoodOn = 'mdi-emoticon mdi',

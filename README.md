@@ -313,6 +313,26 @@ This table stores the list of values of each list definition.
 - sequence
 - isClassification
 
+## Setup
+
+### Pre-Setup
+- Install [VS Code](https://code.visualstudio.com/download)
+- Install [Git for Windows](https://gitforwindows.org/)
+- Clone the repo
+
+### Instructions
+- Install global dependencies
+  - Install [NodeJs](https://nodejs.org/en) 14
+  - Install Angular CLI 11
+
+        npm install -g @angular/cli@11
+
+  - Install Cordova 11
+
+        npm install -g cordova@11
+
+- Do an npm install
+
 ## Scripts
 This is a list of NPM package scripts
 

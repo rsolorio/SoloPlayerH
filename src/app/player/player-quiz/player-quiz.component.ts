@@ -54,6 +54,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   public sec10Playing = false;
   public sec20Playing = false;
   public sec30Playing = false;
+  public isSearching = false;
 
   private htmlAudio = new Audio();
   private playTimer = null;
@@ -145,7 +146,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   }
 
   public onRemainingTimeClick() {
-    this.htmlAudio.currentTime += 30;
+    this.htmlAudio.currentTime += 15;
   }
 
   public onFindClick() {
@@ -317,6 +318,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   }
 
   private async find() {
+    this.isSearching = true;
     this.songInfoVisible = false;
     const song = await this.findSong();
 
@@ -383,6 +385,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     else {
       this.replaceAudioSource();
     }
+    this.isSearching = false;
   }
 
   private subscribeToAudioEvents() {

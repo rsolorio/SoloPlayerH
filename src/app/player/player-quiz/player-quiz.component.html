@@ -29,7 +29,7 @@
     <td>
       <div (click)="onFindClick()" class="sp-chip-item sp-clickable sp-text-large sp-bg-primary-variant sp-text-center">
         <span class="sp-chip-text">
-          <i [ngClass]="AppActionIcons.Search">&nbsp;&nbsp;</i>
+          <i [ngClass]="isSearching ? AppActionIcons.Loading : AppActionIcons.Search">&nbsp;&nbsp;</i>
           <span>Find</span>
         </span>
       </div>

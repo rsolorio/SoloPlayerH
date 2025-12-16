@@ -61,9 +61,10 @@ export class AppTestService {
     //await this.logPopularity();    
     //await this.getAvailableAlbumArt();
 
-    // await this.updateSongs();
+    // const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
+    // await this.updateSongs(genres);
     // console.log('songs');
-    // await this.updateImages();
+    // await this.updateImages(genres);
     // console.log('images');
   }
 
@@ -655,6 +656,12 @@ export class AppTestService {
       value: 'SELECT mood, COUNT(id) AS songCount FROM song GROUP BY mood ORDER BY mood'
     });
 
+    // GENRE ----------------------------------------------------------
+    queries.push({
+      caption: 'Songs by genre. Initial Other value: 885',
+      value: 'SELECT genre, COUNT(id) AS songCount FROM song GROUP BY genre ORDER BY genre'
+    });
+
     // DATES ----------------------------------------------------------
 
     queries.push({
@@ -809,42 +816,52 @@ export class AppTestService {
     console.log(availableAlbumArt);
   }
 
-  private async updateSongs(): Promise<void> {
-    const songs = await SongEntity.findBy({ language: Not(In(['English', 'Spanish']))});
+  private async updateSongs(newGenres: string[]): Promise<void> {
+    const songs = await SongEntity.findBy({ genre: Like('Other'), language: Not(In(['Other'])) });
     for (const song of songs) {
-      const updated = await this.updateSongLanguage(song, 'None');
-      if (!updated) {
-        await this.updateSongLanguage(song, 'Other');
+      if (!this.fileService.exists(song.filePath)) {
+        const result = await this.updateSongGenre(song, newGenres);
+        console.log(`Song updated: ${result} ${song.filePath}`);
       }
     }
   }
 
-  private async updateSongLanguage(song: SongEntity, newLanguage: string): Promise<boolean> {
-    const newPath = song.filePath.replace('\\Various\\', `\\${newLanguage}\\`);
-    if (this.fileService.exists(newPath)) {
-      if (song.language === 'Various') {
-        song.language = newLanguage;
+  private async updateSongGenre(song: SongEntity, newGenres: string[]): Promise<boolean> {
+    for (const newGenre of newGenres) {
+      const newPath = song.filePath.replace('\\Other\\', `\\${newGenre}\\`);
+      if (this.fileService.exists(newPath)) {
+        song.filePath = newPath;
+        song.genre = newGenre;
+        song.hash = this.lookup.hashSong(newPath);
+        await song.save();
+        return true;
       }
-      song.filePath = newPath;
-      song.hash = this.lookup.hashSong(newPath);
-      await song.save();
-      return true;
     }
     return false;
   }
 
-  private async updateImages(): Promise<void> {
-    const images = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Various\\%')});
+  // private async updateSongLanguage(song: SongEntity, newLanguage: string): Promise<boolean> {
+  //   const newPath = song.filePath.replace('\\None\\', `\\${newLanguage}\\`);
+  //   if (this.fileService.exists(newPath)) {
+  //     if (song.language === 'Various') {
+  //       song.language = newLanguage;
+  //     }
+  //     song.filePath = newPath;
+  //     song.hash = this.lookup.hashSong(newPath);
+  //     await song.save();
+  //     return true;
+  //   }
+  //   return false;
+  // }
+
+  private async updateImages(newGenres: string[]): Promise<void> {
+    const images1 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\English\\Other\\%')});
+    const images2 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Spanish\\Other\\%')});
+    const images = images1.concat(images2);
     for (const image of images) {
       if (!this.fileService.exists(image.sourcePath)) {
-        let newPath = image.sourcePath.replace('\\Various\\', '\\None\\');
-        if (this.fileService.exists(newPath)) {
-          image.sourcePath = newPath;
-          image.hash = this.lookup.hashImage(newPath, 0);
-          await image.save();
-        }
-        else {
-          newPath = image.sourcePath.replace('\\Various\\', '\\Other\\');
+        for (const newGenre of newGenres) {
+          const newPath = image.sourcePath.replace('\\Other\\', `\\${newGenre}\\`);
           if (this.fileService.exists(newPath)) {
             image.sourcePath = newPath;
             image.hash = this.lookup.hashImage(newPath, 0);

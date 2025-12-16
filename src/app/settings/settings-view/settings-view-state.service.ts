@@ -118,6 +118,25 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
             }
           },
           {
+            name: 'Path Redirection',
+            icon: AppAttributeIcons.FilePath,
+            textRegular: ['Click here to redirect file (song, image) paths to a new location.'],
+            editorType: SettingsEditorType.Text,
+            onChange: setting => {
+              if (setting.data) {
+                setting.running = true;
+                const values = setting.data.split('|');
+                const originalPath = values[0];
+                const newPath = values[1];
+                this.db.run(`UPDATE song SET filePath = REPLACE(filePath, '${originalPath}', '${newPath}')`).then(() => {
+                  this.db.run(`UPDATE relatedImage SET sourcePath = REPLACE(sourcePath, '${originalPath}', '${newPath}')`).then(() => {
+                    setting.running = false;
+                  });
+                });
+              }
+            }
+          },
+          {
             name: 'Multiple Artists',
             icon: AppFeatureIcons.MultipleArtists,
             textRegular: [
