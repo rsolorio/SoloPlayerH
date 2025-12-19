@@ -170,25 +170,9 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   }
 
   public onClearClick() {
-    this.languageNameSearch = null;
-    this.genreSearch = null;
-    this.decadeSearch = null;
-    this.filePath = null;
-    this.imageSrc = null;
-    this.songName = null;
-    this.artistName = null;
-    this.albumName = null;
-    this.releaseYear = null;
-    this.languageName = null;
-    this.genre = null;
-    this.decade = null;
-    this.elapsedTime = 0;
-    this.remainingTime = 0;
-    this.animatedImage = false;
-    this.sec10Playing = false;
-    this.sec20Playing = false;
-    this.sec30Playing = false;
-    this.pause();
+    this.clearSearchInfo();
+    this.clearSongInfo();
+    this.clearPlayStatus();
   }
 
   public onShowClick() {
@@ -257,6 +241,34 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
+  }
+
+  private clearSearchInfo() {
+    this.languageNameSearch = null;
+    this.genreSearch = null;
+    this.decadeSearch = null;
+  }
+
+  private clearSongInfo() {
+    this.filePath = null;
+    this.imageSrc = null;
+    this.songName = null;
+    this.artistName = null;
+    this.albumName = null;
+    this.releaseYear = null;
+    this.languageName = null;
+    this.genre = null;
+    this.decade = null;
+    this.elapsedTime = 0;
+    this.remainingTime = 0;
+    this.animatedImage = false;
+  }
+
+  private clearPlayStatus() {
+    this.sec10Playing = false;
+    this.sec20Playing = false;
+    this.sec30Playing = false;
+    this.pause();
   }
 
   private async criteriaEdit(columnName: string, currentValue: any, title: string, icon: string, excludeValues: any[], onOk: (value) => void) {
@@ -335,12 +347,15 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
 
   private async find() {
     this.isSearching = true;
+    this.log.info(`Language: '${this.languageNameSearch}', Genre: '${this.genreSearch}', Decade: '${this.decadeSearch}'`);
     this.songInfoVisible = false;
     const song = await this.findSong();
 
     if (!song) {
-      // TODO: song not found message
+      this.clearSongInfo();
       this.log.info('Song not found.');
+      this.navbarService.showToast('Song not found.');
+      this.isSearching = false;
       return;
     }
 
@@ -402,6 +417,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
       this.replaceAudioSource();
     }
     this.isSearching = false;
+    this.navbarService.showToast(`${this.languageName}, ${this.genre}, ${this.decade}`);
   }
 
   private subscribeToAudioEvents() {
