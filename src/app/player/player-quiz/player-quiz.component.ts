@@ -388,7 +388,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
       this.imageSrc = image.src;
     }
     const artists = await (await this.entities.prepareScrobbleRequest(song.id)).artistName;
-    this.log.table('Song found:', { tabular: {
+    this.log.table('Song found at attempt ' + this.cache.songs.length, { tabular: {
       name: song.name,
       cleanName: song.cleanName,
       albumArtist: song.primaryArtistName,
