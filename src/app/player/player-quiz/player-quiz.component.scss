@@ -4,7 +4,7 @@
   display: flex;
   margin-left: 10px;
   margin-right: 10px;
-  margin-top: 10px;
+  margin-top: 5px;
   column-gap: 10px;
 }
 
@@ -22,7 +22,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 34px;
+  height: 32px;
   min-width: 34px;
   // Blends the right margin of this element with the left margin of the input
   margin-right: -1px;
@@ -36,7 +36,7 @@
   display: flex;
   align-items: center;
   text-align: center;
-  height: 34px;
+  height: 32px;
   // Blends the right margin of this element with the left margin of the input
   margin-right: -1px;
   border: 1px solid $sp-color-on-background-low;
@@ -49,7 +49,7 @@
 }
 
 .sp-input-control {
-  height: 34px;
+  height: 32px;
   padding-left: 10px;
   padding-right: 10px;
   outline: none;
@@ -58,7 +58,6 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   font-family: inherit;
-  font-size: inherit;
 }
 
 .sp-input-control-with-icon {
