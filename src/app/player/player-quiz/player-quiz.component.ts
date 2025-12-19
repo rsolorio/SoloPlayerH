@@ -191,16 +191,19 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   public play10sec() {
     this.sec10Playing = true;
     this.playPortion(10);
+    this.log.info('Playing 10 sec.');
   }
 
   public play20sec() {
     this.sec20Playing = true;
     this.playPortion(20);
+    this.log.info('Playing 20 sec.');
   }
 
   public play30sec() {
     this.sec30Playing = true;
     this.playPortion(30);
+    this.log.info('Playing 30 sec.');
   }
 
   private replaceAudioSource() {
