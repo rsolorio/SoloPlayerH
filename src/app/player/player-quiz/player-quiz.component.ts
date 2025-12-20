@@ -62,7 +62,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   private isReplacing = false;
   public isPlaying = false;
   private cache: IQuizCache;
-  private cacheKey = 'sp.QuizCache'
+  private cacheKey = 'sp.QuizCache';
   private stopAt = 0;
 
   constructor(
@@ -140,7 +140,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
   }
 
   public onLanguageEditClick() {
-    this.criteriaEdit('language', this.languageNameSearch, 'Language', AppAttributeIcons.Language, [], value => this.languageNameSearch = value);
+    this.languageEdit();
   }
 
   public onGenreEditClick() {
@@ -310,11 +310,59 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     this.sidebarHostService.loadContent(chipSelectionModel);
   }
 
+  private languageEdit() {
+    const valuePairs: ISelectableValue[] = [
+      {
+        value: 'English',
+        caption: 'English'
+      },
+      {
+        value: 'Spanish',
+        caption: 'Spanish'
+      },
+      {
+        value: 'Other',
+        caption: 'Other'
+      }
+    ];
+    for (const valuePair of valuePairs) {
+      if (valuePair.value === this.languageNameSearch) {
+        valuePair.selected = true;
+      }
+      else {
+        valuePair.selected = false;
+      }
+    }
+    const chipSelectionModel: IChipSelectionModel = {
+      componentType: ChipSelectionComponent,
+      title: 'Language',
+      titleIcon: AppAttributeIcons.Language,
+      displayMode: ChipDisplayMode.Block,
+      type: ChipSelectorType.Quick,
+      items: valuePairs,
+      onOk: model => {
+        const selectedValues = model.items.filter(value => value.selected);
+        const valuePair = selectedValues[0];
+        this.languageNameSearch = valuePair.value;
+      }
+    };
+    this.sidebarHostService.loadContent(chipSelectionModel);
+  }
+
   private async findSong(): Promise<SongExtendedViewEntity> {
     const criteria = new Criteria();
     criteria.random = true;
     if (this.languageNameSearch) {
-      criteria.searchCriteria.push(new CriteriaItem('language', this.languageNameSearch));
+      if (this.languageNameSearch === 'Other') {
+        const languageCriteria = new CriteriaItem('language');
+        languageCriteria.columnValues.push({ value: 'English' });
+        languageCriteria.columnValues.push({ value: 'Spanish' });
+        languageCriteria.comparison = CriteriaComparison.NotEquals;
+        criteria.searchCriteria.push(languageCriteria);
+      }
+      else {
+        criteria.searchCriteria.push(new CriteriaItem('language', this.languageNameSearch));
+      }
     }
     if (this.genreSearch) {
       criteria.searchCriteria.push(new CriteriaItem('genre', this.genreSearch));
