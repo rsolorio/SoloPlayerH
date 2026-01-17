@@ -46,7 +46,7 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    await this.logStatistics();
+    //await this.logStatistics();
     //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
@@ -61,11 +61,12 @@ export class AppTestService {
     //await this.logPopularity();    
     //await this.getAvailableAlbumArt();
 
-    // const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
-    // await this.updateSongs(genres);
-    // console.log('songs');
-    // await this.updateImages(genres);
-    // console.log('images');
+    //const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
+    const genres = ['Pop',];
+    await this.updateSongs(genres);
+    console.log('songs');
+    await this.updateImages(genres);
+    console.log('images');
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -817,7 +818,7 @@ export class AppTestService {
   }
 
   private async updateSongs(newGenres: string[]): Promise<void> {
-    const songs = await SongEntity.findBy({ genre: Like('Other'), language: Not(In(['Other'])) });
+    const songs = await SongEntity.findBy({ genre: In(['Jazz']), language: In(['English']) });
     for (const song of songs) {
       if (!this.fileService.exists(song.filePath)) {
         const result = await this.updateSongGenre(song, newGenres);
@@ -828,7 +829,7 @@ export class AppTestService {
 
   private async updateSongGenre(song: SongEntity, newGenres: string[]): Promise<boolean> {
     for (const newGenre of newGenres) {
-      const newPath = song.filePath.replace('\\Other\\', `\\${newGenre}\\`);
+      const newPath = song.filePath.replace('\\Jazz\\', `\\${newGenre}\\`);
       if (this.fileService.exists(newPath)) {
         song.filePath = newPath;
         song.genre = newGenre;
@@ -855,13 +856,13 @@ export class AppTestService {
   // }
 
   private async updateImages(newGenres: string[]): Promise<void> {
-    const images1 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\English\\Other\\%')});
-    const images2 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Spanish\\Other\\%')});
-    const images = images1.concat(images2);
-    for (const image of images) {
+    const images1 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\English\\Jazz\\%')});
+    //const images2 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Spanish\\Other\\%')});
+    //const images = images1.concat(images2);
+    for (const image of images1) {
       if (!this.fileService.exists(image.sourcePath)) {
         for (const newGenre of newGenres) {
-          const newPath = image.sourcePath.replace('\\Other\\', `\\${newGenre}\\`);
+          const newPath = image.sourcePath.replace('\\Jazz\\', `\\${newGenre}\\`);
           if (this.fileService.exists(newPath)) {
             image.sourcePath = newPath;
             image.hash = this.lookup.hashImage(newPath, 0);
