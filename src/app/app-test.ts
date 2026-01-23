@@ -46,7 +46,7 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    //await this.logStatistics();
+    await this.logStatistics();
     //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
@@ -60,13 +60,14 @@ export class AppTestService {
     //await this.getPlaylistsTracks();
     //await this.logPopularity();    
     //await this.getAvailableAlbumArt();
+    //await this.testFileDates();
 
-    //const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
-    const genres = ['Pop',];
-    await this.updateSongs(genres);
-    console.log('songs');
-    await this.updateImages(genres);
-    console.log('images');
+    // const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
+    // const genres = ['Pop',];
+    // await this.updateSongs(genres);
+    // console.log('songs');
+    // await this.updateImages(genres);
+    // console.log('images');
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -871,5 +872,43 @@ export class AppTestService {
         }
       }
     }
+  }
+
+  private async testFileDates(): Promise<void> {
+    // The windows properties shows: Saturday, June 17, 2023, 4:32:34 PM
+    const filePath = `D:\\Mp3\\English\\Country\\Chris Stapleton\\2015 - Traveller\\03 - tennessee whiskey.mp3`;
+    let info = await this.fileService.getFileInfo(filePath);
+    console.log(info.addDate); // Sat Jun 17 2023 17:32:34 GMT-0500 (Central Daylight Time)
+    const d = new Date('2023-06-17 16:32:34.000');
+    // It looks like JS assumes the date is in the current time zone and for some reason it assumes the time zone is GMT-5
+    console.log(d); // Sat Jun 17 2023 16:32:34 GMT-0500 (Central Daylight Time)
+    console.log(d.toISOString()); // 2023-06-17T21:32:34.000Z
+    console.log(d.getTimezoneOffset()); // 300
+    const r = await this.fileService.setAddDate(filePath, d);
+    // Printing local and utc time, which means local time is UTC-06:00
+    console.log(r); // Saturday, June 17, 2023, 4:32:34 PM, 6/17/2023 4:32:34 PM, 6/17/2023 10:32:34 PM
+    info = await this.fileService.getFileInfo(filePath);
+    console.log(info.addDate); // Sat Jun 17 2023 17:32:34 GMT-0500 (Central Daylight Time)
+    console.log(info.addDate.toISOString());
+
+    // PROBLEM
+    // file add date seems to be "6/17/2023 10:32:34 PM UTC" based on the log reported by c# command app
+    // in properties it shows up as "Saturday, June 17, 2023, 4:32:34 PM" which is GMT-6
+    // debugging file.addDate = "Sat Jun 17 2023 17:32:34 GMT-0500 GMT-5" which, although it is not the proper timezone, the time is still correct
+    // I create a new date object in JS using this string: "2023-06-17 16:32:34.000"
+    // The date is actually created as "2023-06-17 21:32:34.000" because it assumes the string is local time and applies offset (GMT-5) to convert to UTC
+    // At this point there's already a discrepancy, file is 10:32UTC and new date is 09:32UTC
+    // This date is converted to ticks
+    // The original ticks value is: 638226343540000000 which properly represents: 2023-06-17​T21:32:34.000Z
+    // Then, removing the offset changes the ticks value to 638226163540000000 which represents: 2023-06-17​T16:32:34.000Z
+    // This happens because the offset was substracted: 300 minutes (5 hours) and the date ends up being the same value created from the string
+    // This value (in ticks) gets to the C# command line and assumes it is the local time zone: 6/17/2023 4:32:34 PM which is GMT-6
+    // The same value converted to UTC is: 6/17/2023 10:32:34 PM
+    // SUMMARY
+    // Seeing local times in JS debugging console and file properties is the same
+    // But in reality, the UTC on both are different because with JS is GMT-5 and with file props is GMT-6
+    // FIX?
+    // Set add date in UTC, js dates are time agnostic so offset doesn't have to be removed
+    // And make sure the cmd app assumes the input date is utc
   }
 }

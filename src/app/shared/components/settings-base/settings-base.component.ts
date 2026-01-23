@@ -56,7 +56,7 @@ export class SettingsBaseComponent implements OnInit {
       titleIcon: AppActionIcons.Edit,
       type: 'text',
       value: setting.data,
-      label: '',
+      label: setting.editorLabel,
       onOk: result => {
         const inputResult = result as IInputEditorModel;
         setting.data = inputResult.value;

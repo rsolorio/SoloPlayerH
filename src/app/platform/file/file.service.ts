@@ -37,6 +37,8 @@ export abstract class FileService {
    */
   abstract setTimes(filePath: string, modifiedDate: Date, accessDate: Date): void;
 
+  abstract setAddDate(filePath: string, addDate: Date): Promise<string>;
+
   abstract exists(path: string): boolean;
 
   abstract copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>;

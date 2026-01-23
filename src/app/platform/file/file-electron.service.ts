@@ -5,6 +5,7 @@ import { Observable, Subscriber } from 'rxjs';
 import { IFileInfo } from './file.interface';
 import { FileService } from './file.service';
 import { exec } from 'child_process';
+import { toTicks } from 'src/app/app-exports';
 const languageEncoding = require("detect-file-encoding-and-language");
 
 @Injectable({
@@ -12,6 +13,7 @@ const languageEncoding = require("detect-file-encoding-and-language");
 })
 export class FileElectronService extends FileService {
 
+  private utilityFilePath = 'C:\\Dev\\Code\\SoloSoft\\Bin46\\FileAttributeCmd.exe';
   constructor() {
     super();
   }
@@ -187,6 +189,19 @@ export class FileElectronService extends FileService {
 
   public setTimes(filePath: string, modifiedDate: Date, accessDate: Date): void {
     utimesSync(filePath, accessDate, modifiedDate);
+  }
+
+  public async setAddDate(filePath: string, addDate: Date): Promise<string> {
+    // This is a hack that uses a .net cmd file to update the creation date,
+    // since node doesn't support this.
+    if (!this.exists(this.utilityFilePath)) {
+      console.log('Command line file attribute tool not found.');
+      return;
+    }
+    // This will put the string between quotes (needed for the command) and also escape backslashes (needed for the command)
+    let command = JSON.stringify(filePath);
+    command += ' setAddDate ' + toTicks(addDate);
+    return await this.runCommand(`"${this.utilityFilePath}" ${command}`);
   }
 
   getAbsolutePath(locationPath: string, endPath: string): string {

@@ -464,24 +464,6 @@ export class UtilityService {
   }
 
   /**
-   * Converts date to .net ticks.
-   */
-  public toTicks(value: Date, removeOffset?: boolean): number {
-    // the number of .net ticks at the unix epoch
-    const epochTicks = 621355968000000000;
-    // there are 10000 .net ticks per millisecond
-    const ticksPerMillisecond = 10000;
-    const dateTicks = epochTicks + (value.getTime() * ticksPerMillisecond);
-    if (removeOffset) {
-      const millisecondsPerMinute = 60 * 1000;
-      // The offset unit is minutes so we need to convert to milliseconds
-      const offsetTicks = value.getTimezoneOffset() * millisecondsPerMinute * ticksPerMillisecond;
-      return dateTicks - offsetTicks;
-    }
-    return dateTicks;
-  }
-
-  /**
    * Ensures the given value has at least the number of specified digits by adding leading zeros.
    * If the value is 0 and the digits is 0 then it will return an empty string.
    * Better function name: zeroPad

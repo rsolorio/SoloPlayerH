@@ -6,6 +6,8 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   name: string;
   /** If this is an editable setting, the data type specifies how this data can be edited.*/
   editorType?: string;
+  /** Label for the input. */
+  editorLabel?: string;
   /** A list of texts that describe the setting. It supports HTML format. */
   textHtml?: string;
   /** A list of texts that describe the setting. It supports regular text, not HTML. */

@@ -58,7 +58,8 @@ export class DatabaseLookupService {
 
   // SONG
   public hashSong(filePath: string): string {
-    return this.hashValues([filePath]);
+    //return this.hashValues([filePath]);
+    return filePath.toLowerCase();
   }
 
   public findSong(filePath: string, items: SongEntity[]): SongEntity {
@@ -124,7 +125,8 @@ export class DatabaseLookupService {
     // This method does not use the relatedId or the sourceType fields to perform
     // the search since a particular sourcePath and sourceIndex will always be associated
     // only with one relatedId and it will always have the same sourceType.
-    return this.hashValues([sourcePath, sourceIndex.toString()]);
+    //return this.hashValues([sourcePath, sourceIndex.toString()]);
+    return sourcePath.toLowerCase() + '|' + sourceIndex.toString();
   }
 
   public findImage(imageSource: IImageSource, items: RelatedImageEntity[]): RelatedImageEntity {

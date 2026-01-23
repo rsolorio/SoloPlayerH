@@ -82,6 +82,8 @@ interface IBulkInfo {
   bulkCount: number;
   /** Number of rows on each bulk. */
   bulkSize: number;
+  /** Name of the target table. */
+  tableName?: string;
 }
 
 /**
@@ -438,7 +440,8 @@ export class DatabaseService {
       columnCount: repo.metadata.columns.length,
       parameterCount: values.length * repo.metadata.columns.length,
       bulkCount: 0,
-      bulkSize: 0
+      bulkSize: 0,
+      tableName: repo.metadata.tableName
     };
     bulkInfo.bulkCount = Math.ceil(bulkInfo.parameterCount / bulkInfo.parameterMax);
     bulkInfo.bulkSize = bulkInfo.bulkCount > 0 ? Math.ceil(bulkInfo.itemCount / bulkInfo.bulkCount) : 0;

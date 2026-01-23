@@ -419,10 +419,11 @@ export class ScanAudioService {
     else if (dbAddTime < fileAddTime) {
       // TODO: If the sync db function fails this change will prevent the sync process
       // to find this file again. This change should happen after the db is updated
-      await this.setFileAddDate(this.songToProcess.filePath, this.songToProcess.addDate);
-      this.log.debug('Setting older creation date for file: ' + this.songToProcess.filePath, {
-        dbAddDate: this.songToProcess.addDate,
-        fileAddDate: fileAddDate
+      const response = await this.fileService.setAddDate(this.songToProcess.filePath, this.songToProcess.addDate);
+      this.log.info('Setting older creation date for file: ' + this.songToProcess.filePath, {
+        dbAddDate: this.songToProcess.addDate.toISOString(),
+        fileAddDate: fileAddDate.toISOString(),
+        cmdResponse: response
       });
     }
 
@@ -1380,7 +1381,7 @@ export class ScanAudioService {
     existingSong.performerCount = 0;
 
     // UPDATE NEW FILE DATES
-    await this.setFileAddDate(existingSong.filePath, existingSong.addDate);
+    await this.fileService.setAddDate(existingSong.filePath, existingSong.addDate);
     // change date also needed?
 
     // RELATED IMAGES
@@ -1397,24 +1398,6 @@ export class ScanAudioService {
 
   private first<T>(array: T[]): T {
     return this.utility.first(array);
-  }
-
-  /**
-   * Sets a new date in the creation date attribute of the file.
-   * It uses a cmd file that calls a .net library.
-   */
-  private async setFileAddDate(filePath: string, addDate: Date): Promise<void> {
-    // This is a hack that uses a .net cmd file to update the creation date,
-    // since node doesn't support this.
-    const utilityFilePath = 'F:\\Code\\VS Online\\SoloSoft\\Bin46\\FileAttributeCmd.exe';
-    if (!this.fileService.exists(utilityFilePath)) {
-      return;
-    }
-    // This will put the string between quotes (needed for the command) and also escape backslashes (needed for the command)
-    let command = JSON.stringify(filePath);
-    command += ' setAddDate ' + this.utility.toTicks(addDate, true);
-    const result = await this.fileService.runCommand(`"${utilityFilePath}" ${command}`);
-    this.log.info(result);
   }
 
   private setFirst(obj: any, propertyName: string, metadata: KeyValues, field: MetaAttribute, defaultValue?: any): void {

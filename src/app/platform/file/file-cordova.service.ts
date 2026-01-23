@@ -52,6 +52,10 @@ export class FileCordovaService extends FileService {
     //
   }
 
+  setAddDate(filePath: string, addDate: Date): Promise<string> {
+    return null;
+  }
+
   exists(path: string): boolean {
     return false;
   }

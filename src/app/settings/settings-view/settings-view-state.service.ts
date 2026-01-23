@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IStateService, KeyValuesGen } from 'src/app/core/models/core.interface';
-import { FilterId, ModuleOptionId } from 'src/app/shared/services/database/database.seed';
+import { FilterId, ModuleOptionId, SyncProfileId } from 'src/app/shared/services/database/database.seed';
 import { DatabaseOptionsService } from 'src/app/shared/services/database/database-options.service';
 import { PlaylistEntity, SongEntity } from 'src/app/shared/entities';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -122,16 +122,16 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
             icon: AppAttributeIcons.FilePath,
             textRegular: ['Click here to redirect file (song, image) paths to a new location.'],
             editorType: SettingsEditorType.Text,
+            editorLabel: 'Format: originalPath|newPath',
             onChange: setting => {
               if (setting.data) {
                 setting.running = true;
                 const values = setting.data.split('|');
                 const originalPath = values[0];
                 const newPath = values[1];
-                this.db.run(`UPDATE song SET filePath = REPLACE(filePath, '${originalPath}', '${newPath}')`).then(() => {
-                  this.db.run(`UPDATE relatedImage SET sourcePath = REPLACE(sourcePath, '${originalPath}', '${newPath}')`).then(() => {
-                    setting.running = false;
-                  });
+                this.updatePaths(originalPath, newPath).then(() => {
+                  setting.running = false;
+                  this.log.info('Path redirection done');
                 });
               }
             }
@@ -552,6 +552,30 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
     const names = await this.getPlaylistNames(exportConfig.playlistConfig?.ids);
     setting.textData = [names];
     return settings;
+  }
+
+  /**
+   * // TODO: this code needs to be converted to use dbLookup.hashSong and hashImage methods instead of these hardcoded queries.
+   * @param originalPath 
+   * @param newPath 
+   */
+  private async updatePaths(originalPath: string, newPath: string): Promise<void> {
+    // UPDATE song table
+    await this.db.run(`UPDATE song SET filePath = REPLACE(filePath, '${originalPath}', '${newPath}')`);
+    // Found out that LOWER function in SQLite does not convert this character Ø to this ø, but JS toLowerCase does.
+    // Reason: lower and upper only converts ASCII characters by default
+    await this.db.run(`UPDATE song SET hash = LOWER(filePath)`);
+    // UPDATE relatedImage table
+    await this.db.run(`UPDATE relatedImage SET sourcePath = REPLACE(sourcePath, '${originalPath}', '${newPath}')`);
+    await this.db.run(`UPDATE relatedImage SET hash = LOWER(sourcePath) || '|' || sourceIndex`);
+    // UPDATE syncProfile table (should all profiles be updated?)
+    const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
+    if (syncProfile.directoryArray) {
+      syncProfile.directoryArray.forEach((directory, index) => {
+        syncProfile.directoryArray[index] = directory.replace(originalPath, newPath);
+      });
+      await this.entities.saveSyncProfile(syncProfile);
+    }
   }
 
   private buildImportAudioSettings(profile: ISyncProfile): ISettingCategory[] {
