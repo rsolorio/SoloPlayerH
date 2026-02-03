@@ -39,6 +39,12 @@ export class FileElectronService extends FileService {
     return promises.appendFile(filePath, content, { encoding: 'utf8' });
   }
 
+  async prependText(filePath: string, content: string): Promise<void> {
+    const existingContent = await promises.readFile(filePath, 'utf8');
+    const newContent = content + existingContent;
+    await this.writeText(filePath, newContent);
+  }
+
   createDirectory(directoryPath: string): Promise<void> {
     return promises.mkdir(directoryPath, { recursive: true });
   }

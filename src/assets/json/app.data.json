@@ -1136,7 +1136,7 @@
         "profileId": "ef4c2f46-8803-4dc8-b937-2c8ffb150a62",
         "name": "fileInfoReader",
         "type": "FileInfo",
-        "attributes": "filePath,fileName,fileExtension,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,albumAnimated,singleImage,albumArtistStylized,contributor,singer,mediaSubtitles",
+        "attributes": "filePath,fileName,fileExtension,addDate,changeDate,fileSize,unSyncLyrics,artistImage,albumArtistImage,albumImage,albumSecondaryImage,albumAnimated,singleImage,albumArtistStylized,albumStylized,contributor,singer,mediaSubtitles",
         "customMapping": false,
         "sequence": 2,
         "disabled": false,

@@ -13,6 +13,8 @@ export abstract class FileService {
 
   abstract appendText(filePath: string, content: string): Promise<void>;
 
+  abstract prependText(filePath: string, content: string): Promise<void>;
+
   abstract getFiles(directoryPaths: string[]): Observable<IFileInfo>;
 
   abstract getDirectories(directoryPath?: string): Promise<IFileInfo[]>;

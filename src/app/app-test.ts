@@ -19,7 +19,8 @@ import { RelativeDateUnit } from "./shared/services/relative-date/relative-date.
 import { HttpClient } from "@angular/common/http";
 import { LocalStorageService } from "./core/services/local-storage/local-storage.service";
 import { MusicImageType } from "./platform/audio-metadata/audio-metadata.enum";
-import { RelatedImageId } from "./shared/services/database/database.seed";
+import { RelatedImageId, SyncProfileId } from "./shared/services/database/database.seed";
+import { MetadataReaderService } from "./mapping/data-transform/metadata-reader.service";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -42,7 +43,8 @@ export class AppTestService {
     private utility: UtilityService,
     private lookup: DatabaseLookupService,
     private storage: LocalStorageService,
-    private metadataService: AudioMetadataService) {}
+    private metadataService: AudioMetadataService,
+    private reader: MetadataReaderService) {}
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
@@ -910,5 +912,14 @@ export class AppTestService {
     // FIX?
     // Set add date in UTC, js dates are time agnostic so offset doesn't have to be removed
     // And make sure the cmd app assumes the input date is utc
+  }
+
+  private async testMetadataReader(): Promise<void> {
+    const fileInfo = await this.fileService.getFileInfo('D:\\Mp3\\Spanish\\Pop\\Jacinto\\2025 - (¦(\\01 - amar esta raro [feat daaz].mp3');
+    const syncProfile = await this.entities.getSyncProfile(SyncProfileId.DefaultAudioImport);
+    const dataSources = await this.entities.getDataSources(syncProfile.id);
+    await this.reader.init(syncProfile, dataSources);
+    const metadata = await this.reader.run(fileInfo);
+    console.log(metadata);
   }
 }

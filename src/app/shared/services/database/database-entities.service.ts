@@ -639,4 +639,15 @@ export class DatabaseEntitiesService {
     }
     return [];
   }
+
+  public async findSimilarSongs(songId: string): Promise<SongEntity[]> {
+    // Rules
+    // Similarty should be: genre, decade, mood
+    // Extra flag to take Langage into consideration
+    // Do not take other classifications as there's not enough variety
+    // A different method for taking rating and play count
+    const song = await SongEntity.findOneBy({ id: songId });
+    const songs = await SongEntity.findBy({ genre: song.genre, releaseDecade: song.releaseDecade, mood: song.mood });
+    return songs;
+  }
 }

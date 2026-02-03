@@ -531,7 +531,7 @@ export class ExportService {
   private async saveSyncFile(result: IExportResult): Promise<void> {
     const filePath = this.fileService.combine(result.rootPath, this.syncFileName);
     let fileContent = JSON.stringify(result, null, 2);
-    fileContent += '\n--------------------------------------------------\n'
-    await this.fileService.appendText(filePath, fileContent);
+    fileContent += '\n--------------------------------------------------\n';
+    await this.fileService.prependText(filePath, fileContent);
   }
 }

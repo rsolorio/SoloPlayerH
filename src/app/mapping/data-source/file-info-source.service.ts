@@ -112,6 +112,7 @@ export class FileInfoSourceService implements IDataSourceService {
           }
         }
         break;
+      case MetaAttribute.AlbumStylized:
       case MetaAttribute.MediaSubtitles:
         // This logic is for all meta attributes that can be retrieved from the album.json file
         if (this.jsonInfo.albumContent) {
