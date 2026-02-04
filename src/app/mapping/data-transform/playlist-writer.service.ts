@@ -7,6 +7,7 @@ import { IDataSourceParsed, IDataSourceService } from '../data-source/data-sourc
 import { ISongModel } from 'src/app/shared/models/song-model.interface';
 import { FileService } from 'src/app/platform/file/file.service';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { LogService } from 'src/app/core/services/log/log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
   private config: IPlaylistExportConfig;
   constructor(
     private fileService: FileService,
+    private log: LogService,
     private utility: UtilityService) {
     super()
   }
@@ -63,9 +65,13 @@ export class PlaylistWriterService extends DataTransformServiceBase<IExportConfi
     const extension = '.' + format;
     const filePath = this.fileService.combine(this.config.path, fileName + extension);
 
-    // Do not create the playlist if the file already exists
+    // Delete existing playlist, as the export process now supports exporting new songs, replacing existing with new ones,
+    // and this should consider recreating playlists as they could change as well
+    // TODO: define a better way to determine when exactly a playlist file needs to be replaced,
+    // as this current process will regenerate all playlists always
     if (this.fileService.exists(filePath)) {
-      return false;
+      await this.fileService.deleteFile(filePath);
+      this.log.info(`Deleting old destination playlist file: ${filePath}`);
     }
 
     // TODO: use getData and mappings to setup playlist info

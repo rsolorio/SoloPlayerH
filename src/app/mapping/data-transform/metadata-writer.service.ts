@@ -81,8 +81,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
   public async run(input: ISongModel): Promise<IMetadataWriterOutput> {
     // 1. Get only the filePath metadata to determine if we need to keep getting the rest of the metadata
-    const values = await this.getAttributeData(input, MetaAttribute.FilePath);
+    let values = await this.getAttributeData(input, MetaAttribute.FilePath);
     const destinationPath = this.first(values);
+    values = await this.getAttributeData(input, MetaAttribute.ChangeDate);
+    const dbChangeDate = this.first(values);
 
     const result: IMetadataWriterOutput = {
       metadata: null,
@@ -92,10 +94,16 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
     // If the file already exists in the destination, skip it
     if (this.fileService.exists(destinationPath)) {
-      result.metadata = {};
-      result.metadata[MetaAttribute.FilePath] = values;
-      result.skipped = true;
-      return result;
+      const fileInfo = await this.fileService.getFileInfo(destinationPath);
+      if (dbChangeDate.getTime() === fileInfo.changeDate.getTime()) {
+        result.metadata = {};
+        result.metadata[MetaAttribute.FilePath] = values;
+        result.skipped = true;
+        return result;
+      }
+      // If the change dates differ, delete the file (and allow to continue the rest of the process so the new file is created)
+      await this.fileService.deleteFile(destinationPath);
+      this.log.info(`Deleting old destination song file: ${destinationPath}`);
     }
 
     // 2. Get the data

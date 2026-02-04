@@ -72,6 +72,10 @@ export class FileCordovaService extends FileService {
     return null;
   }
 
+  deleteFile(path: string): Promise<void> {
+    return null;
+  }
+
   runCommand(command: string): Promise<any> {
     return null;
   }

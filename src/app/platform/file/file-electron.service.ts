@@ -95,6 +95,10 @@ export class FileElectronService extends FileService {
     return promises.copyFile(sourceFilePath, destinationFilePath);
   }
 
+  async deleteFile(path: string): Promise<void> {
+    return promises.unlink(path);
+  }
+
   private async pushFiles(directoryPaths: string[], observer: Subscriber<IFileInfo>): Promise<void> {
     for (const directoryPath of directoryPaths) {
       const items = await this.getDirItems(directoryPath);
