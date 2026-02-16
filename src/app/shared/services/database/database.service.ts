@@ -97,7 +97,7 @@ export interface IColumnExpression {
 }
 
 /**
- * Exposes properties used to perform a query and get results selecting only one column.
+ * Exposes properties used to build a SELECT query statement with one SELECT column.
  */
 export interface IColumnQuery {
   /** This is the initial criteria used to get a list of values to be used by the search. */
@@ -106,10 +106,18 @@ export interface IColumnQuery {
   columnExpression: IColumnExpression;
   /** This is an optional comparison that can be used when building the final criteria. */
   comparison?: CriteriaComparison;
+  /** Optional value to specify the entity that will be queried using the specified criteria. */
+  entity?: EntityTarget<any>;
 }
 
+/**
+ * Options to define how the results iterator will work.
+ * The iterator basically uses a list of queries to generate a list of values which are combined and used to
+ * dynamically build criteria and run it against the specified entity to get a list of results;
+ * this process will run for every combination that was produced.
+ */
 export interface IResultsIteratorOptions<T extends ObjectLiteral> {
-  /** List of queries used to get a list of values to combine. */
+  /** List of queries used to get a list of values that will be combined and used to generate the actual criteria. */
   queries: IColumnQuery[];
   /** The total number of results to be retrieved on each result. */
   pageSize?: number;
@@ -117,9 +125,10 @@ export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   random?: boolean;
   /** If you are  looking to split the result on smaller chunks you can use this value to specify the number of items for each chunk. */
   chunkSize?: number;
-  /** The entity that will be used to query and get results. */
+  /** The entity that will be queried to produce the final results;
+   * this entity will also be used for getting the initial list of values if no entity was specified on the query.  */
   entity: EntityTarget<T>;
-  /** List of criteria items to be added to the criteria recently built. */
+  /** List of criteria items to be added to the criteria built by the combined values. */
   extraCriteria?: CriteriaItem[];
   /**
    * Callback that is fired when a result is resolved.
@@ -465,27 +474,9 @@ export class DatabaseService {
 
   public async getColumnValues(entity: EntityTarget<any>, criteria: Criteria, columnExpression: IColumnExpression): Promise<any[]> {
     const repo = this.dataSource.getRepository(entity);
-    const columnName = this.getColumnName(columnExpression);
-    // TODO: instead of ignoring all columns, directly create the select statement using the column expression
-    let columnNameFound = false;
-    // Ignore columns
-    for (const column of repo.metadata.columns) {
-      if (column.databaseName === columnName) {
-        columnNameFound = true;
-        if (criteria.ignoredInSelect(columnName)) {
-          this.utilities.throwError(`The main column '${columnName}' cannot be ignored in the select.`);
-        }
-      } else if (!criteria.ignoredInSelect(column.databaseName)) {
-        const criteriaItem = new CriteriaItem(column.databaseName);
-        criteriaItem.ignoreInSelect = true;
-        criteria.searchCriteria.push(criteriaItem);
-      }
-    }
-    if (!columnNameFound) {
-      this.utilities.throwError(`The column '${columnName}' was not found in the metadata.`);
-    }
     this.log.debug('getColumnValues criteria', criteria);
-    const result = await this.createQuery(repo, null, criteria).getRawMany();
+    // No alias is needed as there are no joins involved to tell tables apart
+    const result = await this.createQuery(repo, null, criteria, [columnExpression]).getRawMany();
     return this.transform(result, criteria);
   }
 
@@ -494,18 +485,21 @@ export class DatabaseService {
   }
 
   /**
-   * Generates a list of values for each specified query;
-   * then combines the values of one list with items of the other lists to generate multiple criteria;
-   * each generated criteria is used to perform a search and return a result through a callback.
+   * Runs all specified queries and results are combined and converted in new search criteria;
+   * criteria are used to query and generate new results; each new result will be output through
+   * the onResult callback.
    */
   public async searchResultsIterator(options: IResultsIteratorOptions<any>): Promise<void> {
+    /** Each item in this collection represents a single column name and all its associated values. */
     const queryResultCollection: ICollection<string, any[]> = {
       items: []
     };
 
     // Gather results from all queries
     for (const query of options.queries) {
-      const objectResults = await this.getColumnValues(options.entity, query.criteria, query.columnExpression);
+      const valuesSourceEntity = query.entity ? query.entity : options.entity;
+      // This will always return multiple values for a single column
+      const objectResults = await this.getColumnValues(valuesSourceEntity, query.criteria, query.columnExpression);
       const columnName = this.getColumnName(query.columnExpression);
       // Convert objects to raw values
       const valueResults = objectResults.map(obj => obj[columnName]);
@@ -515,20 +509,24 @@ export class DatabaseService {
       });
     }
 
-    await this.combine({}, queryResultCollection.items, async valuesObj => {
+    // This method will produce objects with every combination of all column values.
+    await this.combine({}, queryResultCollection.items, async combinationResult => {
+      // onCombination callback
+      // valuesObj represents columns and values that will be used to build the criteria
       let criteria: Criteria;
       if (options.onBuildCriteria) {
-        criteria = options.onBuildCriteria(valuesObj);
+        criteria = options.onBuildCriteria(combinationResult);
       }
       else {
         // Automatically create criteria
         criteria = new Criteria();
-        Object.keys(valuesObj).forEach(columnName => {
+        Object.keys(combinationResult).forEach(columnName => {
           // This is an internal value used to specified the page number
           if (columnName !== 'pageNumber') {
-            criteria.searchCriteria.push(new CriteriaItem(columnName, valuesObj[columnName]));
+            criteria.searchCriteria.push(new CriteriaItem(columnName, combinationResult[columnName]));
           }
         });
+        // Add extra criteria
         if (options.extraCriteria?.length) {
           options.extraCriteria.forEach(item => criteria.searchCriteria.push(item));
         }
@@ -545,26 +543,35 @@ export class DatabaseService {
           if (options.chunkSize) {
             let pageNumber = 0;
             while (results.length) {
-              pageNumber++;
-              const newValuesObj = Object.assign({}, valuesObj);
-              newValuesObj['pageNumber'] = pageNumber;
               const chunk = results.splice(0, options.chunkSize);
-              await options.onResult(newValuesObj, chunk);
+              // Output the context object (with page number) and the chunk that was produced
+              await options.onResult(Object.assign({ pageNumber: ++pageNumber }, combinationResult), chunk);
             }
           }
           else {
-            await options.onResult(valuesObj, results);
+            // Output the context object and the full list of results that were produced
+            await options.onResult(combinationResult, results);
           }
         }
         else {
-          this.log.info('Combination yielded no results.', valuesObj);
+          this.log.info('Combination yielded no results.', combinationResult);
         }
       }
     });
   }
 
   /**
-   * Recursive routine that combines results from different queries and fires a callback for each combination.
+   * Recursive routine that combines results (key value pairs) from different queries into objects;
+   * each object being returned represents one of all the possible combinations; each property of the object represents a column name and a value.
+   * for instance: one query result is: releaseDecade = [2000, 2010] and a second query result is: mood [Happy, Sad],
+   * the result is 4 objects with all those combinations:
+   * { releaseDecade: 2000, mood: Happy }
+   * { releaseDecade: 2000, mood: Sad }
+   * { releaseDecade: 2010, mood: Happy }
+   * { releaseDecade: 2010, mood: Sad }
+   * @param valuesObj Object where all values will be combined.
+   * @param queryResults List on which each item represents a column name and all its associated values.
+   * @param onCombination Callback that runs when a single combination has been produced.
    */
   private async combine(
     valuesObj: KeyValueGen<any>,
@@ -589,7 +596,7 @@ export class DatabaseService {
   // SQLite Build Query - START
 
   private createQuery<T>(
-    repo: Repository<T>, entityAlias: string, criteria: Criteria
+    repo: Repository<T>, entityAlias: string, criteria: Criteria, expressions?: IColumnExpression[]
   ): SelectQueryBuilder<T> {
     let queryBuilder = repo.createQueryBuilder(entityAlias);
 
@@ -597,7 +604,12 @@ export class DatabaseService {
       return queryBuilder;
     }
 
-    this.buildSelect(queryBuilder, entityAlias, criteria, repo.metadata.columns);
+    if (expressions?.length) {
+      this.buildSelectWithExpressions(queryBuilder, criteria, expressions);
+    }
+    else {
+      this.buildSelectWithColumns(queryBuilder, entityAlias, criteria, repo.metadata.columns);
+    }
     queryBuilder = this.buildWhere(queryBuilder, entityAlias, criteria);
     if (criteria.random) {
       queryBuilder = this.buildOrderByRandom(queryBuilder, criteria.paging.pageSize);
@@ -609,7 +621,7 @@ export class DatabaseService {
     return queryBuilder;
   }
 
-  private buildSelect<T>(
+  private buildSelectWithColumns<T>(
     queryBuilder: SelectQueryBuilder<T>, entityAlias: string, criteria: Criteria, columns: ColumnMetadata[]
   ) {
     let hasColumns = false;
@@ -623,6 +635,25 @@ export class DatabaseService {
           queryBuilder.select(columnName);
           hasColumns = true;
         }
+      }
+    }
+    if (criteria.paging.pageSize) {
+      queryBuilder.take(criteria.paging.pageSize);
+    }
+    if (criteria.paging.distinct) {
+      queryBuilder.distinct(criteria.paging.distinct);
+    }
+  }
+
+  private buildSelectWithExpressions<T>(queryBuilder: SelectQueryBuilder<T>, criteria: Criteria, expressions: IColumnExpression[]) {
+    let hasExpressions = false;
+    for (const expression of expressions) {
+      if (hasExpressions) {
+        queryBuilder.addSelect(expression.expression, expression.alias);
+      }
+      else {
+        queryBuilder.select(expression.expression, expression.alias);
+        hasExpressions = true;
       }
     }
     if (criteria.paging.pageSize) {
@@ -818,7 +849,8 @@ export class DatabaseService {
   }
 
   /**
-   * Changes the content and order of the specified list of items.
+   * Changes the content and order of the specified list of items based on the transform algorithm
+   * and sorting criteria.
    */
   private transform<T>(items: T[], criteria: Criteria): T[] {
     let transformedResult = this.transformService.transform(items, criteria.transformAlgorithm);
@@ -945,6 +977,9 @@ export class DatabaseService {
     return columnName;
   }
 
+  /** Gets the column name from an expression.
+   * It basically gets the alias if specified,
+   * otherwise it will return the expression as it is. */
   private getColumnName(expression: IColumnExpression): string {
     return expression.alias ? expression.alias : expression.expression;
   }

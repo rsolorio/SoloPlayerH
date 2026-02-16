@@ -278,7 +278,7 @@ export class ExportService {
       const criteria = new Criteria(playlist.name);
       criteria.searchCriteria.push(new CriteriaItem('playlistId', playlist.id));
       criteria.addSorting('sequence');
-      const playlistCreated = await this.exportCriteriaAsPlaylist('#List', criteria);
+      const playlistCreated = await this.exportCriteriaAsPlaylist('#Misc', criteria);
       if (playlistCreated) {
         result++;
       }
@@ -369,6 +369,10 @@ export class ExportService {
     return result;
   }
 
+  /**
+   * Gets two lists: releaseDecades and languages; all values are combined to generate playlists with both values.
+   * @returns The number of playlists created.
+   */
   private createDecadeByLanguagePlaylists(): Promise<number> {
     const decadeCriteria = new Criteria();
     decadeCriteria.paging.distinct = true;
@@ -383,6 +387,10 @@ export class ExportService {
       '%releaseDecade%\'s', '%language%');
   }
 
+  /**
+   * Gets a list of all addYear values and generates a playlist for each one of them.
+   * @returns The number of playlists created.
+   */
   private createAddYearPlaylists(): Promise<number> {
     const criteria = new Criteria();
     criteria.paging.distinct = true;
@@ -390,6 +398,11 @@ export class ExportService {
     return this.createIteratorPlaylists([columnQuery], '#Added', '%addYear%');
   }
 
+  /**
+   * Gets a list of releaseDecade values and generates a playlist for each one of them,
+   * getting only 5 rating songs.
+   * @returns The number of playlists created.
+   */
   private createBestByDecadePlaylists(): Promise<number> {
     const valuesCriteria = new Criteria();
     valuesCriteria.paging.distinct = true;
@@ -398,6 +411,10 @@ export class ExportService {
     return this.createIteratorPlaylists([columnQuery], '#Best', '%releaseDecade%\'s', false, [extraCriteriaItem]);
   }
 
+  /**
+   * Gets a list of moods (excluding Unknown) and generates a playlist in random order for each one of them.
+   * @returns The number of playlists created.
+   */
   private createMoodPlaylists(): Promise<number> {
     const valuesCriteria = new Criteria();
     // Let's do this to have a different playlist every time.
@@ -431,10 +448,11 @@ export class ExportService {
   }
 
   /**
-   * It will create a playlist for each value returned by the prefix expression.
+   * Creates a playlist for each result produced by searchResultsIterator.
    * @param queries Queries used to get the list of values.
-   * @param prefixExpression Script expression to be used as prefix in the name of the playlist file.
-   * @param nameExpression Script expression to be used in the name of the playlist file.
+   * @param prefixExpression Script expression to be used as prefix in the name of every playlist file.
+   * @param nameExpression Script expression to be used in the name of every playlist file.
+   * @param random Enable random sorting for every query result.
    * @param extraCriteria Additional criteria to be used when getting the final list of results.
    * @returns The number of playlists created in the process.
    */
@@ -446,6 +464,7 @@ export class ExportService {
       random: random,
       extraCriteria: extraCriteria,
       onResult: async (valuesObj: KeyValueGen<any>, items: any[]) => {
+        // Convert each result into a new playlist
         if (items?.length) {
           const playlistPrefix = this.parser.parse({ expression: prefixExpression, context: valuesObj });
           const playlistName = this.parser.parse({ expression: nameExpression, context: valuesObj });
@@ -460,6 +479,13 @@ export class ExportService {
     return result;
   }
 
+  /**
+   * 
+   * @param tracks List of songs to include in the playlist.
+   * @param criteria It is only used to get the name of the playlist.
+   * @param prefix Playlist prefix name.
+   * @returns True if the playlist was created, False otherwise.
+   */
   private async processPlaylist(tracks: ISongExtendedModel[], criteria: Criteria, prefix: string): Promise<boolean> {
     const input: IExportConfig = {
       criteria: criteria, // The criteria here is only for passing the name of the playlist
