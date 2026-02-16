@@ -6,7 +6,14 @@ import { IParseInformation } from '../script-parser/script-parser.interface';
 })
 export class PlaceholderService {
   private placeholderLimiter = '%';
-  private placeholderPattern = `\\${this.placeholderLimiter}\\w+\\${this.placeholderLimiter}`;
+  /**
+   * \% Matches a '%' character
+   * \w Matches any word character (alphanumeric & underscore)
+   * .  Matches any character, including dots, except line breaks
+   * +  Match 1 or more of the preceding token
+   * \% Matches a '%' character
+   */
+  private placeholderPattern = `\\${this.placeholderLimiter}\\w.+\\${this.placeholderLimiter}`;
   private placeholderRegExp = new RegExp(this.placeholderPattern, 'g');
   private placeholderLimiterRegExp = new RegExp(this.placeholderLimiter, 'g');
   constructor() { }
@@ -28,7 +35,8 @@ export class PlaceholderService {
         return info.context[mapping];
       }
     }
-    return info.context[placeholderName];
+    // This support nested properties
+    return placeholderName.split('.').reduce((acc, part) => acc && acc[part], info.context);
   }
 
   public parse(info: IParseInformation): any {
