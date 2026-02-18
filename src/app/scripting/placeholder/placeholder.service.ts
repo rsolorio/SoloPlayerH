@@ -9,11 +9,14 @@ export class PlaceholderService {
   /**
    * \% Matches a '%' character
    * \w Matches any word character (alphanumeric & underscore)
-   * .  Matches any character, including dots, except line breaks
+   * [^%]  Matches any character that is not '%'
+   * (the pattern above will make sure values like this %one%.%two%
+   * are treated like two values: "one" and "two" instead of one value: "one%.%two"
+   * and pattern %one.two% is identified as valid.)
    * +  Match 1 or more of the preceding token
    * \% Matches a '%' character
    */
-  private placeholderPattern = `\\${this.placeholderLimiter}\\w.+\\${this.placeholderLimiter}`;
+  private placeholderPattern = `\\${this.placeholderLimiter}\\w[^${this.placeholderLimiter}]+\\${this.placeholderLimiter}`;
   private placeholderRegExp = new RegExp(this.placeholderPattern, 'g');
   private placeholderLimiterRegExp = new RegExp(this.placeholderLimiter, 'g');
   constructor() { }
