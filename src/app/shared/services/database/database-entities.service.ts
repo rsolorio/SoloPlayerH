@@ -396,7 +396,7 @@ export class DatabaseEntitiesService {
     }
     const criteria = new Criteria();
     criteria.paging.distinct = true;
-    const results = await this.db.getColumnValues(SongEntity, criteria, { expression: columnName });
+    const results = await this.db.runExpressionQuery({ entity: SongEntity, criteria: criteria, columnExpressions: [{ expression: columnName }] })
     
     const items = results.map(result => {
       const item: ISelectableValue = {

@@ -278,7 +278,7 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     const criteria = new Criteria();
     criteria.paging.distinct = true;
     criteria.addSorting(columnName);
-    let results = await this.db.getColumnValues(SongEntity, criteria, { expression: columnName });
+    let results = await this.db.runExpressionQuery({ entity: SongEntity, criteria: criteria, columnExpressions: [{ expression: columnName }] })
     if (excludeValues && excludeValues.length) {
       for (const excludeValue of excludeValues) {
         results = results.filter(item => item[columnName] !== excludeValue);

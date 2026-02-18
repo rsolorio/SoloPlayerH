@@ -65,7 +65,7 @@ import { HttpClient } from '@angular/common/http';
 import { ComposerViewEntity } from '../../entities/composer-view.entity';
 import { DatabaseLookupService } from './database-lookup.service';
 import { RelativeDateService } from '../relative-date/relative-date.service';
-import { ICollection, IKeyValuePair, KeyValueGen } from 'src/app/core/models/core.interface';
+import { KeyValueGen } from 'src/app/core/models/core.interface';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
 import { AppEvent } from 'src/app/app-events';
 
@@ -97,17 +97,15 @@ export interface IColumnExpression {
 }
 
 /**
- * Exposes properties used to build a SELECT query statement with one SELECT column.
+ * Exposes properties used to build a query statement based on expressions (column names or column expressions).
  */
-export interface IColumnQuery {
+export interface IExpressionQuery {
   /** This is the initial criteria used to get a list of values to be used by the search. */
   criteria: Criteria;
-  /** This property specifies the column that will be selected to get the values. */
-  columnExpression: IColumnExpression;
-  /** This is an optional comparison that can be used when building the final criteria. */
-  comparison?: CriteriaComparison;
-  /** Optional value to specify the entity that will be queried using the specified criteria. */
-  entity?: EntityTarget<any>;
+  /** Specifies the expressions that will produce the SELECT columns. */
+  columnExpressions: IColumnExpression[];
+  /** Entity that will be queried using the specified criteria. */
+  entity: EntityTarget<any>;
 }
 
 /**
@@ -118,15 +116,14 @@ export interface IColumnQuery {
  */
 export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   /** List of queries used to get a list of values that will be combined and used to generate the actual criteria. */
-  queries: IColumnQuery[];
+  queries: IExpressionQuery[];
   /** The total number of results to be retrieved on each result. */
   pageSize?: number;
   /** Determines if every result should be sorted randomly. */
   random?: boolean;
   /** If you are  looking to split the result on smaller chunks you can use this value to specify the number of items for each chunk. */
   chunkSize?: number;
-  /** The entity that will be queried to produce the final results;
-   * this entity will also be used for getting the initial list of values if no entity was specified on the query.  */
+  /** The entity that will be queried to produce the final results.  */
   entity: EntityTarget<T>;
   /** List of criteria items to be added to the criteria built by the combined values. */
   extraCriteria?: CriteriaItem[];
@@ -472,12 +469,18 @@ export class DatabaseService {
     return this.transform(result, criteria);
   }
 
-  public async getColumnValues(entity: EntityTarget<any>, criteria: Criteria, columnExpression: IColumnExpression): Promise<any[]> {
-    const repo = this.dataSource.getRepository(entity);
-    this.log.debug('getColumnValues criteria', criteria);
+  /**
+   * Runs the query based on the specified query info,
+   * the result is transformed by the specified algorithm if any before being returned.
+   * @param query expression query info.
+   * @returns query result.
+   */
+  public async runExpressionQuery(query: IExpressionQuery): Promise<any[]> {
+    const repo = this.dataSource.getRepository(query.entity);
+    this.log.debug('runExpressionQuery criteria', query.criteria);
     // No alias is needed as there are no joins involved to tell tables apart
-    const result = await this.createQuery(repo, null, criteria, [columnExpression]).getRawMany();
-    return this.transform(result, criteria);
+    const result = await this.createQuery(repo, null, query.criteria, query.columnExpressions).getRawMany();
+    return this.transform(result, query.criteria);
   }
 
   public getRepo<T extends ObjectLiteral>(entity: EntityTarget<T>): Repository<T> {
@@ -487,32 +490,30 @@ export class DatabaseService {
   /**
    * Runs all specified queries and results are combined and converted in new search criteria;
    * criteria are used to query and generate new results; each new result will be output through
-   * the onResult callback.
+   * the onResult callback. The first expression of each query should represent the column that
+   * will be used to build the criteria.
    */
   public async searchResultsIterator(options: IResultsIteratorOptions<any>): Promise<void> {
-    /** Each item in this collection represents a single column name and all its associated values. */
-    const queryResultCollection: ICollection<string, any[]> = {
-      items: []
-    };
-
-    // Gather results from all queries
+    // Columns to be used for building the criteria
+    const criteriaColumns: string[] = [];
+    // List of query results used to combine all values to generate the criteria
+    const resultsCollection: any[][] = [];
+    // Gather results from all queries, and group values from a single column
     for (const query of options.queries) {
-      const valuesSourceEntity = query.entity ? query.entity : options.entity;
-      // This will always return multiple values for a single column
-      const objectResults = await this.getColumnValues(valuesSourceEntity, query.criteria, query.columnExpression);
-      const columnName = this.getColumnName(query.columnExpression);
-      // Convert objects to raw values
-      const valueResults = objectResults.map(obj => obj[columnName]);
-      queryResultCollection.items.push({
-        key: columnName,
-        value: valueResults
-      });
+      if (!query.columnExpressions || !query.columnExpressions.length) {
+        // THROW AN ERROR, this is required for getting the criteria columns needed later
+      }
+      // The first expression will define the column that will be used as criteria
+      criteriaColumns.push(this.getColumnName(query.columnExpressions[0]));
+      // This will return a list of objects, with properties for each expression
+      const objectResults = await this.runExpressionQuery(query);
+      resultsCollection.push(objectResults);
     }
 
     // This method will produce objects with every combination of all column values.
-    await this.combine({}, queryResultCollection.items, async combinationResult => {
+    await this.combine({}, resultsCollection, async combinationResult => {
       // onCombination callback
-      // valuesObj represents columns and values that will be used to build the criteria
+      // combinationResult represents columns and values that will be used to build the criteria
       let criteria: Criteria;
       if (options.onBuildCriteria) {
         criteria = options.onBuildCriteria(combinationResult);
@@ -521,8 +522,7 @@ export class DatabaseService {
         // Automatically create criteria
         criteria = new Criteria();
         Object.keys(combinationResult).forEach(columnName => {
-          // This is an internal value used to specified the page number
-          if (columnName !== 'pageNumber') {
+          if (criteriaColumns.includes(columnName)) {
             criteria.searchCriteria.push(new CriteriaItem(columnName, combinationResult[columnName]));
           }
         });
@@ -561,34 +561,37 @@ export class DatabaseService {
   }
 
   /**
-   * Recursive routine that combines results (key value pairs) from different queries into objects;
-   * each object being returned represents one of all the possible combinations; each property of the object represents a column name and a value.
-   * for instance: one query result is: releaseDecade = [2000, 2010] and a second query result is: mood [Happy, Sad],
-   * the result is 4 objects with all those combinations:
-   * { releaseDecade: 2000, mood: Happy }
-   * { releaseDecade: 2000, mood: Sad }
-   * { releaseDecade: 2010, mood: Happy }
-   * { releaseDecade: 2010, mood: Sad }
-   * @param valuesObj Object where all values will be combined.
-   * @param queryResults List on which each item represents a column name and all its associated values.
+   * Recursive routine that combines all objects on one array with all objects on the rest of the arrays.
+   * Each object being returned represents one of all possible combinations.
+   * Example:
+   * Array1 = { mood: 'Sad' }, { mood: 'Happy' }
+   * Array2 = { decade: '2000' }, { decade: '2010' }
+   * This will produce 4 combinations:
+   * 1 = {mood: 'Sad', decade: '2000'}
+   * 2 = {mood: 'Sad', decade: '2010'}
+   * 3 = {mood: 'Happy', decade: '2000'}
+   * 4 = {mood: 'Happy', decade: '2010'}
+   * @param sourceObj Object that will hold all values for a single combination.
+   * @param arraysToCombine Each item in this collection represents an array of objects (with properties and values).
    * @param onCombination Callback that runs when a single combination has been produced.
    */
   private async combine(
-    valuesObj: KeyValueGen<any>,
-    queryResults: IKeyValuePair<string, any[]>[],
-    onCombination: (valuesObj: any) => Promise<void>
+    sourceObj: any,
+    arraysToCombine: any[][],
+    onCombination: (combinationResult: any) => Promise<void>
   ): Promise<void> {
-    const first = queryResults[0];
-    const rest = queryResults.slice(1);
-    for (const item of first.value) {
-      // Clone the object, the original needs to be untouched because it will be used for all the iterations
-      const newValuesObj = Object.assign({}, valuesObj);
-      newValuesObj[first.key] = item;
-      if (rest && rest.length) {
-        await this.combine(newValuesObj, rest, onCombination);
+    const firstArray = arraysToCombine[0];
+    const restOfArrays = arraysToCombine.slice(1);
+    for (const item of firstArray) {
+      // Combine with the source
+      const newObj = Object.assign(sourceObj, item);
+      // Either continue combining if there are more collections
+      if (restOfArrays?.length) {
+        await this.combine(newObj, restOfArrays, onCombination);
       }
+      // Or stop combining and fire the callback
       else {
-        await onCombination(newValuesObj);
+        await onCombination(newObj);
       }
     }
   }

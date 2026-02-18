@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IExportConfig, IExportResult } from './export.interface';
 import { DatabaseEntitiesService } from '../../shared/services/database/database-entities.service';
-import { DatabaseService, IColumnQuery, IResultsIteratorOptions } from '../../shared/services/database/database.service';
+import { DatabaseService, IColumnExpression, IExpressionQuery, IResultsIteratorOptions } from '../../shared/services/database/database.service';
 import { FilterEntity, PlaylistEntity, SongExportEntity, ValueListEntryEntity } from '../../shared/entities';
 import { ISongExtendedModel, ISongModel } from '../../shared/models/song-model.interface';
 import {
@@ -355,17 +355,16 @@ export class ExportService {
     result += await this.createAddYearPlaylists();
     result += await this.createBestByDecadePlaylists();
     result += await this.createMoodPlaylists();
+    result += await this.createClassificationPlaylists('#Subgenre', ValueLists.Subgenre.id);
+    result += await this.createClassificationPlaylists('#Instrument', ValueLists.Instrument.id);
+    result += await this.createClassificationPlaylists('#Category', ValueLists.Category.id);
+    result += await this.createClassificationPlaylists('#Occasion', ValueLists.Occasion.id);
     return result;
   }
 
   private async exportHardcodedPlaylists(): Promise<number> {
     let result = 0;
     result += await this.createRandomPlaylists();
-    // TODO: use the value list table to get the list of types
-    result += await this.createClassificationTypePlaylists('#Subgenre', ValueLists.Subgenre.id);
-    result += await this.createClassificationTypePlaylists('#Instrument', ValueLists.Instrument.id);
-    result += await this.createClassificationTypePlaylists('#Category', ValueLists.Category.id);
-    result += await this.createClassificationTypePlaylists('#Occasion', ValueLists.Occasion.id);
     return result;
   }
 
@@ -382,8 +381,8 @@ export class ExportService {
     languageCriteria.paging.distinct = true;
 
     return this.createIteratorPlaylists([
-      { criteria: decadeCriteria, columnExpression: { expression: 'releaseDecade' } },
-      { criteria: languageCriteria, columnExpression: { expression: 'language' } }],
+      { criteria: decadeCriteria, columnExpressions: [{ expression: 'releaseDecade' }], entity: this.getSongViewEntity(SongViewType.Standard) },
+      { criteria: languageCriteria, columnExpressions: [{ expression: 'language' }], entity: this.getSongViewEntity(SongViewType.Standard) }],
       '%releaseDecade%\'s', '%language%');
   }
 
@@ -394,8 +393,8 @@ export class ExportService {
   private createAddYearPlaylists(): Promise<number> {
     const criteria = new Criteria();
     criteria.paging.distinct = true;
-    const columnQuery: IColumnQuery = { criteria: criteria, columnExpression: { expression: 'addYear' }};
-    return this.createIteratorPlaylists([columnQuery], '#Added', '%addYear%');
+    const expressionQuery: IExpressionQuery = { criteria: criteria, columnExpressions: [{ expression: 'addYear' }], entity: this.getSongViewEntity(SongViewType.Standard) };
+    return this.createIteratorPlaylists([expressionQuery], '#Added', '%addYear%');
   }
 
   /**
@@ -406,9 +405,9 @@ export class ExportService {
   private createBestByDecadePlaylists(): Promise<number> {
     const valuesCriteria = new Criteria();
     valuesCriteria.paging.distinct = true;
-    const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'releaseDecade' }};
+    const expressionQuery: IExpressionQuery = { criteria: valuesCriteria, columnExpressions: [{ expression: 'releaseDecade' }], entity: this.getSongViewEntity(SongViewType.Standard) };
     const extraCriteriaItem = new CriteriaItem('rating', 5);
-    return this.createIteratorPlaylists([columnQuery], '#Best', '%releaseDecade%\'s', false, [extraCriteriaItem]);
+    return this.createIteratorPlaylists([expressionQuery], '#Best', '%releaseDecade%\'s', false, [extraCriteriaItem]);
   }
 
   /**
@@ -417,34 +416,25 @@ export class ExportService {
    */
   private createMoodPlaylists(): Promise<number> {
     const valuesCriteria = new Criteria();
-    // Let's do this to have a different playlist every time.
+    // This will make sure the list of moods is unique
     valuesCriteria.paging.distinct = true;
     valuesCriteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown', CriteriaComparison.NotEquals));
-    const columnQuery: IColumnQuery = { criteria: valuesCriteria, columnExpression: { expression: 'mood' }};
-    return this.createIteratorPlaylists([columnQuery], '#Mood', '%mood%', true);
+    const expressionQuery: IExpressionQuery = { criteria: valuesCriteria, columnExpressions: [{ expression: 'mood' }], entity: this.getSongViewEntity(SongViewType.Standard) };
+    return this.createIteratorPlaylists([expressionQuery], '#Mood', '%mood%', true);
   }
 
-  private async createClassificationTypePlaylists(prefix: string, classificationTypeId: string): Promise<number> {
-    let result = 0;
-    const classifications = await ValueListEntryEntity.findBy({ valueListTypeId: classificationTypeId });
-    for (const classification of classifications) {
-      const playlistProcessed = await this.createClassificationPlaylist(prefix, classification.name, classification.id);
-      if (playlistProcessed) {
-        result++;
-      }
-    }
-    return result;
-  }
-
-  private createClassificationPlaylist(prefix: string, playlistName: string, classificationId: string): Promise<boolean> {
-    const criteria = new Criteria(playlistName);
-    // Let's do this to have a different playlist every time.
-    criteria.random = true;
-    criteria.paging.distinct = true;
-    const criteriaItem = new CriteriaItem('classificationId', classificationId);
-    criteriaItem.ignoreInSelect = true;
-    criteria.searchCriteria.push(criteriaItem);
-    return this.exportCriteriaAsPlaylist(prefix, criteria);
+  private createClassificationPlaylists(prefix: string, classificationTypeId: string): Promise<number> {
+    const valuesCriteria = new Criteria();
+    valuesCriteria.searchCriteria.push(new CriteriaItem('valueListTypeId', classificationTypeId));
+    // The first expression will be used for building the criteria
+    // NOTE: the previous logic was applying a ignoreInSelect to this column along with distinct=true;
+    // this becomes important if we don't want get duplicate song records, but this only happens if we are applying a filter against classificationId with multiple values
+    // which is not the case for building playlists.
+    const valueExpression: IColumnExpression = { expression: 'id', alias: 'classificationId' };
+    // Second expression will be used for building the name of the playlist
+    const captionExpression: IColumnExpression = { expression: 'name', alias: 'classificationName' };
+    const expressionQuery: IExpressionQuery = { criteria: valuesCriteria, entity: ValueListEntryEntity, columnExpressions: [valueExpression, captionExpression] };
+    return this.createIteratorPlaylists([expressionQuery], prefix, '%classificationName%', true, null, SongViewType.Classification);
   }
 
   /**
@@ -456,10 +446,17 @@ export class ExportService {
    * @param extraCriteria Additional criteria to be used when getting the final list of results.
    * @returns The number of playlists created in the process.
    */
-  private async createIteratorPlaylists(queries: IColumnQuery[], prefixExpression: string, nameExpression: string, random?: boolean, extraCriteria?: CriteriaItem[]): Promise<number> {
+  private async createIteratorPlaylists(
+    queries: IExpressionQuery[],
+    prefixExpression: string,
+    nameExpression: string,
+    random?: boolean,
+    extraCriteria?: CriteriaItem[],
+    songViewType?: SongViewType
+  ): Promise<number> {
     let result = 0;
     const options: IResultsIteratorOptions<any> = {
-      entity: this.getSongViewEntity(SongViewType.Standard),
+      entity: this.getSongViewEntity(songViewType ? songViewType : SongViewType.Standard),
       queries: queries,
       random: random,
       extraCriteria: extraCriteria,
