@@ -330,6 +330,10 @@ export class ExportService {
         criteria.paging.pageSize = this.config.playlistConfig.maxCount;
       }
     }
+    // Randomize if no sorting specified
+    if (!criteria.hasSorting()) {
+      criteria.random = true;
+    }
     let tracks = await this.getSongs(criteria);
     if (tracks?.length) {
       return this.processPlaylist(tracks, criteria, namePrefix);
