@@ -15,7 +15,7 @@ export interface IValueModel<T> {
 
 export interface IKeyValuePair<TKey, TValue> {
   key: TKey;
-  value: TValue;
+  value?: TValue;
 }
 
 export interface ICollection<TKey, TValue> {

@@ -65,6 +65,10 @@ export class UtilityService {
     return value === undefined || value === null || value === '';
   }
 
+  public isString(value: any): boolean {
+    return typeof value === 'string';
+  }
+
   /**
    * Moves the scrollbar of the specified element to the top.
    * @param elementId The identifier of the element that will scroll to the top. If null, the function will scroll the whole window.

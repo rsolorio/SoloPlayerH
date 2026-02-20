@@ -8,7 +8,7 @@
       <tr>
         <!-- Filter Info -->
         <td class="sp-text-overflow-ellipsis">
-          <span class="sp-main-text sp-text-medium sp-no-select">{{item.name}}</span>
+          <span class="sp-main-text sp-text-medium sp-no-select"><ng-container *ngIf="item.prefix">{{item.prefix + ': '}}</ng-container>{{item.name}}</span>
           <br>
           <ng-container *ngIf="item.description">
             <i [ngClass]="AppAttributeIcons.Description" class="sp-color-on-bg-low sp-text-small">&nbsp;</i>

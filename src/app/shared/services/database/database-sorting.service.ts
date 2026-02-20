@@ -5,13 +5,15 @@ import { Criteria, CriteriaItems } from '../criteria/criteria.class';
 import { CriteriaSortDirection } from '../criteria/criteria.enum';
 import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from 'src/app/app-icons';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
+import { IKeyValuePair } from 'src/app/core/models/core.interface';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseSortingService {
 
-  constructor(private sidebarHostService: SideBarHostStateService) { }
+  constructor(private sidebarHostService: SideBarHostStateService, private utility: UtilityService) { }
 
   public getSortingPanelModel(chips: IChipItem[], subTitle: string, subTitleIcon: string): IChipSelectionModel {
     const result: IChipSelectionModel = {
@@ -26,8 +28,10 @@ export class DatabaseSortingService {
       okHidden: true,
       okDelay: 300,
       onChipClick: (selectionChanged, chipItem, model) => {
+        // RULE: the sorting applied by the user will only take effect in the first/main item;
+        // the rest of the items (columns) will keep the same default sort direction
         const criteriaItems = chipItem.value as CriteriaItems;
-        // If the user clicked a new item, match the sort direction on all internal criteria items
+        // If the user clicked a new item, match the sort direction of the first item with the secondary icon
         if (selectionChanged) {
           // All criteria items must use the same sort direction
           if (criteriaItems && criteriaItems.length) {
@@ -40,28 +44,29 @@ export class DatabaseSortingService {
               // Set icon
               chipItem.secondaryIcon = firstItem.sortDirection === CriteriaSortDirection.Ascending ?
                 AppActionIcons.SortAscending : AppActionIcons.SortDescending;
-              // Make sure the sorting matches the icon          
-              criteriaItems.forEach(i => i.sortDirection = firstItem.sortDirection);
             }
           }
-          // The Ok action will be called automatically
+          // When selection changes the Ok action will be called automatically
         }
         // If the user clicked the same sort, swap the sorting direction
         else {
-          if (criteriaItems && criteriaItems[0] && criteriaItems[0].sortDirection === CriteriaSortDirection.Alternate) {
-            // Don't do anything if the user is clicking a selected alternate sorting
-            return;
+          if (criteriaItems?.length) {
+            const firstItem = criteriaItems[0];
+            if (firstItem.sortDirection === CriteriaSortDirection.Alternate) {
+              // Don't do anything if the user is clicking a selected alternate sorting
+              return;
+            }
+            // A selected chip was clicked so swap the sort direction
+            if (chipItem.secondaryIcon === AppActionIcons.SortAscending) {
+              chipItem.secondaryIcon = AppActionIcons.SortDescending;
+              firstItem.sortDirection = CriteriaSortDirection.Descending;
+            }
+            else {
+              chipItem.secondaryIcon = AppActionIcons.SortAscending;
+              firstItem.sortDirection = CriteriaSortDirection.Ascending;
+            }
           }
-          // A selected chip was clicked so swap the sort direction
-          if (chipItem.secondaryIcon === AppActionIcons.SortAscending) {
-            chipItem.secondaryIcon = AppActionIcons.SortDescending;
-            criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Descending);
-          }
-          else {
-            chipItem.secondaryIcon = AppActionIcons.SortAscending;
-            criteriaItems.forEach(i => i.sortDirection = CriteriaSortDirection.Ascending);
-          }
-          // Fire only in this case since it will automatically close if the selection changed
+          // When selection does not change, close ok needs to be called explicitly
           this.sidebarHostService.closeOk();
         }
       }
@@ -69,18 +74,37 @@ export class DatabaseSortingService {
     return result;
   }
 
+  /**
+   * Adds a sorting option (one or more columns) as a chip item in the specified list.
+   * @param id Id that will be associated with all criteria items created for this sorting option.
+   * @param columns All columns needed to apply this sorting option.
+   * @param icon Icon to display as part of this sorting option.
+   * @param caption Text to display as part of this sorting option.
+   * @param chips Existing collection of chips where this new chip will be added.
+   * @param sortingCriteria Existing sorting criteria that comes from the UI, used to determine if the particular chip is being used in the criteria.
+   * @param sortDirection Default sorting direction.
+   * @returns 
+   */
   private addSortingChip(
     id: string,
-    columns: string[],
+    columns: (string | IKeyValuePair<string, CriteriaSortDirection>)[],
     icon: string,
     caption: string,
     chips: IChipItem[],
-    sortingCriteria: CriteriaItems,
-    sortDirection?: CriteriaSortDirection
+    sortingCriteria: CriteriaItems
   ): IChipItem {
     const criteriaItems = new CriteriaItems();
     criteriaItems.id = id;
-    for (const columnName of columns) {
+    for (const column of columns) {
+      let columnName: string;
+      let sortDirection: CriteriaSortDirection;
+      if (this.utility.isString(column)) {
+        columnName = column as string;
+      }
+      else {
+        columnName = (column as IKeyValuePair<string, CriteriaSortDirection>).key;
+        sortDirection = (column as IKeyValuePair<string, CriteriaSortDirection>).value;
+      }
       criteriaItems.addSorting(columnName, sortDirection ? sortDirection : CriteriaSortDirection.Ascending);
     }
     chips.push({
@@ -92,17 +116,6 @@ export class DatabaseSortingService {
       selected: sortingCriteria.id === criteriaItems.id
     });
     return chips[chips.length - 1];
-  }
-
-  private addAlternateChip(
-    id: string,
-    columns: string[],
-    icon: string,
-    caption: string,
-    chips: IChipItem[],
-    sortingCriteria: CriteriaItems
-  ): IChipItem {
-    return this.addSortingChip(id, columns, icon, caption, chips, sortingCriteria, CriteriaSortDirection.Alternate);
   }
 
   public getSortingForSongs(existingCriteria: Criteria): IChipItem[] {
@@ -129,11 +142,11 @@ export class DatabaseSortingService {
     this.addSortingChip(
       'sorting-rating', ['rating', 'playCount'],
       AppAttributeIcons.RatingOn, 'Rating', result, existingCriteria.sortingCriteria);
-    this.addAlternateChip(
-      'alternate-artist', ['primaryArtistName'],
+    this.addSortingChip(
+      'alternate-artist', [{ key: 'primaryArtistName', value: CriteriaSortDirection.Alternate }],
       AppActionIcons.Alternate, 'Alternate Artists', result, existingCriteria.sortingCriteria);
-    this.addAlternateChip(
-      'alternate-language', ['language'],
+    this.addSortingChip(
+      'alternate-language', [{ key: 'language', value: CriteriaSortDirection.Alternate }],
       AppActionIcons.Alternate, 'Alternate Languages', result, existingCriteria.sortingCriteria);
     
     return result;
@@ -210,14 +223,15 @@ export class DatabaseSortingService {
   public getSortingForFilters(existingCriteria: Criteria): IChipItem[] {
     const result: IChipItem[] = [];
     this.addSortingChip(
-      'sorting-filterName', ['name'],
+      'sorting-filterName', ['prefix', 'name'],
       AppEntityIcons.Smartlist, 'Name', result, existingCriteria.sortingCriteria);
     this.addSortingChip(
-      'sorting-favorite', ['favorite', 'accessDate', 'name'],
-      AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.sortingCriteria, CriteriaSortDirection.Descending);
+      'sorting-favorite',
+      [{ key: 'favorite', value: CriteriaSortDirection.Descending }, 'prefix', 'name'],
+      AppAttributeIcons.FavoriteOn, 'Favorite', result, existingCriteria.sortingCriteria);
     this.addSortingChip(
       'sorting-accessDate', ['accessDate'],
-      AppAttributeIcons.AccessDate, 'Access Date', result, existingCriteria.sortingCriteria, CriteriaSortDirection.Descending);
+      AppAttributeIcons.AccessDate, 'Access Date', result, existingCriteria.sortingCriteria);
     return result;
   }
 

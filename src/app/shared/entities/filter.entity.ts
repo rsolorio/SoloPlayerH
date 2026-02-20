@@ -5,6 +5,9 @@ import { dateTransformer } from "./date-transformer";
 
 @Entity({name: 'filter'})
 export class FilterEntity extends ListItemEntity implements IFilterModel {
+  /** Optional text to be displayed before the name of the filter. It can also be used as tag to display filters with the same prefix (feature to come). */
+  @Column({ nullable: true })
+  prefix: string;
   @Column({ nullable: true })
   description: string;
   @Column()
