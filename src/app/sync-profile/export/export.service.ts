@@ -293,7 +293,7 @@ export class ExportService {
       // TODO: do this comparison with a criteria object and the database service
       if (filter.sync && filter.target === FilterTarget.Song) {
         const criteria = await this.entities.getCriteriaFromFilter(filter);
-        const playlistExported = await this.exportCriteriaAsPlaylist('#Filter', criteria);
+        const playlistExported = await this.exportCriteriaAsPlaylist('#' + filter.prefix, criteria);
         if (playlistExported) {
           result++;
         }
