@@ -21,6 +21,7 @@ import { LocalStorageService } from "./core/services/local-storage/local-storage
 import { MusicImageType } from "./platform/audio-metadata/audio-metadata.enum";
 import { RelatedImageId, SyncProfileId } from "./shared/services/database/database.seed";
 import { MetadataReaderService } from "./mapping/data-transform/metadata-reader.service";
+import { LastFmService } from "./shared/services/last-fm/last-fm.service";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -44,7 +45,8 @@ export class AppTestService {
     private lookup: DatabaseLookupService,
     private storage: LocalStorageService,
     private metadataService: AudioMetadataService,
-    private reader: MetadataReaderService) {}
+    private reader: MetadataReaderService,
+    private lastFm: LastFmService) {}
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
@@ -572,11 +574,11 @@ export class AppTestService {
     // Filters (name), Module Options (name)
     //const value = this.lookup.hashValues(['Last.FM API Secret']);
 
-    const value = this.lookup.hashValueListEntry('Other');
+    //const value = this.lookup.hashValueListEntry('Other');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
-    //const value = this.lookup.hashAlbum('Came Here For Love (Acoustic) [Single]', 2017);
+    //const value = this.lookup.hashAlbum('Tu Me Acostumbraste', 1973);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
-    //const value = this.lookup.hashArtist('Hans Zimmer - Lisa Gerrard');
+    const value = this.lookup.hashArtist('Estela Raval');
 
     console.log(value);
   }

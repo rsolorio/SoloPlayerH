@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { md5 } from 'src/app/core/models/md5';
-import { ILastFmArtistResponse, ILastFmImage, ILastFmScrobbleRequest, ILastFmScrobbleResponse, ILastFmSessionResponse } from './last-fm.interface';
+import { ILastFmArtistResponse, ILastFmImage, ILastFmRecentTracksResponse, ILastFmScrobbleRequest, ILastFmScrobbleResponse, ILastFmSessionResponse } from './last-fm.interface';
 import { LocalStorageService } from '../../../core/services/local-storage/local-storage.service';
 import { LocalStorageKeys } from '../../../core/services/local-storage/local-storage.enum';
 import { appName } from 'src/app/app-exports';
-import { LastFmImageSize } from './last-fm.enum';
+import { LastFmFetchLimit, LastFmImageSize } from './last-fm.enum';
 
 /**
  * Service that provides access to the Last.Fm API.
@@ -76,6 +76,23 @@ export class LastFmService {
   }
 
   /**
+   * https://www.last.fm/api/show/user.getRecentTracks
+   * This service does not require authentication.
+   */
+  public getRecentTracks(limit: LastFmFetchLimit): Promise<ILastFmRecentTracksResponse> {
+    let params = this.buildBasicHttpParams('user.getRecentTracks');
+    params = params.append('limit', limit.toString());
+    params = params.append('user', this.user);
+    // Beginning unix timestapm of range, integer number of seconds, UTC time zone
+    //params.append('from', this.user);
+    // End unix timestapm of range, integer number of seconds, UTC time zone
+    //params.append('to', this.user);
+    params = this.appendSignature(params);
+    params = this.appendFormat(params);
+    return this.http.post<ILastFmRecentTracksResponse>(this.rootUrl, null, { params: params }).toPromise();
+  }
+
+  /**
    * https://www.last.fm/api/show/artist.getInfo
    */
   public getArtist(artistName: string): Promise<ILastFmArtistResponse> {
@@ -123,6 +140,7 @@ export class LastFmService {
     return this.http.post<ILastFmSessionResponse>(this.rootUrl, null, { params: params });
   }
 
+  /** Adds the "api_key" and "method" params. */
   private buildBasicHttpParams(method: string): HttpParams {
     let params = new HttpParams();
     params = params.append('api_key', this.apiKey);
@@ -130,6 +148,7 @@ export class LastFmService {
     return params;
   }
 
+  /** Adds the "username" and "password" params. */
   private appendAuth(httpParams: HttpParams, userName: string, password?: string): HttpParams {
     let params = httpParams.append('username', userName);
     if (password) {
@@ -154,23 +173,33 @@ export class LastFmService {
     return httpParams.append('artist', artistName);
   }
 
+  /** Adds the "timestamp" param with the current date/time. */
   private appendTimestamp(httpParams: HttpParams): HttpParams {
     const unix = Math.floor(Date.now() / 1000);
     return httpParams.append('timestamp', unix.toString());
   }
 
+  /** Adds the "sk" param. Make sure to call setupSessionKey before. */
   private appendSessionKey(httpParams: HttpParams): HttpParams {
     return httpParams.append('sk', this.sessionKey);
   }
 
+  /** Adds the "api_sig" param. */
   private appendSignature(httpParams: HttpParams): HttpParams {
     return httpParams.append('api_sig', this.generateApiSignature(httpParams));
   }
 
+  /** Adds the "format" param using the default responseFormat. */
   private appendFormat(httpParams: HttpParams): HttpParams {
     return httpParams.append('format', this.responseFormat);
   }
 
+  /**
+   * Generates a signature by combining all params (key and value), appending the api secret and
+   * then encoding everything with MD5.
+   * @param params All the params
+   * @returns 
+   */
   private generateApiSignature(params: HttpParams): string {
     const sortedKeys = params.keys().sort();
     let signatureString = '';

@@ -89,3 +89,12 @@ export interface ILastFmArtistStats {
   playcount: string;
   userplaycount: string;
 }
+
+export interface ILastFmRecentTracksResponse {
+  recenttracks: ILastFmRecentTracks;
+}
+
+export interface ILastFmRecentTracks {
+  '@attr': any;
+  track: any[];
+}
