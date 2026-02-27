@@ -11,6 +11,8 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   externalId: string;
   @Column({ nullable: true })
   originalSongId: string;
+  @Column({ nullable: true })
+  mbId: string;
   // File info
   @Column({ unique: true })
   filePath: string;

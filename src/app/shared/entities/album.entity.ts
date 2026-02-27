@@ -22,6 +22,8 @@ export class AlbumEntity extends ListItemEntity implements IAlbumModel {
   albumStylized: string;
   @Column({ nullable: true })
   publisher: string;
+  @Column({ nullable: true })
+  mbId: string;
 
   primaryArtistName: string;
   primaryArtistStylized: string;

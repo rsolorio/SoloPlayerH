@@ -104,6 +104,25 @@ export class AlbumViewComponent implements OnInit {
               }
             }
           ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'mbId',
+              icon: AppAttributeIcons.MbId,
+              label: 'MdId',
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                AlbumEntity.findOneBy({ id: this.albumId }).then(album => {
+                  album.mbId = this.entityEditorModel.data['mbId'];
+                  album.save();
+                });
+              }
+            }
+          ]
         }
       ]
     };

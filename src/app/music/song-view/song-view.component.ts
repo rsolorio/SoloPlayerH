@@ -352,6 +352,25 @@ export class SongViewComponent implements OnInit {
               }
             },
           ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'mbId',
+              icon: AppAttributeIcons.MbId,
+              label: 'MbId',
+              onEdit: field => {
+                field.editEnabled = true;
+              },
+              onOk: field => {
+                field.editEnabled = false;
+                SongEntity.findOneBy({ id: this.songId }).then(song => {
+                  song.mbId = this.entityEditorModel.data['mbId'];
+                  song.save();
+                });
+              }
+            }
+          ]
         }
       ]
     };

@@ -9,6 +9,7 @@ import { PlayerSongStatus } from './player.enum';
 export interface ISongModel extends IListItemModel {
   // Ids
   primaryAlbumId: string;
+  mbId: string;
   // File info
   filePath: string;
   fileSize: number;
