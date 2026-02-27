@@ -22,6 +22,7 @@ import { MusicImageType } from "./platform/audio-metadata/audio-metadata.enum";
 import { RelatedImageId, SyncProfileId } from "./shared/services/database/database.seed";
 import { MetadataReaderService } from "./mapping/data-transform/metadata-reader.service";
 import { LastFmService } from "./shared/services/last-fm/last-fm.service";
+import { MusicBrainzService } from "./shared/services/music-brainz/music-brainz.service";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -46,7 +47,7 @@ export class AppTestService {
     private storage: LocalStorageService,
     private metadataService: AudioMetadataService,
     private reader: MetadataReaderService,
-    private lastFm: LastFmService) {}
+    private mb: MusicBrainzService) {}
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
