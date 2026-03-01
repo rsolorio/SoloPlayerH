@@ -315,7 +315,6 @@ export class Id3v2SourceService implements IDataSourceService {
         break;
       case MetaAttribute.Live:
       case MetaAttribute.Favorite:
-      case MetaAttribute.MusicBrainzAlbumType:
         const booleanText = this.metadataService.getValue<string>(attributeName, this.tags, TagPrefix.UserDefinedText);
         // Only return a value if exists
         if (booleanText) {

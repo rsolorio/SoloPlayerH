@@ -157,11 +157,14 @@ export class LastFmService {
     return params;
   }
 
-  private appendMusicInfo(httpParams: HttpParams, albumArtist: string, artist: string, track: string, album: string): HttpParams {
+  private appendMusicInfo(httpParams: HttpParams, albumArtist: string, artist: string, track: string, album: string, mbId?: string): HttpParams {
     let params = httpParams.append('artist', artist);
     params = params.append('track', track);
     params = params.append('album', album);
     params = params.append('albumArtist', albumArtist);
+    if (mbId) {
+      params = params.append('mbid', mbId);
+    }
     params = params.append('context', appName);
     return params;
   }

@@ -13,6 +13,7 @@ export interface ILastFmScrobbleRequest {
   albumArtistName: string;
   artistName: string;
   trackTitle: string;
+  mbId?: string;
 }
 
 export interface ILastFmScrobble {

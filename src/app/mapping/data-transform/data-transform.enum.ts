@@ -66,8 +66,6 @@ export enum MetaAttribute {
   AlbumSort = 'albumSort',
   /** String. Id3v2 */
   AlbumType = 'albumType',
-  /** String. Id3v2 */
-  MusicBrainzAlbumType = 'MusicBrainz Album Type',
   /** String. None. */
   AlbumStylized = 'albumStylized',
   /** Number. Id3v2, Id3v1 */
@@ -207,5 +205,7 @@ export enum MetaAttribute {
   /** Boolean. Scan. */
   Ignored = 'ignored',
   /** ScanFileMode. None. */
-  FileMode = 'fileMode'
+  FileMode = 'fileMode',
+  /** String. */
+  MusicBrainzTrackId = 'mdId',
 }

@@ -147,6 +147,7 @@ export class SongModelSourceService implements IDataSourceService {
         return [this.inputData.infoUrl];
       case MetaAttribute.PlayHistory:
         return []; // ToDo
+      // All these attribute values match with an existing column name
       case MetaAttribute.Rating:
       case MetaAttribute.PlayCount:
       case MetaAttribute.PerformerCount:
@@ -173,6 +174,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaAttribute.Country:
       case MetaAttribute.Subtitle:
       case MetaAttribute.MediaSubtitle:
+      case MetaAttribute.MusicBrainzTrackId:
         return [this.inputData[attributeName]];
     }
     return [];

@@ -161,7 +161,8 @@ export class DatabaseEntitiesService {
       albumArtistName: song.primaryArtistId === EntityId.ArtistVarious ? song.primaryArtistName : song.primaryArtistStylized,
       artistName: artistName,
       trackTitle: song.cleanName,
-      albumName: song.primaryAlbumStylized
+      albumName: song.primaryAlbumStylized,
+      mbId: song.mbId ? song.mbId : undefined
     };
   }
 

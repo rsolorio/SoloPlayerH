@@ -125,6 +125,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * 4a. Remember, an expression is a combination of hardcoded text and/or placeholders (fields or functions)
    * 4b. Do not confuse a field placeholder used in an expression with a metadata attribute.
    * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the source (song model).
+   * 4d. Sometimes the value of an "attribute" property matches the name of a column in the source; although this is ideal (less code in the source service), it is not required.
    * How the full logic works:
    * 1. Each data source service iterates the attributes and retrieves data using the getData method
    * 2. Attributes will be populated with data and they will become the metadata attributes.
@@ -201,6 +202,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
   /**
    * Adds metadata tags and returns an object that follows the tag object of the mp3tag library.
+   * Id3 official site: https://id3.org/
    * Id3 official site (cached): https://web.archive.org/web/20211214132114/https://id3.org/
    * Supported tags: https://mp3tag.js.org/docs/frames.html
    * Mp3Tag reference: https://docs.mp3tag.de/mapping/
@@ -210,9 +212,9 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * Reference to taglib: https://github.com/mono/taglib-sharp
    * This writer consumes these meta attributes:
    * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
-   * album, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
+   * album, albumType, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
-   * seconds, tempo (bpm), owner, ufid, playCount, rating, replayGain, url, videoUrl, advisory,
+   * seconds, tempo (bpm), owner, ufid, mbId, playCount, rating, replayGain, url, videoUrl, advisory,
    * subgenre, category, occasion, instrument,
    * albumImage, albumSecondaryImage, singleImage, albumArtistImage
    */
@@ -408,9 +410,26 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.PCNT = playCount.toString();
     }
 
+    // USER DEFINED TEXTS
     const udTexts = this.createUserDefinedTexts(metadata, [
       MetaAttribute.Subgenre, MetaAttribute.Category, MetaAttribute.Occasion, MetaAttribute.Instrument
     ], true);
+
+    const albumType = this.first(metadata[MetaAttribute.AlbumType]);
+    if (albumType) {
+      udTexts.push({
+        description: 'RELEASETYPE',
+        text: albumType.toString()
+      });
+    }
+
+    const mbId = this.first(metadata[MetaAttribute.MusicBrainzTrackId]);
+    if (mbId) {
+      udTexts.push({
+        description: 'MUSICBRAINZ_TRACKID',
+        text: mbId.toString()
+      });
+    }
 
     const rating = this.first(metadata[MetaAttribute.Rating]);
     if (rating) {
