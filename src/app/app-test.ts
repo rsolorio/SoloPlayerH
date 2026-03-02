@@ -47,7 +47,8 @@ export class AppTestService {
     private storage: LocalStorageService,
     private metadataService: AudioMetadataService,
     private reader: MetadataReaderService,
-    private mb: MusicBrainzService) {}
+    private mb: MusicBrainzService,
+    private lastFm: LastFmService) {}
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();

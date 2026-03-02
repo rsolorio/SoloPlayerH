@@ -79,10 +79,13 @@ export class LastFmService {
    * https://www.last.fm/api/show/user.getRecentTracks
    * This service does not require authentication.
    */
-  public getRecentTracks(limit: LastFmFetchLimit): Promise<ILastFmRecentTracksResponse> {
+  public getRecentTracks(limit: LastFmFetchLimit, extended?: boolean): Promise<ILastFmRecentTracksResponse> {
     let params = this.buildBasicHttpParams('user.getRecentTracks');
     params = params.append('limit', limit.toString());
     params = params.append('user', this.user);
+    if (extended) {
+      params = params.append('extended', '1');
+    }
     // Beginning unix timestapm of range, integer number of seconds, UTC time zone
     //params.append('from', this.user);
     // End unix timestapm of range, integer number of seconds, UTC time zone
