@@ -5,6 +5,9 @@ import { IMbSearchResponse } from './music-brainz.interface';
 /**
  * Service that provides access to the MusicBrainz API.
  * https://musicbrainz.org/doc/MusicBrainz_API
+ * Info about rate limiting:
+ * https://wiki.musicbrainz.org/MusicBrainz_API/Rate_Limiting
+ * In summary, only one request per second is allowed.
  */
 @Injectable({
   providedIn: 'root'
@@ -24,10 +27,11 @@ export class MusicBrainzService {
     let url = `${this.rootUrl}recording/?query=`;
     let query = `"${title}"`;
     if (artistName) {
-      query += `AND artistname:"${artistName}"`;
+      query += ` AND artistname:"${artistName}"`;
     }
     if (albumName) {
-      query += `AND release:"${albumName}"`;
+
+      query += ` AND release:"${albumName}"`;
     }
     url += encodeURI(query);
     return this.http.get<IMbSearchResponse>(url).toPromise();

@@ -242,6 +242,10 @@ export class UtilityService {
     return value / unit;
   }
 
+  public sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   public isDate(value: any): boolean {
     if (value instanceof Date) {
       return true;
@@ -686,6 +690,10 @@ export class UtilityService {
   public googleSearch(searchTerm: string): void {
     const encodedTerm = encodeURI(searchTerm);
     window.open('https://google.com/search?q=' + encodedTerm);
+  }
+
+  public showMusicBrainzEntity(entity: string, id: string): void {
+    window.open(`https://musicbrainz.org/${entity}/${id}`, '_blank');
   }
 
   /**

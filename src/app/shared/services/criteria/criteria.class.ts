@@ -167,14 +167,14 @@ export class CriteriaItem {
 
   constructor(columnName: string, columnValue?: any, comparison?: CriteriaComparison) {
     this.columnName = columnName;
-    if (columnValue !== undefined) {
+    if (columnValue !== undefined && columnValue !== null) {
       this.columnValues.push({
         value: columnValue,
         caption: columnValue.toString()
       });
     }
     if (comparison === undefined) {
-      if (columnValue === undefined) {
+      if (columnValue === undefined || columnValue === null) {
         this.comparison = CriteriaComparison.None;
       }
     }

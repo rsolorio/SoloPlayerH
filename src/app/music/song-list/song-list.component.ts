@@ -100,6 +100,16 @@ export class SongListComponent extends CoreComponent implements OnInit {
         }
       },
       {
+        caption: 'MB Info...',
+        icon: AppAttributeIcons.MbId,
+        action: (menuItem, param) => {
+          const song = param as ISongModel;
+          if (song.mbId) {
+            this.utility.showMusicBrainzEntity('recording', song.mbId);
+          }
+        }
+      },
+      {
         caption: 'Album Artist Songs',
         icon: AppEntityIcons.AlbumArtist,
         action: (menuItem, param) => {
