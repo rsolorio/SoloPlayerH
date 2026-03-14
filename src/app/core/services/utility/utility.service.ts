@@ -238,6 +238,10 @@ export class UtilityService {
     return decryptedValue;
   }
 
+  public normalize(value: string): string {
+    return value.normalize('NFD').replace(/\p{Diacritic}/gu, "");
+  }
+
   public bytesTo(value: number, unit: Bytes): number {
     return value / unit;
   }

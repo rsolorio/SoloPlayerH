@@ -24,16 +24,19 @@ export class MusicBrainzService {
    * @returns 
    */
   public searchTrack(title: string, artistName?: string, albumName?: string): Promise<IMbSearchResponse> {
+    // const newTitle = title.replace("'", '’');
     let url = `${this.rootUrl}recording/?query=`;
     let query = `"${title}"`;
     if (artistName) {
       query += ` AND artistname:"${artistName}"`;
     }
     if (albumName) {
-
       query += ` AND release:"${albumName}"`;
     }
     url += encodeURI(query);
-    return this.http.get<IMbSearchResponse>(url).toPromise();
+    return this.http.get<IMbSearchResponse>(url).toPromise().then(response => {
+      response.url = url;
+      return response;
+    });
   }
 }

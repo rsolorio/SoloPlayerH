@@ -1,5 +1,6 @@
 export interface IMbSearchResponse {
     recordings?: IMbRecording[];
+    url?: string;
 }
 
 export interface IMbRecording {

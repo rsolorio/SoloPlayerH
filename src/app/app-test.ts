@@ -23,7 +23,7 @@ import { RelatedImageId, SyncProfileId } from "./shared/services/database/databa
 import { MetadataReaderService } from "./mapping/data-transform/metadata-reader.service";
 import { LastFmService } from "./shared/services/last-fm/last-fm.service";
 import { MusicBrainzService } from "./shared/services/music-brainz/music-brainz.service";
-import { IMbSearchResponse } from "./shared/services/music-brainz/music-brainz.interface";
+import { IMbRecording, IMbSearchResponse } from "./shared/services/music-brainz/music-brainz.interface";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -941,7 +941,8 @@ export class AppTestService {
     criteria.searchCriteria.push(criteriaItem);
     criteriaItem = new CriteriaItem('mbId', null, CriteriaComparison.IsNull);
     criteria.searchCriteria.push(criteriaItem);
-    const songs = await this.db.getList(SongViewEntity, criteria);
+    criteria.addSorting('primaryArtistName');
+    const songs = await this.db.getList(SongExtendedViewEntity, criteria);
     console.log('Songs with no mbid: ' + songs.length);
     console.log('Songs processed: ' + processedSongs.length);
     console.log('Songs left: ' + (songs.length - processedSongs.length).toString());
@@ -950,9 +951,13 @@ export class AppTestService {
       if (item) {
         continue;
       }
+      let artistName = song.primaryArtistStylized;
+      if (song.primaryArtistName == 'Various' && song.featuring !== undefined && song.featuring !== null) {
+        artistName = song.featuring;
+      }
       let response: IMbSearchResponse;
       try {
-        response = await this.mb.searchTrack(song.cleanName, song.primaryArtistName, song.primaryAlbumName);
+        response = await this.mb.searchTrack(song.cleanName, artistName, song.primaryAlbumStylized);
         // Only one request per second is allowed
         await this.utility.sleep(1000);
       }
@@ -962,27 +967,33 @@ export class AppTestService {
         this.storage.setByKey('sp.tempMbIdProcessedSongs', processedSongs);
         return;
       }
-      const metadata = { id: song.id, status: '', title: song.cleanName, artist: song.primaryArtistName, album: song.primaryAlbumName };
-      if (response?.recordings?.length === 0) {
-        metadata.status = 'NoMatch';
-        processedSongs.push(metadata);
-        console.log(`No matches found for: ${song.cleanName} - ${song.primaryArtistName} (${song.primaryAlbumName} - ${song.releaseYear}).`);
+      let recording: IMbRecording;
+      if (response.recordings.length === 1) {
+        recording = response.recordings[0];
       }
-      else if (response?.recordings?.length === 1) {
-        const recording = response.recordings[0];
+      else {
+        for (const rec of response.recordings) {
+          const recNormalized = this.utility.normalize(rec.title.toLocaleLowerCase());
+          const songNormalized = this.utility.normalize(song.cleanName);
+          if (recNormalized === songNormalized || recNormalized === songNormalized.replace(`'`, '’')) {
+            recording = rec;
+          }
+        }
+      }
+
+      if (recording) {
         const songToUpdate = await SongEntity.findOneBy({ id: song.id });
         songToUpdate.mbId = recording.id;
         await songToUpdate.save();
-        console.log(`Match found for: ${song.cleanName} - ${song.primaryArtistName} (${song.primaryAlbumName} - ${song.releaseYear}).`);
+        console.log(`1 matches found for: ${song.cleanName} - ${artistName} - ${song.primaryAlbumStylized} - ${song.releaseYear}.`);
       }
       else {
-        // TODO, select one using the UI
-        metadata.status = 'MultipleMatch';
+        const metadata = { id: song.id, matchCount: response.recordings.length, recordings: [], title: song.cleanName, artist: artistName, album: song.primaryAlbumStylized, year: song.releaseYear, url: response.url };
+        metadata.recordings = response.recordings.map(rec => { return { mbId: rec.id, title: rec.title } });
         processedSongs.push(metadata);
-        console.log(`Multiple matches found for: ${song.cleanName} - ${song.primaryArtistName} (${song.primaryAlbumName} - ${song.releaseYear}).`);
+        this.storage.setByKey('sp.tempMbIdProcessedSongs', processedSongs);
+        console.log(`${response.recordings.length} matches found for: ${song.cleanName} - ${artistName} - ${song.primaryAlbumStylized} - ${song.releaseYear}.`);
       }
-
-      this.storage.setByKey('sp.tempMbIdProcessedSongs', processedSongs);
     }
   }
 }
