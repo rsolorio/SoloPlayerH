@@ -119,7 +119,7 @@ export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   queries: IExpressionQuery[];
   /** The total number of results to be retrieved on each result. */
   pageSize?: number;
-  /** Determines if every result should be sorted randomly. */
+  /** Determines if every getList execution should enable random flag to sort results (songs) randonmly. */
   random?: boolean;
   /** If you are  looking to split the result on smaller chunks you can use this value to specify the number of items for each chunk. */
   chunkSize?: number;

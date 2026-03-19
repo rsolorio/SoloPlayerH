@@ -709,19 +709,27 @@ export class UtilityService {
   }
 
 
-  public getMimeType(extension: string): MimeType {
-    const ext = extension.toLowerCase();
-    switch (ext) {
-      case 'jpg':
-      case 'jpeg':
-        return MimeType.Jpg;
-      case 'mp3':
-        return MimeType.Mp3;
-      case 'flac':
-        return MimeType.Flac;
-      default:
-        return MimeType.Unknown;
+  /**
+   * Gets the mime type.
+   * @param filePath File path or extension including the dot.
+   * @returns the mime type.
+   */
+  public getMimeType(filePath: string): MimeType {
+    const path = filePath.toLowerCase();
+
+    if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      return MimeType.Jpg;
     }
+    if (path.endsWith('.mp3')) {
+      return MimeType.Mp3;
+    }
+    if (path.endsWith('.flac')) {
+      return MimeType.Flac;
+    }
+    if (path.endsWith('.webp')) {
+      return MimeType.Webp;
+    }
+    return MimeType.Unknown;
   }
 
   public downloadUrl(url: string, fileName?: string): void {

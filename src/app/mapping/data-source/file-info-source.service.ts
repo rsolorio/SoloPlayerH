@@ -5,7 +5,7 @@ import { FileService } from 'src/app/platform/file/file.service';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { IImageSource } from 'src/app/core/models/core.interface';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
-import { MimeType } from 'src/app/core/models/core.enum';
+import { UtilityService } from 'src/app/core/services/utility/utility.service';
 
 interface IJsonInfo {
   artistContent?: any;
@@ -20,7 +20,7 @@ interface IJsonInfo {
 export class FileInfoSourceService implements IDataSourceService {
   protected inputData: IFileInfo;
   protected jsonInfo: IJsonInfo = {};
-  constructor(private fileService: FileService) { }
+  constructor(private fileService: FileService, private utility: UtilityService) { }
 
   public init(): void {}
 
@@ -171,7 +171,7 @@ export class FileInfoSourceService implements IDataSourceService {
         imageType = MusicImageType.Single;
         break;
       case MetaAttribute.AlbumAnimated:
-        fileName = 'animated.mp4';
+        fileName = 'animated.webp';
         imageType = MusicImageType.FrontAnimated;
         break;
     }
@@ -183,7 +183,7 @@ export class FileInfoSourceService implements IDataSourceService {
           sourcePath: filePath,
           sourceType: MusicImageSourceType.ImageFile,
           sourceIndex: 0,
-          mimeType: field === MetaAttribute.AlbumAnimated ? MimeType.Mp4 : MimeType.Jpg,
+          mimeType: this.utility.getMimeType(fileName),
           imageType: imageType
         };
         return [imageData];

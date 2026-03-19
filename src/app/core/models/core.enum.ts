@@ -49,7 +49,8 @@ export enum MimeType {
   Jpg = 'image/jpeg',
   Mp3 = 'audio/mpeg',
   Flac = 'audio/flac',
-  Mp4 = 'video/mp4'
+  Mp4 = 'video/mp4',
+  Webp = 'image/webp'
 }
 
 export enum Separator {

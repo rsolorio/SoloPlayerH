@@ -70,6 +70,8 @@ enum AttachedPictureType {
   providedIn: 'root'
 })
 export class MetadataWriterService extends DataTransformServiceBase<ISongModel, ISongModel, IMetadataWriterOutput> {
+  /** Size of the pictures that will be embedded in the tags. */
+  private tagPictureSize = 600;
   constructor(
     private log: LogService,
     private fileService: FileService,
@@ -498,6 +500,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const pictures: IAttachedPicture[] = [];
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumImage]), AttachedPictureType.Front, 'Front');
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumSecondaryImage]), AttachedPictureType.Front, 'Front2');
+    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumAnimated]), AttachedPictureType.Front, 'Animated');
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.SingleImage]), AttachedPictureType.Other, 'Single');
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumArtistImage]), AttachedPictureType.LeadArtist, albumArtist);
     if (pictures.length) {
@@ -529,17 +532,25 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     return result;
   }
 
+  /**
+   * Adds a new picture object to an existing list of pictures.
+   * @param pictures Existing list of pictures.
+   * @param filePath File path referring to the picture.
+   * @param type Picture type.
+   * @param description Extra information related to the picture.
+   * @returns 
+   */
   private async addPicture(pictures: IAttachedPicture[], filePath: string, type: AttachedPictureType, description?: string): Promise<void> {
     if (!filePath || !this.fileService.exists(filePath)) {
       return;
     }
     let buffer = await this.imageService.shrinkImageToBuffer({
-      src: this.utility.fileToUrl(filePath), srcType: ImageSrcType.FileUrl }, 600);
+      src: this.utility.fileToUrl(filePath), srcType: ImageSrcType.FileUrl }, this.tagPictureSize);
     if (!buffer) {
       buffer = await this.fileService.getBuffer(filePath);
     }
     pictures.push({
-      format: MimeType.Jpg,
+      format: this.utility.getMimeType(filePath),
       type: type,
       description: description,
       data: buffer

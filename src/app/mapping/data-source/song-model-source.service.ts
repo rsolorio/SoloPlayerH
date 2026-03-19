@@ -121,6 +121,8 @@ export class SongModelSourceService implements IDataSourceService {
         return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
       case MetaAttribute.AlbumArtistImage:
         return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.AlbumArtist);
+      case MetaAttribute.AlbumAnimated:
+        return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.FrontAnimated);
       case MetaAttribute.Title:
         return [this.inputData.name];
       case MetaAttribute.CleanTitle:

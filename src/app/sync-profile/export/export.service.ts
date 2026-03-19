@@ -420,8 +420,7 @@ export class ExportService {
    */
   private createMoodPlaylists(): Promise<number> {
     const valuesCriteria = new Criteria();
-    // This will make sure the list of moods is unique
-    valuesCriteria.paging.distinct = true;
+    valuesCriteria.paging.distinct = true; // This will make sure the list of moods is unique
     valuesCriteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown', CriteriaComparison.NotEquals));
     const expressionQuery: IExpressionQuery = { criteria: valuesCriteria, columnExpressions: [{ expression: 'mood' }], entity: this.getSongViewEntity(SongViewType.Standard) };
     return this.createIteratorPlaylists([expressionQuery], '#Mood', '%mood%', true);
@@ -432,7 +431,8 @@ export class ExportService {
     valuesCriteria.searchCriteria.push(new CriteriaItem('valueListTypeId', classificationTypeId));
     // The first expression will be used for building the criteria
     // NOTE: the previous logic was applying a ignoreInSelect to this column along with distinct=true;
-    // this becomes important if we don't want get duplicate song records, but this only happens if we are applying a filter against classificationId with multiple values
+    // this becomes important if we don't want get duplicate song records,
+    // but this only happens if we are applying a filter against classificationId with multiple values,
     // which is not the case for building playlists.
     const valueExpression: IColumnExpression = { expression: 'id', alias: 'classificationId' };
     // Second expression will be used for building the name of the playlist
@@ -446,7 +446,7 @@ export class ExportService {
    * @param queries Queries used to get the list of values.
    * @param prefixExpression Script expression to be used as prefix in the name of every playlist file.
    * @param nameExpression Script expression to be used in the name of every playlist file.
-   * @param random Enable random sorting for every query result.
+   * @param random Enable random sorting for every list of songs produced.
    * @param extraCriteria Additional criteria to be used when getting the final list of results.
    * @returns The number of playlists created in the process.
    */
