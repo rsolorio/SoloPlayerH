@@ -125,7 +125,7 @@ export interface IResultsIteratorOptions<T extends ObjectLiteral> {
   chunkSize?: number;
   /** The entity that will be queried to produce the final results.  */
   entity: EntityTarget<T>;
-  /** List of criteria items to be added to the criteria built by the combined values. */
+  /** List of (search or sort) criteria items to be added to the criteria built by the combined values. */
   extraCriteria?: CriteriaItem[];
   /**
    * Callback that is fired when a result is resolved.
@@ -528,7 +528,14 @@ export class DatabaseService {
         });
         // Add extra criteria
         if (options.extraCriteria?.length) {
-          options.extraCriteria.forEach(item => criteria.searchCriteria.push(item));
+          options.extraCriteria.forEach(item => {
+            if (item.sortSequence > 0) {
+              criteria.sortingCriteria.push(item);
+            }
+            else {
+              criteria.searchCriteria.push(item);
+            }
+          });
         }
       }
       // The criteria can be null if it comes from the onBuildCriteria;

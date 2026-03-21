@@ -359,6 +359,7 @@ export class ExportService {
     result += await this.createAddYearPlaylists();
     result += await this.createBestByDecadePlaylists();
     result += await this.createMoodPlaylists();
+    result += await this.createGenrePlaylists();
     result += await this.createClassificationPlaylists('#Subgenre', ValueLists.Subgenre.id);
     result += await this.createClassificationPlaylists('#Instrument', ValueLists.Instrument.id);
     result += await this.createClassificationPlaylists('#Category', ValueLists.Category.id);
@@ -398,7 +399,10 @@ export class ExportService {
     const criteria = new Criteria();
     criteria.paging.distinct = true;
     const expressionQuery: IExpressionQuery = { criteria: criteria, columnExpressions: [{ expression: 'addYear' }], entity: this.getSongViewEntity(SongViewType.Standard) };
-    return this.createIteratorPlaylists([expressionQuery], '#Added', '%addYear%');
+    const songCriteriaItem = new CriteriaItem('addDate');
+    songCriteriaItem.sortSequence = 1;
+    songCriteriaItem.sortDirection = CriteriaSortDirection.Ascending; // From oldest to newest as we already have "latest" playlists sorted from newest to oldest
+    return this.createIteratorPlaylists([expressionQuery], '#Added', '%addYear%', false, [songCriteriaItem]);
   }
 
   /**
@@ -410,8 +414,9 @@ export class ExportService {
     const valuesCriteria = new Criteria();
     valuesCriteria.paging.distinct = true;
     const expressionQuery: IExpressionQuery = { criteria: valuesCriteria, columnExpressions: [{ expression: 'releaseDecade' }], entity: this.getSongViewEntity(SongViewType.Standard) };
-    const extraCriteriaItem = new CriteriaItem('rating', 5);
-    return this.createIteratorPlaylists([expressionQuery], '#Best', '%releaseDecade%\'s', false, [extraCriteriaItem]);
+    const songCriteriaItem = new CriteriaItem('rating', 5);
+    // Since all songs have the same rating, make sure it is random to get different playlists everytime
+    return this.createIteratorPlaylists([expressionQuery], '#Best', '%releaseDecade%\'s', true, [songCriteriaItem]);
   }
 
   /**
@@ -424,6 +429,20 @@ export class ExportService {
     valuesCriteria.searchCriteria.push(new CriteriaItem('mood', 'Unknown', CriteriaComparison.NotEquals));
     const expressionQuery: IExpressionQuery = { criteria: valuesCriteria, columnExpressions: [{ expression: 'mood' }], entity: this.getSongViewEntity(SongViewType.Standard) };
     return this.createIteratorPlaylists([expressionQuery], '#Mood', '%mood%', true);
+  }
+
+  /**
+   * Gets a list of genres and generates a playlist for each one, in random order with songs rated 3 or less.
+   * @returns The number of playlists created.
+   */
+  private createGenrePlaylists(): Promise<number> {
+    const valuesCriteria = new Criteria();
+    valuesCriteria.paging.distinct = true; // This will make sure the list of genres is unique
+    valuesCriteria.searchCriteria.push(new CriteriaItem('genre', 'Unknown', CriteriaComparison.NotEquals));
+    const expressionQuery: IExpressionQuery = { criteria: valuesCriteria, columnExpressions: [{ expression: 'genre' }], entity: this.getSongViewEntity(SongViewType.Standard) };
+    const songCriteriaItem = new CriteriaItem('rating', 3, CriteriaComparison.LessThanOrEqualTo); // let's use less popular music for these playlists
+    // TODO: older than 3 years?
+    return this.createIteratorPlaylists([expressionQuery], '#Genre', '%genre%', true, [songCriteriaItem]);
   }
 
   private createClassificationPlaylists(prefix: string, classificationTypeId: string): Promise<number> {

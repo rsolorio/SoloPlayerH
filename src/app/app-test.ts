@@ -576,13 +576,13 @@ export class AppTestService {
 
   private hash(): void {
     // Filters (name), Module Options (name)
-    //const value = this.lookup.hashValues(['Last.FM API Secret']);
+    //const value = this.lookup.hashValues(['Fresh & Happy']);
 
-    //const value = this.lookup.hashValueListEntry('Other');
+    const value = this.lookup.hashValueListEntry('Bachata');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
     //const value = this.lookup.hashAlbum('Tu Me Acostumbraste', 1973);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
-    const value = this.lookup.hashArtist('Estela Raval');
+    //const value = this.lookup.hashArtist('Estela Raval');
 
     console.log(value);
   }
