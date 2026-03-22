@@ -35,7 +35,7 @@ export class SongModelSourceService implements IDataSourceService {
    * for the mapping scripts. This is a way to use easier/shorter names instead of the
    * real names of the source (in this case the ISongExtendedModel).
    */
-  private placeholders: KeyValueGen<string> = {
+  private placeholderShortcuts: KeyValueGen<string> = {
     artist: 'primaryArtistName',
     album: 'primaryAlbumName',
     year: 'releaseYear',
@@ -201,13 +201,13 @@ export class SongModelSourceService implements IDataSourceService {
       for (const mapping of sortedMappings) {
         const valuesToIgnore = mapping.ignore ? mapping.ignore.split('|') : [];
         if (mapping.iterator) {
-          const data = await this.getDataFromExpression(mapping.iterator, this.placeholders);
+          const data = await this.getDataFromExpression(mapping.iterator, this.placeholderShortcuts);
           if (Array.isArray(data)) {
             const array = data as any[];
             for (const item of array) {
               // Add the data item as one more property to the context as %item%
               this.context.item = item;
-              const value = await this.getDataFromExpression(mapping.source, this.placeholders);
+              const value = await this.getDataFromExpression(mapping.source, this.placeholderShortcuts);
               this.addValueToArray(result, value, valuesToIgnore);
             }
             // Remove the data item from the context
@@ -215,7 +215,7 @@ export class SongModelSourceService implements IDataSourceService {
           }
         }
         else {
-          const value = await this.getDataFromExpression(mapping.source, this.placeholders);
+          const value = await this.getDataFromExpression(mapping.source, this.placeholderShortcuts);
           this.addValueToArray(result, value, valuesToIgnore);
         }
       }

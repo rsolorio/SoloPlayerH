@@ -121,12 +121,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * If you want to save data in tags:
    * 1. Look for the metadata attributes supported (consumed) by the setupV2Tags method.
    * 2. Add the metadata attribute to the "attributes" property of the data source. This will ensure the attributes are populated with a value.
-   * 2a. Adding the attribute is mandatory since the attribute value will be used to populate the tag.
+   * 2a. Adding the attribute is mandatory since the attribute value will be used to populate a corresponding tag.
    * 3. Confirm the source (song model) has hardcoded logic to find the data associated to the metadata attribute.
-   * 4. If you don't want to use the default logic or if it doesn't exist, you can setup a mapping and use an expression to get the data from the source.
+   * 4. If you don't want to use the default logic or if it doesn't exist, you can setup a mapping and use an expression (within the "source" property) to get the data from the source.
    * 4a. Remember, an expression is a combination of hardcoded text and/or placeholders (fields or functions)
    * 4b. Do not confuse a field placeholder used in an expression with a metadata attribute.
-   * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the source (song model).
+   * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the source (song model), or as a placeholder shortcut.
    * 4d. Sometimes the value of an "attribute" property matches the name of a column in the source; although this is ideal (less code in the source service), it is not required.
    * How the full logic works:
    * 1. Each data source service iterates the attributes and retrieves data using the getData method
@@ -135,7 +135,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * 4. Mappings retrieve data using a parser that processes expression fields and functions ("expression fields" match columns from the views providing data)
    * 5. Hardcoded logic generally retrieves data associating a meta attribute with the property of the input data or using built-in methods
    * 6. Lastly it gets user defined mappings, also using expressions and the parser
-   * Once this happens, the writer will use the metadata to locate the data to write to the supported tags, and to user defined tags.
+   * Once this happens, the writer will use the metadata to locate the data to write to the "supported tags" and to "user defined tags".
    * @param input The song model
    * @returns A metadata object
    */
@@ -212,7 +212,8 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * Other reference: https://exiftool.org/TagNames/ID3.html
    * One more with details: https://mutagen-specs.readthedocs.io/en/latest/id3/id3v2.4.0-frames.html
    * Reference to taglib: https://github.com/mono/taglib-sharp
-   * This writer consumes these meta attributes:
+   * If the following meta attributes are setup in the "attributes" property of the data source,
+   * this writer will automatically consume them to set default tags:
    * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
    * album, albumType, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
