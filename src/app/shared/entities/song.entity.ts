@@ -22,7 +22,7 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   fileSize: number;
   // Song info
   @Column()
-  cleanName: string;
+  title: string;
   @Column()
   titleSort: string;
   @Column({ nullable: true })

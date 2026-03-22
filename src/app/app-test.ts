@@ -957,7 +957,7 @@ export class AppTestService {
       }
       let response: IMbSearchResponse;
       try {
-        response = await this.mb.searchTrack(song.cleanName, artistName, song.primaryAlbumStylized);
+        response = await this.mb.searchTrack(song.title, artistName, song.primaryAlbumStylized);
         // Only one request per second is allowed
         await this.utility.sleep(1000);
       }
@@ -974,7 +974,7 @@ export class AppTestService {
       else {
         for (const rec of response.recordings) {
           const recNormalized = this.utility.normalize(rec.title.toLocaleLowerCase());
-          const songNormalized = this.utility.normalize(song.cleanName);
+          const songNormalized = this.utility.normalize(song.title);
           if (recNormalized === songNormalized || recNormalized === songNormalized.replace(`'`, '’')) {
             recording = rec;
           }
@@ -985,14 +985,14 @@ export class AppTestService {
         const songToUpdate = await SongEntity.findOneBy({ id: song.id });
         songToUpdate.mbId = recording.id;
         await songToUpdate.save();
-        console.log(`1 matches found for: ${song.cleanName} - ${artistName} - ${song.primaryAlbumStylized} - ${song.releaseYear}.`);
+        console.log(`1 matches found for: ${song.title} - ${artistName} - ${song.primaryAlbumStylized} - ${song.releaseYear}.`);
       }
       else {
-        const metadata = { id: song.id, matchCount: response.recordings.length, recordings: [], title: song.cleanName, artist: artistName, album: song.primaryAlbumStylized, year: song.releaseYear, url: response.url };
+        const metadata = { id: song.id, matchCount: response.recordings.length, recordings: [], title: song.title, artist: artistName, album: song.primaryAlbumStylized, year: song.releaseYear, url: response.url };
         metadata.recordings = response.recordings.map(rec => { return { mbId: rec.id, title: rec.title } });
         processedSongs.push(metadata);
         this.storage.setByKey('sp.tempMbIdProcessedSongs', processedSongs);
-        console.log(`${response.recordings.length} matches found for: ${song.cleanName} - ${artistName} - ${song.primaryAlbumStylized} - ${song.releaseYear}.`);
+        console.log(`${response.recordings.length} matches found for: ${song.title} - ${artistName} - ${song.primaryAlbumStylized} - ${song.releaseYear}.`);
       }
     }
   }

@@ -15,7 +15,7 @@ export interface ISongModel extends IListItemModel {
   fileSize: number;
   fileExtension: string;
   // Song info
-  cleanName: string;
+  title: string;
   trackNumber: number;
   mediaNumber: number;
   releaseYear: number;

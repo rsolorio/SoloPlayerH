@@ -32,7 +32,7 @@ export class PlayerListModel implements IDbModel {
     id: '0',
     mbId: '0',
     name: '[Empty Song]',
-    cleanName: '[Empty Song]',
+    title: '[Empty Song]',
     primaryAlbumId: null,
     filePath: null,
     fileExtension: null,

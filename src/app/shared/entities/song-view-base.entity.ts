@@ -14,7 +14,7 @@ ON album.primaryArtistId = artist.id
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const songViewBaseSelect = `
-SELECT song.id, song.name, song.cleanName, song.hash,
+SELECT song.id, song.name, song.title, song.hash,
 song.primaryAlbumId, song.mbId, song.filePath, song.fileExtension, song.fileSize,
 song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.rating, song.playCount,
 song.performerCount, song.genre, song.mood, song.language, song.lyrics,
@@ -32,7 +32,7 @@ artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
  * favorite, live, advisory, addDate, playDate, replaceDate, primaryAlbumName, primaryAlbumStylized, primaryArtistId,
  * primaryArtistName, primaryArtistStylized.
  * Excluded fields:
- * externalId, cleanName, titleSort, subtitle, featuring, grouping, composer, composerSort,
+ * externalId, title, titleSort, subtitle, featuring, grouping, composer, composerSort,
  * primaryAlbumSort, primaryAlbumType, country, primaryArtistSort, primaryArtistType,
  * originalArtist, originalAlbum, originalReleaseYear, comment,
  * infoUrl, videoUrl, replayGain, tempo, addYear, changeDate, replaceDate
@@ -59,7 +59,7 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   fileSize: number;
   // Song info
   @ViewColumn()
-  cleanName: string;
+  title: string;
   @ViewColumn()
   trackNumber: number;
   @ViewColumn()
@@ -129,7 +129,7 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const songExtendedViewSelect = `
-SELECT song.id, song.name, song.cleanName, song.hash, song.primaryAlbumId, song.mbId, song.externalId, song.originalSongId,
+SELECT song.id, song.name, song.title, song.hash, song.primaryAlbumId, song.mbId, song.externalId, song.originalSongId,
 song.filePath, song.fileExtension, song.fileSize,
 song.titleSort, song.subtitle, song.featuring, song.trackNumber, song.mediaNumber, song.mediaSubtitle, song.releaseYear, song.releaseDecade,
 song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.language,

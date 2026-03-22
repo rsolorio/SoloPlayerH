@@ -42,12 +42,10 @@ export class SongModelSourceService implements IDataSourceService {
     decade: 'releaseDecade',
     media: 'mediaNumber',
     track: 'trackNumber',
-    title: 'name',
     ext: 'fileExtension',
     file: 'fileName',
     albumType: 'primaryAlbumType',
-    artistType: 'primaryArtistType',
-    cleanTitle: 'cleanName'
+    artistType: 'primaryArtistType'
   };
   constructor(private utility: UtilityService, private parser: ScriptParserService) { }
 
@@ -124,9 +122,7 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaAttribute.AlbumAnimated:
         return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.FrontAnimated);
       case MetaAttribute.Title:
-        return [this.inputData.name];
-      case MetaAttribute.CleanTitle:
-        return [this.inputData.cleanName];
+        return [this.inputData.title];
       case MetaAttribute.ArtistType:
         return [this.inputData.primaryArtistType];
       case MetaAttribute.UnSyncLyrics:

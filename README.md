@@ -108,11 +108,13 @@ All standard entities have three main fields:
 - id
 - hash
 - name
-  - the title of the song
-  - ID3 mapping: title
-- cleanName
-  - name without brackets info, if any
-  - auto calculated
+  - file name
+  - can be used when exporting to a filePath
+- title
+  - song name without brackets info, if the name was retrieved from the file system
+  - ID3 mapping: title if id3 exists
+  - can be used to set the proper stylized song title tag when exporting
+  - should not be used when exporting to a filePath as it could contain unsupported characters by the OS
 - titleSort
   - Value used to sort the track in a list
   - ID3 mapping: TSOT

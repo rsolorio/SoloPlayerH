@@ -441,14 +441,14 @@ export class PlayerQuizComponent implements OnInit, OnDestroy {
     const artists = await (await this.entities.prepareScrobbleRequest(song.id)).artistName;
     this.log.table('Song found at attempt ' + this.cache.songs.length, { tabular: {
       name: song.name,
-      cleanName: song.cleanName,
+      title: song.title,
       albumArtist: song.primaryArtistName,
       artist: artists,
       album: song.primaryAlbumStylized,
       year: song.releaseYear
     } });
     this.filePath = song.filePath;
-    this.songName = song.cleanName;
+    this.songName = song.title;
     this.artistName = artists;
     this.albumName = song.primaryAlbumStylized;
     this.releaseYear = song.releaseYear;

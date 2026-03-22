@@ -83,6 +83,10 @@ export class ScanAudioService {
   private existingSongClassifications: SongClassificationEntity[];
   private existingImages: RelatedImageEntity[];
 
+  // Properties used by the this.set method
+  private targetObject: any;
+  private sourceMetadata: KeyValues;
+
   constructor(
     private fileService: FileService,
     private metadataReader: MetadataReaderService,
@@ -494,11 +498,12 @@ export class ScanAudioService {
 
   private processAlbum(artist: ArtistEntity, metadata: KeyValues): AlbumEntity {
     const newAlbum = new AlbumEntity();
-    this.setFirst(newAlbum, 'name', metadata, MetaAttribute.Album, AlbumName.Unknown);
+    this.preSet(metadata, newAlbum);
+    this.set(MetaAttribute.Album, 'name', AlbumName.Unknown);
     // Is this actually the album year? Album year and song year might be different.
-    this.setFirst(newAlbum, 'releaseYear', metadata, MetaAttribute.Year, 0);
-    this.setFirst(newAlbum, 'albumSort', metadata, MetaAttribute.AlbumSort, newAlbum.name);
-    this.setFirst(newAlbum, 'publisher', metadata, MetaAttribute.Publisher);
+    this.set(MetaAttribute.Year, 'releaseYear', 0);
+    this.set(MetaAttribute.AlbumSort, 'albumSort', newAlbum.name);
+    this.set(MetaAttribute.Publisher, 'publisher');
 
     let albumCleanName = '';
     const brackets = this.utility.matchBrackets(newAlbum.name);
@@ -510,7 +515,7 @@ export class ScanAudioService {
     else {
       albumCleanName = newAlbum.name;
     }
-    this.setFirst(newAlbum, 'albumStylized', metadata, MetaAttribute.AlbumStylized, albumCleanName);
+    this.set(MetaAttribute.AlbumStylized, 'albumStylized', albumCleanName);
 
     const existingAlbum = this.lookupService.findAlbum(newAlbum.name, newAlbum.releaseYear, artist.id, this.existingAlbums);
     if (existingAlbum) {
@@ -550,23 +555,22 @@ export class ScanAudioService {
     const song = new SongEntity();
     song.id = this.utility.newGuid();
     song.isNew = true;
-    song.filePath = this.first(metadata[MetaAttribute.FilePath]);
-    song.fileExtension = this.first(metadata[MetaAttribute.FileExtension]);
+    this.preSet(metadata, song);
+    this.set(MetaAttribute.FileName, 'name');
+    this.set(MetaAttribute.FilePath, 'filePath');
+    this.set(MetaAttribute.FileExtension, 'fileExtension');
     song.hash = this.lookupService.hashSong(song.filePath);
 
-    this.setFirst(song, 'externalId', metadata, MetaAttribute.UfId);
-    this.setFirst(song, 'name', metadata, MetaAttribute.Title, this.first(metadata[MetaAttribute.FileName]));
+    this.set(MetaAttribute.UfId, 'externalId');
 
-    // Clean file name from brackets
+    this.set(MetaAttribute.Title, 'title', song.name);
+    // Remove brackets if any
     // TODO: use a module option to perform this action
-    const brackets = this.utility.matchBrackets(song.name);
+    const brackets = this.utility.matchBrackets(song.title);
     if (brackets?.length) {
       for (const bracket of brackets) {
-        song.cleanName = song.name.replace(bracket, '').trim();
+        song.title = song.title.replace(bracket, '').trim();
       }
-    }
-    else {
-      song.cleanName = song.name;
     }
 
     song.subtitle = this.first(metadata[MetaAttribute.Subtitle]);
@@ -587,9 +591,9 @@ export class ScanAudioService {
 
     song.primaryAlbumId = album.id;
 
-    this.setFirst(song, 'trackNumber', metadata, MetaAttribute.TrackNumber, 0);
-    this.setFirst(song, 'mediaNumber', metadata, MetaAttribute.MediaNumber, 1);
-    this.setFirst(song, 'mediaSubtitle', metadata, MetaAttribute.MediaSubtitle);
+    this.set(MetaAttribute.TrackNumber, 'trackNumber', 0);
+    this.set(MetaAttribute.MediaNumber, 'mediaNumber', 1);
+    this.set(MetaAttribute.MediaSubtitle, 'mediaSubtitle');
     if (!song.mediaSubtitle) {
       const mediaSubtitles = metadata[MetaAttribute.MediaSubtitles];
       // Validate the media number has a subtitle
@@ -600,13 +604,13 @@ export class ScanAudioService {
     song.releaseYear = album.releaseYear;
     song.releaseDecade = album.releaseDecade;
 
-    this.setFirst(song, 'composer', metadata, MetaAttribute.Composer);
-    this.setFirst(song, 'composerSort', metadata, MetaAttribute.ComposerSort);
-    this.setFirst(song, 'originalArtist', metadata, MetaAttribute.OriginalArtist);
-    this.setFirst(song, 'originalAlbum', metadata, MetaAttribute.OriginalAlbum);
-    this.setFirst(song, 'originalReleaseYear', metadata, MetaAttribute.OriginalReleaseYear, 0);
-    this.setFirst(song, 'comment', metadata, MetaAttribute.Comment);
-    this.setFirst(song, 'grouping', metadata, MetaAttribute.Grouping);
+    this.set(MetaAttribute.Composer, 'composer');
+    this.set(MetaAttribute.ComposerSort, 'composerSort');
+    this.set(MetaAttribute.OriginalArtist, 'originalArtist');
+    this.set(MetaAttribute.OriginalAlbum, 'originalAlbum');
+    this.set(MetaAttribute.OriginalReleaseYear, 'originalReleaseYear', 0);
+    this.set(MetaAttribute.Comment, 'comment');
+    this.set(MetaAttribute.Grouping, 'grouping');
 
     // Add Date
     let addDate = this.first(metadata[MetaAttribute.AddDate]) as Date;
@@ -632,11 +636,11 @@ export class ScanAudioService {
     // TODO: Set dates in file
 
     // TODO: add language/mood to value list entry if it doesn't exist
-    this.setFirst(song, 'language', metadata, MetaAttribute.Language, ValueLists.Language.entries.Unknown.name);
-    this.setFirst(song, 'mood', metadata, MetaAttribute.Mood, ValueLists.Mood.entries.Unknown.name);
+    this.set(MetaAttribute.Language, 'language', ValueLists.Language.entries.Unknown.name);
+    this.set(MetaAttribute.Mood, 'mood', ValueLists.Mood.entries.Unknown.name);
 
-    this.setFirst(song, 'rating', metadata, MetaAttribute.Rating, 0);
-    this.setFirst(song, 'playCount', metadata, MetaAttribute.PlayCount, 0);
+    this.set(MetaAttribute.Rating, 'rating', 0);
+    this.set(MetaAttribute.PlayCount, 'playCount', 0);
 
     let lyrics = this.first(metadata[MetaAttribute.UnSyncLyrics]);
     if (!lyrics) {
@@ -646,21 +650,21 @@ export class ScanAudioService {
       song.lyrics = lyrics;
     }
 
-    this.setFirst(song, 'titleSort', metadata, MetaAttribute.TitleSort, song.name);
-    this.setFirst(song, 'live', metadata, MetaAttribute.Live, false);
-    this.setFirst(song, 'favorite', metadata, MetaAttribute.Favorite, false);
-    this.setFirst(song, 'advisory', metadata, MetaAttribute.Advisory, 0);
+    this.set(MetaAttribute.TitleSort, 'titleSort', song.title);
+    this.set(MetaAttribute.Live, 'live', false);
+    this.set(MetaAttribute.Favorite, 'favorite', false);
+    this.set(MetaAttribute.Advisory, 'advisory', 0);
 
     // Let's start with zero but this cannot be the final value, it should be at least 1
     // If this value is not found here, the processArtistRelations will figure it out
-    this.setFirst(song, 'performerCount', metadata, MetaAttribute.PerformerCount, 0);
+    this.set(MetaAttribute.PerformerCount, 'performerCount', 0);
 
     let bitrate = this.first(metadata[MetaAttribute.Bitrate]);
     song.bitrate = bitrate ? this.utility.round(bitrate, 4) : 0;
 
-    this.setFirst(song, 'frequency', metadata, MetaAttribute.Frequency, 0);
-    this.setFirst(song, 'tempo', metadata, MetaAttribute.Tempo, 0);
-    this.setFirst(song, 'replayGain', metadata, MetaAttribute.ReplayGain, 0);
+    this.set(MetaAttribute.Frequency, 'frequency', 0);
+    this.set(MetaAttribute.Tempo, 'tempo', 0);
+    this.set(MetaAttribute.ReplayGain, 'replayGain', 0);
 
     let seconds = this.first(metadata[MetaAttribute.Seconds]);
     song.seconds = seconds ? this.utility.round(seconds, 4) : 0;
@@ -1352,18 +1356,17 @@ export class ScanAudioService {
     }
 
     // SONG
+    this.preSet(newMetadata, existingSong);
     existingSong.filePath = newFilePath;
     existingSong.hash = this.lookupService.hashSong(existingSong.filePath);
-    this.setFirst(existingSong, 'name', newMetadata, MetaAttribute.Title, this.first(newMetadata[MetaAttribute.FileName]));
+    this.set(MetaAttribute.FileName, 'name');
 
-    const brackets = this.utility.matchBrackets(existingSong.name);
+    this.set(MetaAttribute.Title, 'title', existingSong.name);
+    const brackets = this.utility.matchBrackets(existingSong.title);
     if (brackets?.length) {
       for (const bracket of brackets) {
-        existingSong.cleanName = existingSong.name.replace(bracket, '').trim();
+        existingSong.title = existingSong.title.replace(bracket, '').trim();
       }
-    }
-    else {
-      existingSong.cleanName = existingSong.name;
     }
 
     const featuringArtists = newMetadata[MetaAttribute.FeaturingArtist];
@@ -1374,10 +1377,10 @@ export class ScanAudioService {
       existingSong.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
     }
 
-    this.setFirst(existingSong, 'trackNumber', newMetadata, MetaAttribute.TrackNumber, 0);
-    this.setFirst(existingSong, 'mediaNumber', newMetadata, MetaAttribute.MediaNumber, 1);
-    this.setFirst(existingSong, 'titleSort', newMetadata, MetaAttribute.TitleSort, existingSong.name);
-    this.setFirst(existingSong, 'language', newMetadata, MetaAttribute.Language);
+    this.set(MetaAttribute.TrackNumber, 'trackNumber', 0);
+    this.set(MetaAttribute.MediaNumber, 'mediaNumber', 1);
+    this.set(MetaAttribute.TitleSort, 'titleSort', existingSong.name);
+    this.set(MetaAttribute.Language, 'language');
     existingSong.performerCount = 0;
 
     // UPDATE NEW FILE DATES
@@ -1400,13 +1403,31 @@ export class ScanAudioService {
     return this.utility.first(array);
   }
 
-  private setFirst(obj: any, propertyName: string, metadata: KeyValues, field: MetaAttribute, defaultValue?: any): void {
-    const value = this.first(metadata[field]);
+  /**
+   * Method that prepares the source and target objects for setting a value.
+   * Call this method before calling this.set
+   * @param source 
+   * @param target 
+   */
+  private preSet(source: KeyValues, target: any): void {
+    this.targetObject = target;
+    this.sourceMetadata = source;
+  }
+
+  /**
+   * Gets the first value of the attribute from the source metadata object and saves it in the target object.
+   * Make sure to call this.preSet first to setup the source and target objects.
+   * @param sourceField The field in the metadata object that points to the value to retrieve.
+   * @param targetPropertyName The name of the property in the target object.
+   * @param defaultValue A default value in case the metadata field is empty.
+   */
+  private set(sourceField: MetaAttribute, targetPropertyName: string, defaultValue?: any): void {
+    const value = this.first(this.sourceMetadata[sourceField]);
     if (value) {
-      obj[propertyName] = value;
+      this.targetObject[targetPropertyName] = value;
     }
     else if (defaultValue !== undefined) {
-      obj[propertyName] = defaultValue;
+      this.targetObject[targetPropertyName] = defaultValue;
     }
   }
 }

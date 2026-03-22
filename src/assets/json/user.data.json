@@ -73,7 +73,7 @@
     "dataMapping": [
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$path(%rootPath%,%language%,%genre%,%artist%,$if(%year%,$pad(%year%,4) - %album%, %album%),$pad(%media%,2)-$pad(%track%,2) - %title%.%ext%)",
+        "source": "$path(%rootPath%,%language%,%genre%,%artist%,$if(%year%,$pad(%year%,4) - %album%, %album%),$pad(%media%,2)-$pad(%track%,2) - %name%.%ext%)",
         "destination": "filePath",
         "priority": 1,
         "sequence": 1,
@@ -474,7 +474,7 @@
       },
       {
         "dataSourceId": "6001aaf1-ad29-4068-b81d-1ce958cec2cf",
-        "source": "$path(%rootPath%,%language%,%genre%,%artist%,$if(%year%,$pad(%year%,4) - %album%, %album%),$pad(%media%,2)-$pad(%track%,2) - %title%.%ext%)",
+        "source": "$path(%rootPath%,%language%,%genre%,%artist%,$if(%year%,$pad(%year%,4) - %album%, %album%),$pad(%media%,2)-$pad(%track%,2) - %name%.%ext%)",
         "destination": "filePath",
         "priority": 1,
         "sequence": 1,
@@ -544,7 +544,7 @@
       },
       {
         "dataSourceId": "c0b391b0-8961-42d9-abe5-67bfa20172c6",
-        "source": "$path(%rootPath%,%language%,%genre%,%artist%,$if(%year%,$pad(%year%,4) - %album%, %album%),$pad(%media%,2)-$pad(%track%,2) - %title%.%ext%)",
+        "source": "$path(%rootPath%,%language%,%genre%,%artist%,$if(%year%,$pad(%year%,4) - %album%, %album%),$pad(%media%,2)-$pad(%track%,2) - %name%.%ext%)",
         "destination": "filePath",
         "priority": 1,
         "sequence": 1,

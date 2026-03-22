@@ -29,7 +29,7 @@ class="sp-table sp-table-list sp-table-support-overflow-ellipsis sp-auto-line-he
         <span
         class="sp-text-medium sp-no-select"
         [ngClass]="{ 'sp-color-playing': playlistSong.playerStatus === PlayerSongStatus.Playing }"
-        >{{playlistSong.cleanName}}</span>
+        >{{playlistSong.title}}</span>
         <br>
         <span class="sp-color-on-bg-low sp-text-small sp-no-select" [ngClass]="{ 'sp-color-primary-low': playlistSong.playerStatus === PlayerSongStatus.Playing }">
           <i [ngClass]="AppAttributeIcons.ArtistName">&nbsp;</i>

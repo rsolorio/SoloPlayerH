@@ -160,7 +160,7 @@ export class DatabaseEntitiesService {
     return {
       albumArtistName: song.primaryArtistId === EntityId.ArtistVarious ? song.primaryArtistName : song.primaryArtistStylized,
       artistName: artistName,
-      trackTitle: song.cleanName,
+      trackTitle: song.title,
       albumName: song.primaryAlbumStylized,
       mbId: song.mbId ? song.mbId : undefined
     };
