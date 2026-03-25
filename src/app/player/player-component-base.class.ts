@@ -52,8 +52,6 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   public images: RelatedImageEntity[] = [];
   public selectedImageIndex = -1;
   public contributors: string;
-  public animatedImage: RelatedImageEntity;
-  public animatedImageVisible = false;
 
   constructor(
     private playerServiceBase: HtmlPlayerService,
@@ -173,11 +171,14 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     // Get rid of animated art
     const songImages = await RelatedImageEntity.findBy({ relatedId: song.id });
     await this.setSrc(songImages);
+    const albumAnimatedImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: MusicImageType.FrontAnimated });
+    await this.setSrc(albumAnimatedImages);
     const albumImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: Not(MusicImageType.FrontAnimated) });
     await this.setSrc(albumImages);
     const artistImages = await RelatedImageEntity.findBy({ relatedId: song.primaryArtistId });
     await this.setSrc(artistImages);
-    this.images = [...songImages, ...albumImages, ...artistImages];
+    // We want to display images in this order
+    this.images = [...songImages, ...albumAnimatedImages, ...albumImages, ...artistImages];
     if (!this.images.length) {
       const defaultImages = await RelatedImageEntity.findBy({ id: RelatedImageId.DefaultLarge });
       await this.setSrc(defaultImages);
@@ -185,16 +186,6 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
     }
     if (this.images.length) {
       this.selectedImageIndex = 0;
-    }
-    const animatedImages = await RelatedImageEntity.findBy({ relatedId: song.primaryAlbumId, imageType: MusicImageType.FrontAnimated });
-    if (animatedImages?.length) {
-      this.animatedImage = animatedImages[0];
-      this.setSrc([this.animatedImage]);
-      this.animatedImageVisible = true;
-    }
-    else {
-      this.animatedImage = null;
-      this.animatedImageVisible = false;
     }
   }
 
@@ -294,10 +285,6 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
 
   public onTogglePlaylist() {
     this.model.playerList.isVisible = !this.model.playerList.isVisible;
-  }
-
-  public onToggleAnimation() {
-    this.animatedImageVisible = !this.animatedImageVisible;
   }
 
   public onCollapseClick() {

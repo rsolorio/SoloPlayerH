@@ -130,7 +130,12 @@ export class LogService {
         console.log(data);
       }
       // Adding 4 spaces indent
-      entry.data = JSON.stringify(data, null, 4);
+      try {
+        entry.data = JSON.stringify(data, null, 4);
+      }
+      catch {
+        entry.data = '[Data could not be stringified.]';
+      }
     }
     if (trace) {
       console.trace();

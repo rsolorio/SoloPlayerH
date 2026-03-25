@@ -288,6 +288,11 @@ export class ScanAudioService {
     return this.addAudioFile(metadata);
   }
 
+  /**
+   * Treats the specified metadata as a new audio file, creating brand new data for the associated song.
+   * @param metadata 
+   * @returns 
+   */
   private async addAudioFile(metadata: KeyValues): Promise<KeyValues> {
     // PRIMARY ALBUM ARTIST
     const primaryArtist = this.processAlbumArtist(metadata);
@@ -354,6 +359,13 @@ export class ScanAudioService {
     return metadata;
   }
 
+  /**
+   * Assumes the specified metadata belongs to an existing song file.
+   * It will update the following information:
+   * Lyrics, seconds, duration, bitrate, frequency, vbr, replayGain, fileSize, and images.
+   * @param metadata 
+   * @returns 
+   */
   private async updateAudioFile(metadata: KeyValues): Promise<KeyValues> {
     // Lyrics
     let lyrics = this.first(metadata[MetaAttribute.UnSyncLyrics]);

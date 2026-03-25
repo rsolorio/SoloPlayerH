@@ -76,6 +76,7 @@ export class AppTestService {
     // console.log('songs');
     // await this.updateImages(genres);
     // console.log('images');
+    //await this.getAnimatedArtUrls();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -92,7 +93,7 @@ export class AppTestService {
       const mp3Tag = new MP3Tag(buffer, true);
       mp3Tag.read();
       this.log.warn('mp3tag.js', mp3Tag.tags);
-      // Display lyrics content
+      // Display lyrics file content if exists
       const txtFile = selectedFiles[0].replace('.mp3', '.txt').replace('.flac', '.txt');
       if (txtFile.endsWith('.txt') && this.fileService.exists(txtFile)) {
         const lyrics = await this.fileService.getText(txtFile);
@@ -746,14 +747,15 @@ export class AppTestService {
 
   /**
    * Uses the apple api to search the specified album and get its metadata (especially if it has animated art).
+   * This methd requires to setup the supported origin in the main.ts.
    */
   private async getAlbumMetadata(albumRow: AlbumViewEntity): Promise<any> {
-    const albumMetadata = { id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
-    const token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzM3NDgwNzIxLCJleHAiOjE3NDQ3MzgzMjEsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.n_2fV0lbEYcLIKyt590X3A0oH8VFugS53cmTFiGHYxy1ilDRd-rWp9K1Ka2r5aAf-cRdsMaHx7VZSJ4IwG9UnQ';
-    const url = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumMetadata.albumName + ' ' + albumMetadata.artistName);
+    const albumMetadata = { searchUrl: '', id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
+    const token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzY4NTIxMTkyLCJleHAiOjE3NzU3Nzg3OTIsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.iZTD-bdGzofBHTdPBDcuXR8SGhObN6HYWBgYfPteY_457FtNd1xb-V6NZSuJgSyVcOzJh8LEIZWXHDD48UMP6Q';
+    albumMetadata.searchUrl = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumMetadata.albumName + ' ' + albumMetadata.artistName);
     
     try {
-      const response = await this.http.get(url, { headers: { authorization: 'Bearer ' + token }}).toPromise();
+      const response = await this.http.get(albumMetadata.searchUrl, { headers: { authorization: 'Bearer ' + token }}).toPromise();
       const searchData = response as any;
       if (searchData?.results?.albums?.data?.length) {
         const album = searchData.results.albums.data[0];
@@ -798,7 +800,7 @@ export class AppTestService {
           console.log(albumMetadata);
           result.push(albumMetadata);
         }
-        await new Promise(r => setTimeout(r, 2000));
+        await this.utility.sleep(2000);
       }
     }
     this.storage.setByKey('sp.AnimatedArtAlbums', processedAlbums);
@@ -826,8 +828,26 @@ export class AppTestService {
     console.log(availableAlbumArt);
   }
 
+  /**
+   * Just a temporary method to get urls of all albums with animated art.
+   */
+  private async getAnimatedArtUrls(): Promise<void> {
+    const albumData: any[] = [];
+    const albums = await AlbumViewEntity.find();
+    for (const album of albums) {
+      const animatedArt = await RelatedImageEntity.findOneBy({ relatedId: album.id, imageType: MusicImageType.FrontAnimated });
+      if (animatedArt) {
+        const albumMetadata = await this.getAlbumMetadata(album);
+        albumData.push(albumMetadata);
+      }
+    }
+    const jsonString = JSON.stringify(albumData, null, 4);
+    await this.fileService.writeText('animatedUrls.json', jsonString);
+    console.log('Done');
+  }
+
   private async updateSongs(newGenres: string[]): Promise<void> {
-    const songs = await SongEntity.findBy({ genre: In(['Jazz']), language: In(['English']) });
+    const songs = await SongEntity.findBy({ genre: In(['Rock']), language: In(['Spanish']) });
     for (const song of songs) {
       if (!this.fileService.exists(song.filePath)) {
         const result = await this.updateSongGenre(song, newGenres);
@@ -838,7 +858,7 @@ export class AppTestService {
 
   private async updateSongGenre(song: SongEntity, newGenres: string[]): Promise<boolean> {
     for (const newGenre of newGenres) {
-      const newPath = song.filePath.replace('\\Jazz\\', `\\${newGenre}\\`);
+      const newPath = song.filePath.replace('\\Rock\\', `\\${newGenre}\\`);
       if (this.fileService.exists(newPath)) {
         song.filePath = newPath;
         song.genre = newGenre;
@@ -865,13 +885,13 @@ export class AppTestService {
   // }
 
   private async updateImages(newGenres: string[]): Promise<void> {
-    const images1 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\English\\Jazz\\%')});
+    const images1 = await RelatedImageEntity.findBy({ sourcePath: Like('D:\\Mp3\\Spanish\\Rock\\%')});
     //const images2 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Spanish\\Other\\%')});
     //const images = images1.concat(images2);
     for (const image of images1) {
       if (!this.fileService.exists(image.sourcePath)) {
         for (const newGenre of newGenres) {
-          const newPath = image.sourcePath.replace('\\Jazz\\', `\\${newGenre}\\`);
+          const newPath = image.sourcePath.replace('\\Rock\\', `\\${newGenre}\\`);
           if (this.fileService.exists(newPath)) {
             image.sourcePath = newPath;
             image.hash = this.lookup.hashImage(newPath, 0);

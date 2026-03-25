@@ -501,7 +501,6 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const pictures: IAttachedPicture[] = [];
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumImage]), AttachedPictureType.Front, 'Front');
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumSecondaryImage]), AttachedPictureType.Front, 'Front2');
-    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumAnimated]), AttachedPictureType.Front, 'Animated');
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.SingleImage]), AttachedPictureType.Other, 'Single');
     await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumArtistImage]), AttachedPictureType.LeadArtist, albumArtist);
     if (pictures.length) {
