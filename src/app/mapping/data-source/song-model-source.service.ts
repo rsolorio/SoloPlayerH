@@ -69,6 +69,14 @@ export class SongModelSourceService implements IDataSourceService {
     return true;
   }
 
+  /**
+   * Gets the data associated with the specified attribute.
+   * The first step in the process is to look for mappings by matching the mapping destination property with the attribute;
+   * if a mapping is found, its source will define an expression to retrieve the data;
+   * if no mapping is found, the method will go through hardcoded logic to get the data based on the attribute name.
+   * @param attributeName The name of the attribute.
+   * @returns The data of the attribute as an array.
+   */
   public async getData(attributeName: string): Promise<any[]> {
     const mappings = this.getMappings(attributeName);
     if (mappings?.length) {
@@ -115,12 +123,12 @@ export class SongModelSourceService implements IDataSourceService {
         return await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.Front);
       case MetaAttribute.AlbumSecondaryImage:
         return await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.FrontAlternate);
+      case MetaAttribute.AlbumAnimated:
+        return await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.FrontAnimated);
       case MetaAttribute.SingleImage:
         return await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
       case MetaAttribute.AlbumArtistImage:
         return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.AlbumArtist);
-      case MetaAttribute.AlbumAnimated:
-        return await this.getRelatedImagePath(this.inputData.primaryArtistId, MusicImageType.FrontAnimated);
       case MetaAttribute.Title:
         return [this.inputData.title];
       case MetaAttribute.ArtistType:
@@ -182,6 +190,9 @@ export class SongModelSourceService implements IDataSourceService {
    * Gets mappings associated with the specified field and sorted by priority.
    */
   private getMappings(destinationField: string): DataMappingEntity[] {
+    // In theory, these mappings will never be user defined mappings,
+    // since user defined mappings use the "destination" property to specify brand new custom attributes,
+    // and this source has hardcoded attributes.
     const mappings = this.entityData.mappings.filter(m => m.destination === destinationField && !m.disabled);
     return this.utility.sort(mappings, 'priority');
   }
@@ -392,10 +403,14 @@ export class SongModelSourceService implements IDataSourceService {
     }
   }
 
-  private async getRelatedImagePath(songId: string, imageType: MusicImageType): Promise<string[]> {
-    const relatedImage = await RelatedImageEntity.findOneBy({ relatedId: songId, imageType: imageType, sourceType: MusicImageSourceType.ImageFile });
+  private async getRelatedImagePath(relatedId: string, imageType: MusicImageType): Promise<string[]> {
+    const relatedImage = await RelatedImageEntity.findOneBy({ relatedId: relatedId, imageType: imageType, sourceType: MusicImageSourceType.ImageFile });
     if (relatedImage?.sourcePath) {
       return [relatedImage.sourcePath];
+    }
+    // If no front cover found return a default
+    if (imageType === MusicImageType.Front) {
+      return ['./src/assets/img/default-image-full.jpg'];
     }
     return [];
   }

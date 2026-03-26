@@ -114,6 +114,8 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const originalAudioBuffer = await this.fileService.getBuffer(result.sourcePath);
     // 4. Write metadata
     await this.writeMetadata(originalAudioBuffer, result.destinationPath, result.metadata);
+    // 5. Create associated files
+    await this.createAssociatedFiles(result.destinationPath, result.metadata);
     return result;
   }
 
@@ -174,6 +176,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
   }
 
+  /**
+   * Crates the song file with the proper tag metadata.
+   * @param existingAudioBuffer 
+   * @param newFilePath 
+   * @param metadata 
+   */
   private async writeMetadata(existingAudioBuffer: Buffer, newFilePath: string, metadata: KeyValues): Promise<void> {
     const config = this.syncProfile.configObj as IExportConfig;
     // Save to v2.3 by default, and also support v2.4
@@ -219,7 +227,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
    * seconds, tempo (bpm), owner, ufid, mbId, playCount, rating, replayGain, url, videoUrl, advisory,
    * subgenre, category, occasion, instrument,
-   * albumImage, albumSecondaryImage, singleImage, albumArtistImage
+   * (albumImage, albumSecondaryImage, singleImage, albumArtistImage, and descriptions)
    */
   private async setupV2Tags(metadata: KeyValues, v2Version: number): Promise<any> {
     const tags: any = {};
@@ -356,6 +364,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.TIT1 = grouping;
     }
 
+    // TODO: give the user the ability to exclude lyrics from tags, but include as file
     const lyrics = this.first(metadata[MetaAttribute.UnSyncLyrics]);
     if (lyrics) {
       tags.USLT = [{
@@ -499,10 +508,13 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     }
 
     const pictures: IAttachedPicture[] = [];
-    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumImage]), AttachedPictureType.Front, 'Front');
-    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumSecondaryImage]), AttachedPictureType.Front, 'Front2');
-    await this.addPicture(pictures, this.first(metadata[MetaAttribute.SingleImage]), AttachedPictureType.Other, 'Single');
-    await this.addPicture(pictures, this.first(metadata[MetaAttribute.AlbumArtistImage]), AttachedPictureType.LeadArtist, albumArtist);
+    const imageAttributes = [MetaAttribute.AlbumImage, MetaAttribute.AlbumSecondaryImage, MetaAttribute.SingleImage, MetaAttribute.AlbumArtistImage];
+    for (const imageAttribute of imageAttributes) {
+      const imageDescription = this.first(metadata[imageAttribute + 'Description']);
+      if (imageDescription) {
+        await this.addPicture(pictures, this.first(metadata[imageAttribute]), AttachedPictureType.Front, imageDescription);
+      }
+    }
     if (pictures.length) {
       tags.APIC = pictures;
     }
@@ -559,6 +571,38 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
 
   private first(array: any[]): any {
     return this.utility.first(array);
+  }
+
+  /**
+   * Writes certain metadata directly to a file associated with the song file.
+   * This method supports the following metadata attributes:
+   * Source paths: albumImage, albumSecondaryImage, singleImage, albumArtistImage, albumAnimated
+   * Destination paths: albumImagePath, albumSecondaryImagePath, singleImagePath, albumArtistImagePath, albumAnimatedPath
+   * Source texts: unSyncLyrics, syncLyrics
+   * Destination paths: unSyncLyricsPaths, syncLyricsPaths
+   * @param newFilePath 
+   * @param metadata 
+   */
+  private async createAssociatedFiles(newFilePath: string, metadata: KeyValues): Promise<void> {
+    const fileAttributes = [MetaAttribute.AlbumImage, MetaAttribute.AlbumSecondaryImage, MetaAttribute.SingleImage, MetaAttribute.AlbumArtistImage, MetaAttribute.AlbumAnimated];
+    for (const fileAttribute of fileAttributes) {
+      const sourcePath = this.first(metadata[fileAttribute]);
+      const destinationPath = this.first(metadata[fileAttribute + 'Path']);
+      if (sourcePath && destinationPath && !this.fileService.exists(destinationPath)) {
+        // TODO: point destination path to proper path if not specified
+        await this.fileService.copyFile(sourcePath, destinationPath);
+      }
+    }
+
+    const textAttributes = [MetaAttribute.UnSyncLyrics, MetaAttribute.SyncLyrics];
+    for (const textAttribute of textAttributes) {
+      const textContent = this.first(metadata[textAttribute]);
+      const destinationPath = this.first(metadata[textAttribute + 'Path']);
+      if (textContent && destinationPath && !this.fileService.exists(destinationPath)) {
+        // TODO: point destination path to proper path if not specified
+        await this.fileService.writeText(destinationPath, textContent);
+      }
+    }
   }
 
   /**

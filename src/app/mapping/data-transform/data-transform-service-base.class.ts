@@ -60,11 +60,13 @@ export abstract class DataTransformServiceBase<TProcessInput, TDataInput, TProce
     if (!userDefinedMappings.length) {
       return;
     }
-    // Setup the list of ud fields
+    // Custom attribute that specifies which other metadata attributes were setup from user defined fields.
     if (!metadata[MetaAttribute.UserDefinedField]) {
       metadata[MetaAttribute.UserDefinedField] = [];
     }
     const userDefinedFields = metadata[MetaAttribute.UserDefinedField];
+    // Iterate each user defined mapping, get the data, and store it in the metadata, using the destination name as the key;
+    // this is similar to what the setValues method does.
     for (const mapping of userDefinedMappings) {
       if (!userDefinedFields.includes(mapping.destination)) {
         userDefinedFields.push(mapping.destination);
@@ -75,6 +77,14 @@ export abstract class DataTransformServiceBase<TProcessInput, TDataInput, TProce
     }
   }
 
+  /**
+   * Iterates to each attribute in the list and gets its associated data from the specified data source service.
+   * The data is stored in the metadata object.
+   * @param metadata 
+   * @param service 
+   * @param attributes 
+   * @returns 
+   */
   protected async setValues(metadata: KeyValues, service: IDataSourceService, attributes: string[]) {
     if (!attributes || !attributes.length) {
       return;

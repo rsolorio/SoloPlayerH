@@ -9,6 +9,9 @@ export enum RelatedImageId {
   DefaultSmall = '3228514b-53a7-4853-baef-7bf6af2c41c1'
 }
 
+/**
+ * List of default images and their relative src (url) properties that can be used within img elements.
+ */
 export enum RelatedImageSrc {
   /** Default image at 1000x1000. */
   DefaultFull = '../assets/img/default-image-full.jpg',
