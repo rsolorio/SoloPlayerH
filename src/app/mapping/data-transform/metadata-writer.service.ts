@@ -13,7 +13,7 @@ import { ImageService } from 'src/app/platform/image/image.service';
 import { IMetadataWriterOutput } from './data-transform.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
-import { appName } from 'src/app/app-exports';
+import { appName, xmlDeclaration } from 'src/app/app-exports';
 import { IExportConfig } from 'src/app/sync-profile/export/export.interface';
 import { MpegTagVersion } from 'src/app/shared/models/music.enum';
 const MP3Tag = require('mp3tag.js');
@@ -590,16 +590,24 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       const destinationPath = this.first(metadata[fileAttribute + 'Path']);
       if (sourcePath && destinationPath && !this.fileService.exists(destinationPath)) {
         // TODO: point destination path to proper path if not specified
+        // TODO: copy if the source file is newer than the destination file
         await this.fileService.copyFile(sourcePath, destinationPath);
       }
     }
 
-    const textAttributes = [MetaAttribute.UnSyncLyrics, MetaAttribute.SyncLyrics];
+    const textAttributes = [MetaAttribute.UnSyncLyrics, MetaAttribute.SyncLyrics, MetaAttribute.AlbumArtistInfoXml];
     for (const textAttribute of textAttributes) {
-      const textContent = this.first(metadata[textAttribute]);
+      let textContent = this.first(metadata[textAttribute]);
       const destinationPath = this.first(metadata[textAttribute + 'Path']);
       if (textContent && destinationPath && !this.fileService.exists(destinationPath)) {
-        // TODO: point destination path to proper path if not specified
+        if (textAttribute.endsWith('Xml')) {
+          // Append the xml declaration
+          textContent = xmlDeclaration + textContent;
+        }
+        // TODO: point destination path to proper path if not specified (or maybe we simply support full paths)
+        const dirPath = this.fileService.getDirectoryPath(destinationPath);
+        // Ensure the parent directories are created
+        await this.fileService.createDirectory(dirPath);
         await this.fileService.writeText(destinationPath, textContent);
       }
     }

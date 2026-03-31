@@ -168,6 +168,8 @@ export enum MetaAttribute {
   OtherImage = 'otherImage',
   /** IImageSource. FileInfo */
   AlbumAnimated = 'albumAnimated',
+  /** String. Custom. */
+  AlbumArtistInfoXml = 'albumArtistInfoXml',
   /** String. FileInfo */
   FilePath = 'filePath',
   /** String. FileInfo */

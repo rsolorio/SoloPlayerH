@@ -42,3 +42,4 @@ export function toTicks(value: Date, removeOffset?: boolean): number {
 
 export const appName = 'SoloPlayer';
 export const cryptKey = '6f495abd-3746-40d8-9ea2-83a97e0310d7';
+export const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
