@@ -192,6 +192,31 @@ export abstract class ImageService {
     return result;
   }
 
+  public getImageSize(src: string): Promise<ISize> {
+    return new Promise<ISize>((resolve, reject) => {
+      try {
+        const imageElement = new Image();
+        imageElement.onload = () => {
+          resolve({
+            width: imageElement.naturalWidth,
+            height: imageElement.naturalHeight
+          });
+        };
+        imageElement.onerror = () => {
+          imageElement.decode().then(() => {
+            reject('Error but properly decoded.');
+          }).catch(err => {
+            reject(err);
+          });
+        };
+        imageElement.src = src;
+      }
+      catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   /**
    * Generates a new image source with smaller dimensions.
    * @param image The image to shrink

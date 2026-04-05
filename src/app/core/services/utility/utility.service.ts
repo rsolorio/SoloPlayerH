@@ -527,6 +527,11 @@ export class UtilityService {
     return value.replace(/[/\\?%*:|"<>]/g, '');
   }
 
+  /**
+   * Returns "true" if the string is '1', 'true' or 'yes'.
+   * @param value 
+   * @returns A boolean indicating if the string is true.
+   */
   public isTrue(value: string): boolean {
     if (value) {
       if (value === '1') {

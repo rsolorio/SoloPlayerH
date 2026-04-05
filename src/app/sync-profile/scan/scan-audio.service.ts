@@ -30,9 +30,10 @@ import { AlbumName, ArtistName, EntityId, ImageName, ModuleOptionId, SyncProfile
 import { Criteria, CriteriaItem } from '../../shared/services/criteria/criteria.class';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { PartyRelationType } from '../../shared/models/music.enum';
-import { IImageSource, KeyValues } from 'src/app/core/models/core.interface';
+import { IImageSource, ISize, KeyValues } from 'src/app/core/models/core.interface';
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { DatabaseEntitiesService } from '../../shared/services/database/database-entities.service';
+import { ImageService } from 'src/app/platform/image/image.service';
 
 enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -89,6 +90,7 @@ export class ScanAudioService {
 
   constructor(
     private fileService: FileService,
+    private imageService: ImageService,
     private metadataReader: MetadataReaderService,
     private utility: UtilityService,
     private db: DatabaseService,
@@ -295,16 +297,16 @@ export class ScanAudioService {
    */
   private async addAudioFile(metadata: KeyValues): Promise<KeyValues> {
     // PRIMARY ALBUM ARTIST
-    const primaryArtist = this.processAlbumArtist(metadata);
+    const primaryArtist = await this.processAlbumArtist(metadata);
 
     // MULTIPLE ARTISTS
     const artists = this.processArtists(metadata, this.artistSplitSymbols);
 
     // PRIMARY ALBUM
-    const primaryAlbum = this.processAlbum(primaryArtist, metadata);
+    const primaryAlbum = await this.processAlbum(primaryArtist, metadata);
 
     // MAIN SONG
-    this.songToProcess = this.processSong(primaryAlbum, metadata);
+    this.songToProcess = await this.processSong(primaryAlbum, metadata);
     // Add the new song
     this.existingSongs.push(this.songToProcess);
 
@@ -456,15 +458,15 @@ export class ScanAudioService {
 
     // Images
     const existingAlbum = this.existingAlbums.find(a => a.id === this.songToProcess.primaryAlbumId);
-    this.processImage(existingAlbum.primaryArtistId, metadata, MetaAttribute.ArtistImage);
-    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumImage);
-    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumSecondaryImage);
-    this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumAnimated);
-    this.processImage(this.songToProcess.id, metadata, MetaAttribute.SingleImage);
+    await this.processImage(existingAlbum.primaryArtistId, metadata, MetaAttribute.ArtistImage);
+    await this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumImage);
+    await this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumSecondaryImage);
+    await this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumAnimated);
+    await this.processImage(this.songToProcess.id, metadata, MetaAttribute.SingleImage);
     return metadata;
   }
 
-  private processAlbumArtist(metadata: KeyValues): ArtistEntity {
+  private async processAlbumArtist(metadata: KeyValues): Promise<ArtistEntity> {
     let artistName = this.first(metadata[MetaAttribute.AlbumArtist]);
     if (!artistName) {
       artistName = this.first(metadata[MetaAttribute.Artist]);
@@ -503,12 +505,12 @@ export class ScanAudioService {
       return existingArtist;
     }
 
-    this.processImage(newArtist.id, metadata, MetaAttribute.AlbumArtistImage);
+    await this.processImage(newArtist.id, metadata, MetaAttribute.AlbumArtistImage);
     this.existingArtists.push(newArtist);
     return newArtist;
   }
 
-  private processAlbum(artist: ArtistEntity, metadata: KeyValues): AlbumEntity {
+  private async processAlbum(artist: ArtistEntity, metadata: KeyValues): Promise<AlbumEntity> {
     const newAlbum = new AlbumEntity();
     this.preSet(metadata, newAlbum);
     this.set(MetaAttribute.Album, 'name', AlbumName.Unknown);
@@ -555,15 +557,15 @@ export class ScanAudioService {
     const albumType = this.first(metadata[MetaAttribute.AlbumType]);
     newAlbum.albumType = albumType ? this.registerValueListEntry(albumType, ValueLists.AlbumType.id, this.existingAlbumTypes) : ValueLists.AlbumType.entries.Album.name;
     newAlbum.hash = this.lookupService.hashAlbum(newAlbum.name, newAlbum.releaseYear);
-    this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumImage);
-    this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumSecondaryImage);
-    this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumAnimated);
+    await this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumImage);
+    await this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumSecondaryImage);
+    await this.processImage(newAlbum.id, metadata, MetaAttribute.AlbumAnimated);
 
     this.existingAlbums.push(newAlbum);
     return newAlbum;
   }
 
-  private processSong(album: AlbumEntity, metadata: KeyValues): SongEntity {
+  private async processSong(album: AlbumEntity, metadata: KeyValues): Promise<SongEntity> {
     const song = new SongEntity();
     song.id = this.utility.newGuid();
     song.isNew = true;
@@ -686,11 +688,11 @@ export class ScanAudioService {
     song.infoUrl = this.first(metadata[MetaAttribute.Url]);
     song.videoUrl = this.first(metadata[MetaAttribute.VideoUrl]);
 
-    this.processImage(song.id, metadata, MetaAttribute.SingleImage);
+    await this.processImage(song.id, metadata, MetaAttribute.SingleImage);
     return song;
   }
 
-  private processImage(relatedId: string, metadata: KeyValues, field: MetaAttribute): void {
+  private async processImage(relatedId: string, metadata: KeyValues, field: MetaAttribute): Promise<void> {
     const image = this.first(metadata[field]) as IImageSource;
 
     if (image && image.sourcePath) {
@@ -708,6 +710,24 @@ export class ScanAudioService {
         newImage.imageType = image.imageType;
         newImage.mimeType = image.mimeType;
         newImage.isNew = true;
+        let imageSize: ISize;
+        try {
+          if (newImage.sourceType === MusicImageSourceType.ImageFile) {
+            imageSize = await this.imageService.getImageSize(this.utility.fileToUrl(image.sourcePath));
+          }
+          else if (newImage.sourceType === MusicImageSourceType.Url) {
+            imageSize = await this.imageService.getImageSize(image.sourcePath);
+          }
+          else {
+            imageSize = { height: 0, width: 0 };
+          }
+        }
+        catch (err) {
+          this.log.warn('Error getting image size for: ' + image.sourcePath, err);
+          imageSize = { height: 0, width: 0 };
+        }
+        newImage.height = imageSize.height;
+        newImage.width = imageSize.width;
         this.existingImages.push(newImage);
       }
     }

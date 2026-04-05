@@ -9,7 +9,7 @@ import { DatabaseEntitiesService } from "./shared/services/database/database-ent
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
 import { AlbumViewEntity, ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedByPlaylistViewEntity, SongExtendedViewEntity, SongViewEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
-import { IValuePair } from "./core/models/core.interface";
+import { ISize, IValuePair } from "./core/models/core.interface";
 import { ValueLists } from "./shared/services/database/database.lists";
 import { DatabaseLookupService } from "./shared/services/database/database-lookup.service";
 import { In, IsNull, Like, MoreThan, Not } from "typeorm";
@@ -18,12 +18,13 @@ import { CriteriaComparison } from "./shared/services/criteria/criteria.enum";
 import { RelativeDateUnit } from "./shared/services/relative-date/relative-date.enum";
 import { HttpClient } from "@angular/common/http";
 import { LocalStorageService } from "./core/services/local-storage/local-storage.service";
-import { MusicImageType } from "./platform/audio-metadata/audio-metadata.enum";
+import { MusicImageSourceType, MusicImageType } from "./platform/audio-metadata/audio-metadata.enum";
 import { RelatedImageId, SyncProfileId } from "./shared/services/database/database.seed";
 import { MetadataReaderService } from "./mapping/data-transform/metadata-reader.service";
 import { LastFmService } from "./shared/services/last-fm/last-fm.service";
 import { MusicBrainzService } from "./shared/services/music-brainz/music-brainz.service";
 import { IMbRecording, IMbSearchResponse } from "./shared/services/music-brainz/music-brainz.interface";
+import { ImageService } from "./platform/image/image.service";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -40,6 +41,7 @@ export class AppTestService {
     private exporter: ExportService,
     private dialog: DialogService,
     private fileService: FileService,
+    private imageService: ImageService,
     private db: DatabaseService,
     private entities: DatabaseEntitiesService,
     private options: DatabaseOptionsService,
@@ -71,12 +73,15 @@ export class AppTestService {
     //await this.getMbIds();
 
     // const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
-    // const genres = ['Pop',];
-    // await this.updateSongs(genres);
+    // const newGenres = ['Soundtrack',];
+    // await this.updateSongs('English', 'Hip-Hop', newGenres);
     // console.log('songs');
-    // await this.updateImages(genres);
+    // await this.updateImages('English', 'Hip-Hop', newGenres);
     // console.log('images');
     //await this.getAnimatedArtUrls();
+    //await this.getAndStoreAnimatedArtList();
+    //await this.getAnimatedArtUrls();
+    //await this.updateImageSize();
   }
 
   private async logFileMetadata(): Promise<void> {
@@ -661,6 +666,16 @@ export class AppTestService {
       value: 'SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade'
     });
 
+    queries.push({
+      caption: 'Animated art count. Initial value: 451',
+      value: 'SELECT COUNT(id) AS animatedArtCount FROM relatedImage WHERE imageType = "FrontAnimated"'
+    });
+
+    queries.push({
+      caption: 'Animated art by decade',
+      value: 'SELECT album.releaseDecade, COUNT(album.id) AS albumCount FROM album INNER JOIN relatedImage ON album.id = relatedImage.relatedId WHERE relatedImage.imageType = "FrontAnimated" GROUP BY album.releaseDecade'
+    });
+
     // MOOD ----------------------------------------------------------
     queries.push({
       caption: 'Songs by mood. Initial Unknown value: 1173',
@@ -747,7 +762,7 @@ export class AppTestService {
 
   /**
    * Uses the apple api to search the specified album and get its metadata (especially if it has animated art).
-   * This methd requires to setup the supported origin in the main.ts.
+   * This method requires to setup the supported origin in the main.ts.
    */
   private async getAlbumMetadata(albumRow: AlbumViewEntity): Promise<any> {
     const albumMetadata = { searchUrl: '', id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
@@ -773,92 +788,64 @@ export class AppTestService {
   }
 
   /**
-   * Iterates the list of all albums and determines (by reading data from local storage)
-   * if metadata has not retrieved yet, if not, it will get it from the apple api
-   * and save it in local storage.
+   * Iterates all the existing albums with no animated art in the db, and returns a list of metadata with animated art in the apple api.
+   * @returns 
    */
-  private async findAnimatedArt(): Promise<void> {
-    let processedAlbums = this.storage.getByKey<any[]>('sp.AnimatedArtAlbums');
-    if (!processedAlbums) {
-      processedAlbums = [];
-    }
-    const result = [];
+  private async getAndStoreAnimatedArtList(): Promise<void> {
+    const albumMetadataItems: any[] = [];
     let albums = await AlbumViewEntity.find();
-    albums = this.utility.sort(albums, 'releaseYear', true);
+    albums = this.utility.sort(albums, 'primaryArtistName');
+    console.log('Total albums: ' + albums.length);
     for (const album of albums) {
-      const processedAlbum = processedAlbums.find(i => i.id === album.id);
-      if (!processedAlbum) {
+      const animatedArt = await RelatedImageEntity.findOneBy({ relatedId: album.id, imageType: MusicImageType.FrontAnimated });
+      if (!animatedArt) {
         const albumMetadata = await this.getAlbumMetadata(album);
-        if (albumMetadata.error) {
-          console.log(albumMetadata.error);
-          console.log(result);
-          this.storage.setByKey('sp.AnimatedArtAlbums', processedAlbums);
-          return;
-        }
-        processedAlbums.push(albumMetadata);
+        console.log(albumMetadata.artistName + ' ' + albumMetadata.albumName);
         if (albumMetadata.hasAnimatedArt) {
-          console.log(albumMetadata);
-          result.push(albumMetadata);
+          albumMetadataItems.push(albumMetadata);
+          this.storage.setByKey('sp.AnimatedArtAlbums', albumMetadataItems);
+          console.log('%c%s', `color: #e9ff25`, 'Album has animated art.');
+        }
+        else if (albumMetadata.error) {
+          console.log('%c%s','color: #cc0000', 'Album error:');
+          console.log(albumMetadata.error);
+        }
+        else {
+          console.log('%c%s', 'color: #2a9fd6', 'Album without animated art.');
         }
         await this.utility.sleep(2000);
       }
     }
-    this.storage.setByKey('sp.AnimatedArtAlbums', processedAlbums);
-    console.log(result);
-  }
-
-  /**
-   * Finds albums with no animated art, and then determines if there's metadata in local storage
-   * that indicates there's animated art in the apple api.
-   */
-  private async getAvailableAlbumArt(): Promise<void> {
-    const processedAlbums = this.storage.getByKey<any[]>('sp.AnimatedArtAlbums');
-    const availableAlbumArt = [];
-    let albums = await AlbumViewEntity.find();
-    albums = this.utility.sort(albums, 'primaryArtistName');
-    for (const album of albums) {
-      const animatedArt = await RelatedImageEntity.findOneBy({ relatedId: album.id, imageType: MusicImageType.FrontAnimated });
-      if (!animatedArt) {
-        const processedAlbum = processedAlbums.find(i => i.id === album.id);
-        if (processedAlbum && processedAlbum.hasAnimatedArt) {
-          availableAlbumArt.push(processedAlbum);
-        }
-      }
-    }
-    console.log(availableAlbumArt);
+    console.log('Done');
   }
 
   /**
    * Just a temporary method to get urls of all albums with animated art.
    */
   private async getAnimatedArtUrls(): Promise<void> {
-    const albumData: any[] = [];
-    const albums = await AlbumViewEntity.find();
-    for (const album of albums) {
-      const animatedArt = await RelatedImageEntity.findOneBy({ relatedId: album.id, imageType: MusicImageType.FrontAnimated });
-      if (animatedArt) {
-        const albumMetadata = await this.getAlbumMetadata(album);
-        albumData.push(albumMetadata);
-      }
-    }
-    const jsonString = JSON.stringify(albumData, null, 4);
+    const albumMetadata = this.storage.getByKey<any[]>('sp.AnimatedArtAlbums');
+    const jsonString = JSON.stringify(albumMetadata, null, 4);
     await this.fileService.writeText('animatedUrls.json', jsonString);
     console.log('Done');
   }
 
-  private async updateSongs(newGenres: string[]): Promise<void> {
-    const songs = await SongEntity.findBy({ genre: In(['Rock']), language: In(['Spanish']) });
+  /**
+   * Updates the genres of all songs that match the specified genre and language.
+   * @param newGenres 
+   */
+  private async updateSongs(language: string, genre: string, newGenres: string[]): Promise<void> {
+    const songs = await SongEntity.findBy({ genre: In([genre]), language: In([language]) });
     for (const song of songs) {
       if (!this.fileService.exists(song.filePath)) {
-        const result = await this.updateSongGenre(song, newGenres);
+        const result = await this.updateSongGenre(song, genre, newGenres);
         console.log(`Song updated: ${result} ${song.filePath}`);
       }
     }
   }
 
-  private async updateSongGenre(song: SongEntity, newGenres: string[]): Promise<boolean> {
+  private async updateSongGenre(song: SongEntity, genre: string, newGenres: string[]): Promise<boolean> {
     for (const newGenre of newGenres) {
-      const newPath = song.filePath.replace('\\Rock\\', `\\${newGenre}\\`);
+      const newPath = song.filePath.replace(`\\${genre}\\`, `\\${newGenre}\\`);
       if (this.fileService.exists(newPath)) {
         song.filePath = newPath;
         song.genre = newGenre;
@@ -884,18 +871,25 @@ export class AppTestService {
   //   return false;
   // }
 
-  private async updateImages(newGenres: string[]): Promise<void> {
-    const images1 = await RelatedImageEntity.findBy({ sourcePath: Like('D:\\Mp3\\Spanish\\Rock\\%')});
+  /**
+   * Updates hash and sourcePath of relatedImage records with new genre.
+   * @param languageFolder 
+   * @param genreFolder 
+   * @param newGenres 
+   */
+  private async updateImages(languageFolder: string, genreFolder: string, newGenres: string[]): Promise<void> {
+    const images1 = await RelatedImageEntity.findBy({ sourcePath: Like(`D:\\Mp3\\${languageFolder}\\${genreFolder}\\%`)});
     //const images2 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Spanish\\Other\\%')});
     //const images = images1.concat(images2);
     for (const image of images1) {
       if (!this.fileService.exists(image.sourcePath)) {
         for (const newGenre of newGenres) {
-          const newPath = image.sourcePath.replace('\\Rock\\', `\\${newGenre}\\`);
+          const newPath = image.sourcePath.replace(`\\${genreFolder}\\`, `\\${newGenre}\\`);
           if (this.fileService.exists(newPath)) {
             image.sourcePath = newPath;
             image.hash = this.lookup.hashImage(newPath, 0);
             await image.save();
+            console.log(`Image updated: ${image.sourcePath}`);
           }
         }
       }
@@ -1015,5 +1009,36 @@ export class AppTestService {
         console.log(`${response.recordings.length} matches found for: ${song.title} - ${artistName} - ${song.primaryAlbumStylized} - ${song.releaseYear}.`);
       }
     }
+  }
+
+  private async updateImageSize(): Promise<void> {
+    let relatedImages = await RelatedImageEntity.find();
+    relatedImages = this.utility.sort(relatedImages, 'sourcePath');
+    for (const relatedImage of relatedImages) {
+      if (!relatedImage.height || !relatedImage.width) {
+        try {
+          let imageSize: ISize;
+          if (relatedImage.sourceType === MusicImageSourceType.ImageFile) {
+            imageSize = await this.imageService.getImageSize(this.utility.fileToUrl(relatedImage.sourcePath));
+          }
+          else if (relatedImage.sourceType === MusicImageSourceType.Url) {
+            imageSize = await this.imageService.getImageSize(relatedImage.sourcePath);
+          }
+          else {
+            continue;
+          }
+          
+          relatedImage.height = imageSize.height;
+          relatedImage.width = imageSize.width;
+          await relatedImage.save();
+          console.log(`${relatedImage.sourcePath} ${relatedImage.height}X${relatedImage.width}`);
+        }
+        catch (err) {
+          console.log('%c%s', 'color: red', relatedImage.sourcePath);
+          console.log(err);
+        }
+      }
+    }
+    console.log('Done');
   }
 }

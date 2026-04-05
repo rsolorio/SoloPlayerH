@@ -21,6 +21,10 @@ export class RelatedImageEntity extends DbEntity implements IImage, IImageSource
   colorSelection: string;
   @Column({ nullable: true })
   colorPalette: string;
+  @Column()
+  height: number;
+  @Column()
+  width: number;
 
   src: string;
   srcType: ImageSrcType;
