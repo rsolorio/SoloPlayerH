@@ -458,7 +458,7 @@ export class ScanAudioService {
 
     // Images
     const existingAlbum = this.existingAlbums.find(a => a.id === this.songToProcess.primaryAlbumId);
-    await this.processImage(existingAlbum.primaryArtistId, metadata, MetaAttribute.ArtistImage);
+    await this.processImage(existingAlbum.primaryArtistId, metadata, MetaAttribute.AlbumArtistImage);
     await this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumImage);
     await this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumSecondaryImage);
     await this.processImage(this.songToProcess.primaryAlbumId, metadata, MetaAttribute.AlbumAnimated);
@@ -466,7 +466,14 @@ export class ScanAudioService {
     return metadata;
   }
 
-  private async processAlbumArtist(metadata: KeyValues): Promise<ArtistEntity> {
+  /**
+   * Gets the album artist name from the metadata using the proper "album artist" attribute if exists;
+   * if not found, it will try to get the name from the "artist" attribute;
+   * if nothing is found, it will return "Unknown".
+   * @param metadata 
+   * @returns 
+   */
+  private getAlbumArtistName(metadata: KeyValues): string {
     let artistName = this.first(metadata[MetaAttribute.AlbumArtist]);
     if (!artistName) {
       artistName = this.first(metadata[MetaAttribute.Artist]);
@@ -474,6 +481,11 @@ export class ScanAudioService {
         artistName = ArtistName.Unknown
       }
     }
+    return artistName;
+  }
+
+  private async processAlbumArtist(metadata: KeyValues): Promise<ArtistEntity> {
+    const artistName = this.getAlbumArtistName(metadata);
 
     const artistType = this.first(metadata[MetaAttribute.ArtistType]);
     const country = this.first(metadata[MetaAttribute.Country]);
@@ -753,10 +765,7 @@ export class ScanAudioService {
     }
 
     if (imageType === MusicImageType.AlbumArtist) {
-      const albumArtist = this.first(metadata[MetaAttribute.AlbumArtist]);
-      if (albumArtist) {
-        return albumArtist;
-      }
+      return this.getAlbumArtistName(metadata);
     }
 
     if (imageType === MusicImageType.Artist) {
@@ -1280,7 +1289,7 @@ export class ScanAudioService {
     /** Starts as the original artist but it may change to a different existing artist or a new one. */
     let primaryArtist = await ArtistEntity.findOneBy({ id: primaryAlbum.primaryArtistId });
 
-    const newArtistName = this.first(newMetadata[MetaAttribute.AlbumArtist]);
+    const newArtistName = this.getAlbumArtistName(newMetadata);
     const newAlbumName = this.first(newMetadata[MetaAttribute.Album]);
     const newYear = this.first(newMetadata[MetaAttribute.Year]);
     const newReleaseYear = newYear ? newYear : 0;
