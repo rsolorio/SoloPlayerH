@@ -80,7 +80,6 @@ export class AppTestService {
     // console.log('images');
     //await this.getAnimatedArtUrls();
     //await this.getAndStoreAnimatedArtList();
-    //await this.getAnimatedArtUrls();
     //await this.updateImageSize();
   }
 
@@ -584,9 +583,9 @@ export class AppTestService {
     // Filters (name), Module Options (name)
     //const value = this.lookup.hashValues(['Fresh & Happy']);
 
-    const value = this.lookup.hashValueListEntry('Bachata');
+    //const value = this.lookup.hashValueListEntry('Bachata');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
-    //const value = this.lookup.hashAlbum('Tu Me Acostumbraste', 1973);
+    const value = this.lookup.hashAlbum('Sketches For My Sweetheart The Drunk', 1998);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
     //const value = this.lookup.hashArtist('Estela Raval');
 
@@ -696,6 +695,11 @@ export class AppTestService {
     });
 
     queries.push({
+      caption: '5 star songs by release year.',
+      value: 'SELECT releaseYear, COUNT(id) AS songCount FROM song WHERE releaseYear > 0 AND rating = 5 GROUP BY releaseYear'
+    });
+
+    queries.push({
       caption: 'Songs added by year',
       value: `SELECT STRFTIME('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`
     });
@@ -766,7 +770,7 @@ export class AppTestService {
    */
   private async getAlbumMetadata(albumRow: AlbumViewEntity): Promise<any> {
     const albumMetadata = { searchUrl: '', id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
-    const token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzY4NTIxMTkyLCJleHAiOjE3NzU3Nzg3OTIsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.iZTD-bdGzofBHTdPBDcuXR8SGhObN6HYWBgYfPteY_457FtNd1xb-V6NZSuJgSyVcOzJh8LEIZWXHDD48UMP6Q';
+    const token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzc0ODk2NTE3LCJleHAiOjE3ODIxNTQxMTcsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.Rr-x075Wm_iiqd0AhxcGEsZsIOnaM6eSLGSe1Ou7_SQsC0AFuVcX9qFtv-icBdPnbKSuZJOHm_JH1QwyS4DC8g';
     albumMetadata.searchUrl = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumMetadata.albumName + ' ' + albumMetadata.artistName);
     
     try {
@@ -780,40 +784,68 @@ export class AppTestService {
         }
       }
     }
-    catch (err) {
-      albumMetadata.error = err;
+    catch (err: any) {
+      if (err.status === 401) {
+        albumMetadata.error = 'Invalid token.';
+      }
+      else {
+        albumMetadata.error = err;
+      }
     }
     
     return albumMetadata;
   }
 
   /**
-   * Iterates all the existing albums with no animated art in the db, and returns a list of metadata with animated art in the apple api.
+   * Iterates all the existing albums with no animated art in the db, and stores a list of metadata with animated art in local storage.
+   * If the album was already processed, it won't be processed again until it is deleted from local storage.
    * @returns 
    */
   private async getAndStoreAnimatedArtList(): Promise<void> {
-    const albumMetadataItems: any[] = [];
     let albums = await AlbumViewEntity.find();
     albums = this.utility.sort(albums, 'primaryArtistName');
     console.log('Total albums: ' + albums.length);
+
+    let albumMetadataItems = this.storage.getByKey<any[]>('sp.AnimatedArtAlbums');
+    if (!albumMetadataItems) {
+      albumMetadataItems = [];
+    }
+    
     for (const album of albums) {
+      console.log(album.primaryArtistName + ' ' + album.albumStylized);
       const animatedArt = await RelatedImageEntity.findOneBy({ relatedId: album.id, imageType: MusicImageType.FrontAnimated });
       if (!animatedArt) {
-        const albumMetadata = await this.getAlbumMetadata(album);
-        console.log(albumMetadata.artistName + ' ' + albumMetadata.albumName);
-        if (albumMetadata.hasAnimatedArt) {
-          albumMetadataItems.push(albumMetadata);
-          this.storage.setByKey('sp.AnimatedArtAlbums', albumMetadataItems);
-          console.log('%c%s', `color: #e9ff25`, 'Album has animated art.');
-        }
-        else if (albumMetadata.error) {
-          console.log('%c%s','color: #cc0000', 'Album error:');
-          console.log(albumMetadata.error);
+        const frontArt = await RelatedImageEntity.findOneBy({ relatedId: album.id, imageType: MusicImageType.Front });
+        // Only look for animated art if it has regular art
+        if (frontArt) {
+          let albumMetadata = albumMetadataItems.find(i => i.id === album.id);
+          // Continue looking in the apple api only if it hasn't been processed yet
+          if (!albumMetadata) {
+            albumMetadata = await this.getAlbumMetadata(album);
+            if (albumMetadata.hasAnimatedArt) {
+              albumMetadataItems.push(albumMetadata);
+              this.storage.setByKey('sp.AnimatedArtAlbums', albumMetadataItems);
+              console.log('%c%s', `color: #e9ff25`, 'Album has animated art in apple.');
+            }
+            else if (albumMetadata.error) {
+              console.log('%c%s','color: #cc0000', 'Album error:');
+              console.log(albumMetadata.error);
+            }
+            else {
+              console.log('%c%s', 'color: #2a9fd6', 'Album without animated art in apple.');
+            }
+            await this.utility.sleep(2000);
+          }
+          else {
+            console.log('%c%s', `color: #2a9fd6`, 'Album already processed.');
+          }
         }
         else {
-          console.log('%c%s', 'color: #2a9fd6', 'Album without animated art.');
+          console.log('%c%s', `color: #2a9fd6`, 'Album does not have cover in the db.');
         }
-        await this.utility.sleep(2000);
+      }
+      else {
+        console.log('%c%s', `color: #2a9fd6`, 'Album has animated art in the db.');
       }
     }
     console.log('Done');
