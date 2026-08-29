@@ -6,7 +6,7 @@ import { IFileInfo } from './file.interface';
 import { FileService } from './file.service';
 import { exec } from 'child_process';
 import { toTicks } from 'src/app/app-exports';
-const languageEncoding = require("detect-file-encoding-and-language");
+const chardet = require("chardet");
 
 @Injectable({
   providedIn: 'root'
@@ -51,9 +51,9 @@ export class FileElectronService extends FileService {
 
   async getText(filePath: string): Promise<string> {
     const buffer = await promises.readFile(filePath);
-    const fileInfo = await languageEncoding(new Blob([buffer]));
+    const encoding = chardet.detect(buffer);
     let result: string;
-    switch (fileInfo.encoding) {
+    switch (encoding) {
       case 'latin1':
       case 'ISO-8859-1':
       case 'CP1250':

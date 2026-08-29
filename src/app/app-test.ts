@@ -585,9 +585,9 @@ export class AppTestService {
 
     //const value = this.lookup.hashValueListEntry('Bachata');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
-    const value = this.lookup.hashAlbum('Sketches For My Sweetheart The Drunk', 1998);
+    //const value = this.lookup.hashAlbum('Sketches For My Sweetheart The Drunk', 1998);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
-    //const value = this.lookup.hashArtist('Estela Raval');
+    const value = this.lookup.hashArtist('Boyz II Men');
 
     console.log(value);
   }
@@ -700,6 +700,11 @@ export class AppTestService {
     });
 
     queries.push({
+      caption: '5 star songs by release decade.',
+      value: 'SELECT releaseDecade, COUNT(id) AS songCount FROM song WHERE releaseDecade > 0 AND rating = 5 GROUP BY releaseDecade'
+    });
+
+    queries.push({
       caption: 'Songs added by year',
       value: `SELECT STRFTIME('%Y', addDate) AS addYear, COUNT(id) AS songCount FROM song GROUP BY addYear ORDER BY addYear`
     });
@@ -770,7 +775,7 @@ export class AppTestService {
    */
   private async getAlbumMetadata(albumRow: AlbumViewEntity): Promise<any> {
     const albumMetadata = { searchUrl: '', id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
-    const token = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzc0ODk2NTE3LCJleHAiOjE3ODIxNTQxMTcsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.Rr-x075Wm_iiqd0AhxcGEsZsIOnaM6eSLGSe1Ou7_SQsC0AFuVcX9qFtv-icBdPnbKSuZJOHm_JH1QwyS4DC8g';
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzg2NjMyOTI0LCJleHAiOjE3OTI2ODA5MjQsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.hBgj61sZf-y7bmuvT-joXAUAcf7TVJ51732xnH5vFkLHOmsQHxVqGMYUuI4h8c0-RX3fRY3moylhLW8fewFJyw';
     albumMetadata.searchUrl = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumMetadata.albumName + ' ' + albumMetadata.artistName);
     
     try {
