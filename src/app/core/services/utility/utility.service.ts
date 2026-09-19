@@ -609,7 +609,7 @@ export class UtilityService {
   }
 
   /**
-   * Gets a list of values that match text within square brackets.
+   * Gets a list of values within square brackets, including brackets.
    */
   public matchBrackets(value: string): string[] {
     const regexp = new RegExp('\\[(.*?)\\]', 'g');

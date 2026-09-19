@@ -367,6 +367,9 @@ export class ExportService {
     return result;
   }
 
+  /**
+   * Currently, the only "hardcoded" logic playlist type is random playlists.
+   */
   private async exportHardcodedPlaylists(): Promise<number> {
     let result = 0;
     result += await this.createRandomPlaylists();

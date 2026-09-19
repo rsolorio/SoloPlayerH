@@ -582,15 +582,14 @@ export class ScanAudioService {
     song.id = this.utility.newGuid();
     song.isNew = true;
     this.preSet(metadata, song);
-    this.set(MetaAttribute.FileName, 'name');
+    this.set(MetaAttribute.Title, 'name', this.first(metadata[MetaAttribute.FileName]));
     this.set(MetaAttribute.FilePath, 'filePath');
     this.set(MetaAttribute.FileExtension, 'fileExtension');
-    song.hash = this.lookupService.hashSong(song.filePath);
-
     this.set(MetaAttribute.UfId, 'externalId');
+    song.hash = this.lookupService.hashSong(song.filePath);    
 
-    this.set(MetaAttribute.Title, 'title', song.name);
-    // Remove brackets if any
+    song.title = song.name;
+    // Remove brackets from title if any
     // TODO: use a module option to perform this action
     const brackets = this.utility.matchBrackets(song.title);
     if (brackets?.length) {

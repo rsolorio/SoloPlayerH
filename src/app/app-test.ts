@@ -580,14 +580,20 @@ export class AppTestService {
   }
 
   private hash(): void {
+    // Summary of hashing logic:
+    // 1. Song = filePath to lower case
+    // 2. Image = sourcePath to lower case | source index
+    // 3. Album = (name | release year) hash
+    // 4. Rest (artist, module option, filter, value list entry) = name hash
+
     // Filters (name), Module Options (name)
     //const value = this.lookup.hashValues(['Fresh & Happy']);
 
     //const value = this.lookup.hashValueListEntry('Bachata');
     //const value = this.lookup.hashSong('G:\\Music\\Spanish\\Salsa\\Sonora Carruseles\\1998 - Heavy Salsa\\09 - micaela.mp3');
-    //const value = this.lookup.hashAlbum('Sketches For My Sweetheart The Drunk', 1998);
+    const value = this.lookup.hashAlbum("Pa' Luego Es Tarde", 2022);
     //const value = this.lookup.hashImage('G:\\Music\\English\\Pop\\Sigala\\2017 - Came Here For Love (Acoustic) [Single]\\front.jpg', 0);
-    const value = this.lookup.hashArtist('Boyz II Men');
+    //const value = this.lookup.hashArtist('Boyz II Men');
 
     console.log(value);
   }

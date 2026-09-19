@@ -57,6 +57,7 @@ export class SettingsBaseComponent implements OnInit {
       type: 'text',
       value: setting.data,
       label: setting.editorLabel,
+      actions: setting.editorActions,
       onOk: result => {
         const inputResult = result as IInputEditorModel;
         setting.data = inputResult.value;
@@ -77,6 +78,7 @@ export class SettingsBaseComponent implements OnInit {
       type: 'number',
       value: setting.data,
       label: '',
+      actions: setting.editorActions,
       onOk: result => {
         const inputResult = result as IInputEditorModel;
         setting.data = inputResult.value;
@@ -97,6 +99,7 @@ export class SettingsBaseComponent implements OnInit {
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.Quick,
       items: [],
+      actions: setting.editorActions,
       onChipClick: (selectionChanged: boolean, chipItem: IChipItem) => {
         if (selectionChanged) {
           setting.data = chipItem.value;
@@ -118,6 +121,7 @@ export class SettingsBaseComponent implements OnInit {
       displayMode: ChipDisplayMode.Block,
       type: ChipSelectorType.MultipleOk,
       items: [],
+      actions: setting.editorActions,
       onOk: selectionModel => {
         setting.data = selectionModel.items.filter(i => i.selected).map(i => i.value);
         setting.onChange(setting);

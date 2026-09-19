@@ -23,6 +23,8 @@ import { ExportService } from 'src/app/sync-profile/export/export.service';
 import { ScanService } from 'src/app/sync-profile/scan/scan.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
+import { IInputEditorModel } from 'src/app/shared/components/input-editor/input-editor.interface';
+import { DatabaseLookupService } from 'src/app/shared/services/database/database-lookup.service';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +41,7 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
     private navigation: NavigationService,
     private exporter: ExportService,
     private log: LogService,
+    private lookup: DatabaseLookupService,
     private scanner: ScanService)
   {
   }
@@ -321,6 +324,28 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
               this.log.level = levelNumber as LogLevel;
               this.utility.reloadApp();
             }
+          },
+          {
+            name: 'Hash',
+            icon: AppAttributeIcons.TrackNumber,
+            textRegular: ['Generate hash.'],
+            editorType: SettingsEditorType.Text,
+            editorActions: [
+              {
+                caption: 'Hash',
+                action: (iconAction, result) => {
+                  const model = result as IInputEditorModel;
+                  model.value = this.lookup.hashArtist(model.value);
+                }
+              },
+              {
+                caption: 'Lower',
+                action: (iconAction, result) => {
+                  const model = result as IInputEditorModel;
+                  model.value = model.value.toLowerCase();
+                }
+              }
+            ]
           },
           {
             name: 'Test',

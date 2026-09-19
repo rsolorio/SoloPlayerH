@@ -1,5 +1,5 @@
 import { ISideBarHostModel } from "src/app/core/components/side-bar-host/side-bar-host-model.interface";
-import { IIconActionGeneric } from "src/app/core/models/core.interface";
+import { IIconAction, IIconActionGeneric } from "src/app/core/models/core.interface";
 
 export interface ISetting extends IIconActionGeneric<ISetting, any> {
   /** Name of the setting displayed as header. */
@@ -8,6 +8,8 @@ export interface ISetting extends IIconActionGeneric<ISetting, any> {
   editorType?: string;
   /** Label for the input. */
   editorLabel?: string;
+  /** Aditional actions in the editor. */
+  editorActions?: IIconAction[];
   /** A list of texts that describe the setting. It supports HTML format. */
   textHtml?: string;
   /** A list of texts that describe the setting. It supports regular text, not HTML. */
