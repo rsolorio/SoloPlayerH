@@ -113,6 +113,13 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
       caption: 'Toggle Explicit',
       icon: AppAttributeIcons.ExplicitOn,
       action: () => {
+        if (this.model.playerList.hasTrack()) {
+          const newValue = this.model.playerList.current.advisory ? false : true;
+          this.databaseEntityService.setExplicit(this.model.playerList.current.id, newValue).then(track => {
+            this.model.playerList.current.advisory = track.advisory;
+            this.eventService.broadcast(AppEvent.PlayerSongUpdated, this.model.playerList.current);
+          });
+        }
       },
       actionTimeout: 300
     });
