@@ -46,5 +46,6 @@ export enum CriteriaTransformAlgorithm {
 export enum CriteriaDataType {
   String,
   Number,
-  Boolean
+  Boolean,
+  Date
 }

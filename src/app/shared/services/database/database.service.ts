@@ -57,7 +57,7 @@ import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { databaseColumns } from './database.columns';
 import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
-import { CriteriaComparison, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
+import { CriteriaComparison, CriteriaDataType, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { IComparison } from '../criteria/criteria.interface';
 import { ListTransformService } from '../list-transform/list-transform.service';
 import { RelatedImageEntity } from '../../entities/related-image.entity';
@@ -787,39 +787,54 @@ export class DatabaseService {
   }
 
   private buildWhereForRelativeDate(builder: WhereExpressionBuilder, entityAlias: string, criteriaItem: CriteriaItem): void {
-    // We currently support only one relative date just because I don't see the need to support multiple
-    // If we need to support multiple values, we need to, at least, assign unique indexes to the parameters
+    // We currently support only one relative date just because I don't see the need to support multiple.
+    // If we need to support multiple values, we need to, at least, assign unique indexes to the parameters.
+    // This relative date logic assumes columns are either type "Number" (treated as year) or "Date" (treated as full date).
     const expressionText = criteriaItem.columnValues[0].value;
     const expression = this.relativeDateService.createExpression(expressionText);
     if (this.relativeDateService.isValid(expression)) {
       const dateRange = this.relativeDateService.parse(expression);
+      let fromValue: any;
+      let toValue: any;
+      if (criteriaItem.columnDataType === CriteriaDataType.Number) {
+        fromValue = dateRange.from.getFullYear();
+        toValue = dateRange.to.getFullYear();
+      }
+      else if (criteriaItem.columnDataType === CriteriaDataType.Date) {
+        fromValue = dateRange.from;
+        toValue = dateRange.to;
+      }
+      else {
+        const dataTypeText = this.utilities.getEnumNameByValue(criteriaItem.columnDataType.toString(), CriteriaDataType);
+        this.log.error(`Column ${criteriaItem.columnName} with data type ${dataTypeText} does not support relative dates.`);
+      }
       const columnName = this.buildColumnName(criteriaItem.columnName, entityAlias);
       switch (criteriaItem.comparison) {
         // This will match the whole period
         case CriteriaComparison.Equals:
-          builder = builder.where(`${columnName} >= :fromDate`, { fromDate: dateRange.from });
-          builder = builder.andWhere(`${columnName} <= :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} >= :fromDate`, { fromDate: fromValue });
+          builder = builder.andWhere(`${columnName} <= :toDate`, { toDate: toValue });
           break;
         // This wil match any date outside the period
         case CriteriaComparison.NotEquals:
-          builder = builder.where(`${columnName} < :fromDate`, { fromDate: dateRange.from });
-          builder = builder.andWhere(`${columnName} > :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} < :fromDate`, { fromDate: fromValue });
+          builder = builder.andWhere(`${columnName} > :toDate`, { toDate: toValue });
           break;
         // This will match dates before the start of the period
         case CriteriaComparison.LessThan:
-          builder = builder.where(`${columnName} < :fromDate`, { fromDate: dateRange.from });
+          builder = builder.where(`${columnName} < :fromDate`, { fromDate: fromValue });
           break;
         // This will match dates from the period and older
         case CriteriaComparison.LessThanOrEqualTo:
-          builder = builder.where(`${columnName} <= :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} <= :toDate`, { toDate: toValue });
           break;
         // This will match dates after the end of the period
         case CriteriaComparison.GreaterThan:
-          builder = builder.where(`${columnName} > :toDate`, { toDate: dateRange.to });
+          builder = builder.where(`${columnName} > :toDate`, { toDate: toValue });
           break;
         // This will match dates from the period and newer
         case CriteriaComparison.GreaterThanOrEqualTo:
-          builder = builder.where(`${columnName} >= :fromDate`, { fromDate: dateRange.from });
+          builder = builder.where(`${columnName} >= :fromDate`, { fromDate: fromValue });
           break;
       }
     }
@@ -978,6 +993,28 @@ export class DatabaseService {
       }
     }
     return entityInstance as T;
+  }
+
+  /**
+   * Determines if the current data type of the specified column matches the specified column type.
+   * This method looks into the column metadata of the specified table name.
+   * This method DOES NOT work with views, as TypeOrm does not have column data type definitions in views.
+   * @param columnName The name of the column.
+   * @param tableName The name of the table.
+   * @param columnType The column type.
+   * @returns 
+   */
+  private compareColumnType(columnName: string, tableName: string, columnType: any): boolean {
+    const metadata = this.findEntityMetadata(tableName);
+    if (metadata) {
+      for (const column of metadata.columns) {
+        if (column.propertyName === columnName) {
+          // This type property would be empty on a view column
+          return column.type === columnType;
+        }
+      }
+    }
+    return false;
   }
 
   private buildColumnName(columnName: string, entityAlias?: string): string {

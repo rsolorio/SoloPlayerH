@@ -11,6 +11,8 @@ export class FilterCriteriaItemEntity extends BaseEntity {
   @Column({ nullable: true })
   columnValue: string;
   @Column()
+  columnDataType: number;
+  @Column()
   comparison: number;
   @Column()
   valuesOperator: number;
