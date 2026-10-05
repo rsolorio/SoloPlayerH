@@ -762,6 +762,11 @@ export class AppTestService {
       `
     });
 
+    queries.push({
+      caption: 'Songs with upper case extension',
+      value: `SELECT filePath FROM song WHERE SUBSTR(filePath, -3) = 'MP3' ORDER BY filePath`
+    });
+
     for (const query of queries) {
       const result = await this.db.run(query.value);
       if (query.caption) {

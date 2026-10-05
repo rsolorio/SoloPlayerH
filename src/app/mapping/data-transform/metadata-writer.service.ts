@@ -60,7 +60,7 @@ enum AttachedPictureType {
 }
 
 /**
- * A transform service to save metadata to an audio file.
+ * A transform service that copies audio files to the specified path and writes tags afterwards.
  * It uses the specified profile to get a list of data sources;
  * data sources have the responsibility of reading metadata and pass it to the writer.
  * Data sources support custom mapping.
