@@ -12,8 +12,9 @@ export class ValidatorAlternateArtist extends ListTransformValidatorBase<ISongMo
 
   /** Returns "true" if the artist is different than the previous artist; returns "false" otherwise. */
   protected innerValidate(item: ISongModel): boolean {
-    if (!this.previousArtistIds.includes(item.primaryArtistId)) {
-      this.previousArtistIds.push(item.primaryArtistId);
+    const artistId = item.artistId ? item.artistId : item.primaryArtistId;
+    if (!this.previousArtistIds.includes(artistId)) {
+      this.previousArtistIds.push(artistId);
       return true;
     }
     return false;

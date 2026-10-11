@@ -339,6 +339,12 @@ export class SongModelSourceService implements IDataSourceService {
     return context;
   }
 
+  /**
+   * Gets a list of artists associated with the current primary artist.
+   * First, it gets featuring artists.
+   * Second, it gets contributors and singers.
+   * @returns List of artist names.
+   */
   private getArtists(): string[] {
     const result: string[] = [];
 

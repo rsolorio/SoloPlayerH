@@ -30,6 +30,8 @@ export enum CriteriaTransformAlgorithm {
   None,
   /** Alternates artists in a list. */
   ShuffleArtist,
+  /** Alternates primary artists in a list. */
+  ShufflePrimaryArtist,
   /** Alternates the combination of language/artist in a list. */
   ShuffleLanguageArtist,
   /** Alternates the combination of decade/genre in a list. */

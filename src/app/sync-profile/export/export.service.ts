@@ -18,7 +18,7 @@ import { Criteria, CriteriaItem } from '../../shared/services/criteria/criteria.
 import { MetadataWriterService } from 'src/app/mapping/data-transform/metadata-writer.service';
 import { PlaylistWriterService } from 'src/app/mapping/data-transform/playlist-writer.service';
 import { KeyValueGen } from 'src/app/core/models/core.interface';
-import { CriteriaComparison, CriteriaSortDirection } from '../../shared/services/criteria/criteria.enum';
+import { CriteriaComparison, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../../shared/services/criteria/criteria.enum';
 import { ScriptParserService } from 'src/app/scripting/script-parser/script-parser.service';
 import { ValueLists } from '../../shared/services/database/database.lists';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -30,7 +30,9 @@ import { AppRoute } from 'src/app/app-routes';
 import { Bytes } from 'src/app/core/services/utility/utility.enum';
 import { FileService } from 'src/app/platform/file/file.service';
 import { AppEvent } from 'src/app/app-events';
-import { FilterTarget } from 'src/app/shared/models/music.enum';
+import { FilterTarget, PartyRelationType } from 'src/app/shared/models/music.enum';
+import { EntityId } from 'src/app/shared/services/database/database.seed';
+import { ListTransformService } from 'src/app/shared/services/list-transform/list-transform.service';
 
 enum SongViewType {
   Standard,
@@ -64,6 +66,7 @@ export class ExportService {
     private entities: DatabaseEntitiesService,
     private events: EventsService,
     private sidebarMenuService: SideBarMenuStateService,
+    private transformService: ListTransformService,
     private fileService: FileService,
     private utility: UtilityService) { }
 
@@ -103,7 +106,7 @@ export class ExportService {
 
     const dataSources = await this.entities.getDataSources(syncProfile.id);
     await this.writer.init(syncProfile, dataSources);
-    await this.prepareSongs();
+    await this.prepareSongs(syncProfile.nonPrimaryRelations);
     this.sortSongs();
 
     const exportResult: IExportResult = {
@@ -171,7 +174,7 @@ export class ExportService {
   /**
    * Sets up the songs in the config object based on the specified criteria and fills the SongExport table if needed.
    */
-  private async prepareSongs(): Promise<void> {
+  private async prepareSongs(nonPrimaryRelations: any[]): Promise<void> {
     // Let's make sure export is not enabled to get songs from the real tables
     this.config.exportTableEnabled = false;
 
@@ -183,22 +186,22 @@ export class ExportService {
       for (const playlistId of this.config.playlistConfig.ids) {
         criteriaItem.columnValues.push({ value: playlistId });
       }
-      await this.mergeCriteria(criteria);
+      await this.getAndMergeSongs(criteria, nonPrimaryRelations);
     }
     if (this.config.filterId) {
       const filter = await FilterEntity.findOneBy({ id: this.config.filterId });
       const criteria = await this.entities.getCriteriaFromFilter(filter);
-      await this.mergeCriteria(criteria);
+      await this.getAndMergeSongs(criteria, nonPrimaryRelations);
     }
     if (this.config.lastAdded) {
       const criteria = new Criteria('Last Added');
       criteria.paging.pageSize = this.config.lastAdded;
       criteria.addSorting('addDate', CriteriaSortDirection.Descending);
-      await this.mergeCriteria(criteria);
+      await this.getAndMergeSongs(criteria, nonPrimaryRelations);
     }
 
     if (this.config.criteria) {
-      await this.mergeCriteria(this.config.criteria);
+      await this.getAndMergeSongs(this.config.criteria, nonPrimaryRelations);
     }
 
     if (this.config.songs) {
@@ -225,11 +228,26 @@ export class ExportService {
   }
 
   /**
-   * The songs retrieved by the specified criteria will be added to the config.songs list.
+   * It generates a new list of songs using the specified criteria;
+   * the songs will be added to the existing config.songs list without creating duplicates.
    * @param criteria Criteria to generate a list of songs.
    */
-  private async mergeCriteria(criteria: Criteria): Promise<void> {
+  private async getAndMergeSongs(criteria: Criteria, nonPrimaryRelations: any[]): Promise<void> {
+    // HACK: Force Shuffle Artist (not album artist) to use real artists instead of "Various"
+    const isShuffleArtist = criteria.transformAlgorithm === CriteriaTransformAlgorithm.ShuffleArtist;
+    // Do not perform the shuffle just yet
+    if (isShuffleArtist) {
+      criteria.transformAlgorithm = CriteriaTransformAlgorithm.None;
+    }
     const songs = await this.getSongs(criteria);
+    if (isShuffleArtist) {
+      this.prepareSongsForShuffleArtist(songs, nonPrimaryRelations);
+      // Perform the shuffle now
+      this.transformService.transform(songs, CriteriaTransformAlgorithm.ShuffleArtist);
+      // Put back the algorithm just in case
+      criteria.transformAlgorithm = CriteriaTransformAlgorithm.ShuffleArtist;
+    }
+
     if (this.config.songs?.length) {
       this.mergeSongs(songs, this.config.songs);
     }
@@ -302,6 +320,12 @@ export class ExportService {
     return result;
   }
 
+  /**
+   * Calls getList to get a list of song records.
+   * It evaluates the criteria fields to determine the proper view to use when querying the info.
+   * @param criteria The criteria used to filter.
+   * @returns A list of song models.
+   */
   private async getSongs(criteria: Criteria): Promise<ISongExtendedModel[]> {
     if (criteria.hasComparison(false, 'classificationId')) {
       return this.db.getList(this.getSongViewEntity(SongViewType.Classification), criteria);
@@ -575,6 +599,20 @@ export class ExportService {
         return SongExtendedByPlaylistViewEntity;
     }
     return null;
+  }
+
+  private prepareSongsForShuffleArtist(songs: ISongExtendedModel[], nonPrimaryRelations: any[]): void {
+    for (const song of songs) {
+      const artistId = song.artistId ? song.artistId : song.primaryArtistId;
+      if (artistId === EntityId.ArtistVarious) {
+        // Find real artist, if available
+        const featuringRelations = nonPrimaryRelations.filter(item => item.songId === song.id && item.relationTypeId === PartyRelationType.Featuring);
+        if (featuringRelations?.length) {
+          // TODO: is there a better way to determine the proper artist, instead of using the first one?
+          song.artistId = featuringRelations[0].artistId;
+        }
+      }
+    }
   }
 
   private async saveSyncFile(result: IExportResult): Promise<void> {

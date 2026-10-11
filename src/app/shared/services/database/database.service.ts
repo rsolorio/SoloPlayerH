@@ -878,8 +878,9 @@ export class DatabaseService {
    * and sorting criteria.
    */
   private transform<T>(items: T[], criteria: Criteria): T[] {
+    // Step 1: run generic transform algorithm
     let transformedResult = this.transformService.transform(items, criteria.transformAlgorithm);
-    // Individual alternate transforms
+    // Step 2: run individual alternate transforms
     const transformCriteriaItems = criteria.sortingCriteria.filter(criteriaItem =>
       criteriaItem.sortSequence > 0 &&
       criteriaItem.sortDirection === CriteriaSortDirection.Alternate);

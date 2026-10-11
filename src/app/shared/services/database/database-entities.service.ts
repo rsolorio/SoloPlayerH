@@ -166,6 +166,11 @@ export class DatabaseEntitiesService {
     };
   }
 
+  /**
+   * Performs a LastFm scrobble.
+   * @param songId Id of the song to scrobble.
+   * @returns True if the scrobble was successful.
+   */
   public async scrobble(songId: string): Promise<boolean> {
     const scrobbleRequest = await this.prepareScrobbleRequest(songId);
     try {
@@ -333,11 +338,12 @@ export class DatabaseEntitiesService {
   /**
    * Gets a list of artistId/songId/artistName records where the relation type is
    * Featuring or Contributor or Singer.
+   * @returns A list of items with the following properties: artistId, songId, artistName, artistStylized, relationTypeId
    */
   public getNonPrimaryRelations(): Promise<any[]> {
     // TODO: create interface or entity for this query
     const nonPrimaryRelationsQuery = `
-      SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName, artist.artistStylized
+      SELECT partyRelation.artistId, partyRelation.songId, artist.name AS artistName, artist.artistStylized, partyRelation.relationTypeId
       FROM partyRelation
       INNER JOIN artist
       ON partyRelation.relatedId = artist.id
@@ -348,6 +354,11 @@ export class DatabaseEntitiesService {
     return this.db.run(nonPrimaryRelationsQuery);
   }
 
+  /**
+   * Gets a list of artist associations where the type is either Singer or Contributor.
+   * Each item result represents the main artist, the associated artist and their relation type.
+   * @returns A list of items with the following properties: associatedArtistName, primaryArtistName, relationTypeId
+   */
   public getAssociatedArtists(): Promise<any[]> {
     const associatedArtistsQuery = `
       SELECT associatedArtist.name AS associatedArtistName, primaryArtist.name AS primaryArtistName, partyRelation.relationTypeId

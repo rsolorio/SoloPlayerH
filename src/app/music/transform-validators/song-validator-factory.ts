@@ -1,6 +1,7 @@
 import { CriteriaTransformAlgorithm } from "src/app/shared/services/criteria/criteria.enum";
 import { ITransformValidatorFactory, IValidatorInfo } from "src/app/shared/services/list-transform/list-transform.interface";
 import { ValidatorAlternateArtist } from "./validator-alternate-artist";
+import { ValidatorAlternatePrimaryArtist } from "./validator-alternate-primary-artist";
 import { ValidatorAlternateLanguage } from "./validator-alternate-language";
 import { ValidatorAlternateProperties } from "./validator-alternate-properties";
 
@@ -10,6 +11,11 @@ export class SongValidatorFactory implements ITransformValidatorFactory {
       case CriteriaTransformAlgorithm.ShuffleArtist:
         return {
           validator: new ValidatorAlternateArtist(),
+          algorithm: algorithm
+        };
+      case CriteriaTransformAlgorithm.ShufflePrimaryArtist:
+        return {
+          validator: new ValidatorAlternatePrimaryArtist(),
           algorithm: algorithm
         };
       case CriteriaTransformAlgorithm.ShuffleLanguage:
