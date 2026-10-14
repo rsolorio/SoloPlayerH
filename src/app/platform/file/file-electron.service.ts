@@ -64,6 +64,7 @@ export class FileElectronService extends FileService {
       case 'CP1255':
       case 'CP1256':
       case 'CP1257':
+      case 'windows-1252':
         result = buffer.toString('latin1');
         result = this.replace1252Codes(result);
         break;
