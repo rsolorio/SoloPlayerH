@@ -422,7 +422,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.PCNT = playCount.toString();
     }
 
-    // USER DEFINED TEXTS
+    // USER DEFINED TEXTS: TXXX
     const udTexts = this.createUserDefinedTexts(metadata, [
       MetaAttribute.Subgenre, MetaAttribute.Category, MetaAttribute.Occasion, MetaAttribute.Instrument
     ], true);
@@ -456,6 +456,16 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       udTexts.push({
         description: 'RATING',
         text: this.convert5To100(rating).toString()
+      });
+    }
+
+    // MusicBee "loved" support
+    // For "banned" support, use value 'B' with same description
+    const favorite = this.first(metadata[MetaAttribute.Favorite]);
+    if (favorite) {
+      udTexts.push({
+        description: 'LOVE RATING',
+        text: 'L' // Loved
       });
     }
 
