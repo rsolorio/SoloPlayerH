@@ -10,6 +10,7 @@ import { ISyncProfileParsed } from 'src/app/shared/models/sync-profile-model.int
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { MusicImageSourceType, MusicImageType } from 'src/app/platform/audio-metadata/audio-metadata.enum';
 import { appName } from 'src/app/app-exports';
+import { EntityId } from 'src/app/shared/services/database/database.seed';
 
 /**
  * A data source that retrieves information from a ISongModel object.
@@ -114,9 +115,9 @@ export class SongModelSourceService implements IDataSourceService {
       case MetaAttribute.AlbumArtistStylized:
         return [this.inputData.primaryArtistStylized];
       case MetaAttribute.Artist:
-        return this.getArtists();
+        return this.getArtists(this.inputData, false);
       case MetaAttribute.ArtistStylized:
-        return this.getStylizedArtists(this.inputData);
+        return this.getArtists(this.inputData, true);
       case MetaAttribute.UfId:
         return [this.inputData.id];
       case MetaAttribute.AlbumImage:
@@ -295,7 +296,7 @@ export class SongModelSourceService implements IDataSourceService {
         result = `${this.inputData.fileExtension.toUpperCase()}/${this.getQuality(this.inputData)}`;
         break;
       case '$getStylizedArtists()':
-        result = this.getStylizedArtists(this.inputData);
+        result = this.getArtists(this.inputData, true);
         break;
       default:
         result = this.parser.parse({
@@ -340,52 +341,43 @@ export class SongModelSourceService implements IDataSourceService {
   }
 
   /**
-   * Gets a list of artists associated with the current primary artist.
+   * Gets a list of artists associated with the song and its primary artist.
    * First, it gets featuring artists.
    * Second, it gets contributors and singers.
+   * @param song Song to be used as reference for getting the information.
+   * @param stylized True if the artist values should be stylized.
    * @returns List of artist names.
    */
-  private getArtists(): string[] {
+  private getArtists(song: ISongExtendedModel, stylized: boolean): string[] {
     const result: string[] = [];
+    const artistNameProperty = stylized ? 'artistStylized' : 'artistName';
+    const primaryArtistNameProperty = stylized ? 'primaryArtistStylized' : 'primaryArtistName';
 
-    // First, the album artist as regular artist
-    result.push(this.inputData.primaryArtistName);
-    // Find other artists (featuring) associated with the song
-    const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === this.inputData.id);
+    // Find featuring artists associated with the song
+    const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === song.id);
     for (const relation of songRelations) {
-      if (!result.includes(relation.artistName)) {
-        result.push(relation.artistName);
-      }
-    }
-    // Then find artists (contributors and singers) associated with primary artist of the song
-    const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === this.inputData.primaryArtistId);
-    for (const relation of artistRelations) {
-      if (!result.includes(relation.artistName)) {
-        result.push(relation.artistName);
+      if (!result.includes(relation[artistNameProperty])) {
+        result.push(relation[artistNameProperty]);
       }
     }
 
-    return result;
-  }
-
-  private getStylizedArtists(songData: ISongExtendedModel): string[] {
-    const result: string[] = [];
-
-    // First, the album artist as regular artist
-    result.push(songData.primaryArtistStylized);
-    // Find other artists (featuring) associated with the song
-    const songRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.songId === songData.id);
-    for (const relation of songRelations) {
-      if (!result.includes(relation.artistStylized)) {
-        result.push(relation.artistStylized);
+    if (song.primaryArtistId === EntityId.ArtistVarious) {
+      // At this point we assume Various doesn't have contributors or singers on its own
+      // Add the artist only if there are not other artists
+      if (!result.length) {
+        result.push(song[primaryArtistNameProperty]);
       }
     }
-    // Then find artists (contributors and singers) associated with primary artist of the song
-    const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === songData.primaryArtistId);
-    for (const relation of artistRelations) {
-      if (!result.includes(relation.artistStylized)) {
-        result.push(relation.artistStylized);
+    else {
+      // Find contributors and singers associated with primary artist of the song
+      const artistRelations = this.syncProfileData.nonPrimaryRelations.filter(r => r.artistId === song.primaryArtistId);
+      for (const relation of artistRelations) {
+        if (!result.includes(relation[artistNameProperty])) {
+          result.push(relation[artistNameProperty]);
+        }
       }
+      // Add the primary artist as the first item
+      result.unshift(song[primaryArtistNameProperty]);
     }
 
     return result;
