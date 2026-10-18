@@ -335,7 +335,7 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
                 caption: 'Hash',
                 action: (iconAction, result) => {
                   const model = result as IInputEditorModel;
-                  model.value = this.lookup.hashArtist(model.value);
+                  model.value = this.lookup.hashValues([model.value]);
                 }
               },
               {

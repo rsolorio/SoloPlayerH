@@ -225,7 +225,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
    * album, albumType, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
-   * seconds, tempo (bpm), owner, ufid, mbId, playCount, rating, replayGain, url, videoUrl, advisory,
+   * seconds, tempo (bpm), owner, ufid, mbId, playCount, rating, replayGain, url, videoUrl, favorite, advisory,
    * subgenre, category, occasion, instrument,
    * (albumImage, albumSecondaryImage, singleImage, albumArtistImage, and descriptions)
    */

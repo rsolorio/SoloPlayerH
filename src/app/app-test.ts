@@ -991,6 +991,14 @@ export class AppTestService {
     console.log(metadata);
   }
 
+  /**
+   * Gets a list of songs without mbid.
+   * For each song:
+   * - Searches for the recordings (songs) metadata in the MB database
+   * - If the match is more than one, it tries to find the recording that better matches the song title
+   * - If there's a match, the associated song will be updated
+   * - If there's no match, local storage (sp.tempMbIdProcessedSongs) will be updated with metadata that was found during the search
+   */
   private async getMbIds(): Promise<void> {
     let processedSongs = this.storage.getByKey<any[]>('sp.tempMbIdProcessedSongs');
     if (!processedSongs) {
