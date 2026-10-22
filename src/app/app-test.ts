@@ -55,7 +55,7 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    await this.logStatistics();
+    //await this.logStatistics();
     //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
@@ -70,7 +70,7 @@ export class AppTestService {
     //await this.logPopularity();    
     //await this.getAvailableAlbumArt();
     //await this.testFileDates();
-    //await this.getMbIds();
+    await this.getMbIds();
 
     // const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
     // const newGenres = ['Soundtrack',];

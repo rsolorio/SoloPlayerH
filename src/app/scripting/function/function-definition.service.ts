@@ -37,6 +37,7 @@ export class FunctionDefinitionService {
 
   private initializeFunctions(): void {
     this.ifFunction();
+    this.iifFunction();
     this.eqFunction();
     this.notFunction();
     this.andFunction();
@@ -64,6 +65,22 @@ export class FunctionDefinitionService {
           return y;
         }
         return z;
+      }
+    });
+  }
+
+  private iifFunction(): void {
+    this.functions.push({
+      name: 'iif',
+      syntax: '$iif(x,y)',
+      description: 'If x is true, x is returned, otherwise y.',
+      fn: args => {
+        const x = args[0];
+        const y = args[1];
+        if (x) {
+          return x;
+        }
+        return y;
       }
     });
   }

@@ -201,17 +201,7 @@
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
         "source": "$getTechInfo()",
-        "destination": "composer",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": false,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$upper(%ext%)",
-        "destination": "publisher",
+        "destination": "grouping",
         "priority": 1,
         "sequence": 1,
         "userDefined": false,
@@ -260,8 +250,8 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%playDate%",
-        "destination": "PlayDate",
+        "source": "$if($eq(%quality%,LQ),LQ,%empty%)",
+        "destination": "AlbumVersion",
         "priority": 1,
         "sequence": 1,
         "userDefined": true,
@@ -270,17 +260,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%changeDate%",
-        "destination": "ChangeDate",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Synced: $now()",
+        "source": "$now()",
         "destination": "SyncDate",
         "priority": 1,
         "sequence": 1,
@@ -290,37 +270,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%performerCount%",
-        "destination": "PerformerCount",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%playHistory%",
-        "destination": "PlayHistory",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "%playCount%",
-        "destination": "PlayCount",
-        "priority": 1,
-        "sequence": 1,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$str(%decade%)/%genre%",
+        "source": "%genre%/%language%/$pad(%decade%,4)",
         "destination": "Style",
         "priority": 1,
         "sequence": 1,
@@ -408,16 +358,6 @@
         "destination": "Track_Tags",
         "priority": 1,
         "sequence": 7,
-        "userDefined": true,
-        "disabled": false,
-        "system": false
-      },
-      {
-        "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "Style: %genre%/$pad(%decade%,4)/%language%",
-        "destination": "Track_Tags",
-        "priority": 1,
-        "sequence": 8,
         "userDefined": true,
         "disabled": false,
         "system": false

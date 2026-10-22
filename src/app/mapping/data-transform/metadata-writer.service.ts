@@ -120,6 +120,8 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
   }
 
   /**
+   * Creates a metadata object (key/value pairs) with all attributes and their values, using all the datasources enabled for this process;
+   * this metadata object is later used to save data into tags.
    * If you want to save data in tags:
    * 1. Look for the metadata attributes supported (consumed) by the setupV2Tags method.
    * 2. Add the metadata attribute to the "attributes" property of the data source. This will ensure the attributes are populated with a value.
@@ -130,6 +132,13 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * 4b. Do not confuse a field placeholder used in an expression with a metadata attribute.
    * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the source (song model), or as a placeholder shortcut.
    * 4d. Sometimes the value of an "attribute" property matches the name of a column in the source; although this is ideal (less code in the source service), it is not required.
+   * In other words:
+   * 1. The "attributes" property of the data source is used to tell this method which metadata attributes will be populated with data.
+   * 1a. The "attributes" property is basically used to specify an attribute and let the setupV2Tags method fill the corresponding tag (if supported).
+   * 1a. This property is configurable because some attributes are "harder" to get and there's no reason to get them all if you only need a few.
+   * 2. The logic on how this data will be retrieved resides in the corresponding data source;
+   * 2a. Some attributes just match their names to a data source field, so retrieving data is simple; however, other attributes have hardcoded logic to get the needed info.
+   * 3. When using expressions (either for default or user defined properties), field placeholders (%someField%) must exist as a column/field in the source.
    * How the full logic works:
    * 1. Each data source service iterates the attributes and retrieves data using the getData method
    * 2. Attributes will be populated with data and they will become the metadata attributes.

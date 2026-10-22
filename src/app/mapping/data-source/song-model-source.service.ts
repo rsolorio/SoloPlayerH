@@ -75,6 +75,9 @@ export class SongModelSourceService implements IDataSourceService {
    * The first step in the process is to look for mappings by matching the mapping destination property with the attribute;
    * if a mapping is found, its source will define an expression to retrieve the data;
    * if no mapping is found, the method will go through hardcoded logic to get the data based on the attribute name.
+   * Harcoded logic includes:
+   * - If the attribute name matches a field in the data source, the logic simply gets the data from it.
+   * - If the attribute doesn't match any field, it will have special logic.
    * @param attributeName The name of the attribute.
    * @returns The data of the attribute as an array.
    */
