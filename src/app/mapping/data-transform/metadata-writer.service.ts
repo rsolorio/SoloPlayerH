@@ -368,11 +368,6 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.TPUB = publisher;
     }
 
-    const grouping = this.first(metadata[MetaAttribute.Grouping]);
-    if (grouping) {
-      tags.TIT1 = grouping;
-    }
-
     // TODO: give the user the ability to exclude lyrics from tags, but include as file
     const lyrics = this.first(metadata[MetaAttribute.UnSyncLyrics]);
     if (lyrics) {
@@ -435,6 +430,19 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     const udTexts = this.createUserDefinedTexts(metadata, [
       MetaAttribute.Subgenre, MetaAttribute.Category, MetaAttribute.Occasion, MetaAttribute.Instrument
     ], true);
+
+    // According to google TIT1 was the standard tag to store grouping information.
+    // iTunes reassigned TIT1 to store "work" information;
+    // iTunes introduced the non standard GRP1 to store grouping data.
+    // mp3tag.js does not support GRP1 so storing as a user defined tag.
+    // TODO: Request mp3tag.js to support GRP1
+    const grouping = this.first(metadata[MetaAttribute.Grouping]);
+    if (grouping) {
+      udTexts.push({
+        description: 'GROUPING',
+        text: grouping
+      });
+    }
 
     const albumType = this.first(metadata[MetaAttribute.AlbumType]);
     if (albumType) {
