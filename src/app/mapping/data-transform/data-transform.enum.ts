@@ -186,8 +186,8 @@ export enum MetaAttribute {
   Bitrate = 'bitrate',
   /** Number. Id3v2 */
   Frequency = 'frequency',
-  /** Boolean. Id3v2 */
-  Vbr = 'vbr',
+  /** String. Id3v2 */
+  Quality = 'quality',
   /** Number. Id3v2 */
   Tempo = 'tempo',
   /** Number. Id3v2 */

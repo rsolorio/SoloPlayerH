@@ -295,9 +295,6 @@ export class SongModelSourceService implements IDataSourceService {
           result = expression === '$getInstruments()' ? instruments : instruments.join('/');
         }
         break;
-      case '$getTechInfo()':
-        result = `${this.inputData.fileExtension.toUpperCase()}/${this.getQuality(this.inputData)}`;
-        break;
       case '$getStylizedArtists()':
         result = this.getArtists(this.inputData, true);
         break;
@@ -414,18 +411,5 @@ export class SongModelSourceService implements IDataSourceService {
       return ['./src/assets/img/default-image-full.jpg'];
     }
     return [];
-  }
-
-  /**
-   * Supported values: GQ (good quality = 320kbps), VBR (variable bitrate), LQ (low quality = everything else)
-   */
-  private getQuality(songData: ISongExtendedModel): string {
-    if (songData.vbr) {
-      return 'VBR';
-    }
-    if (songData.bitrate === 320000) {
-      return 'GQ';
-    }
-    return 'LQ';
   }
 }

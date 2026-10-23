@@ -662,8 +662,8 @@ export class AppTestService {
     });
 
     queries.push({
-      caption: 'Overall bitrate. Initial value: 225.477',
-      value: 'SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE vbr = 0'
+      caption: 'Overall bitrate (ignoring VBR files). Initial value: 225.477',
+      value: 'SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE quality <> "VBR"'
     });
 
     queries.push({
@@ -737,7 +737,7 @@ export class AppTestService {
 
     queries.push({
       caption: 'Low quality songs by artist. Initial artist count: 1046',
-      value: 'SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND vbr = 0 GROUP BY primaryArtistName ORDER BY songCount DESC, primaryArtistName ASC'
+      value: 'SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND quality <> "VBR" GROUP BY primaryArtistName ORDER BY songCount DESC, primaryArtistName ASC'
     });
 
     queries.push({
@@ -751,14 +751,14 @@ export class AppTestService {
     });
 
     // High quality songs updated after 2022-07-01 and added before 2022-07-01
-    //queries.push(`SELECT changeDate, filePath FROM song WHERE (bitrate = 320000 OR VBR = 1) AND changeDate > '2022-07-01' AND addDate < '2022-07-01' ORDER BY changeDate ASC`);
+    //queries.push(`SELECT changeDate, filePath FROM song WHERE (bitrate = 320000 OR quality = 'VBR') AND changeDate > '2022-07-01' AND addDate < '2022-07-01' ORDER BY changeDate ASC`);
 
     queries.push({
       caption: 'Low quality percentage. Initial value: 40.15',
       value: `
         SELECT allSongs.count AS allSongsCount, lowSongs.count AS lowSongsCount, (CAST(lowSongs.count AS float) / allSongs.count) * 100 AS lowQualityPercentage
         FROM
-        (SELECT COUNT(*) AS count FROM song) AS allSongs, (SELECT COUNT(*) AS count FROM song WHERE bitrate < 320000 AND Vbr = 0) AS lowSongs
+        (SELECT COUNT(*) AS count FROM song) AS allSongs, (SELECT COUNT(*) AS count FROM song WHERE bitrate < 320000 AND quality <> 'VBR') AS lowSongs
       `
     });
 

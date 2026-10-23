@@ -200,7 +200,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$getTechInfo()",
+        "source": "$upper(%ext%)/%quality%",
         "destination": "grouping",
         "priority": 1,
         "sequence": 1,
@@ -2367,17 +2367,17 @@
       },
       {
         "filterCriteriaId": "b7ffad50-6a00-43e7-9008-212ba12b91ba",
-        "columnName": "vbr",
-        "columnValue": false,
-        "comparison": 1,
+        "columnName": "quality",
+        "columnValue": "VBR",
+        "comparison": 2,
         "valuesOperator": 0,
         "expressionOperator": 0,
         "sortDirection": 0,
         "sortSequence": 0,
         "ignoreInSelect": false,
         "isRelativeDate": false,
-        "displayName": "Vbr",
-        "displayValue": "No"
+        "displayName": "Quality",
+        "displayValue": "VBR"
       },
       {
         "filterCriteriaId": "b7ffad50-6a00-43e7-9008-212ba12b91ba",
@@ -2545,17 +2545,17 @@
       },
       {
         "filterCriteriaId": "cb5cf6b9-03db-4e80-b5b1-e9f16af2fa91",
-        "columnName": "vbr",
-        "columnValue": false,
-        "comparison": 1,
+        "columnName": "quality",
+        "columnValue": "VBR",
+        "comparison": 2,
         "valuesOperator": 0,
         "expressionOperator": 0,
         "sortDirection": 0,
         "sortSequence": 0,
         "ignoreInSelect": false,
         "isRelativeDate": false,
-        "displayName": "Vbr",
-        "displayValue": "No"
+        "displayName": "Quality",
+        "displayValue": "VBR"
       },
       {
         "filterCriteriaId": "60ae1fee-17e8-4d47-a67c-c70e8ac06824",

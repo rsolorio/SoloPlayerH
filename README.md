@@ -172,7 +172,7 @@ All standard entities have three main fields:
   - Fallback: file modification date
 - replaceDate
   - Full timestamp describing when the song's file or audio signature changed meaning that the file was replaced by a different one.
-  - Properties that define this change: file size, bitrate, frequency, seconds, vbr, replayGain
+  - Properties that define this change: file size, bitrate, frequency, seconds, quality, replayGain
 - playDate
   - Full timestamp describing the last time the song was played
 - language
@@ -203,8 +203,8 @@ All standard entities have three main fields:
 - frequency
   - Samples per second in the audio
   - Set during the scan process
-- vbr
-  - Flag that indicates if it has a variable bitrate
+- quality
+  - Sound quality (LQ, VBR, GQ, CD, HQ, HR)
   - Set during the scan process
 - replayGain
   - Loudness of the audio

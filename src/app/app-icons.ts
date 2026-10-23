@@ -57,6 +57,7 @@ export enum AppAttributeIcons {
   CleanOff = 'mdi-alpha-c-box-outline mdi',
   Bitrate = 'mdi-wave mdi',
   Vbr = 'mdi-waveform mdi',
+  Quality = 'mdi-ear-hearing mdi',
   Image = 'mdi-image mdi',
   ImageAnimated = 'mdi-video-image mdi',
   TrackNumber = 'mdi-pound mdi',

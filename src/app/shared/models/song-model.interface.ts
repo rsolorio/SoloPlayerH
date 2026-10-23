@@ -32,7 +32,7 @@ export interface ISongModel extends IListItemModel {
   duration: string;
   bitrate: number;
   frequency: number;
-  vbr: boolean;
+  quality: string;
   // Flags
   favorite: boolean;
   live: boolean;

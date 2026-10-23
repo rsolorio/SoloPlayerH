@@ -18,7 +18,7 @@ SELECT song.id, song.name, song.title, song.hash,
 song.primaryAlbumId, song.mbId, song.filePath, song.fileExtension, song.fileSize,
 song.trackNumber, song.mediaNumber, song.releaseYear, song.releaseDecade, song.rating, song.playCount,
 song.performerCount, song.genre, song.mood, song.language, song.lyrics,
-song.seconds, song.duration, song.bitrate, song.frequency, song.vbr,
+song.seconds, song.duration, song.bitrate, song.frequency, song.quality,
 song.favorite, song.live, song.advisory, song.addDate, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.albumStylized AS primaryAlbumStylized, album.primaryArtistId AS primaryArtistId,
 artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
@@ -28,7 +28,7 @@ artist.name AS primaryArtistName, artist.artistStylized AS primaryArtistStylized
  * Base class that includes all columns for any view implementing the ISongModel interface.
  * Fields: id, name, hash, primaryAlbumId, mbId, filePath, fileExtension, fileSize,
  * trackNumber, mediaNumber, releaseYear, releaseDecade, rating, playCount,
- * performerCount, genre, mood, language, lyrics, seconds, duration, bitrate, frequency, vbr,
+ * performerCount, genre, mood, language, lyrics, seconds, duration, bitrate, frequency, quality,
  * favorite, live, advisory, addDate, playDate, replaceDate, primaryAlbumName, primaryAlbumStylized, primaryArtistId,
  * primaryArtistName, primaryArtistStylized.
  * Excluded fields:
@@ -92,7 +92,7 @@ export class SongViewBaseEntity extends SongBaseEntity implements ISongModel {
   @ViewColumn()
   frequency: number;
   @ViewColumn()
-  vbr: boolean;
+  quality: string;
   // Flags
   @ViewColumn()
   favorite: boolean;
@@ -135,7 +135,7 @@ song.titleSort, song.subtitle, song.featuring, song.trackNumber, song.mediaNumbe
 song.rating, song.playCount, song.performerCount, song.genre, song.mood, song.language,
 song.lyrics, song.grouping, song.composer, song.composerSort, song.comment,
 song.originalArtist, song.originalAlbum, song.originalReleaseYear, song.infoUrl, song.videoUrl,
-song.seconds, song.duration, song.bitrate, song.frequency, song.vbr, song.replayGain, song.tempo,
+song.seconds, song.duration, song.bitrate, song.frequency, song.quality, song.replayGain, song.tempo,
 song.favorite, song.live, song.advisory, song.addDate, song.addYear, song.changeDate, song.playDate, song.replaceDate,
 album.name AS primaryAlbumName, album.description AS primaryAlbumDescription, album.albumSort AS primaryAlbumSort, album.albumStylized AS primaryAlbumStylized, album.albumType AS primaryAlbumType, album.publisher AS primaryAlbumPublisher, album.primaryArtistId,
 artist.country, artist.name AS primaryArtistName, artist.artistSort AS primaryArtistSort, artist.artistStylized AS primaryArtistStylized, artist.artistType AS primaryArtistType

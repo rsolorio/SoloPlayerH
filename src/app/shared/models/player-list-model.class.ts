@@ -9,6 +9,7 @@ import { ISongModel } from "./song-model.interface";
 import { ImageSrcType } from "src/app/core/models/core.enum";
 import { fisherYatesShuffle } from "src/app/app-exports";
 import { AppEvent } from "src/app/app-events";
+import { SongQuality } from "./music.enum";
 
 /**
  * Class responsible for handling the access to the tracks and updating the playlist status.
@@ -52,7 +53,7 @@ export class PlayerListModel implements IDbModel {
     duration: '00:00',
     bitrate: 0,
     frequency: 0,
-    vbr: false,
+    quality: SongQuality.LQ,
     favorite: false,
     live: false,
     advisory: 0,

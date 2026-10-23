@@ -247,10 +247,10 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
-              propertyName: 'vbr',
-              icon: AppAttributeIcons.Vbr,
-              label: 'VBR',
-              editorType: ValueEditorType.YesNo
+              propertyName: 'quality',
+              icon: AppAttributeIcons.Quality,
+              label: 'Quality',
+              editorType: ValueEditorType.Text
             },
             {
               propertyName: 'replayGain',

@@ -9,6 +9,7 @@ import { MusicImageSourceType, MusicImageType, TagPrefix } from 'src/app/platfor
 import { IImageSource } from 'src/app/core/models/core.interface';
 import { MimeType } from 'src/app/core/models/core.enum';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
+import { SongQuality } from 'src/app/shared/models/music.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -368,8 +369,14 @@ export class Id3v2SourceService implements IDataSourceService {
           return [this.audioInfo.metadata.format.sampleRate];
         }
         break;
-      case MetaAttribute.Vbr:
-        return [this.audioInfo.metadata.format.codecProfile !== 'CBR'];
+      case MetaAttribute.Quality:
+        if (this.audioInfo.metadata.format.codecProfile === 'CBR') {
+          if (this.audioInfo.metadata.format.bitrate === 320000) {
+            return [SongQuality.GQ];
+          }
+          return [SongQuality.LQ];
+        }
+        return [SongQuality.VBR];
       case MetaAttribute.Tempo:
         const tempoText = this.metadataService.getValue<string>('TBPM', this.tags);
         if (tempoText) {

@@ -42,7 +42,7 @@ enum ScanFileMode {
    * Mode where the scanner identifies the file already exists in the database but it needs to be updated.
    * Changes allowed in update mode:
    * Add/update lyrics and images.
-   * Update this information: vbr, size, freq, bitrate, seconds, duration, layer, level, channel mode, changeDate.
+   * Update this information: quality, size, freq, bitrate, seconds, duration, layer, level, channel mode, changeDate.
    * Keep older add date in the file.
    */
   Update = 'update',
@@ -190,7 +190,7 @@ export class ScanAudioService {
     }
     syncInfo.songUpdatedRecords = this.existingSongs.filter(song => song.hasChanges);
     if (syncInfo.songUpdatedRecords.length) {
-      const songUpdateColumns = ['lyrics', 'seconds', 'duration', 'bitrate', 'frequency', 'vbr', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
+      const songUpdateColumns = ['lyrics', 'seconds', 'duration', 'bitrate', 'frequency', 'quality', 'replayGain', 'fileSize', 'addDate', 'changeDate', 'replaceDate'];
       await this.db.bulkUpdate(SongEntity, syncInfo.songUpdatedRecords, songUpdateColumns);
       // songsToBeUpdated.forEach(s => s.hasChanges = false);
     }
@@ -364,7 +364,7 @@ export class ScanAudioService {
   /**
    * Assumes the specified metadata belongs to an existing song file.
    * It will update the following information:
-   * Lyrics, seconds, duration, bitrate, frequency, vbr, replayGain, fileSize, and images.
+   * Lyrics, seconds, duration, bitrate, frequency, quality, replayGain, fileSize, and images.
    * @param metadata 
    * @returns 
    */
@@ -405,9 +405,9 @@ export class ScanAudioService {
       this.songToProcess.frequency = frequency;
       replaced = true;
     }
-    const vbr = metadata[MetaAttribute.Vbr];
-    if (vbr?.length && vbr[0] !== this.songToProcess.vbr) {
-      this.songToProcess.vbr = vbr[0];
+    const quality = this.first(metadata[MetaAttribute.Quality]);
+    if (quality && quality !== this.songToProcess.quality) {
+      this.songToProcess.quality = quality;
       replaced = true;
     }
     const replayGain = this.first(metadata[MetaAttribute.ReplayGain]);
@@ -694,7 +694,7 @@ export class ScanAudioService {
     let seconds = this.first(metadata[MetaAttribute.Seconds]);
     song.seconds = seconds ? this.utility.round(seconds, 4) : 0;
     song.duration = this.utility.secondsToMinutes(song.seconds);
-    song.vbr = this.first(metadata[MetaAttribute.Vbr]);
+    song.quality = this.first(metadata[MetaAttribute.Quality]);
     song.fileSize = this.first(metadata[MetaAttribute.FileSize]);
     song.infoUrl = this.first(metadata[MetaAttribute.Url]);
     song.videoUrl = this.first(metadata[MetaAttribute.VideoUrl]);

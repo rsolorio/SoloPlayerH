@@ -32,6 +32,7 @@ import { AppEvent } from '../app-events';
 import { MusicImageType } from '../platform/audio-metadata/audio-metadata.enum';
 import { LastFmService } from '../shared/services/last-fm/last-fm.service';
 import { LogService } from '../core/services/log/log.service';
+import { SongQuality } from '../shared/models/music.enum';
 
 /**
  * Base component for any implementation of the player modes.
@@ -210,7 +211,7 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   protected getBitrate(): string {
-    if (this.model.playerList.current.vbr) {
+    if (this.model.playerList.current.quality === SongQuality.VBR) {
       return 'Vbr';
     }
     const kbps = this.model.playerList.current.bitrate / 1000;

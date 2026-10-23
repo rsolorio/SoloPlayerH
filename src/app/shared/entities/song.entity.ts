@@ -81,7 +81,7 @@ export class SongEntity extends SongBaseEntity implements ISongFullModel {
   @Column()
   frequency: number;
   @Column()
-  vbr: boolean;
+  quality: string;
   @Column()
   replayGain: number;
   @Column()

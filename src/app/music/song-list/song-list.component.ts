@@ -18,7 +18,7 @@ import { NavigationService } from 'src/app/shared/services/navigation/navigation
 import { AppRoute, appRoutes } from 'src/app/app-routes';
 import { Criteria, CriteriaItem, CriteriaItems } from 'src/app/shared/services/criteria/criteria.class';
 import { CriteriaComparison } from 'src/app/shared/services/criteria/criteria.enum';
-import { SongBadge } from 'src/app/shared/models/music.enum';
+import { SongBadge, SongQuality } from 'src/app/shared/models/music.enum';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { ModuleOptionId } from 'src/app/shared/services/database/database.seed';
 import { ImageService } from 'src/app/platform/image/image.service';
@@ -61,6 +61,7 @@ export class SongListComponent extends CoreComponent implements OnInit {
   public AppPlayerIcons = AppPlayerIcons;
   public AppAttributeIcons = AppAttributeIcons;
   public SongBadge = SongBadge;
+  public SongQuality = SongQuality;
   public songAttributesVisible = true;
   private expandPlayerOnPlay = false;
 

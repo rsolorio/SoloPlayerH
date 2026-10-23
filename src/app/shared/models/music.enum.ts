@@ -1,3 +1,18 @@
+export enum SongQuality {
+  /** Low quality, bitrate < 320kbps && not VBR. */
+  LQ = 'LQ',
+  /** Variable bitrate < 320kbps. */
+  VBR = 'VBR',
+  /** Good quality, bitrate = 320kbps. */
+  GQ = 'GQ',
+  /** CD quality, bits = 16, Khz = 44.1. */
+  CD = 'CD',
+  /** High quality, bits > 16, Khz < 88.2. */
+  HQ = 'HQ',
+  /** High res, bits >= 24, Khz >= 88.2. */
+  HR = 'HR'
+}
+
 export enum SongBadge {
   Kbps320 = '320 KBPS',
   Lyrics = 'LYRICS',
