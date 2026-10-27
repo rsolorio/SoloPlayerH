@@ -7,7 +7,7 @@ import { LogService } from "./core/services/log/log.service";
 import { DatabaseService } from "./shared/services/database/database.service";
 import { DatabaseEntitiesService } from "./shared/services/database/database-entities.service";
 import { DatabaseOptionsService } from "./shared/services/database/database-options.service";
-import { AlbumViewEntity, ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedByPlaylistViewEntity, SongExtendedViewEntity, SongViewEntity, ValueListEntryEntity } from "./shared/entities";
+import { AlbumEntity, AlbumViewEntity, ArtistEntity, FilterCriteriaEntity, FilterCriteriaItemEntity, FilterEntity, PlayHistoryEntity, PlaylistEntity, PlaylistSongEntity, RelatedImageEntity, SongClassificationEntity, SongEntity, SongExtendedByPlaylistViewEntity, SongExtendedViewEntity, SongViewEntity, ValueListEntryEntity } from "./shared/entities";
 import { UtilityService } from "./core/services/utility/utility.service";
 import { ISize, IValuePair } from "./core/models/core.interface";
 import { ValueLists } from "./shared/services/database/database.lists";
@@ -71,12 +71,12 @@ export class AppTestService {
     //await this.getAvailableAlbumArt();
     //await this.testFileDates();
     await this.getMbIds();
+    //await this.addSoundtrackSubgenre();
 
-    // const genres = ['Rock', 'Pop', 'Jazz', 'Electronic', 'Folk', 'Hip-Hop', 'Country', 'R&B', 'Rap', 'Grupero', 'Ranchero', 'Urbano', 'Indie', 'Salsa'];
-    // const newGenres = ['Soundtrack',];
-    // await this.updateSongs('English', 'Hip-Hop', newGenres);
+    // const genres = ['R&B', 'Indie', 'Pop', 'Folk', 'Electronic', 'Rock', 'Other', 'Country', 'Disco', 'Rap', 'Hip-Hop', 'Jazz', 'New Age', 'Folk', 'Reggae', 'Salsa', 'Flamenco', 'Instrumental'];
+    // await this.updateSongs('None', 'Soundtrack', genres);
     // console.log('songs');
-    // await this.updateImages('English', 'Hip-Hop', newGenres);
+    // await this.updateImages('None', 'Soundtrack', genres);
     // console.log('images');
     //await this.getAnimatedArtUrls();
     //await this.getAndStoreAnimatedArtList();
@@ -878,19 +878,35 @@ export class AppTestService {
   }
 
   /**
-   * Updates the genres of all songs that match the specified genre and language.
+   * Finds songs with the specified language and genre, and it will validate if each song
+   * has changed its file path, specifically if the genre part has changed to any of the new genres;
+   * if so, it will update file path, genre and hash.
+   * EXCEPTION: this method will not work with cases where the original language and genre match
+   * (like 'Other' lang and 'Other' genre.)
    * @param newGenres 
    */
-  private async updateSongs(language: string, genre: string, newGenres: string[]): Promise<void> {
-    const songs = await SongEntity.findBy({ genre: In([genre]), language: In([language]) });
+  private async updateSongs(languageFolder: string, genreFolder: string, newGenres: string[]): Promise<void> {
+    // Stop here
+    if (languageFolder === genreFolder) {
+      return;
+    }
+    //const songs = await SongEntity.findBy({ genre: In([genre]), language: In([language]) });
+    const songs = await SongEntity.findBy({ filePath: Like(`D:\\Mp3\\${languageFolder}\\${genreFolder}\\%`) });
     for (const song of songs) {
       if (!this.fileService.exists(song.filePath)) {
-        const result = await this.updateSongGenre(song, genre, newGenres);
+        const result = await this.updateSongGenre(song, genreFolder, newGenres);
         console.log(`Song updated: ${result} ${song.filePath}`);
       }
     }
   }
 
+  /**
+   * 
+   * @param song 
+   * @param genre 
+   * @param newGenres 
+   * @returns 
+   */
   private async updateSongGenre(song: SongEntity, genre: string, newGenres: string[]): Promise<boolean> {
     for (const newGenre of newGenres) {
       const newPath = song.filePath.replace(`\\${genre}\\`, `\\${newGenre}\\`);
@@ -921,11 +937,17 @@ export class AppTestService {
 
   /**
    * Updates hash and sourcePath of relatedImage records with new genre.
+   * EXCEPTION: this method will not work with cases where the original language and genre match
+   * (like 'Other' lang and 'Other' genre.)
    * @param languageFolder 
    * @param genreFolder 
    * @param newGenres 
    */
   private async updateImages(languageFolder: string, genreFolder: string, newGenres: string[]): Promise<void> {
+    // Stop here
+    if (languageFolder === genreFolder) {
+      return;
+    }
     const images1 = await RelatedImageEntity.findBy({ sourcePath: Like(`D:\\Mp3\\${languageFolder}\\${genreFolder}\\%`)});
     //const images2 = await RelatedImageEntity.findBy({ sourcePath: Like('G:\\Music\\Spanish\\Other\\%')});
     //const images = images1.concat(images2);
@@ -938,7 +960,31 @@ export class AppTestService {
             image.hash = this.lookup.hashImage(newPath, 0);
             await image.save();
             console.log(`Image updated: ${image.sourcePath}`);
+            // Stop rest of iterations
+            break;
           }
+        }
+      }
+    }
+  }
+
+  private async addSoundtrackSubgenre() {
+    const soundtrackAlbums = await AlbumEntity.findBy({ albumType: 'Soundtrack' });
+    for (const album of soundtrackAlbums) {
+      const tracks = await SongEntity.findBy({ primaryAlbumId: album.id });
+      for (const track of tracks) {
+        let subgenreRecord = await SongClassificationEntity.findOneBy({ songId: track.id, classificationId: '60bc92f0-622a-4bc0-81fd-105d6eac0e51'});
+        if (subgenreRecord) {
+          console.log(`Soundtrack already marked for ${track.filePath}`);
+        }
+        else {
+          subgenreRecord = new SongClassificationEntity();
+          subgenreRecord.songId = track.id;
+          subgenreRecord.classificationId = '60bc92f0-622a-4bc0-81fd-105d6eac0e51';
+          subgenreRecord.classificationTypeId = '522b4e6c-1161-477b-ad5f-0a219f46d99d';
+          subgenreRecord.primary = false;
+          await subgenreRecord.save();
+          console.log(`Soundtrack added for ${track.filePath}`);
         }
       }
     }
