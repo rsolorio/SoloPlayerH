@@ -481,6 +481,7 @@ export class UtilityService {
    * Better function name: zeroPad
    * @param value The value to format
    * @param digits The number of digits to enforce
+   * @param enforceSign If true, a positive number will be appended to the begining of the value
    */
   public enforceDigits(value: number, digits: number, enforceSign?: boolean): string {
     if (digits === 0 && value === 0) {

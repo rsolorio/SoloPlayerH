@@ -210,7 +210,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$join(%comma%%space%,$if($eq(%language%,Other),%empty%,Language:%space%%language%),$if($eq(%country%,Unknown),%empty%,Country:%space%%country%),$if($eq(%artistType%,Unknown),%empty%,Type:%space%%artistType%))",
+        "source": "$join(%comma%%space%,$if($eq(%language%,Other),%empty%,Language:%space%%language%),$if($eq(%country%,Unknown),%empty%,Country:%space%%country%),$if($eq(%artistType%,Unknown),%empty%,Type:%space%%artistType%),$if(%replayGain%,RG: $pad(%replayGain%,2,1)))",
         "destination": "comment",
         "priority": 1,
         "sequence": 1,
