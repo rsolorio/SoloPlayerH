@@ -146,8 +146,6 @@ export class CriteriaItem {
   columnName: string;
   /** The values to compare the column to. */
   columnValues: IValuePair[] = [];
-  /** The data type of the column. */
-  columnDataType = CriteriaDataType.String;
   /** Determines if the column values are special expressions that describe a relative date. */
   isRelativeDate: boolean;
   /** The comparison operator between the column and the value. */
@@ -182,10 +180,6 @@ export class CriteriaItem {
     }
     else {
       this.comparison = comparison;
-    }
-    // Hack: set type to date if the name implies
-    if (columnName.endsWith('Date')) {
-      this.columnDataType = CriteriaDataType.Date;
     }
   }
 }

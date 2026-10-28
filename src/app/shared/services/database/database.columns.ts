@@ -2,13 +2,17 @@ import { AppActionIcons, AppAttributeIcons, AppEntityIcons } from "src/app/app-i
 import { CriteriaDataType } from "../criteria/criteria.enum";
 import { IColumn } from "../criteria/criteria.interface";
 
+/** Enumeration with the list of column names. */
 export enum DbColumn {
   Artist = 'artistId',
   AlbumArtist = 'primaryArtistId',
   AlbumArtistName = 'primaryArtistName',
   Album = 'primaryAlbumId',
   AlbumName = 'primaryAlbumName',
-  Title = 'name',
+  /** Song name (usually comes from the file name). */
+  Name = 'name',
+  /** Clean version (no square brackets) of the song name. */
+  Title = 'title',
   TitleSort = 'titleSort',
   TrackNumber = 'trackNumber',
   MediaNumber = 'mediaNumber',
@@ -33,33 +37,59 @@ export enum DbColumn {
   Limit = 'limit',
   /** Fake column for advanced sorting purposes. */
   TransformAlgorithm = 'transformAlgorithm',
+  Bitrate = 'bitrate',
+  ChangeDate = 'changeDate',
+  Genre = 'genre',
+  PlayDate = 'playDate',
+  Quality = 'quality',
+  ReplaceDate = 'replaceDate'
 }
 
 export const databaseColumns: { [name: string]: IColumn } = { };
-databaseColumns[DbColumn.Artist] = { name: DbColumn.Artist, caption: 'Artist', icon: AppEntityIcons.Artist, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.AddDate] = { name: DbColumn.AddDate, caption: 'Add Date', icon: AppAttributeIcons.AddDate, dataType: CriteriaDataType.Date };
+databaseColumns[DbColumn.Bitrate] = { name: DbColumn.Bitrate, caption: 'Bitrate', icon: AppAttributeIcons.Bitrate, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.Advisory] = { name: DbColumn.Advisory, caption: 'Advisory', icon: AppAttributeIcons.Advisory, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.Album] = { name: DbColumn.Album, caption: 'Album', icon: AppEntityIcons.Album, dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.AlbumArtist] = { name: DbColumn.AlbumArtist, caption: 'Album Artist', icon: AppEntityIcons.AlbumArtist, dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.AlbumArtistName] = { name: DbColumn.AlbumArtistName, caption: 'Album Artist', icon: AppAttributeIcons.ArtistName, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.Album] = { name: DbColumn.Album, caption: 'Album', icon: AppEntityIcons.Album, dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.AlbumName] = { name: DbColumn.AlbumName, caption: 'Album', icon: AppAttributeIcons.AlbumName, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Artist] = { name: DbColumn.Artist, caption: 'Artist', icon: AppEntityIcons.Artist, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.ChangeDate] = { name: DbColumn.ChangeDate, caption: 'Change Date', icon: AppAttributeIcons.ChangeDate, dataType: CriteriaDataType.Date };
+databaseColumns[DbColumn.Classification] = { name: DbColumn.Classification, caption: 'Classification', icon: AppEntityIcons.Classification, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Favorite] = { name: DbColumn.Favorite, caption: 'Favorite', icon: AppAttributeIcons.FavoriteOn, dataType: CriteriaDataType.Boolean };
+databaseColumns[DbColumn.Genre] = { name: DbColumn.Genre, caption: 'Genre', icon: AppAttributeIcons.GenreName, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Grouping] = { name: DbColumn.Grouping, caption: 'Grouping', icon: AppAttributeIcons.Grouping, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Language] = { name: DbColumn.Language, caption: 'Language', icon: AppAttributeIcons.Language, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Limit] = { name: DbColumn.Limit, caption: 'Limit', icon: AppAttributeIcons.Limit, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.Live] = { name: DbColumn.Live, caption: 'Live', icon: AppAttributeIcons.LiveOn, dataType: CriteriaDataType.Boolean };
+databaseColumns[DbColumn.Lyrics] = { name: DbColumn.Lyrics, caption: 'Lyrics', icon: AppAttributeIcons.LyricsOn, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.MediaNumber] = { name: DbColumn.MediaNumber, caption: 'Media Number', icon: AppAttributeIcons.MediaNumber, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.Mood] = { name: DbColumn.Mood, caption: 'Mood', icon: AppAttributeIcons.MoodOn, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Name] = { name: DbColumn.Name, caption: 'Name', icon: AppAttributeIcons.SongName, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.PerformerCount] = { name: DbColumn.PerformerCount, caption: 'Performers', icon: AppAttributeIcons.PerformerCount, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.PlayCount] = { name: DbColumn.PlayCount, caption: 'Play Count', icon: AppAttributeIcons.PlayCount, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.PlayDate] = { name: DbColumn.PlayDate, caption: 'Play Date', icon: AppAttributeIcons.PlayDate, dataType: CriteriaDataType.Date };
+databaseColumns[DbColumn.Quality] = { name: DbColumn.Quality, caption: 'Quality', icon: AppAttributeIcons.Quality, dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.Rating] = { name: DbColumn.Rating, caption: 'Rating', icon: AppAttributeIcons.RatingOn, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Decade', icon: AppAttributeIcons.Decade, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.ReleaseYear] = { name: DbColumn.ReleaseYear, caption: 'Year', icon: AppAttributeIcons.Year, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.ReplaceDate] = { name: DbColumn.ReplaceDate, caption: 'Replace Date', icon: AppAttributeIcons.ReplaceDate, dataType: CriteriaDataType.Date };
+databaseColumns[DbColumn.Seconds] = { name: DbColumn.Seconds, caption: 'Duration', icon: AppAttributeIcons.Duration, dataType: CriteriaDataType.Number };
+databaseColumns[DbColumn.SortBy] = { name: DbColumn.SortBy, caption: 'Sort By', icon: AppActionIcons.Sort, dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.Title] = { name: DbColumn.Title, caption: 'Title', icon: AppAttributeIcons.SongName, dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.TitleSort] = { name: DbColumn.TitleSort, caption: 'Title Sort', icon: AppAttributeIcons.TitleSort, dataType: CriteriaDataType.String };
 databaseColumns[DbColumn.TrackNumber] = { name: DbColumn.TrackNumber, caption: 'Track Number', icon: AppAttributeIcons.TrackNumber, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.MediaNumber] = { name: DbColumn.MediaNumber, caption: 'Media Number', icon: AppAttributeIcons.MediaNumber, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.Grouping] = { name: DbColumn.Grouping, caption: 'Grouping', icon: AppAttributeIcons.Grouping, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.Classification] = { name: DbColumn.Classification, caption: 'Classification', icon: AppEntityIcons.Classification, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.Rating] = { name: DbColumn.Rating, caption: 'Rating', icon: AppAttributeIcons.RatingOn, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.Mood] = { name: DbColumn.Mood, caption: 'Mood', icon: AppAttributeIcons.MoodOn, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.PlayCount] = { name: DbColumn.PlayCount, caption: 'Play Count', icon: AppAttributeIcons.PlayCount, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.Seconds] = { name: DbColumn.Seconds, caption: 'Duration', icon: AppAttributeIcons.Duration, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.Language] = { name: DbColumn.Language, caption: 'Language', icon: AppAttributeIcons.Language, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.Live] = { name: DbColumn.Live, caption: 'Live', icon: AppAttributeIcons.LiveOn, dataType: CriteriaDataType.Boolean };
-databaseColumns[DbColumn.Favorite] = { name: DbColumn.Favorite, caption: 'Favorite', icon: AppAttributeIcons.FavoriteOn, dataType: CriteriaDataType.Boolean };
-databaseColumns[DbColumn.Advisory] = { name: DbColumn.Advisory, caption: 'Advisory', icon: AppAttributeIcons.Advisory, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.PerformerCount] = { name: DbColumn.PerformerCount, caption: 'Performers', icon: AppAttributeIcons.PerformerCount, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.ReleaseYear] = { name: DbColumn.ReleaseYear, caption: 'Year', icon: AppAttributeIcons.Year, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.ReleaseDecade] = { name: DbColumn.ReleaseDecade, caption: 'Decade', icon: AppAttributeIcons.Decade, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.Lyrics] = { name: DbColumn.Lyrics, caption: 'Lyrics', icon: AppAttributeIcons.LyricsOn, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.AddDate] = { name: DbColumn.AddDate, caption: 'Add Date', icon: AppAttributeIcons.AddDate, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.SortBy] = { name: DbColumn.SortBy, caption: 'Sort By', icon: AppActionIcons.Sort, dataType: CriteriaDataType.String };
-databaseColumns[DbColumn.Limit] = { name: DbColumn.Limit, caption: 'Limit', icon: AppAttributeIcons.Limit, dataType: CriteriaDataType.Number };
-databaseColumns[DbColumn.TransformAlgorithm] = { name: DbColumn.TransformAlgorithm, caption: 'Transform', icon: 'mdi-sort-alphabetical-variant mdi', dataType: CriteriaDataType.String };
+databaseColumns[DbColumn.TransformAlgorithm] = { name: DbColumn.TransformAlgorithm, caption: 'Transform', icon: AppActionIcons.Transform, dataType: CriteriaDataType.String };
+
+export function getColumnDataType(columnName: string): CriteriaDataType {
+  const dbColumn = databaseColumns[columnName];
+  if (dbColumn) {
+    return dbColumn.dataType;
+  }
+  // Log for developer
+  console.log(`Data type not found for ${columnName}`);
+  if (columnName.endsWith('Date')) {
+    return CriteriaDataType.Date;
+  }
+  return CriteriaDataType.String;
+}

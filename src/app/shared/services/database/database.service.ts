@@ -55,7 +55,7 @@ import {
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { EventsService } from 'src/app/core/services/events/events.service';
 import { LogService } from 'src/app/core/services/log/log.service';
-import { databaseColumns } from './database.columns';
+import { databaseColumns, getColumnDataType } from './database.columns';
 import { Criteria, CriteriaItem, CriteriaItems } from '../criteria/criteria.class';
 import { CriteriaComparison, CriteriaDataType, CriteriaJoinOperator, CriteriaSortDirection, CriteriaTransformAlgorithm } from '../criteria/criteria.enum';
 import { IComparison } from '../criteria/criteria.interface';
@@ -796,16 +796,17 @@ export class DatabaseService {
       const dateRange = this.relativeDateService.parse(expression);
       let fromValue: any;
       let toValue: any;
-      if (criteriaItem.columnDataType === CriteriaDataType.Number) {
+      const columnDataType = getColumnDataType(criteriaItem.columnName);
+      if (columnDataType === CriteriaDataType.Number) {
         fromValue = dateRange.from.getFullYear();
         toValue = dateRange.to.getFullYear();
       }
-      else if (criteriaItem.columnDataType === CriteriaDataType.Date) {
+      else if (columnDataType === CriteriaDataType.Date) {
         fromValue = dateRange.from;
         toValue = dateRange.to;
       }
       else {
-        const dataTypeText = this.utilities.getEnumNameByValue(criteriaItem.columnDataType.toString(), CriteriaDataType);
+        const dataTypeText = this.utilities.getEnumNameByValue(columnDataType.toString(), CriteriaDataType);
         this.log.error(`Column ${criteriaItem.columnName} with data type ${dataTypeText} does not support relative dates.`);
       }
       const columnName = this.buildColumnName(criteriaItem.columnName, entityAlias);

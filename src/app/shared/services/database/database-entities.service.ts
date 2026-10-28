@@ -574,7 +574,6 @@ export class DatabaseEntitiesService {
       if (!criteriaItem) {
         criteriaItem = new CriteriaItem(filterCriteriaItem.columnName);
         criteriaItem.id = filterCriteriaItem.id;
-        criteriaItem.columnDataType = filterCriteriaItem.columnDataType;
         criteriaItem.comparison = filterCriteriaItem.comparison;
         criteriaItem.valuesOperator = filterCriteriaItem.valuesOperator;
         criteriaItem.expressionOperator = filterCriteriaItem.expressionOperator;
