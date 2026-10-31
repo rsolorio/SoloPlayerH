@@ -200,7 +200,7 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$upper(%ext%)/%quality%",
+        "source": "$upper(%ext%) ● %quality%",
         "destination": "grouping",
         "priority": 1,
         "sequence": 1,
