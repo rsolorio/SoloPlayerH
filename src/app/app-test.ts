@@ -55,7 +55,7 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    //await this.logStatistics();
+    await this.logStatistics();
     //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
@@ -70,7 +70,7 @@ export class AppTestService {
     //await this.logPopularity();    
     //await this.getAvailableAlbumArt();
     //await this.testFileDates();
-    await this.getMbIds();
+    //await this.getMbIds();
     //await this.addSoundtrackSubgenre();
 
     // const genres = ['R&B', 'Indie', 'Pop', 'Folk', 'Electronic', 'Rock', 'Other', 'Country', 'Disco', 'Rap', 'Hip-Hop', 'Jazz', 'New Age', 'Folk', 'Reggae', 'Salsa', 'Flamenco', 'Instrumental'];
@@ -738,6 +738,16 @@ export class AppTestService {
     queries.push({
       caption: 'Low quality songs by artist. Initial artist count: 1046',
       value: 'SELECT primaryArtistName, COUNT(id) AS songCount FROM songView WHERE bitrate < 320000 AND quality <> "VBR" GROUP BY primaryArtistName ORDER BY songCount DESC, primaryArtistName ASC'
+    });
+
+    queries.push({
+      caption: 'Low quality songs by release year. Initial count: 62',
+      value: 'SELECT releaseYear, COUNT(id) AS songCount FROM song WHERE quality = "LQ" GROUP BY releaseYear ORDER BY releaseYear DESC'
+    });
+
+    queries.push({
+      caption: 'VBR songs by release year. Initial count: 81',
+      value: 'SELECT releaseYear, COUNT(id) AS songCount FROM song WHERE quality = "VBR" GROUP BY releaseYear ORDER BY releaseYear DESC'
     });
 
     queries.push({
