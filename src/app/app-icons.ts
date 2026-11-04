@@ -28,6 +28,8 @@ export enum AppAttributeIcons {
   ArtistName = 'mdi-account mdi',
   ArtistGroup = 'mdi-account-group mdi',
   ArtistStylized = 'mdi-symbol mdi',
+  ArtistSinger = 'mdi-account-tie-voice mdi',
+  ArtistContributor = 'mdi-account-multiple mdi',
   AlbumName = 'mdi-album mdi',
   SongName = 'mdi-music-clef-treble mdi',
   TitleSort = 'mdi-sort-alphabetical-variant mdi',

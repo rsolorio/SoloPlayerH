@@ -12,10 +12,12 @@ import { UtilityService } from 'src/app/core/services/utility/utility.service';
 import { ChipDisplayMode, ChipSelectorType, IChipSelectionModel } from 'src/app/shared/components/chip-selection/chip-selection-model.interface';
 import { ChipSelectionComponent } from 'src/app/shared/components/chip-selection/chip-selection.component';
 import { IEntityEditorModel } from 'src/app/shared/components/entity-editor/entity-editor.interface';
-import { ArtistEntity, ValueListEntryEntity } from 'src/app/shared/entities';
+import { ArtistEntity, PartyRelationEntity, ValueListEntryEntity } from 'src/app/shared/entities';
+import { PartyRelationType } from 'src/app/shared/models/music.enum';
 import { DatabaseEntitiesService } from 'src/app/shared/services/database/database-entities.service';
 import { ValueLists } from 'src/app/shared/services/database/database.lists';
 import { NavigationService } from 'src/app/shared/services/navigation/navigation.service';
+import { In } from 'typeorm';
 
 @Component({
   selector: 'sp-artist-view',
@@ -50,6 +52,18 @@ export class ArtistViewComponent implements OnInit {
 
   private async loadModel(): Promise<void> {
     const data = await ArtistEntity.findOneBy({ id: this.artistId });
+    const singerRelations = await PartyRelationEntity.findBy({ artistId: data.id, relationTypeId: PartyRelationType.Singer });
+    if (singerRelations.length) {
+      let singerArtistIds = singerRelations.map(s => s.relatedId);
+      const singerArtists = await ArtistEntity.findBy({ id: In(this.utility.removeDuplicates(singerArtistIds)) });
+      data['singers'] = singerArtists.map(a => a.artistStylized).join(', ');
+    }
+    const contributorRelations = await PartyRelationEntity.findBy({ artistId: data.id, relationTypeId: PartyRelationType.Contributor });
+    if (contributorRelations.length) {
+      let contributorArtistIds = contributorRelations.map(s => s.relatedId);
+      const contributorArtists = await ArtistEntity.findBy({ id: In(this.utility.removeDuplicates(contributorArtistIds)) });
+      data['contributors'] = contributorArtists.map(a => a.artistStylized).join(', ');
+    }
     this.entityEditorModel = {
       data: data,
       groups: [
@@ -78,6 +92,24 @@ export class ArtistViewComponent implements OnInit {
                   artist.save();
                 });
               }
+            }
+          ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'singers',
+              icon: AppAttributeIcons.ArtistSinger,
+              label: 'Singers'
+            }
+          ]
+        },
+        {
+          fields: [
+            {
+              propertyName: 'contributors',
+              icon: AppAttributeIcons.ArtistContributor,
+              label: 'Contributors'
             }
           ]
         },

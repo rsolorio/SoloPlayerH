@@ -122,6 +122,15 @@ export class SongViewComponent implements OnInit {
         {
           fields: [
             {
+              propertyName: 'featuring',
+              icon: AppAttributeIcons.ArtistGroup,
+              label: 'Featuring Artists'
+            }
+          ]
+        },
+        {
+          fields: [
+            {
               propertyName: 'primaryAlbumName',
               icon: AppAttributeIcons.AlbumName,
               label: 'Album'
