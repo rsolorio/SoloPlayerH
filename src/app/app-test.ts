@@ -662,16 +662,6 @@ export class AppTestService {
     });
 
     queries.push({
-      caption: 'Overall bitrate (ignoring VBR files). Initial value: 225.477',
-      value: 'SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE quality <> "VBR"'
-    });
-
-    queries.push({
-      caption: 'Bitrate by decade',
-      value: 'SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade'
-    });
-
-    queries.push({
       caption: 'Animated art count. Initial value: 451',
       value: 'SELECT COUNT(id) AS animatedArtCount FROM relatedImage WHERE imageType = "FrontAnimated"'
     });
@@ -734,6 +724,16 @@ export class AppTestService {
     //queries.push(`SELECT STRFTIME('%Y', addDate) AS addYear, releaseYear, COUNT(id) AS releaseYearCount FROM song GROUP BY addYear, releaseYear ORDER BY addYear, releaseYear`);
 
     // QUALITY ------------------------------------------------------------
+
+    queries.push({
+      caption: 'Overall bitrate (ignoring VBR files). Initial value: 225.477',
+      value: 'SELECT AVG(bitrate) AS bitrateAverage FROM song WHERE quality <> "VBR"'
+    });
+
+    queries.push({
+      caption: 'Bitrate by decade',
+      value: 'SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade'
+    });
 
     queries.push({
       caption: 'Low quality songs by artist. Initial artist count: 1046',

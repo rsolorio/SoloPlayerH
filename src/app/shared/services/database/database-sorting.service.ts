@@ -164,7 +164,7 @@ export class DatabaseSortingService {
       'sorting-songCount', ['songCount', 'name'],
       AppAttributeIcons.SongCount, 'Song Count', result, existingCriteria.sortingCriteria);
     this.addSortingChip(
-      'sorting-addDate', ['songAddDateMax'],
+      'sorting-addDate', [{ key: 'songAddDateMax', value: CriteriaSortDirection.Descending }],
       AppAttributeIcons.AddDate, 'Last Song Add Date', result, existingCriteria.sortingCriteria);    
     return result;
   }
@@ -181,14 +181,14 @@ export class DatabaseSortingService {
       'sorting-songCount', ['songCount', 'releaseYear', 'name'],
       AppAttributeIcons.SongCount, 'Song Count', result, existingCriteria.sortingCriteria);
     this.addSortingChip(
-      'sorting-addDate', ['songAddDateMax'],
-      AppAttributeIcons.AddDate, 'Last Song Add Date', result, existingCriteria.sortingCriteria);
-    this.addSortingChip(
       'sorting-artistName', ['artistName', 'releaseYear', 'name'],
       AppAttributeIcons.ArtistName, 'Artist Name', result, existingCriteria.sortingCriteria);
     this.addSortingChip(
       'sorting-releaseYear', ['releaseYear', 'name'],
       AppAttributeIcons.Year, 'Release Year', result, existingCriteria.sortingCriteria);    
+    this.addSortingChip(
+      'sorting-addDate', [{ key: 'songAddDateMax', value: CriteriaSortDirection.Descending }],
+      AppAttributeIcons.AddDate, 'Last Song Add Date', result, existingCriteria.sortingCriteria);
     return result;
   }
 
