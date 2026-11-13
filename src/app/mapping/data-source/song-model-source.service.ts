@@ -249,11 +249,15 @@ export class SongModelSourceService implements IDataSourceService {
     // These functions are supported alone and not combined with any other expression
     switch (expression) {
       case '$getSingleImage()':
+        // This function exists because the "singleImage" field/placeholder does not exist, although it exists as a metadata attribute.
+        // This means if the attribute is added to the attributes value, the metadata will be populated and the picture will be added to the tag by default;
+        // but if an expression is needed, "%singleImage%" would not work.
         const singleImagePaths = await this.getRelatedImagePath(this.inputData.id, MusicImageType.Single);
         if (singleImagePaths?.length) {
           result = singleImagePaths[0];
         }
         break;
+        // This function exists because the "albumImage" field/placeholder does not exist, although it exists as a metadata attribute.
       case '$getAlbumImage()':
         const albumImagePaths = await this.getRelatedImagePath(this.inputData.primaryAlbumId, MusicImageType.Front);
         if (albumImagePaths?.length) {

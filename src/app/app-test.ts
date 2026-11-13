@@ -55,7 +55,7 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    await this.logStatistics();
+    //await this.logStatistics();
     //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
@@ -68,7 +68,6 @@ export class AppTestService {
     //await this.updateSong();
     //await this.getPlaylistsTracks();
     //await this.logPopularity();    
-    //await this.getAvailableAlbumArt();
     //await this.testFileDates();
     //await this.getMbIds();
     //await this.addSoundtrackSubgenre();
@@ -79,7 +78,7 @@ export class AppTestService {
     // await this.updateImages('None', 'Soundtrack', genres);
     // console.log('images');
     //await this.getAnimatedArtUrls();
-    //await this.getAndStoreAnimatedArtList();
+    await this.getAndStoreAnimatedArtList();
     //await this.updateImageSize();
   }
 
@@ -796,8 +795,9 @@ export class AppTestService {
    */
   private async getAlbumMetadata(albumRow: AlbumViewEntity): Promise<any> {
     const albumMetadata = { searchUrl: '', id: albumRow.id, url: '', hasAnimatedArt: false, artistName: albumRow.primaryArtistName, albumName: albumRow.albumStylized, error: null };
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzg2NjMyOTI0LCJleHAiOjE3OTI2ODA5MjQsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.hBgj61sZf-y7bmuvT-joXAUAcf7TVJ51732xnH5vFkLHOmsQHxVqGMYUuI4h8c0-RX3fRY3moylhLW8fewFJyw';
-    albumMetadata.searchUrl = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumMetadata.albumName + ' ' + albumMetadata.artistName);
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzkyNzgwNTM0LCJleHAiOjE3OTg4Mjg1MzQsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.wcf_7U-zcgUjY2L8d4HWFkdxP1YSJCkkqEpEtVPKpRARrlaag0DHyIpRcoUEWZU8kJlvx5Q7ZNp04OabfuiuAw';
+    const albumInfoToEncode = albumMetadata.artistName === 'Various' ? albumMetadata.albumName : albumMetadata.albumName + ' ' + albumMetadata.artistName;
+    albumMetadata.searchUrl = `https://amp-api.music.apple.com/v1/catalog/us/search?types=albums&extend=editorialVideo&term=` + encodeURIComponent(albumInfoToEncode);
     
     try {
       const response = await this.http.get(albumMetadata.searchUrl, { headers: { authorization: 'Bearer ' + token }}).toPromise();

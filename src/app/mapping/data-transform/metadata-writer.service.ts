@@ -129,15 +129,16 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * 3. Confirm the source (song model) has hardcoded logic to find the data associated to the metadata attribute.
    * 4. If you don't want to use the default logic or if it doesn't exist, you can setup a mapping and use an expression (within the "source" property) to get the data from the source.
    * 4a. Remember, an expression is a combination of hardcoded text and/or placeholders (fields or functions)
-   * 4b. Do not confuse a field placeholder used in an expression with a metadata attribute.
+   * 4b. Do not confuse a field placeholder (which uses the syntax %placeholder%) used in an expression with a metadata attribute (which is referred as regular camel case name like: albumImage).
    * 4c. The field does not need to exist in the "attributes" property, but it has to exist as a column in the source (song model), or as a placeholder shortcut.
    * 4d. Sometimes the value of an "attribute" property matches the name of a column in the source; although this is ideal (less code in the source service), it is not required.
+   * 4e. Fields/placeholders can be used as an expression in the "source" attribute of a mapping; metadata attributes are only used in the "attributes" property, or in the "destination" attribute to override the default value.
    * In other words:
    * 1. The "attributes" property of the data source is used to tell this method which metadata attributes will be populated with data.
    * 1a. The "attributes" property is basically used to specify an attribute and let the setupV2Tags method fill the corresponding tag (if supported).
-   * 1a. This property is configurable because some attributes are "harder" to get and there's no reason to get them all if you only need a few.
+   * 1a. Attributes have to be explicitly set because some attributes are "harder" to get and there's no reason to get them all if you only need a few.
    * 2. The logic on how this data will be retrieved resides in the corresponding data source;
-   * 2a. Some attributes just match their names to a data source field, so retrieving data is simple; however, other attributes have hardcoded logic to get the needed info.
+   * 2a. Some attributes just match their names to a data source field, so logic is simple; however, other attributes have hardcoded or more complex logic to get the needed info.
    * 3. When using expressions (either for default or user defined properties), field placeholders (%someField%) must exist as a column/field in the source.
    * How the full logic works:
    * 1. Each data source service iterates the attributes and retrieves data using the getData method
@@ -534,9 +535,12 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.WXXX = urls;
     }
 
+    // This logic only covers attaching pictures to tags;
+    // For exporting pictures as files, refer to: createAssociatedFiles
     const pictures: IAttachedPicture[] = [];
     const imageAttributes = [MetaAttribute.AlbumImage, MetaAttribute.AlbumSecondaryImage, MetaAttribute.SingleImage, MetaAttribute.AlbumArtistImage];
     for (const imageAttribute of imageAttributes) {
+      // In order to attach a picture in the metadata, a description for the related picture must exist as a destination.
       const imageDescription = this.first(metadata[imageAttribute + 'Description']);
       if (imageDescription) {
         await this.addPicture(pictures, this.first(metadata[imageAttribute]), AttachedPictureType.Front, imageDescription);
