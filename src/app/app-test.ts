@@ -55,7 +55,7 @@ export class AppTestService {
 
   public async test(): Promise<void> {
     //await this.logFileMetadata();
-    //await this.logStatistics();
+    await this.logStatistics();
     //this.hash();
     //await this.readSongClassification();
     //await this.readPlayHistory();
@@ -78,7 +78,7 @@ export class AppTestService {
     // await this.updateImages('None', 'Soundtrack', genres);
     // console.log('images');
     //await this.getAnimatedArtUrls();
-    await this.getAndStoreAnimatedArtList();
+    //await this.getAndStoreAnimatedArtList();
     //await this.updateImageSize();
   }
 
@@ -658,6 +658,11 @@ export class AppTestService {
     queries.push({
       caption: 'Songs by album type',
       value: 'SELECT albumType, COUNT(id) AS albumCount FROM album GROUP BY albumType ORDER BY albumCount DESC'
+    });
+
+    queries.push({
+      caption: 'Single art count. Initial value: 656',
+      value: 'SELECT COUNT(id) AS singleArtCount FROM relatedImage WHERE imageType = "Single"'
     });
 
     queries.push({
