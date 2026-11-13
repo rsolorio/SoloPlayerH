@@ -735,8 +735,8 @@ export class AppTestService {
     });
 
     queries.push({
-      caption: 'Bitrate by decade',
-      value: 'SELECT releaseDecade, AVG(bitrate) AS bitrateAverage FROM song GROUP BY releaseDecade ORDER BY releaseDecade'
+      caption: 'Song count by decade and quality.',
+      value: 'SELECT releaseDecade, quality, COUNT(id) AS songCount FROM song GROUP BY quality, releaseDecade ORDER BY releaseDecade DESC, quality DESC'
     });
 
     queries.push({
