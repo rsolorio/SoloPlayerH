@@ -232,8 +232,8 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * Reference to taglib: https://github.com/mono/taglib-sharp
    * If the following meta attributes are setup in the "attributes" property of the data source,
    * this writer will automatically consume them to set default tags:
-   * title, titleSort, subtitle, artist, artistSort, albumArtist, albumArtistSort,
-   * album, albumType, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
+   * title, titleSort, subtitle, artist, artistStylized, artistSort, albumArtist, albumArtistStylized, albumArtistSort,
+   * album, albumStylized, albumType, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
    * seconds, tempo (bpm), owner, ufid, mbId, playCount, rating, replayGain, url, videoUrl, favorite, advisory,
    * subgenre, category, occasion, instrument,
@@ -259,7 +259,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.TIT3 = subtitle;
     }
 
-    const artists = metadata[MetaAttribute.Artist];
+    let artists = metadata[MetaAttribute.ArtistStylized];
+    if (!artists?.length) {
+      artists = metadata[MetaAttribute.Artist];
+    }
     if (artists?.length) {
       if (v2Version === 4) {
         tags.TPE1 = artists.join(frameSeparator);
@@ -279,7 +282,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       }
     }
 
-    const albumArtist = this.first(metadata[MetaAttribute.AlbumArtist]);
+    let albumArtist = this.first(metadata[MetaAttribute.AlbumArtistStylized]);
+    if (!albumArtist) {
+      albumArtist = this.first(metadata[MetaAttribute.AlbumArtist]);
+    }
     if (albumArtist) {
       tags.TPE2 = albumArtist;
     }
@@ -289,7 +295,10 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
       tags.TSO2 = albumArtistSort;
     }
 
-    const album = this.first(metadata[MetaAttribute.Album]);
+    let album = this.first(metadata[MetaAttribute.AlbumStylized]);
+    if (!album) {
+      album = this.first(metadata[MetaAttribute.Album]);
+    }
     if (album) {
       tags.TALB = album;
     }

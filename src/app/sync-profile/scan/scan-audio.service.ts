@@ -532,10 +532,10 @@ export class ScanAudioService {
     this.set(MetaAttribute.Publisher, 'publisher');
 
     let albumCleanName = '';
-    const brackets = this.utility.matchBrackets(newAlbum.name);
-    if (brackets?.length) {
-      for (const bracket of brackets) {
-        albumCleanName = newAlbum.name.replace(bracket, '').trim();
+    const matches = this.utility.matchBrackets(newAlbum.name);
+    if (matches?.length) {
+      for (const match of matches) {
+        albumCleanName = newAlbum.name.replace(match, '').trim();
       }
     }
     else {

@@ -219,8 +219,7 @@ export class FunctionDefinitionService {
       description: 'Removes any content in x surrounded by brackets, including the brackets.',
       fn: args => {
         let x = args[0] as string;
-        const regexp = new RegExp('\\[(.*?)\\]', 'g');
-        const matches = x.match(regexp);
+        const matches = this.utility.matchBrackets(x);
         if (matches?.length) {
           for (const match of matches) {
             x = x.replace(match, '').trim();
