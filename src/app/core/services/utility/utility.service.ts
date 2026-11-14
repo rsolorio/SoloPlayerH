@@ -262,15 +262,15 @@ export class UtilityService {
    */
   public toDateTimeText(date: Date): IDateTimeText {
     return {
-      year: this.enforceDigits(date.getFullYear(), 4),
-      month: this.enforceDigits(date.getMonth() + 1, 2),
-      day: this.enforceDigits(date.getDate(), 2),
-      hour: this.enforceDigits(date.getHours(), 2),
-      hour12: this.enforceDigits(date.getHours() % 12 || 12, 2),
+      year: this.zeroPad(date.getFullYear(), 4),
+      month: this.zeroPad(date.getMonth() + 1, 2),
+      day: this.zeroPad(date.getDate(), 2),
+      hour: this.zeroPad(date.getHours(), 2),
+      hour12: this.zeroPad(date.getHours() % 12 || 12, 2),
       amPm: date.getHours() < 12 ? 'AM' : 'PM',
-      minute: this.enforceDigits(date.getMinutes(), 2),
-      second: this.enforceDigits(date.getSeconds(), 2),
-      millisecond: this.enforceDigits(date.getMilliseconds(), 3)
+      minute: this.zeroPad(date.getMinutes(), 2),
+      second: this.zeroPad(date.getSeconds(), 2),
+      millisecond: this.zeroPad(date.getMilliseconds(), 3)
     };
   }
 
@@ -391,7 +391,7 @@ export class UtilityService {
     const valueInt = Math.floor(value);
     const minutes = Math.floor(valueInt / 60);
     const secondsLeft = valueInt % 60;
-    return `${this.enforceDigits(minutes, 2)}:${this.enforceDigits(secondsLeft, 2)}`;
+    return `${this.zeroPad(minutes, 2)}:${this.zeroPad(secondsLeft, 2)}`;
   }
 
   /**
@@ -404,9 +404,9 @@ export class UtilityService {
     let secondsLeft = valueInt % 3600;
     const minutes = Math.floor(secondsLeft / 60);
     secondsLeft = secondsLeft % 60;
-    const minutesAndSeconds = `${this.enforceDigits(minutes, 2)}:${this.enforceDigits(secondsLeft, 2)}`;
+    const minutesAndSeconds = `${this.zeroPad(minutes, 2)}:${this.zeroPad(secondsLeft, 2)}`;
     if (hours) {
-      return `${this.enforceDigits(hours, 2)}:${minutesAndSeconds}`;
+      return `${this.zeroPad(hours, 2)}:${minutesAndSeconds}`;
     }
     return minutesAndSeconds;
   }
@@ -476,40 +476,20 @@ export class UtilityService {
   }
 
   /**
-   * Ensures the given value has at least the number of specified digits by adding leading zeros.
-   * If the value is 0 and the digits is 0 then it will return an empty string.
-   * Better function name: zeroPad
+   * Adds leading or trailing zeros to the specified value.
    * @param value The value to format
-   * @param digits The number of digits to enforce
-   * @param enforceSign If true, a positive number will be appended to the begining of the value
+   * @param minIntegerDigits Minimum number of integer digits to display
+   * @param minFractionDigits Minimum number of fraction digits to display
+   * @param enforcePositive If true, a plus sign will be appended to the beginning of positive values
+   * @returns Formatted value
    */
-  public enforceDigits(value: number, digits: number, enforceSign?: boolean): string {
-    if (digits === 0 && value === 0) {
-      // In this particular case return an empty string
-      return '';
-    }
-    // Keep the sign since we will get the absolute value
-    const sign = Math.sign(value);
-    // Absolute value to text
-    const fullNumberText = Math.abs(value).toString();
-    // Handle decimal values
-    const numberParts = fullNumberText.split('.');
-    const integerPart = numberParts[0].padStart(digits, '0');
-    const decimalPart = numberParts.length > 1 ? '.' + numberParts[1] : '';
-    const numberText = integerPart + decimalPart;
-
-    // Negative sign
-    if (sign === -1) {
-      return `-${numberText}`;
-    }
-
-    // At this point, we can assume it is a positive sign
-    // Enforce?
-    if (enforceSign) {
-      return `+${numberText}`;
-    }
-    // Positive number, no sign
-    return numberText;
+  public zeroPad(value: number, minIntegerDigits: number, minFractionDigits?: number, enforcePositive?: boolean): string {
+    const formatFn = new Intl.NumberFormat('en-US', {
+      minimumIntegerDigits: minIntegerDigits,
+      minimumFractionDigits: minFractionDigits
+    });
+    const result = formatFn.format(value);
+    return enforcePositive && value > 0 ? `+${result}` : result;
   }
 
   public round(value: number, decimals: number): number {

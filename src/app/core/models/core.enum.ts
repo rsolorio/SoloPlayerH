@@ -61,7 +61,8 @@ export enum Separator {
   ForwardSlash = '/',
   Dash = '-',
   Colon = ':',
-  SemiColon = ';'
+  SemiColon = ';',
+  Circle = '●'
 }
 
 export enum ValueEditorType {

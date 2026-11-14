@@ -33,6 +33,7 @@ import { MusicImageType } from '../platform/audio-metadata/audio-metadata.enum';
 import { LastFmService } from '../shared/services/last-fm/last-fm.service';
 import { LogService } from '../core/services/log/log.service';
 import { SongQuality } from '../shared/models/music.enum';
+import { Separator } from '../core/models/core.enum';
 
 /**
  * Base component for any implementation of the player modes.
@@ -326,7 +327,8 @@ export class PlayerComponentBase extends CoreComponent implements OnInit {
   }
 
   public getFileInfo(): string {
-    return `${this.model.playerList.current.fileExtension} · ${this.getBitrate()} · ${this.getFrequency()}`;
+    //return `${this.model.playerList.current.fileExtension} ${Separator.MiddleDot} ${this.getBitrate()} ${Separator.MiddleDot} ${this.getFrequency()}`;
+    return `${this.model.playerList.current.fileExtension} ${Separator.Circle} ${this.getBitrate()} ${Separator.Circle} ${this.getFrequency()}`;
   }
 
   public adjustTimeDown(): void {

@@ -89,15 +89,15 @@ export class TimeDisplayComponent implements OnInit {
   }
 
   get seconds(): string {
-    return this.utility.enforceDigits(this.timeSpan.seconds, 2);
+    return this.utility.zeroPad(this.timeSpan.seconds, 2);
   }
 
   get minutes(): string {
-    return this.utility.enforceDigits(this.timeSpan.minutes, 2);
+    return this.utility.zeroPad(this.timeSpan.minutes, 2);
   }
 
   get hours(): string {
-    return this.utility.enforceDigits(this.timeSpan.hours, 2);
+    return this.utility.zeroPad(this.timeSpan.hours, 2);
   }
 
   ngOnInit(): void {

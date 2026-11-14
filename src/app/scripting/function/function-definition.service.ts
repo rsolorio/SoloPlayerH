@@ -28,7 +28,7 @@ export class FunctionDefinitionService {
       this.functionCounter++;
       return {
         name: definition.name,
-        uniqueName: definition.name + this.nameSeparator + this.utility.enforceDigits(this.functionCounter, 2),
+        uniqueName: definition.name + this.nameSeparator + this.utility.zeroPad(this.functionCounter, 2),
         value: definition.fn(args)
       };
     }
@@ -139,13 +139,14 @@ export class FunctionDefinitionService {
   private padFunction(): void {
     this.functions.push({
       name: 'pad',
-      syntax: '$pad(x,y,z)',
-      description: 'Returns x with at least the number of digits specified in y adding leading zeros.',
+      syntax: '$pad(x,y,z,a)',
+      description: 'Formats x with y minimum of integer digits, z minimum of fractional digits.',
       fn: args => {
         const x = args[0];
         const y = args[1];
         const z = args[2];
-        return this.utility.enforceDigits(x, y, z);
+        const a = args[3];
+        return this.utility.zeroPad(x, y, z, a);
       }
     });
   }
