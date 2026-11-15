@@ -458,7 +458,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     if (albumVersion) {
       udTexts.push({
         description: 'ALBUMVERSION',
-        text: grouping
+        text: albumVersion
       });
     }
 
