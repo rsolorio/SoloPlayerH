@@ -233,7 +233,7 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
    * If the following meta attributes are setup in the "attributes" property of the data source,
    * this writer will automatically consume them to set default tags:
    * title, titleSort, subtitle, artist, artistStylized, artistSort, albumArtist, albumArtistStylized, albumArtistSort,
-   * album, albumStylized, albumType, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
+   * album, albumStylized, albumVersion, albumType, albumSort, genre, track, media, year, addDate, comment, description, composer, composerSort,
    * publisher, grouping, unSyncLyrics, language, mood, mediaType, mediaSubtitle,
    * seconds, tempo (bpm), owner, ufid, mbId, playCount, rating, replayGain, url, videoUrl, favorite, advisory,
    * subgenre, category, occasion, instrument,
@@ -450,6 +450,14 @@ export class MetadataWriterService extends DataTransformServiceBase<ISongModel, 
     if (grouping) {
       udTexts.push({
         description: 'GROUPING',
+        text: grouping
+      });
+    }
+
+    const albumVersion = this.first(metadata[MetaAttribute.AlbumVersion]);
+    if (albumVersion) {
+      udTexts.push({
+        description: 'ALBUMVERSION',
         text: grouping
       });
     }

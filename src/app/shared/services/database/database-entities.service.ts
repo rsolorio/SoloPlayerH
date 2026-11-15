@@ -31,6 +31,7 @@ import { EntityId } from './database.seed';
 import { ILastFmScrobbleRequest } from '../last-fm/last-fm.interface';
 import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
+import { Separator } from 'src/app/core/models/core.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -90,7 +91,7 @@ export class DatabaseEntitiesService {
     if (relations.length) {
       const artists = await ArtistEntity.findBy({ id: In(relations.map(r => r.relatedId ))});
       if (artists.length) {
-        return artists.map(a => a.artistStylized).join(', ');
+        return artists.map(a => a.artistStylized).join(Separator.CommaSpace);
       }
     }
     return null;

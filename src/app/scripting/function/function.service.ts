@@ -14,6 +14,12 @@ export class FunctionService {
     private placeholders: PlaceholderService,
     private definitions: FunctionDefinitionService) { }
 
+  /**
+   * 
+   * @param info 
+   * @param keepFnCounter 
+   * @returns 
+   */
   public parse(info: IParseInformation, keepFnCounter?: boolean): IParseInformation {
     if (!keepFnCounter) {
       this.definitions.resetCounter();
@@ -27,7 +33,7 @@ export class FunctionService {
       const functionIndex = result.expression.indexOf(functionPrefix);
       const openParenthesisIndex = functionIndex + functionPrefix.length - 1;
       const closeParenthesisIndex = this.findClosingParenthesis(result.expression, openParenthesisIndex + 1);
-      let args = [];
+      let args: any[] = [];
       if (openParenthesisIndex < closeParenthesisIndex) {
         const functionArguments = result.expression.substring(openParenthesisIndex + 1, closeParenthesisIndex);
         if (functionArguments) {

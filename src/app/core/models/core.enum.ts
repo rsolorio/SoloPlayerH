@@ -57,6 +57,7 @@ export enum Separator {
   MiddleDot = '·',
   Bar = '|',
   Comma = ',',
+  CommaSpace = ', ',
   BackSlash = '\\',
   ForwardSlash = '/',
   Dash = '-',

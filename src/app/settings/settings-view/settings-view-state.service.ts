@@ -25,6 +25,7 @@ import { LogService } from 'src/app/core/services/log/log.service';
 import { LogLevel } from 'src/app/core/services/log/log.enum';
 import { IInputEditorModel } from 'src/app/shared/components/input-editor/input-editor.interface';
 import { DatabaseLookupService } from 'src/app/shared/services/database/database-lookup.service';
+import { Separator } from 'src/app/core/models/core.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -695,7 +696,7 @@ export class SettingsViewStateService implements IStateService<KeyValuesGen<ISet
   private async getPlaylistNames(ids: string[]): Promise<string> {
     if (ids?.length) {
       const playlists = await PlaylistEntity.findBy({ id: In(ids) });
-      return playlists.map(p => p.name).join(', ');
+      return playlists.map(p => p.name).join(Separator.CommaSpace);
     }
     return null;
   }

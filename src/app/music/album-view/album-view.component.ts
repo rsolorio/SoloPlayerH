@@ -66,6 +66,15 @@ export class AlbumViewComponent implements OnInit {
         {
           fields: [
             {
+              propertyName: 'albumStylized',
+              icon: AppAttributeIcons.AlbumStylized,
+              label: 'Stylized'
+            }
+          ]
+        },
+        {
+          fields: [
+            {
               propertyName: 'primaryArtistName',
               icon: AppAttributeIcons.ArtistName,
               label: 'Artist'

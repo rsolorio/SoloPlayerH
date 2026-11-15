@@ -39,7 +39,7 @@
         "name": "dbToId3Mappings",
         "type": "SongModel",
         "config": "",
-        "attributes": "track,media,mediaSubtitle,year,album,albumStylized,albumType,albumSort,albumArtist,albumArtistStylized,artist,artistStylized,ufId,mbId,singleImage,singleImageDescription,albumImage,albumImagePath,albumAnimated,albumAnimatedPath,albumArtistImage,albumArtistImagePath,albumArtistInfoXml,albumArtistInfoXmlPath,title,artistType,owner,genre,subgenre,occasion,instrument,category,rating,advisory,favorite,playCount,performerCount,mood,language,addDate,changeDate,playDate,filePath,fileName,grouping,publisher,composer,composerSort,titleSort,albumArtistSort,comment,description,seconds,url,tempo,replayGain,subtitle,playHistory,unSyncLyrics",
+        "attributes": "track,media,mediaSubtitle,year,album,albumStylized,albumVersion,albumType,albumSort,albumArtist,albumArtistStylized,artist,artistStylized,ufId,mbId,singleImage,singleImageDescription,albumImage,albumImagePath,albumAnimated,albumAnimatedPath,albumArtistImage,albumArtistImagePath,albumArtistInfoXml,albumArtistInfoXmlPath,title,artistType,owner,genre,subgenre,occasion,instrument,category,rating,advisory,favorite,playCount,performerCount,mood,language,addDate,changeDate,playDate,filePath,fileName,grouping,publisher,composer,composerSort,titleSort,albumArtistSort,comment,description,seconds,url,tempo,replayGain,subtitle,playHistory,unSyncLyrics",
         "customMapping": true,
         "sequence": 1,
         "disabled": false,
@@ -229,11 +229,11 @@
       },
       {
         "dataSourceId": "989ce667-0cda-4fa9-a0b8-2a7f8bfb8d08",
-        "source": "$if($eq(%quality%,LQ),LQ,%empty%)",
-        "destination": "AlbumVersion",
+        "source": "$join(%space%%cricle%%space%,%albumVersion%,$if($eq(%quality%,LQ),LQ,%empty%))",
+        "destination": "albumVersion",
         "priority": 1,
         "sequence": 1,
-        "userDefined": true,
+        "userDefined": false,
         "disabled": false,
         "system": false
       },

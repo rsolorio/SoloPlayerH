@@ -31,6 +31,7 @@ export enum AppAttributeIcons {
   ArtistSinger = 'mdi-account-tie-voice mdi',
   ArtistContributor = 'mdi-account-multiple mdi',
   AlbumName = 'mdi-album mdi',
+  AlbumStylized = 'mdi-symbol mdi',
   SongName = 'mdi-music-clef-treble mdi',
   TitleSort = 'mdi-sort-alphabetical-variant mdi',
   SongCount = 'mdi-music mdi',

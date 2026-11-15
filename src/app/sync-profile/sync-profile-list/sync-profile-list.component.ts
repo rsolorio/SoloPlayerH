@@ -17,6 +17,7 @@ import { NavigationService } from 'src/app/shared/services/navigation/navigation
 import { AppEvent } from 'src/app/app-events';
 import { ListBaseService } from 'src/app/shared/components/list-base/list-base.service';
 import { SettingsViewId } from 'src/app/settings/settings-view/settings-view.enum';
+import { Separator } from 'src/app/core/models/core.enum';
 
 @Component({
   selector: 'sp-sync-profile-list',
@@ -102,7 +103,7 @@ export class SyncProfileListComponent extends CoreComponent implements OnInit {
     if (profile.directories) {
       const directories = JSON.parse(profile.directories) as string[];
       if (directories?.length) {
-        return directories.join(', ');
+        return directories.join(Separator.CommaSpace);
       }
     }
     return '[Not Selected]';

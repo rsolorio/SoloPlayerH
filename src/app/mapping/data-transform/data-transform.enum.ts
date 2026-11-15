@@ -68,6 +68,8 @@ export enum MetaAttribute {
   AlbumType = 'albumType',
   /** String. None. */
   AlbumStylized = 'albumStylized',
+  /** String. Id3v2. */
+  AlbumVersion = 'albumVersion',
   /** Number. Id3v2, Id3v1 */
   Year = 'year',
   /** String. Id3v2 */

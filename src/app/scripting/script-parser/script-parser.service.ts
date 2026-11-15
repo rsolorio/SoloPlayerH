@@ -32,6 +32,8 @@ export class ScriptParserService {
     result['openParen'] = '(';
     result['closeParen'] = ')';
     result['empty'] = '';
+    result['circle'] = '●';
+    result['middleDot'] = '·';
     return result;
   }
 }

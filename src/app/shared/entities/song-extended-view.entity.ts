@@ -3,6 +3,10 @@ import { PartyRelationType } from "../models/music.enum";
 import { SongExtendedViewBaseEntity, songExtendedViewSelect, songViewBaseJoins } from "./song-view-base.entity";
 
 // SONG TABLE
+/**
+ * Entity that uses the extended version of the song view, which includes more data (fields).
+ * This entity is currently being used by the export service as data source
+ */
 @ViewEntity({
   name: 'songExtendedView',
   expression: `

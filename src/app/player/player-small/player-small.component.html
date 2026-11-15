@@ -11,7 +11,7 @@
         <span class="sp-text-medium">{{song.title}}</span>
         <span *ngIf="song.playCount > 0" class="sp-text-tiny sp-play-count">&nbsp;{{song.playCount}}</span>
         <br>
-        <span class="sp-text-small text-muted">{{song.primaryArtistName}} · {{song.primaryAlbumName}}</span>
+        <span class="sp-text-small text-muted">{{song.primaryArtistStylized}} · {{song.primaryAlbumStylized}}</span>
       </td>
       <!-- Back -->
       <td (click)="onPrevious()" class="sp-td-play-control">

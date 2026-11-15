@@ -5,7 +5,7 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { ValueEditorType } from 'src/app/core/models/core.enum';
+import { Separator, ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { UtilityService } from 'src/app/core/services/utility/utility.service';
@@ -56,13 +56,13 @@ export class ArtistViewComponent implements OnInit {
     if (singerRelations.length) {
       let singerArtistIds = singerRelations.map(s => s.relatedId);
       const singerArtists = await ArtistEntity.findBy({ id: In(this.utility.removeDuplicates(singerArtistIds)) });
-      data['singers'] = singerArtists.map(a => a.artistStylized).join(', ');
+      data['singers'] = singerArtists.map(a => a.artistStylized).join(Separator.CommaSpace);
     }
     const contributorRelations = await PartyRelationEntity.findBy({ artistId: data.id, relationTypeId: PartyRelationType.Contributor });
     if (contributorRelations.length) {
       let contributorArtistIds = contributorRelations.map(s => s.relatedId);
       const contributorArtists = await ArtistEntity.findBy({ id: In(this.utility.removeDuplicates(contributorArtistIds)) });
-      data['contributors'] = contributorArtists.map(a => a.artistStylized).join(', ');
+      data['contributors'] = contributorArtists.map(a => a.artistStylized).join(Separator.CommaSpace);
     }
     this.entityEditorModel = {
       data: data,

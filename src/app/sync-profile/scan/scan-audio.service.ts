@@ -34,6 +34,7 @@ import { IImageSource, ISize, KeyValues } from 'src/app/core/models/core.interfa
 import { IFileInfo } from 'src/app/platform/file/file.interface';
 import { DatabaseEntitiesService } from '../../shared/services/database/database-entities.service';
 import { ImageService } from 'src/app/platform/image/image.service';
+import { Separator } from 'src/app/core/models/core.enum';
 
 enum ScanFileMode {
   /** Mode where the scanner identifies a new audio file and it will be added to the database. */
@@ -531,17 +532,21 @@ export class ScanAudioService {
     this.set(MetaAttribute.AlbumSort, 'albumSort', newAlbum.name);
     this.set(MetaAttribute.Publisher, 'publisher');
 
-    let albumCleanName = '';
-    const matches = this.utility.matchBrackets(newAlbum.name);
+    let albumCleanName = newAlbum.name;
+    let albumVersion: string;
+    const matches = this.utility.matchBrackets(albumCleanName);
     if (matches?.length) {
+      const versions: string[] = [];
       for (const match of matches) {
-        albumCleanName = newAlbum.name.replace(match, '').trim();
+        // Remove values, including brackets
+        albumCleanName = albumCleanName.replace(match, '').trim();
+        // Add values without brackets
+        versions.push(match.replace('[', '').replace(']', '').trim());
       }
-    }
-    else {
-      albumCleanName = newAlbum.name;
+      albumVersion = versions.join(Separator.CommaSpace);
     }
     this.set(MetaAttribute.AlbumStylized, 'albumStylized', albumCleanName);
+    this.set(MetaAttribute.AlbumVersion, 'albumVersion', albumVersion);
 
     const existingAlbum = this.lookupService.findAlbum(newAlbum.name, newAlbum.releaseYear, artist.id, this.existingAlbums);
     if (existingAlbum) {
@@ -602,16 +607,16 @@ export class ScanAudioService {
     if (!song.subtitle) {
       const parenthesis = this.utility.matchParenthesis(song.name);
       if (parenthesis?.length) {
-        song.subtitle = parenthesis.map(v => v.replace('(', '').replace(')', '')).join(', ');
+        song.subtitle = parenthesis.map(v => v.replace('(', '').replace(')', '')).join(Separator.CommaSpace);
       }
     }
 
     const featuringArtists = metadata[MetaAttribute.FeaturingArtist];
     if (featuringArtists?.length) {
-      song.featuring = featuringArtists.join(', ');
+      song.featuring = featuringArtists.join(Separator.CommaSpace);
     }
     else if (brackets?.length) {
-      song.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
+      song.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(Separator.CommaSpace);
     }
 
     song.primaryAlbumId = album.id;
@@ -1411,10 +1416,10 @@ export class ScanAudioService {
 
     const featuringArtists = newMetadata[MetaAttribute.FeaturingArtist];
     if (featuringArtists?.length) {
-      existingSong.featuring = featuringArtists.join(', ');
+      existingSong.featuring = featuringArtists.join(Separator.CommaSpace);
     }
     else if (brackets?.length) {
-      existingSong.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(', ');
+      existingSong.featuring = brackets.map(v => v.replace('[', '').replace(']', '')).join(Separator.CommaSpace);
     }
 
     this.set(MetaAttribute.TrackNumber, 'trackNumber', 0);
@@ -1466,6 +1471,7 @@ export class ScanAudioService {
     if (value) {
       this.targetObject[targetPropertyName] = value;
     }
+    // TODO: should this ignore empty strings?
     else if (defaultValue !== undefined) {
       this.targetObject[targetPropertyName] = defaultValue;
     }

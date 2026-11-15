@@ -25,6 +25,7 @@ import { LastFmService } from "./shared/services/last-fm/last-fm.service";
 import { MusicBrainzService } from "./shared/services/music-brainz/music-brainz.service";
 import { IMbRecording, IMbSearchResponse } from "./shared/services/music-brainz/music-brainz.interface";
 import { ImageService } from "./platform/image/image.service";
+import { Separator } from "./core/models/core.enum";
 const MP3Tag = require('mp3tag.js');
 
 /**
@@ -71,6 +72,7 @@ export class AppTestService {
     //await this.testFileDates();
     //await this.getMbIds();
     //await this.addSoundtrackSubgenre();
+    //await this.setAlbumVersion();
 
     // const genres = ['R&B', 'Indie', 'Pop', 'Folk', 'Electronic', 'Rock', 'Other', 'Country', 'Disco', 'Rap', 'Hip-Hop', 'Jazz', 'New Age', 'Folk', 'Reggae', 'Salsa', 'Flamenco', 'Instrumental'];
     // await this.updateSongs('None', 'Soundtrack', genres);
@@ -1154,6 +1156,31 @@ export class AppTestService {
           console.log('%c%s', 'color: red', relatedImage.sourcePath);
           console.log(err);
         }
+      }
+    }
+    console.log('Done');
+  }
+
+  private async setAlbumVersion(): Promise<void> {
+    const albums = await AlbumEntity.find();
+    for (const album of albums) {
+      let albumCleanName = album.name;
+      let albumVersion: string;
+      const matches = this.utility.matchBrackets(albumCleanName);
+      if (matches?.length) {
+        const versions: string[] = [];
+        for (const match of matches) {
+          // Remove values, including brackets
+          albumCleanName = albumCleanName.replace(match, '').trim();
+          // Add values without brackets
+          versions.push(match.replace('[', '').replace(']', '').trim());
+        }
+        albumVersion = versions.join(Separator.CommaSpace);
+
+        // Save
+        album.albumStylized = albumCleanName;
+        album.albumVersion = albumVersion;
+        await album.save();
       }
     }
     console.log('Done');

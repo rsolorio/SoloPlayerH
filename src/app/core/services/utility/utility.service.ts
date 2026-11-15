@@ -9,7 +9,7 @@ import { IDateTimeFormat, IDateTimeText, IRouteInfo, ISize, ITimeSpan } from 'sr
 import { RouterCacheService } from '../router-cache/router-cache.service';
 import { AppRoute, appRoutes, IAppRouteInfo } from 'src/app/app-routes';
 import { ICoordinate } from 'src/app/core/models/core.interface';
-import { MimeType, TimeAgo } from '../../models/core.enum';
+import { MimeType, Separator, TimeAgo } from '../../models/core.enum';
 import { CoreEvent } from 'src/app/app-events';
 
 @Injectable({
@@ -472,7 +472,7 @@ export class UtilityService {
       result.push(timeSpan.milliseconds + ' milliseconds');
     }
 
-    return result.join(', ');;
+    return result.join(Separator.CommaSpace);
   }
 
   /**

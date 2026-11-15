@@ -6,7 +6,7 @@ import { LoadingViewStateService } from 'src/app/core/components/loading-view/lo
 import { NavbarDisplayMode } from 'src/app/core/components/nav-bar/nav-bar-model.interface';
 import { NavBarStateService } from 'src/app/core/components/nav-bar/nav-bar-state.service';
 import { SideBarHostStateService } from 'src/app/core/components/side-bar-host/side-bar-host-state.service';
-import { ValueEditorType } from 'src/app/core/models/core.enum';
+import { Separator, ValueEditorType } from 'src/app/core/models/core.enum';
 import { ISelectableValue } from 'src/app/core/models/core.interface';
 import { IconActionArray } from 'src/app/core/models/icon-action-array.class';
 import { EventsService } from 'src/app/core/services/events/events.service';
@@ -76,7 +76,7 @@ export class SongViewComponent implements OnInit {
       const entries = classifications.filter(
         c => c.valueListTypeId === classificationType.id);
       if (entries.length) {
-        song[classificationType.name] = entries.map(s => s.name).join(', ');
+        song[classificationType.name] = entries.map(s => s.name).join(Separator.CommaSpace);
         // Hack: save a list of selected ids in case we need to edit
         song[classificationType.id] = entries.map(s => s.id);
       }
@@ -512,7 +512,7 @@ export class SongViewComponent implements OnInit {
         const field = this.findFieldByProperty(classificationTypeName);
         const selectedValuePairs = valuePairs.filter(v => v.selected);
         if (selectedValuePairs.length) {
-          this.entityEditorModel.data[classificationTypeName] = selectedValuePairs.map(v => v.caption).join(', ');
+          this.entityEditorModel.data[classificationTypeName] = selectedValuePairs.map(v => v.caption).join(Separator.CommaSpace);
           this.entityEditorModel.data[classificationTypeId] = selectedValuePairs.map(v => v.value);
           if (selectedValuePairs.length > 1) {
             field.badge = selectedValuePairs.length.toString();
