@@ -645,13 +645,15 @@ export class AppTestService {
     // Artists by country
     //queries.push('SELECT country, COUNT(id) AS artistCount FROM artist GROUP BY country ORDER BY artistCount DESC');
 
+    // TODO: separate list by album artists and artists
+
     queries.push({
-      caption: 'Artists with no country',
+      caption: 'Album artists with no country',
       value: `SELECT name FROM albumArtistView WHERE country = 'Unknown' ORDER BY name`
     });
 
     queries.push({
-      caption: 'Songs by artist type',
+      caption: 'Songs by album artist type',
       value: 'SELECT artistType, COUNT(id) AS artistCount FROM albumArtistView GROUP BY artistType ORDER BY artistCount DESC'
     });
 

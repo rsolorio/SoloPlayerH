@@ -486,7 +486,8 @@ export class UtilityService {
   public zeroPad(value: number, minIntegerDigits: number, minFractionDigits?: number, enforcePositive?: boolean): string {
     const formatFn = new Intl.NumberFormat('en-US', {
       minimumIntegerDigits: minIntegerDigits,
-      minimumFractionDigits: minFractionDigits
+      minimumFractionDigits: minFractionDigits,
+      useGrouping: false // whether to use (thousand) separators
     });
     const result = formatFn.format(value);
     return enforcePositive && value > 0 ? `+${result}` : result;
